@@ -1,6 +1,5 @@
 define(function(require) {
 	'use strict';
-
 	var $ = require('lib/jquery'),
 		_ = require('lib/underscore'),
 		Backbone = require('lib/backbone'),
@@ -9,7 +8,8 @@ define(function(require) {
 		headItemRows = require('collections/headItemRow'),
 		selectRegions = require('collections/selectRegion'),
 		cells = require('collections/cells'),
-		cache = require('basic/tools/cache');
+		cache = require('basic/tools/cache'),
+		ShearPlateContainer;
 
 	/**
 	 * 剪切板视图类
@@ -20,7 +20,7 @@ define(function(require) {
 	 * @extends Backbone.View
 	 * @constructor
 	 */
-	var ShearPlateContainer = Backbone.View.extend({
+	ShearPlateContainer = Backbone.View.extend({
 		/**
 		 * 绑定视图
 		 * @property el
@@ -120,47 +120,67 @@ define(function(require) {
 		 * @param  {String} pasteText 复制数据内容
 		 */
 		shearPlateDataPaste: function(pasteText) {
-			var tempString,
-				tempStringArr = [],
-				tempRowTextArr = [],
-				i,
-				j,
-				relativeRowIndex = 0,
-				relativeColIndex = 0;
-
-			//以回车符+换行符，进行分割
-			tempRowTextArr = pasteText.split("\r\n");
-			for (i = 0; i < tempRowTextArr.length - 1; i++) {
-				//以制表符进行列分割
-				tempStringArr = tempRowTextArr[i].split("\t");
-				for (j = 0; j < tempStringArr.length; j++) {
-					tempString = analysis(tempStringArr[j]);
-					this.textToCell(relativeRowIndex, relativeColIndex, tempString);
-					relativeColIndex++;
+			var encodeText,
+				rowData = [],
+				tempCellData = [],
+				decodeText;
+			encodeText = encodeURI(pasteText);
+			rowData = encodeText.split('%0D%0A');
+			if (this.isAblePaste(rowData.length - 1, rowData[0].split('%09').length) === false) return;
+			for (var i = 0; i < rowData.length - 1; i++) {
+				tempCellData = rowData[i].split('%09');
+				for (var j = 0; j < tempCellData.length; j++) {
+					this.textToCell(i, j, decodeURI(analysisText(tempCellData[j])));
 				}
-				relativeColIndex = 0;
-				relativeRowIndex++;
 			}
 
-			function analysis(text) {
-				if (text.indexOf("\n") === -1) {
+			function analysisText(text) {
+				var head = '',
+					tail = '';
+				if (text.indexOf("%0A") === -1) {
 					return text;
 				}
-
-				text = text.substring(1, text.length - 1);
-				var textArr = [],
-					tempText = '',
-					i;
-				textArr = text.split('""');
-				for (i = 0; i < textArr.length; i++) {
-					if (i === 0) {
-						tempText += textArr[i];
+				text = text.substring(3, text.length - 3);
+				while (true) {
+					if (text.indexOf("%22%22") === 0) {
+						text = text.substring(6);
+						head += "%22";
 					} else {
-						tempText += '"' + textArr[i];
+						break;
 					}
 				}
-				return tempText;
+				while (true) {
+					if (text.lastIndexOf("%22%22") === text.length - 6 && text.length > 6) {
+						text = text.substring(0, text.length - 6);
+						tail += "%22";
+					} else {
+						break;
+					}
+				}
+				text = head + text + tail;
+				return text;
 			}
+		},
+		isAblePaste: function(rowlen, collen) {
+			var rowStartIndex,
+				colStartIndex,
+				rowEndIndex,
+				colEndIndex,
+				cellModelArray,
+				i = 0;
+
+			colStartIndex = selectRegions.models[0].get('wholePosi').startX;
+			rowStartIndex = selectRegions.models[0].get('wholePosi').startY;
+			rowEndIndex = rowStartIndex + rowlen - 1;
+			colEndIndex = colStartIndex + collen - 1;
+			cellModelArray = cells.getRegionCells(colStartIndex, rowStartIndex, colEndIndex, rowEndIndex);
+			for (; i < cellModelArray.length; i++) {
+				if (cellModelArray[i] === null) continue;
+				if (cellModelArray[i].get('occupy').x.length > 1 || cellModelArray[i].get('occupy').y.length > 1) {
+					return false;
+				}
+			}
+			return true;
 		},
 		/**
 		 * 将文本复制到单元格对象上面
@@ -179,6 +199,7 @@ define(function(require) {
 				gridLineColList,
 				gridLineRowList;
 
+			if (text === '') return;
 			gridLineColList = headItemCols.models;
 			gridLineRowList = headItemRows.models;
 			indexCol = selectRegions.models[0].get('wholePosi').startX + relativeColIndex;
@@ -197,6 +218,9 @@ define(function(require) {
 			width = gridLineColList[indexCol].get('width');
 			height = gridLineRowList[indexRow].get('height');
 			cacheCell = new Cell();
+			//判断是否已经存在单元格
+			aliasCol = gridLineColList[indexCol].get('alias');
+			aliasRow = gridLineRowList[indexRow].get('alias');
 			cacheCell.set('occupy', {
 				x: aliasCol,
 				y: aliasRow
@@ -208,9 +232,6 @@ define(function(require) {
 				height: height
 			});
 			cacheCell.set("content.texts", text);
-			//判断是否已经存在单元格
-			aliasCol = gridLineColList[indexCol].get('alias');
-			aliasRow = gridLineRowList[indexRow].get('alias');
 			cache.cachePosition(aliasRow, aliasCol, cells.length);
 			cells.add(cacheCell);
 		}
