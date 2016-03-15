@@ -1,0 +1,25 @@
+{
+	"name": "practice",
+	"version": "0.0.1",
+	"description": "a simple example",
+	"devDependencies": {
+		"grunt": "0.4.1",
+		"grunt-size": "0.1.0",
+		"gmudoc": "0.0.3",
+		"grunt-jekyll": "0.4.1",
+		"grunt-gh-pages": "0.9.0",
+		"grunt-contrib-copy": "0.5.0",
+		"requirejs": "2.1.9",
+		"grunt-contrib-qunit": "0.4.0",
+		"grunt-contrib-connect": "0.7.1",
+		"load-grunt-tasks": "0.4.0"
+	},
+	"dependencies": {
+		"grunt-contrib-jshint": "~0.11.1",
+		"grunt-contrib-watch": "~0.6.0",
+		"express": "~3.1.0",
+		"path": "~0.4.9",
+		"mongoose": "~3.5.5",
+		"body-parser": "~1.9.1"
+	}
+}
