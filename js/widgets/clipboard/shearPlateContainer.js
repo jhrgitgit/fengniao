@@ -9,6 +9,7 @@ define(function(require) {
 		selectRegions = require('collections/selectRegion'),
 		cells = require('collections/cells'),
 		cache = require('basic/tools/cache'),
+		send = require('basic/tools/send'),
 		ShearPlateContainer;
 
 	/**
@@ -123,16 +124,28 @@ define(function(require) {
 			var encodeText,
 				rowData = [],
 				tempCellData = [],
-				decodeText;
+				decodeText,
+				sendData = [];
+
 			encodeText = encodeURI(pasteText);
 			rowData = encodeText.split('%0D%0A');
 			if (this.isAblePaste(rowData.length - 1, rowData[0].split('%09').length) === false) return;
 			for (var i = 0; i < rowData.length - 1; i++) {
 				tempCellData = rowData[i].split('%09');
 				for (var j = 0; j < tempCellData.length; j++) {
-					this.textToCell(i, j, decodeURI(analysisText(tempCellData[j])));
+					if (tempCellData[j] !== '') {
+						sendData.push(this.textToCell(i, j, decodeURI(analysisText(tempCellData[j]))));
+					}
 				}
 			}
+			send.PackAjax({
+				url: 'plate.htm?m=paste',
+				data: JSON.stringify({
+					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
+					sheetId: '1',
+					pasteData: sendData
+				})
+			});
 
 			function analysisText(text) {
 				var head = '',
@@ -160,6 +173,7 @@ define(function(require) {
 				text = head + text + tail;
 				return text;
 			}
+
 		},
 		isAblePaste: function(rowlen, collen) {
 			var rowStartIndex,
@@ -197,7 +211,8 @@ define(function(require) {
 				aliasCol,
 				aliasRow,
 				gridLineColList,
-				gridLineRowList;
+				gridLineRowList,
+				result;
 
 			if (text === '') return;
 			gridLineColList = headItemCols.models;
@@ -222,8 +237,8 @@ define(function(require) {
 			aliasCol = gridLineColList[indexCol].get('alias');
 			aliasRow = gridLineRowList[indexRow].get('alias');
 			cacheCell.set('occupy', {
-				x: aliasCol,
-				y: aliasRow
+				x: [aliasCol],
+				y: [aliasRow]
 			});
 			cacheCell.set('physicsBox', {
 				top: top,
@@ -234,6 +249,12 @@ define(function(require) {
 			cacheCell.set("content.texts", text);
 			cache.cachePosition(aliasRow, aliasCol, cells.length);
 			cells.add(cacheCell);
+			result = {
+				aliasCol: aliasCol,
+				aliasRow: aliasRow,
+				text: text
+			};
+			return result;
 		}
 	});
 	return ShearPlateContainer;
