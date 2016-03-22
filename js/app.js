@@ -26,5 +26,6 @@ define('app', function(require) {
 		excelBuild.buildExcelEventListener(SpreadSheet);
 	}
 	new SpreadSheet();
+	
 	return SpreadSheet;
 });
