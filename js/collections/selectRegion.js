@@ -67,6 +67,11 @@ define(function(require) {
 					break;
 			}
 		},
+		/**
+		 * 通过选中区域状态进行筛选
+		 * @param  {string} type 选中区域类型
+		 * @return {array} 筛选结果
+		 */
 		getModelByType: function(type) {
 				return this.where({
 					selectType: type

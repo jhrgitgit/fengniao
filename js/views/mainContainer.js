@@ -21,6 +21,7 @@ define(function(require) {
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
 		cells = require('collections/cells'),
+		selectRegions = require('collections/selectRegion'),
 		GridLineRowContainer = require('views/gridLineRowContainer'),
 		CellContainer = require('views/cellContainer'),
 		CellsContainer = require('views/cellsContainer');
@@ -59,7 +60,7 @@ define(function(require) {
 			Backbone.on('event:mainContainer:destroy', this.destroy, this);
 			Backbone.on('event:mainContainer:attributesRender', this.attributesRender, this);
 			Backbone.on('event:mainContainer:appointPosition', this.appointPosition, this);
-			Backbone.on('event:mainContainer:nextCellPosition', this.nextCellPosition, this);
+			
 			//ps:定位事件，只由主区域订阅
 			this.currentRule = clone.clone(cache.CurrentRule);
 
@@ -74,7 +75,7 @@ define(function(require) {
 				this.delegateEvents({
 					'scroll': 'syncScroll'
 				});
-
+				Backbone.on('event:mainContainer:nextCellPosition', this.nextCellPosition, this);
 				// userViewRowModel = headItemRowList.getModelByAlias(cache.UserView.rowAlias);
 				// userViewEndRowModel = headItemRowList.getModelByPosition(userViewRowModel.get('top') + this.el.offsetHeight);
 				// cache.UserView.rowEndAlias = userViewEndRowModel.get('alias');
@@ -226,7 +227,7 @@ define(function(require) {
 				this.$el.addClass(newAttributes.style);
 			}
 		},
-		nextCellPosition: function(cell, direction) {
+		nextCellPosition: function(direction) {
 			switch (direction) {
 				case 'LEFT':
 					break;
@@ -235,27 +236,36 @@ define(function(require) {
 				case 'UP':
 					break;
 				case 'DOWN':
-					this.downCellPosition(cell);
+					this.downCellPosition();
 					break;
 				default:
 					break;
 			}
 		},
-		downCellPosition: function(cell) {
-			var colAliasArray,
-				rowAliasArray,
+		downCellPosition: function() {
+			var rowAliasArray=[],
 				nextRowAlias,
 				loadStartAlias,
 				loadEndAlias,
-				headItemRow,
 				offsetTop,
 				userViewTop,
 				recordScrollTop,
+				cellModels,
+				cellModel,
+				bottomHeadRowItem,
+				visibleTop,
 				top,
 				i, len, load;
-			//ps:未冻结情况
-			colAliasArray = cell.get('occupy').x;
-			rowAliasArray = cell.get('occupy').y;
+
+
+			//ps:需处理冻结状况
+			cellModel = cells.getCellsByWholeSelectRegion()[0];
+			if (cellModel === null) {
+				rowAliasArray.push(headItemRows.models[selectRegions.models[0].get('wholePosi').startY].get('alias'));
+			} else {
+				rowAliasArray = cellModel.get('occupy').y;
+			}
+
 			len = rowAliasArray.length;
 			for (i = 0; i < len; i++) {
 				if (headItemRows.getIndexByAlias(rowAliasArray[i]) === -1) {
@@ -267,12 +277,7 @@ define(function(require) {
 				loadEndAlias = rowAliasArray[len - 1];
 				//ajax get rows data by alias
 			}
-
-
-			headItemRow = headItemRows.getModelByAlias(rowAliasArray[len - 1]);
-			//重新定位，可视区域bottom值
-			top = headItemRow.get('top') + headItemRow.get('height') + config.User.cellHeight - this.el.offsetHeight + 1- offsetTop - userViewTop;
-
+			bottomHeadRowItem = headItemRows.getModelByAlias(rowAliasArray[len - 1]);
 			//判断Excel冻结状态，非冻结状态(冻结高度为0，用户可视起点高度为0)
 			if (cache.TempProp.isFrozen === true) {
 				offsetTop = this.currentRule.displayPosition.offsetTop;
@@ -281,12 +286,16 @@ define(function(require) {
 				offsetTop = 0;
 				userViewTop = 0;
 			}
+			// visibleTop
+			//重新定位，可视区域底部高度值
+			top = bottomHeadRowItem.get('top') + bottomHeadRowItem.get('height') + config.User.cellHeight + 10 - offsetTop - userViewTop;
+
 			//ajax get rows data by posi
 			//add rows data
 			//view show 
-			if(top<this.el.scrollTop) return;
+			if (top < this.el.scrollTop + this.el.offsetHeight) return;
 			recordScrollTop = this.el.scrollTop;
-			this.el.scrollTop = bottom ;
+			this.el.scrollTop = (top-this.el.offsetHeight);
 			this.deleteTop(recordScrollTop);
 			this.addBottom(recordScrollTop);
 		},
@@ -330,7 +339,6 @@ define(function(require) {
 			if (verticalDirection > 0) {
 				this.addTop(currentDisplayViewTop);
 				this.deleteBottom(currentDisplayViewTop);
-
 			}
 			//as scrollbar scroll down
 			if (verticalDirection < 0) {
@@ -391,7 +399,7 @@ define(function(require) {
 			if (recordIndex >= limitIndex) {
 				return;
 			}
-			for (i = currentIndex; i < limitIndex; i++) {
+			for (i = recordIndex; i < limitIndex; i++) {
 				headItemRowList[i].destroyView();
 			}
 
@@ -516,7 +524,7 @@ define(function(require) {
 			var limitTopPosi,
 				limitBottomPosi,
 				unloadRegions, i = 0;
-			
+
 			limitTopPosi = this.el.scrollTop - config.System.prestrainHeight + offsetTop + userViewTop;
 
 			if (limitTopPosi < 0) limitTopPosi = 0;
@@ -634,7 +642,7 @@ define(function(require) {
 		 * 显示行下方到达加载区域，添加视图视图
 		 * @method addBottom
 		 */
-		addBottom: function(recordViewTop,currentViewTop) {
+		addBottom: function(recordViewTop, currentViewTop) {
 			var limitTopPosi,
 				limitBottomPosi,
 				limitTopIndex,

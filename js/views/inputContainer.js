@@ -160,15 +160,18 @@ define(function(require) {
 				len, i, isShortKey, keyboard;
 			keyboard = config.keyboard;
 			isShortKey = this.isShortKey(e.keyCode);
+
 			if (isShortKey) {
 				switch (e.keyCode) {
 					case keyboard.enter:
-						this.close();
-						var moveToDistance = selectRegions.models[0].get('physicsBox').height + selectRegions.models[0].get('physicsPosi').top;
-						Backbone.trigger('event:cellsContainer:changePosi', {
-							clientX: selectRegions.models[0].get('physicsPosi').left +config.System.outerLeft + $('#spreadSheet').offset().left,
-							clientY: moveToDistance + config.System.outerTop + $('#spreadSheet').offset().top + 2
-						});
+						if (e.altKey) {
+							this.$el.val(this.$el.val()+'\r\n');
+							return;
+						} else {
+							this.close();
+							Backbone.trigger('event:mainContainer:nextCellPosition', 'DOWN');
+							Backbone.trigger('event:cellsContainer:selectRegionChange', 'DOWN');
+						}
 						break;
 				}
 			}

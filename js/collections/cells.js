@@ -73,8 +73,8 @@ define(function(require) {
 				physicsBox: {
 					top: top,
 					left: left,
-					width: width-1,
-					height: height-1
+					width: width - 1,
+					height: height - 1
 				}
 			});
 			return this.models[this.length - 1];
@@ -889,6 +889,25 @@ define(function(require) {
 		 */
 		getCellByAlias: function(aliasCol, aliasRow) {
 			var tempCellIndex;
+			if (cache.CellsPosition.strandY[aliasRow] === undefined || cache.CellsPosition.strandY[aliasRow][aliasCol] === undefined) {
+				return null;
+			}
+			tempCellIndex = cache.CellsPosition.strandY[aliasRow][aliasCol];
+			return this.models[tempCellIndex];
+		},
+		/**
+		 * 根据index获取单元格对象
+		 * @method getCellByAlias 
+		 * @param  aliasCol {string} 行别名
+		 * @param  aliasRow {string} 行列别名
+		 * @return {Cell} 单元格对象
+		 */
+		getCellByIndex: function(indexCol, indexRow) {
+			var tempCellIndex,
+				aliasRow,
+				aliasCol;
+			aliasRow = headItemRows.models[indexRow].get("alias");
+			aliasCol = headItemCols.models[indexCol].get("alias");
 			if (cache.CellsPosition.strandY[aliasRow] === undefined || cache.CellsPosition.strandY[aliasRow][aliasCol] === undefined) {
 				return null;
 			}

@@ -7,6 +7,7 @@ define(function(require) {
 		send = require('basic/tools/send'),
 		cache = require('basic/tools/cache'),
 		listener = require('basic/util/listener'),
+		copy = require('entrance/tool/copy'),
 		Screen;
 
 
@@ -34,6 +35,7 @@ define(function(require) {
 			'mouseup': 'realseDrag',
 			'beforeunload': 'closeWindow',
 			'paste': 'pasteData',
+			'copy' : 'copyData',
 			'mousedown': 'transAction',
 			'keydown': 'onKeyDown'
 		},
@@ -192,6 +194,10 @@ define(function(require) {
 				pasteText = event.originalEvent.clipboardData.getData('Text'); //e.clipboardData.getData('text/plain');
 			}
 			Backbone.trigger('event:pasteData', pasteText);
+		},
+		copyData: function(event) {
+			if ($(':focus').length > 0) return;
+			copy(event);
 		},
 		/**
 		 * 用于其他视图，绑定该视图
