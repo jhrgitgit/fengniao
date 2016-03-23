@@ -118,7 +118,7 @@ define(function(require) {
 		}
 		//更新选中视图
 	};
-
+	
 	function deletePosi(indexCol, indexRow) {
 		var currentCellPosition = cache.CellsPosition,
 			currentStrandX = currentCellPosition.strandX,

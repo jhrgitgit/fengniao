@@ -63,9 +63,11 @@
 			 * @param  {string} pasteText 数据 
 			 */
 			pasteData: function(pasteText) {
-				//剪切板数据源数据复制
-				this.shearPlateDataPaste(pasteText);
-				//在线excel数据源复制
+				if (cache.clipState === "copy") {
+					this.excelDataPaste();
+				} else {
+					this.clipBoardDataPaste(pasteText);
+				}
 
 			},
 			/**
@@ -87,27 +89,133 @@
 			 * @method pasteData
 			 * @param  {string} pasteText 数据 
 			 */
-			onlinePaste: function() {
+			excelDataPaste: function() {
+				var clipRegion,
+					selectRegion,
+					startColIndex,
+					startRowIndex,
+					endColIndex,
+					endRowIndex,
+					clipColAlias,
+					clipRowAlias,
+					selectColAlias,
+					selectRowAlias,
+					relativeColIndex,
+					relativeRowIndex,
+					tempCopyCellModel,
+					tempCellModel,
+					CellModel,
+					sendData = [],
+					text = "",
+					i,
+					j;
 
+				clipRegion = selectRegions.getModelByType("clip")[0];
+				selectRegion = selectRegions.getModelByType("operation")[0];
+
+				startColIndex = clipRegion.get("wholePosi").startX;
+				startRowIndex = clipRegion.get("wholePosi").startY;
+				endColIndex = clipRegion.get("wholePosi").endX;
+				endRowIndex = clipRegion.get("wholePosi").endY;
+
+				relativeColIndex = startColIndex - selectRegion.get("wholePosi").startX;
+				relativeRowIndex = startRowIndex - selectRegion.get("wholePosi").startY;
+
+				if (this.isAblePaste(endRowIndex - startRowIndex + 1, endColIndex - startColIndex + 1) === false) return;
+
+				for (i = startRowIndex; i < endRowIndex + 1; i++) {
+					for (j = startColIndex; j < endColIndex + 1; j++) {
+						clipColAlias = headItemCols.models[j].get('alias');
+						clipRowAlias = headItemRows.models[i].get('alias');
+						selectColAlias = headItemCols.models[j - relativeColIndex].get('alias');
+						selectRowAlias = headItemRows.models[i - relativeRowIndex].get('alias');
+						tempCellModel = cells.getCellByAlias(selectColAlias, selectRowAlias);
+						if (tempCellModel !== null) {
+							tempCellModel.set('isDestroy', true);
+							this.deletePosi(selectColAlias, selectRowAlias);
+						}
+						CellModel = cells.getCellByAlias(clipColAlias, clipRowAlias);
+						if (CellModel !== null) {
+							tempCopyCellModel = CellModel.clone();
+							this.adaptCell(tempCopyCellModel, relativeColIndex, relativeRowIndex);
+							cells.add(tempCopyCellModel);
+						}
+					}
+				}
+				//增加消息发送
+				cache.clipState = "null";
+				clipRegion.destroy();
 			},
-			/**
-			 * 写入剪切板数据
-			 * @method inputshearPlate
-			 */
-			inputshearPlate: function() {
+			adaptCell: function(cell, relativeColIndex, relativeRowIndex) {
+				var arrayOriginalColAlias,
+					arrayOriginalRowAlias,
+					arrayColAlias = [],
+					arrayRowAlias = [],
+					colIndex,
+					rowIndex,
+					left, top,
+					width = 0,
+					height = 0,
+					rowLen, colLen, i;
 
+				arrayOriginalColAlias = cell.get("occupy").x;
+				arrayOriginalRowAlias = cell.get("occupy").y;
+				rowLen = arrayOriginalRowAlias.length;
+				colLen = arrayOriginalColAlias.length;
+				//增加超过加载区域处理
+				for (i = 0; i < rowLen; i++) {
+					rowIndex = headItemRows.getIndexByAlias(arrayOriginalRowAlias[i]) - relativeRowIndex;
+					arrayRowAlias.push(headItemRows.models[rowIndex].get("alias"));
+					height += headItemRows.models[rowIndex].get("height") + 1;
+					if (i === 0) top = headItemRows.models[rowIndex].get("top");
+				}
+				for (i = 0; i < colLen; i++) {
+					colIndex = headItemCols.getIndexByAlias(arrayOriginalColAlias[i]) - relativeColIndex;
+					arrayColAlias.push(headItemCols.models[colIndex].get("alias"));
+					width += headItemCols.models[colIndex].get("width") + 1;
+					if (i === 0) left = headItemCols.models[colIndex].get("left");
+				}
+
+				cell.set("occupy", {
+					x: arrayColAlias,
+					y: arrayRowAlias
+				});
+				cell.set("physicsBox", {
+					top: top,
+					left: left,
+					width: width - 1,
+					height: height - 1
+				});
+			},
+			deletePosi: function(aliasCol, aliasRow) {
+				var currentCellPosition = cache.CellsPosition,
+					currentStrandX = currentCellPosition.strandX,
+					currentStrandY = currentCellPosition.strandY;
+				if (currentStrandX[aliasCol] !== undefined && currentStrandX[aliasCol][aliasRow] !== undefined) {
+					delete currentStrandX[aliasCol][aliasRow];
+					if (!Object.getOwnPropertyNames(currentStrandX[aliasCol]).length) {
+						delete currentStrandX[aliasCol];
+					}
+				}
+				if (currentStrandY[aliasRow] !== undefined && currentStrandY[aliasRow][aliasCol] !== undefined) {
+					delete currentStrandY[aliasRow][aliasCol];
+					if (!Object.getOwnPropertyNames(currentStrandY[aliasRow]).length) {
+						delete currentStrandY[aliasRow];
+					}
+				}
 			},
 			/**
 			 * 剪切板数据源数据解析
 			 * @method shearPlateDataPaste
 			 * @param  {String} pasteText 复制数据内容
 			 */
-			shearPlateDataPaste: function(pasteText) {
+			clipBoardDataPaste: function(pasteText) {
 				var encodeText,
 					rowData = [],
 					tempCellData = [],
 					decodeText,
-					sendData = [];
+					sendData = [],
+					clipRegion;
 
 				encodeText = encodeURI(pasteText);
 				rowData = encodeText.split('%0D%0A');
@@ -121,6 +229,12 @@
 						}
 					}
 				}
+
+				clipRegion = selectRegions.getModelByType("clip")[0];
+				if (clipRegion !== null && clipRegion !== undefined) {
+					clipRegion.destory();
+				}
+				cache.clipState = "null";
 				send.PackAjax({
 					url: 'plate.htm?m=paste',
 					data: JSON.stringify({

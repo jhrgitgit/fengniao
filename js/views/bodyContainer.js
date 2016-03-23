@@ -358,20 +358,25 @@ define(function(require) {
 				userViewColModel,
 				userViewRowIndex,
 				userViewColIndex;
+
+
 			currentRowIndex = modelRowList.getIndexByAlias(cache.TempProp.rowAlias);
 			currentColIndex = modelColList.getIndexByAlias(cache.TempProp.colAlias);
+
 			if (currentRowIndex === -1) {
 				currentRowModelTop = 0;
 			} else {
 				currentRowModel = modelRowList.models[currentRowIndex];
 				currentRowModelTop = currentRowModel.get('top');
 			}
+			
 			if (currentColIndex === -1) {
 				currentColModelLeft = 0;
 			} else {
 				currentColModel = modelColList.models[currentColIndex];
 				currentColModelLeft = currentColModel.get('left');
 			}
+
 			//可视点
 			userViewRowModel = modelRowList.getModelByAlias(cache.UserView.rowAlias);
 			userViewRowIndex = modelRowList.getIndexByAlias(cache.UserView.rowAlias);

@@ -45,7 +45,9 @@ define(function(require) {
 		 */
 		initialize: function(options) {
 			Backbone.on('event:selectRegion:patchOprCell', this.patchOprCell, this);
-			Backbone.on('event:selectRegion:createInputContainer', this.addInputContainer, this);
+			if (this.model.get("selectType") === "operation") {
+				Backbone.on('event:selectRegion:createInputContainer', this.addInputContainer, this);
+			}
 			this.listenTo(this.model, 'change', this.changePosition);
 			this.listenTo(this.model, 'destroy', this.destroy);
 			this.currentRule = util.clone(cache.CurrentRule);
@@ -259,7 +261,7 @@ define(function(require) {
 			} else {
 				cellModel = cellModelList[0];
 			}
-			cellModel.set('content.texts','');
+			cellModel.set('content.texts', '');
 
 			var inputContainer = new InputContainer({
 				model: cellModel,

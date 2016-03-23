@@ -3,6 +3,8 @@ define(function(require) {
 	var Backbone = require('lib/backbone'),
 		cache = require('basic/tools/cache'),
 		cells = require('collections/cells'),
+		headItemCols = require('collections/headItemCol'),
+		headItemRows = require('collections/headItemRow'),
 		selectRegions = require('collections/selectRegion'),
 		copy;
 
@@ -13,6 +15,8 @@ define(function(require) {
 			startRowIndex,
 			endColIndex,
 			endRowIndex,
+			colAlias,
+			rowAlias,
 			text = "",
 			i,
 			j;
@@ -27,7 +31,9 @@ define(function(require) {
 
 		for (i = startRowIndex; i < endRowIndex + 1; i++) {
 			for (j = startColIndex; j < endColIndex + 1; j++) {
-				tempCellModel = cells.getCellByIndex(j, i);
+				colAlias = headItemCols.models[j].get('alias');
+				rowAlias = headItemRows.models[i].get('alias');
+				tempCellModel = cells.getCellByAlias(colAlias, rowAlias);
 				if (tempCellModel !== null) {
 					text += cellToText(tempCellModel);
 				}
@@ -38,11 +44,11 @@ define(function(require) {
 				}
 			}
 		}
-		if(e!== undefined){
+		if (e !== undefined) {
 			e.preventDefault();
 			if (window.clipboardData) {
 				window.clipboardData.setData("Text", text);
-			}else{
+			} else {
 				e.originalEvent.clipboardData.setData("Text", text);
 			}
 		}
@@ -57,17 +63,17 @@ define(function(require) {
 				return text;
 			}
 			while (true) {
-				if (text.indexOf("\n") === 0) {
+				if (text.indexOf('"') === 0) {
 					text = text.substring(1);
-					head += "\n\n";
+					head += '""';
 				} else {
 					break;
 				}
 			}
 			while (true) {
-				if (text.lastIndexOf("\n") === text.length - 1 && text.length > 1) {
+				if (text.lastIndexOf('"') === text.length - 1 && text.length > 1) {
 					text = text.substring(0, text.length - 1);
-					tail += "\n\n";
+					tail += '""';
 				} else {
 					break;
 				}

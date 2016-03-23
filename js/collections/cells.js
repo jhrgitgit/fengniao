@@ -896,25 +896,6 @@ define(function(require) {
 			return this.models[tempCellIndex];
 		},
 		/**
-		 * 根据index获取单元格对象
-		 * @method getCellByAlias 
-		 * @param  aliasCol {string} 行别名
-		 * @param  aliasRow {string} 行列别名
-		 * @return {Cell} 单元格对象
-		 */
-		getCellByIndex: function(indexCol, indexRow) {
-			var tempCellIndex,
-				aliasRow,
-				aliasCol;
-			aliasRow = headItemRows.models[indexRow].get("alias");
-			aliasCol = headItemCols.models[indexCol].get("alias");
-			if (cache.CellsPosition.strandY[aliasRow] === undefined || cache.CellsPosition.strandY[aliasRow][aliasCol] === undefined) {
-				return null;
-			}
-			tempCellIndex = cache.CellsPosition.strandY[aliasRow][aliasCol];
-			return this.models[tempCellIndex];
-		},
-		/**
 		 * 按照行列索引，获取两列之间开始区域不超过开始行的cell对象
 		 * @method getCellsInStartRowRegion 
 		 * @param  startRowIndex {int} 行开始索引
