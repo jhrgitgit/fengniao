@@ -57,6 +57,7 @@ define(function(require) {
 		initialize: function(options) {
 			Backbone.on('call:cellsContainer', this.callCellsContainer, this);
 			Backbone.on('event:cellsContainer:createDataSourceRegion', this.createDataSourceRegion, this);
+			Backbone.on('event:cellsContainer:adjustSelectRegion', this.adjustSelectRegion, this);
 			Backbone.on('event:cellsContainer:getPosi', this.getPosi, this);
 			Backbone.on('event:cellsContainer:destroy', this.destroy, this);
 			Backbone.on('event:cellsContainer:unBindDrag', this.unBindDrag, this);
@@ -579,8 +580,6 @@ define(function(require) {
 			if ($(e.target).attr('class') === 'edit-frame') {
 				return;
 			}
-			//end
-			//
 			this.changePosi(targetPosi);
 			Backbone.trigger('event:cellsContainer:bindDrag');
 		},

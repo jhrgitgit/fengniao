@@ -9,6 +9,7 @@ define(function(require) {
 		Backbone = require('lib/backbone'),
 		headItemRows = require('collections/headItemRow'),
 		headItemCols = require('collections/headItemCol'),
+		selectRegions = require('collections/selectRegion'),
 		config = require('spreadsheet/config'),
 		cache = require('basic/tools/cache'),
 		send = require('basic/tools/send'),
@@ -54,12 +55,17 @@ define(function(require) {
 		 * @method render 
 		 */
 		render: function() {
-			var modelJSON = this.model.toJSON();
+			var modelJSON = this.model.toJSON(),
+				clipRegion;
 			/**
 			 * 设置模板
 			 * @property template
 			 * @type {html}
 			 */
+			clipRegion = selectRegions.getModelByType("clip")[0];
+			if (clipRegion !== undefined) {
+				clipRegion.destroy();
+			}
 			this.template = Handlebars.compile($('#tempItemCell').html());
 			// this.$el.removeAttr('style');
 			this.$el.css({
@@ -115,12 +121,12 @@ define(function(require) {
 			}
 			texts = text.split('\n');
 			text = '';
-			if (this.model.get('content').wordWrap===false) {
-				for (i=0; i < texts.length; i++) {
+			if (this.model.get('content').wordWrap === false) {
+				for (i = 0; i < texts.length; i++) {
 					text += texts[i];
 				}
 			} else {
-				for (i=0; i < texts.length; i++) {
+				for (i = 0; i < texts.length; i++) {
 					text += texts[i] + '<br>';
 				}
 			}

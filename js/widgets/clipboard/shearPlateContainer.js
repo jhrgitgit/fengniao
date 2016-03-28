@@ -10,7 +10,7 @@
 			cells = require('collections/cells'),
 			cache = require('basic/tools/cache'),
 			send = require('basic/tools/send'),
-			copy = require('entrance/tool/copy'),
+			clipOperate = require('entrance/tool/clipoperate'),
 			ShearPlateContainer;
 
 		/**
@@ -57,6 +57,12 @@
 						break;
 				}
 			},
+			copyData: function() {
+				clipOperate("copy");
+			},
+			cutData: function() {
+				clipOperate("cut");
+			},
 			/**
 			 * 复制数据
 			 * @method pasteData
@@ -64,32 +70,19 @@
 			 */
 			pasteData: function(pasteText) {
 				if (cache.clipState === "copy") {
-					this.excelDataPaste();
+					this.excelDataPaste("copy");
+				} else if (cache.clipState === "cut") {
+					this.excelDataPaste("cut");
 				} else {
 					this.clipBoardDataPaste(pasteText);
 				}
 
 			},
 			/**
-			 * 剪切数据
-			 * @method pasteData
-			 * @param  {string} pasteText 数据 
+			 * excel内部选中区域数据进行粘贴
+			 * @method excelDataPaste
 			 */
-			cutData: function() {},
-			/**
-			 * 复制数据
-			 * @method pasteData
-			 * @param  {string} pasteText 数据 
-			 */
-			copyData: function() {
-				copy();
-			},
-			/**
-			 * 现在粘贴数据
-			 * @method pasteData
-			 * @param  {string} pasteText 数据 
-			 */
-			excelDataPaste: function() {
+			excelDataPaste: function(type) {
 				var clipRegion,
 					selectRegion,
 					startColIndex,
@@ -122,29 +115,58 @@
 				relativeRowIndex = startRowIndex - selectRegion.get("wholePosi").startY;
 
 				if (this.isAblePaste(endRowIndex - startRowIndex + 1, endColIndex - startColIndex + 1) === false) return;
-
+				//超出已加载区域处理
 				for (i = startRowIndex; i < endRowIndex + 1; i++) {
 					for (j = startColIndex; j < endColIndex + 1; j++) {
 						clipColAlias = headItemCols.models[j].get('alias');
 						clipRowAlias = headItemRows.models[i].get('alias');
 						selectColAlias = headItemCols.models[j - relativeColIndex].get('alias');
 						selectRowAlias = headItemRows.models[i - relativeRowIndex].get('alias');
+
 						tempCellModel = cells.getCellByAlias(selectColAlias, selectRowAlias);
-						if (tempCellModel !== null) {
-							tempCellModel.set('isDestroy', true);
-							this.deletePosi(selectColAlias, selectRowAlias);
-						}
 						CellModel = cells.getCellByAlias(clipColAlias, clipRowAlias);
-						if (CellModel !== null) {
+						if (CellModel !== null && CellModel.get('occupy').x[0] === clipColAlias && CellModel.get('occupy').y[0] === clipRowAlias) {
+							if (tempCellModel !== null) {
+								tempCellModel.set('isDestroy', true);
+								this.deletePosi(selectColAlias, selectRowAlias);
+							}
 							tempCopyCellModel = CellModel.clone();
+							if (type === "cut") {
+								CellModel.set('isDestroy', true);
+								this.deletePosi(clipColAlias, clipRowAlias);
+							}
 							this.adaptCell(tempCopyCellModel, relativeColIndex, relativeRowIndex);
+							this.cacheCellPosition(tempCopyCellModel);
 							cells.add(tempCopyCellModel);
 						}
 					}
 				}
-				//增加消息发送
 				cache.clipState = "null";
 				clipRegion.destroy();
+				Backbone.trigger('event:cellsContainer:adjustSelectRegion', {
+					startColIndex: startColIndex - relativeColIndex,
+					startRowIndex: startRowIndex - relativeRowIndex,
+					endColIndex: endColIndex - relativeColIndex,
+					endRowIndex: endRowIndex - relativeRowIndex
+				});
+			},
+			cacheCellPosition: function(cell) {
+				var occupyCols = cell.get('occupy').x,
+					occupyRows = cell.get('occupy').y,
+					aliasCol,
+					aliasRow,
+					rowLen,
+					colLen,
+					i = 0,
+					j;
+				rowLen = occupyRows.length;
+				colLen = occupyCols.length;
+				for (; i < rowLen; i++) {
+					for (j = 0; j < colLen; j++) {
+						cache.cachePosition(occupyRows[i], occupyCols[j], cells.length);
+					}
+				}
+
 			},
 			adaptCell: function(cell, relativeColIndex, relativeRowIndex) {
 				var arrayOriginalColAlias,

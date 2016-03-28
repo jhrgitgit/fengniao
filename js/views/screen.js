@@ -7,7 +7,7 @@ define(function(require) {
 		send = require('basic/tools/send'),
 		cache = require('basic/tools/cache'),
 		listener = require('basic/util/listener'),
-		copy = require('entrance/tool/copy'),
+		clipOperate = require('entrance/tool/clipOperate'),
 		Screen;
 
 
@@ -35,7 +35,8 @@ define(function(require) {
 			'mouseup': 'realseDrag',
 			'beforeunload': 'closeWindow',
 			'paste': 'pasteData',
-			'copy' : 'copyData',
+			'copy': 'copyData',
+			'cut': 'cutData',
 			'mousedown': 'transAction',
 			'keydown': 'onKeyDown'
 		},
@@ -85,7 +86,7 @@ define(function(require) {
 				default:
 					break;
 			}
-			if(flag){
+			if (flag) {
 				Backbone.trigger('event:selectRegion:createInputContainer');
 			}
 			// if (e.keyCode === 32 || (36 < e.keyCode && e.keyCode < 46) ||
@@ -197,7 +198,11 @@ define(function(require) {
 		},
 		copyData: function(event) {
 			if ($(':focus').length > 0) return;
-			copy(event);
+			clipOperate("copy", event);
+		},
+		cutData: function(event) {
+			if ($(':focus').length > 0) return;
+			clipOperate("cut", event);
 		},
 		/**
 		 * 用于其他视图，绑定该视图
