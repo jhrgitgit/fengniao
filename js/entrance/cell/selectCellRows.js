@@ -7,7 +7,6 @@ define(function(require) {
 		cache = require('basic/tools/cache'),
 		listener = require('basic/util/listener'),
 		selectRegions = require('collections/selectRegion'),
-		dataSourceRegions = require('collections/dataSourceRegion'),
 		cells = require('collections/cells'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
@@ -61,10 +60,10 @@ define(function(require) {
 		if (e === undefined || e.isDefaultPrevented() === false) {
 			if (cache.setDataSource === true) {
 
-				if (dataSourceRegions.length === 0) {
+				if (selectRegions.getModelByType("dataSource")[0] === undefined) {
 					Backbone.trigger('event:cellsContainer:createDataSourceRegion', {});
 				}
-				dataSourceRegions.models[0].set({
+				selectRegions.getModelByType("dataSource")[0].set({
 					physicsPosi: {
 						left: left,
 						top: top

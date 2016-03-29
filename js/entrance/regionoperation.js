@@ -21,7 +21,6 @@ define(function(require) {
 				endColIndex,
 				endRowIndex;
 			if (regionLabel instanceof Array) {
-
 				region.startColIndex = headItemCol.getIndexByDisplayname(getDisplayName(regionLabel[0],'col'));
 				region.startRowIndex = headItemRow.getIndexByDisplayname(getDisplayName(regionLabel[0],'row'));
 

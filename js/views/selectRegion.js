@@ -44,13 +44,17 @@ define(function(require) {
 		 * @method initialize
 		 */
 		initialize: function(options) {
-			Backbone.on('event:selectRegion:patchOprCell', this.patchOprCell, this);
 			if (this.model.get("selectType") === "operation") {
+				Backbone.on('event:selectRegion:patchOprCell', this.patchOprCell, this);
 				Backbone.on('event:selectRegion:createInputContainer', this.addInputContainer, this);
 			}
 			this.listenTo(this.model, 'change', this.changePosition);
 			this.listenTo(this.model, 'destroy', this.destroy);
-			this.currentRule = util.clone(cache.CurrentRule);
+			if (options.currentRule !== undefined) {
+				this.currentRule = options.currentRule;
+			} else {
+				this.currentRule = util.clone(cache.CurrentRule);
+			}
 			this.userViewTop = cache.TempProp.isFrozen ? headItemRows.getModelByAlias(cache.UserView.rowAlias).get('top') : 0;
 			this.userViewLeft = cache.TempProp.isFrozen ? headItemCols.getModelByAlias(cache.UserView.colAlias).get('left') : 0;
 			this.offsetLeft = cache.TempProp.isFrozen ? (this.currentRule.displayPosition.offsetLeft || 0) : 0;
@@ -311,11 +315,17 @@ define(function(require) {
 		 * @method destroy
 		 */
 		destroy: function() {
-			Backbone.off('event:selectRegion:patchOprCell');
-			this.remove();
+			if (this.model.get("selectType") === "operation") {
+				Backbone.off('event:selectRegion:patchOprCell', this.patchOprCell, this);
+				Backbone.off('event:selectRegion:createInputContainer', this.addInputContainer, this);
+			}
 			if (this.model.get('selectType') === 'drag') {
 				this.viewCellsContainer.dragView = null;
 			}
+			if (this.model.get('selectType') === 'dataSource') {
+				this.viewCellsContainer.dataSoureRegionView = null;
+			}
+			this.remove();
 		}
 	});
 	return SelectRegion;

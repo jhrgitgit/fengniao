@@ -1,7 +1,6 @@
 define(function(require) {
 	'use strict';
 	var cache = require('basic/tools/cache'),
-		dataSourceRegions = require('collections/dataSourceRegion'),
 		operation;
 
 	operation = {
@@ -12,8 +11,8 @@ define(function(require) {
 			cache.setDataSource = false;
 		},
 		destroyDataSoureRegion: function() {
-			if (dataSourceRegions.length > 0) {
-				dataSourceRegions.models[0].destroy();
+			if (selectRegions.getModelByType("dataSource")[0] !== undefined) {
+				selectRegions.getModelByType("dataSource")[0].destroy();
 			}
 		}
 	};

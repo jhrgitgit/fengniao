@@ -15,12 +15,25 @@ define(function(require) {
 			startRowIndex,
 			endColIndex,
 			endRowIndex,
+			selectModel,
+			clipModel,
 			colAlias,
 			rowAlias,
 			text = "",
 			i,
 			j;
-		Backbone.trigger('event:cellsContainer:addClipRegion');
+
+		clipModel = selectRegions.getModelByType('clip')[0];
+		if (clipModel !== undefined) {
+			clipModel.destroy();
+		}
+		selectRegion = selectRegions.getModelByType("operation")[0];
+		clipModel = selectRegion.clone();
+		clipModel.set("selectType", "clip");
+		selectRegions.add(clipModel);
+
+		Backbone.trigger('event:cellsContainer:addClipRegionView');
+		
 		if(type === "copy"){
 			cache.clipState = "copy";
 		}else if(type === "cut"){

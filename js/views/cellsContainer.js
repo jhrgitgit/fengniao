@@ -14,11 +14,9 @@ define(function(require) {
 		siderLineRows = require('collections/siderLineRow'),
 		siderLineCols = require('collections/siderLineCol'),
 		cells = require('collections/cells'),
-		dataSourceRegions = require('collections/dataSourceRegion'),
 		GridLineContainer = require('views/gridLineContainer'),
 		ContentCellsContainer = require('views/contentCellsContainer'),
-		SelectRegionView = require('views/selectRegion'),
-		DataSourceRegionView = require('views/dataSourceRegion');
+		SelectRegionView = require('views/selectRegion');
 
 
 	/**
@@ -64,7 +62,7 @@ define(function(require) {
 			Backbone.on('event:cellsContainer:bindDrag', this.bindDrag, this);
 			Backbone.on('event:cellsContainer:changePosi', this.changePosi, this);
 			Backbone.on('event:cellsContainer:selectRegionChange', this.selectRegionChange, this);
-			Backbone.on('event:cellsContainer:addClipRegion', this.addClipRegion, this);
+			Backbone.on('event:cellsContainer:addClipRegionView', this.addClipRegionView, this);
 			Backbone.on('call:cellsContainer:getCoordinate', this.getCoordinate, this);
 			_.bindAll(this, 'callView', 'drag');
 			this.currentRule = util.clone(cache.CurrentRule);
@@ -88,6 +86,7 @@ define(function(require) {
 
 			this.contentCellsContainer = new ContentCellsContainer();
 			this.$el.append(this.contentCellsContainer.render().el);
+
 			len = modelList.length;
 			for (i = 0; i < len; i++) {
 				this.addSelectRegion(modelList[i]);
@@ -421,22 +420,18 @@ define(function(require) {
 		/**
 		 * 增加复制(剪切)选中框
 		 */
-		addClipRegion: function() {
+		addClipRegionView: function() {
 			var clipModel,
 				clipView,
 				selectModel;
+
 			clipModel = selectRegions.getModelByType('clip')[0];
-			if (clipModel !== undefined) {
-				clipModel.destroy();
-			}
-			selectModel= selectRegions.getModelByType('operation')[0];
-			clipModel=selectModel.clone();
-			clipModel.set("selectType","clip");
-			selectRegions.add(clipModel);
 			clipView = new SelectRegionView({
 				model: clipModel,
-				className: 'clip-container'
+				className: 'clip-container',
+				currentRule: this.currentRule
 			});
+			this.clipView = clipView;
 			this.$el.append(clipView.render().el);
 		},
 		/**
@@ -444,9 +439,15 @@ define(function(require) {
 		 * @method addSelectRegion
 		 */
 		addSelectRegion: function(modelSelectRegion) {
-			//init selectRegion 
+			var className;
+			if (modelSelectRegion.get("selectType") === "operation") {
+				className = "selected-container";
+			} else {
+				className = "datasource-container";
+			}
 			this.selectRegion = new SelectRegionView({
-				model: modelSelectRegion
+				model: modelSelectRegion,
+				className: className
 			});
 			this.$el.append(this.selectRegion.render().el);
 		},
@@ -655,6 +656,7 @@ define(function(require) {
 
 			cellsPositionX = cache.CellsPosition.strandX;
 
+			//ps：修改
 			if (cellsPositionX[aliasGridCol] !== undefined &&
 				cellsPositionX[aliasGridCol][aliasGridRow] !== undefined) {
 				modelCell = cells.models[cellsPositionX[aliasGridCol][aliasGridRow]];
@@ -691,6 +693,7 @@ define(function(require) {
 				};
 				this.adjustOperationRegion(options, e);
 			}
+
 			var e = {};
 			for (i = startPosiX; i < endPosiX + 1; i++) {
 				colDisplayNames.push(headLineColModelList[i].get('displayName'));
@@ -797,9 +800,9 @@ define(function(require) {
 
 
 			if (cache.setDataSource === true) {
-				regionModel = dataSourceRegions.models[0];
+				regionModel = selectRegions.getModelByType("dataSource")[0];
 			} else {
-				regionModel = selectRegions.models[0];
+				regionModel = selectRegions.getModelByType("operation")[0];
 			}
 
 			//鼠标开始移动索引
@@ -1060,6 +1063,7 @@ define(function(require) {
 				headItemRowList = headItemRows.models,
 				rowDisplayNames = [],
 				colDisplayNames = [],
+				dataSourceRegion,
 				width, height, i;
 
 			var e = {};
@@ -1076,12 +1080,15 @@ define(function(require) {
 			listener.excute('regionChange', e);
 			listener.excute('dataSourceRegionChange', e);
 
-			if (dataSourceRegions.length === 0) {
-				this.createDataSourceRegion(options);
+			dataSourceRegion = selectRegions.getModelByType("dataSource")[0];
+
+			if (dataSourceRegion === undefined) {
+				dataSourceRegion = this.createDataSourceRegion(options);
 			}
 			if (this.dataSoureRegionView === undefined || this.dataSoureRegionView === null) {
-				this.dataSoureRegionView = new DataSourceRegionView({
-					model: dataSourceRegions.models[0]
+				this.dataSoureRegionView = new SelectRegionView({
+					model: dataSourceRegion,
+					className: 'datasource-container'
 				});
 				this.$el.append(this.dataSoureRegionView.render().el);
 			}
@@ -1089,14 +1096,14 @@ define(function(require) {
 			width = headItemColList[endColIndex].get('width') + headItemColList[endColIndex].get('left') - headItemColList[startColIndex].get('left');
 			height = headItemRowList[endRowIndex].get('height') + headItemRowList[endRowIndex].get('top') - headItemRowList[startRowIndex].get('top');
 			if (options.initColIndex !== undefined) {
-				dataSourceRegions.models[0].set({
+				dataSourceRegion.set({
 					initPosi: {
 						startX: options.initColIndex,
 						startY: options.initRowIndex
 					}
 				});
 			}
-			dataSourceRegions.models[0].set({
+			dataSourceRegion.set({
 				physicsPosi: {
 					top: headItemRowList[startRowIndex].get('top'),
 					left: headItemColList[startColIndex].get('left')
@@ -1148,7 +1155,7 @@ define(function(require) {
 
 			width = headItemColList[endColIndex].get('width') + headItemColList[endColIndex].get('left') - headItemColList[startColIndex].get('left');
 			height = headItemRowList[endRowIndex].get('height') + headItemRowList[endRowIndex].get('top') - headItemRowList[startRowIndex].get('top');
-			dataSourceRegions.add({
+			selectRegions.add({
 				mousePosi: {
 					mouseX: startColIndex,
 					mouseY: startRowIndex
@@ -1174,11 +1181,13 @@ define(function(require) {
 				selectType: 'dataSource'
 			});
 			if (this.dataSoureRegionView === undefined || this.dataSoureRegionView === null) {
-				this.dataSoureRegionView = new DataSourceRegionView({
-					model: dataSourceRegions.models[0]
+				this.dataSoureRegionView = new SelectRegionView({
+					model: selectRegions.getModelByType("dataSource")[0],
+					className: 'datasource-container'
 				});
 				this.$el.append(this.dataSoureRegionView.render().el);
 			}
+			return selectRegions.getModelByType("dataSource")[0];
 		},
 		destroyDataSourceRegion: function() {
 			dataSourceRegions.models[0].destroy();
@@ -1206,6 +1215,9 @@ define(function(require) {
 			Backbone.off('event:cellsContainer:destroy');
 			this.contentCellsContainer.destroy();
 			this.selectRegion.destroy();
+			if (this.clipView !== undefined && this.clipView !== null) this.clipView.destroy();
+			if (this.dragView !== undefined && this.dragView !== null) this.dragView.destroy();
+			if (this.dataSoureRegionView !== undefined && this.dataSoureRegionView !== null) this.dataSoureRegionView.destroy();
 			this.remove();
 		}
 	});
