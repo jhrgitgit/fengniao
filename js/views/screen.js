@@ -7,7 +7,8 @@ define(function(require) {
 		send = require('basic/tools/send'),
 		cache = require('basic/tools/cache'),
 		listener = require('basic/util/listener'),
-		clipOperate = require('entrance/tool/clipOperate'),
+		clipSelectOperate = require('entrance/tool/clipselectoperate'),
+		clipPasteOperate = require('entrance/tool/clippasteoperate'),
 		Screen;
 
 
@@ -48,6 +49,7 @@ define(function(require) {
 		 */
 		initialize: function(id) {
 			Backbone.on('call:screenContainer', this.screenContainer, this);
+			Backbone.on('event:screenContainer:destroy', this.destroy, this);
 			Backbone.on('call:screenContainer:adaptScreen', this.attributesRender, this);
 			_.bindAll(this, 'callView');
 			this.render();
@@ -194,15 +196,15 @@ define(function(require) {
 			} else {
 				pasteText = event.originalEvent.clipboardData.getData('Text'); //e.clipboardData.getData('text/plain');
 			}
-			Backbone.trigger('event:pasteData', pasteText);
+			clipPasteOperate(pasteText);
 		},
 		copyData: function(event) {
 			if ($(':focus').length > 0) return;
-			clipOperate("copy", event);
+			clipSelectOperate("copy", event);
 		},
 		cutData: function(event) {
 			if ($(':focus').length > 0) return;
-			clipOperate("cut", event);
+			clipSelectOperate("cut", event);
 		},
 		/**
 		 * 用于其他视图，绑定该视图
@@ -258,7 +260,14 @@ define(function(require) {
 		 */
 		mouseMoveHeadContainer: function(e, args, moveEvent) {
 			this.$el.on('mousemove', args, moveEvent);
+		},
+		destroy: function(){
+			Backbone.off('call:screenContainer');
+			Backbone.off('call:screenContainer:adaptScreen');
+			this.bodyContainer.destroy();
+			this.remove();
 		}
+
 	});
 	return Screen;
 });

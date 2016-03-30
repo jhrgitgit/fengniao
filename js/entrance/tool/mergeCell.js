@@ -31,6 +31,7 @@ define(function(require) {
 			selectRegionCells = cells.getCellByRow(startIndexRow, startIndexCol, endIndexRow, endIndexCol),
 			i, j,
 			len,
+			textNum = 0,
 			cacheCell,
 			gridLineColList = headItemCols.models,
 			gridLineRowList = headItemRows.models,
@@ -60,15 +61,13 @@ define(function(require) {
 			success: function(data) {}
 		});
 		len = selectRegionCells.length;
-
 		for (i = 0; i < len; i++) {
 			if (selectRegionCells[i].get('content').texts !== '') {
+				textNum++;
 				cacheCell = selectRegionCells[i].clone();
-				break;
 			}
 		}
-
-		//cells中包含文本的单元格的个数
+		if (textNum > 1) return;
 		if (len) {
 			//销毁选中的单元格
 			for (i = 0; i < len; i++) {
@@ -118,7 +117,7 @@ define(function(require) {
 		}
 		//更新选中视图
 	};
-	
+
 	function deletePosi(indexCol, indexRow) {
 		var currentCellPosition = cache.CellsPosition,
 			currentStrandX = currentCellPosition.strandX,

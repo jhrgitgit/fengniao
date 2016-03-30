@@ -1,14 +1,17 @@
 define(function(require) {
 	'use strict';
-	var Backbone = require('lib/backbone'),
-		cache = require('basic/tools/cache'),
-		cells = require('collections/cells'),
+	var $ = require('lib/jquery'),
+		_ = require('lib/underscore'),
+		Backbone = require('lib/backbone'),
+		Cell = require('models/cell'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
 		selectRegions = require('collections/selectRegion'),
-		clipOperate;
+		cells = require('collections/cells'),
+		cache = require('basic/tools/cache'),
+		send = require('basic/tools/send');
 
-	clipOperate = function(type,e) {
+	function clipSelectOperate(type, e) {
 		var tempCellModel,
 			selectRegion,
 			startColIndex,
@@ -33,10 +36,10 @@ define(function(require) {
 		selectRegions.add(clipModel);
 
 		Backbone.trigger('event:cellsContainer:addClipRegionView');
-		
-		if(type === "copy"){
+
+		if (type === "copy") {
 			cache.clipState = "copy";
-		}else if(type === "cut"){
+		} else if (type === "cut") {
 			cache.clipState = "cut";
 		}
 		selectRegion = selectRegions.getModelByType("operation")[0];
@@ -98,6 +101,6 @@ define(function(require) {
 			text = head + text + tail;
 			return text;
 		}
-	};
-	return clipOperate;
+	}
+	return clipSelectOperate;
 });

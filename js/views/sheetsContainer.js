@@ -46,6 +46,9 @@ define(function(require) {
 				this.$el.append(sheetView.render().el);
 			}
 			return this;
+		},
+		destroy:function(){
+			this.remove();
 		}
 	});
 	return SheetsContainer;

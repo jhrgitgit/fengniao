@@ -447,7 +447,8 @@ define(function(require) {
 			}
 			this.selectRegion = new SelectRegionView({
 				model: modelSelectRegion,
-				className: className
+				className: className,
+				currentRule: this.currentRule
 			});
 			this.$el.append(this.selectRegion.render().el);
 		},
@@ -930,7 +931,8 @@ define(function(require) {
 			if (this.dragView === undefined || this.dragView === null) {
 				this.dragView = new SelectRegionView({
 					model: dragRegion,
-					className: 'datasource-container'
+					className: 'datasource-container',
+					currentRule: this.currentRule
 				});
 				this.$el.append(this.dragView.render().el);
 			}
@@ -1088,7 +1090,8 @@ define(function(require) {
 			if (this.dataSoureRegionView === undefined || this.dataSoureRegionView === null) {
 				this.dataSoureRegionView = new SelectRegionView({
 					model: dataSourceRegion,
-					className: 'datasource-container'
+					className: 'datasource-container',
+					currentRule: this.currentRule
 				});
 				this.$el.append(this.dataSoureRegionView.render().el);
 			}
@@ -1183,7 +1186,8 @@ define(function(require) {
 			if (this.dataSoureRegionView === undefined || this.dataSoureRegionView === null) {
 				this.dataSoureRegionView = new SelectRegionView({
 					model: selectRegions.getModelByType("dataSource")[0],
-					className: 'datasource-container'
+					className: 'datasource-container',
+					currentRule: this.currentRule
 				});
 				this.$el.append(this.dataSoureRegionView.render().el);
 			}

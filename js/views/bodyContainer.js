@@ -58,6 +58,7 @@ define(function(require) {
 
 		generateSheet: function() {
 			var sheetsView = new SheetsContainer();
+			this.sheetsView = sheetsView;
 			this.$el.find('.sheet-cf-list').append(sheetsView.render().el);
 		},
 		/**
@@ -369,7 +370,7 @@ define(function(require) {
 				currentRowModel = modelRowList.models[currentRowIndex];
 				currentRowModelTop = currentRowModel.get('top');
 			}
-			
+
 			if (currentColIndex === -1) {
 				currentColModelLeft = 0;
 			} else {
@@ -609,6 +610,15 @@ define(function(require) {
 				return parseInt($('div', virtualEl).innerWidth(), 0);
 			}
 			return (scrollNone - scrollExist);
+		},
+		destroy: function() {
+			Backbone.off('call:bodyContainer');
+			Backbone.off('event:bodyContainer:executiveFrozen');
+			Backbone.trigger('event:colsPanelContainer:destroy');
+			Backbone.trigger('event:rowsPanelContainer:destroy');
+			Backbone.trigger('event:mainContainer:destroy');
+			this.sheetsView.destroy();
+			this.remove();
 		}
 	});
 	return BodyContainer;
