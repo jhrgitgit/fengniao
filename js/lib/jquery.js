@@ -157,7 +157,7 @@ define(function() {
 				length = arguments.length,
 				deep = false;
 
-			// Handle a deep copy situation
+			// Handle a deep copy 
 			if (typeof target === "boolean") {
 				deep = target;
 
@@ -3595,7 +3595,7 @@ define(function() {
 				} else {
 					// Fresh assignments by object are shallow copied
 					if (jQuery.isEmptyObject(cache)) {
-						jQuery.extend(this.cache[unlock], data);
+						f(this.cache[unlock], data);
 						// Otherwise, copy the properties one-by-one to the cache object
 					} else {
 						for (prop in data) {

@@ -18,7 +18,7 @@ define(function(require) {
 				result.point = callback;
 			};
 		};
-		Backbone.trigger('call:cellsContainer:getCoordinate', getResult(), mouseColPosi, mouseRowPosi);
+		Backbone.trigger('event:cellsContainer:getCoordinate', getResult(), mouseColPosi, mouseRowPosi);
 		if (result.point === undefined) {
 			result.point = {
 				col: '',

@@ -17685,7 +17685,7 @@
     				result.point = callback;
     			};
     		};
-    		Backbone.trigger('call:cellsContainer:getCoordinate', getResult(), mouseColPosi, mouseRowPosi);
+    		Backbone.trigger('event:cellsContainer:getCoordinate', getResult(), mouseColPosi, mouseRowPosi);
     		if (result.point === undefined) {
     			result.point = {
     				col: '',
@@ -26166,7 +26166,7 @@
     			Backbone.on('event:cellsContainer:bindDrag', this.bindDrag, this);
     			Backbone.on('call:cellsContainer:createDataSourceRegion', this.createDataSourceRegion, this);
     
-    			Backbone.on('call:cellsContainer:getCoordinate', this.getCoordinate, this);
+    			Backbone.on('event:cellsContainer:getCoordinate', this.getCoordinate, this);
     			_.bindAll(this, 'callView', 'drag');
     			this.currentRule = util.clone(cache.CurrentRule);
     			// this.listenTo(selectRegions, 'add', this.addSelectRegion);

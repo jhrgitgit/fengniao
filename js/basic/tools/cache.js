@@ -1,6 +1,7 @@
 //attention bug , those cache objects has mix , for use 
 define(function() {
 	'use strict';
+	var config = require('spreadsheet/config');
 	/**
 	 * 系统缓存对象
 	 * @author ray wu
@@ -31,7 +32,7 @@ define(function() {
 			 */
 			strandY: {}
 		},
-		clipState : 'null', //copy：复制状态，cut:剪切状态，null:未进行剪切板操作
+		clipState: 'null', //copy：复制状态，cut:剪切状态，null:未进行剪切板操作
 		/**
 		 * 用户可视的区域(在Excel未冻结的情况下使用)
 		 * @property {object} UserView
@@ -58,13 +59,15 @@ define(function() {
 			 */
 			rowEndAlias: '1'
 		},
-		setDataSource: false,
+		//鼠标操作状态
+		mouseOperateState: config.mouseOperateState.select,
+		
 		listenerList: {}, //事件监听列表
 		/**
 		 * cellsContainer 行视图最大高度
 		 * @type {Number}
 		 */
-		displayRowHeight:0,
+		displayRowHeight: 0,
 		/**
 		 * 后台存储excel的总高度
 		 * @property {int} localRowPosi
@@ -133,8 +136,8 @@ define(function() {
 			positionX[aliasCol][aliasRow] = index;
 			positionY[aliasRow][aliasCol] = index;
 		},
-		rowRegionPosi:[],
-		colRegionPosi:[]
+		rowRegionPosi: [],
+		colRegionPosi: []
 	};
 
 });

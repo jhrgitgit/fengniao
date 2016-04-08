@@ -49,7 +49,7 @@ define(function(require) {
 		endRowIndex = clipRegion.get("wholePosi").endY;
 
 		relativeColIndex = startColIndex - selectRegion.get("wholePosi").startX;
-		relativeRowIndex = startRowIndex - selectRegion.get("wholePosi").startY;
+		relativeRowIndex = startRowIndex - selectRegino.get("wholePosi").startY;
 
 		if (isAblePaste(endRowIndex - startRowIndex + 1, endColIndex - startColIndex + 1) === false) return;
 		//超出已加载区域处理

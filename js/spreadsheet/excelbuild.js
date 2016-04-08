@@ -4,6 +4,7 @@ define(function(require) {
 	var original = require('basic/tools/original'),
 		domloader = require('basic/tools/template'),
 		listener = require('basic/util/listener'),
+		extend = require('basic/util/extend'),
 		setFontColor = require('entrance/tool/setFontColor'),
 		setFillColor = require('entrance/tool/setFillColor'),
 		setFontFamily = require('entrance/tool/setFontFamily'),
@@ -24,11 +25,11 @@ define(function(require) {
 		setTextType = require('entrance/tool/setTextType'),
 		operationDataSourceRegion = require('entrance/selectregion/dataSourceRegionOperation'),
 		getPointByPosi = require('entrance/sheet/getPointByPosi'),
-		setWordWrap=require('entrance/tool/setWordWrap'),
+		setWordWrap = require('entrance/tool/setWordWrap'),
 		getTextByCoordinate = require('entrance/cell/getTextByCoordinate'),
 		adaptScreen = require('entrance/sheet/adaptScreen'),
 		getFrozenState = require('entrance/sheet/getFrozenState'),
-		getSelectRegion=require('entrance/sheet/getSelectRegion');
+		getSelectRegion = require('entrance/sheet/getSelectRegion');
 
 
 
@@ -90,8 +91,8 @@ define(function(require) {
 			SpreadSheet.prototype.adaptScreen = adaptScreen;
 			SpreadSheet.prototype.getTextByCoordinate = getTextByCoordinate;
 			SpreadSheet.prototype.getFrozenState = getFrozenState;
-			SpreadSheet.prototype.setWordWrap=setWordWrap;
-			SpreadSheet.prototype.getSelectRegion=getSelectRegion;
+			SpreadSheet.prototype.setWordWrap = setWordWrap;
+			SpreadSheet.prototype.getSelectRegion = getSelectRegion;
 		},
 		buildDataSourceOperation: function(SpreadSheet) {
 			SpreadSheet.prototype.setDataSourceRegion = operationDataSourceRegion.setDataSourceRegion;
@@ -101,6 +102,9 @@ define(function(require) {
 		buildExcelEventListener: function(SpreadSheet) {
 			SpreadSheet.prototype.addEventListener = listener.addEventListener;
 			SpreadSheet.prototype.removeEventListener = listener.removeEventListener;
+		},
+		buildExcelExtend: function(SpreadSheet) {
+			SpreadSheet.prototype.extend = listener.extend;
 		}
 	};
 	return excelBuild;

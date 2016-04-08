@@ -12,6 +12,7 @@ define(function(require) {
 			SpreadSheet = require('excel');
 			spreadSheet = new SpreadSheet();
 		});
+		
 		it("选择剪切区域测试", function() {
 			var cutRegion,
 				clipPasteOperate;

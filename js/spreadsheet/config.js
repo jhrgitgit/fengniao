@@ -103,6 +103,12 @@ define(function() {
 			 */
 			maxRowNum: 9999
 		},
+		mouseOperateState: {
+			select: 'select',
+			dataSource: 'dataSource',
+			drag: 'drag',
+			highlight: 'highlight'
+		},
 		keyboard: {
 			backspace: 8,
 			deleteKey: 46,

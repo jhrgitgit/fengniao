@@ -1,0 +1,19 @@
+.highlight-container{
+	position: absolute;
+	border: 2px solid transparent;
+	margin: -1px;
+	overflow: hidden;
+	z-index: 99;
+}
+.highlight-right{
+	border-right: 2px solid red;
+}
+.highlight-left{
+	border-left: 2px solid red;
+}
+.highlight-top{
+	border-top: 2px solid red;
+}
+.highlight-bottom{
+	border-bottom: 2px solid red;
+}
