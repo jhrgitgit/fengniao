@@ -13,7 +13,6 @@ define(function(require) {
 		mergeCell = require('entrance/tool/mergeCell'),
 		splitCell = require('entrance/tool/splitCell');
 
-
 	/**
 	 * 合并，拆分单元格视图类
 	 * @author ray wu

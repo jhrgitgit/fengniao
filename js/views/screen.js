@@ -189,7 +189,6 @@ define(function(require) {
 		 * @method pasteData
 		 */
 		pasteData: function(event) {
-			console.log(this);
 			event.preventDefault();
 			var pasteText;
 			if (window.clipboardData && window.clipboardData.getData) { // IE

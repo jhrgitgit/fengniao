@@ -49,7 +49,7 @@ define(function(require) {
 		endRowIndex = clipRegion.get("wholePosi").endY;
 
 		relativeColIndex = startColIndex - selectRegion.get("wholePosi").startX;
-		relativeRowIndex = startRowIndex - selectRegino.get("wholePosi").startY;
+		relativeRowIndex = startRowIndex - selectRegion.get("wholePosi").startY;
 
 		if (isAblePaste(endRowIndex - startRowIndex + 1, endColIndex - startColIndex + 1) === false) return;
 		//超出已加载区域处理
@@ -294,8 +294,7 @@ define(function(require) {
 
 		tempCell = cells.getCellByX(indexCol, indexRow)[0];
 
-		if (tempCell !== undefined && tempCell.get(isDestroy) === false) {
-			tempCell = null;
+		if (tempCell !== undefined && tempCell.get("isDestroy") === false) {
 			tempCell.set("isDestroy", true);
 		}
 

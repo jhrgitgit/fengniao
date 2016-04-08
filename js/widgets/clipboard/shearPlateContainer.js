@@ -2,6 +2,7 @@
 		'use strict';
 		var $ = require('lib/jquery'),
 			_ = require('lib/underscore'),
+			cache = require('basic/tools/cache'),
 			Backbone = require('lib/backbone'),
 			clipSelectOperate = require('entrance/tool/clipselectoperate'),
 			clipPasteOperate=require('entrance/tool/clippasteoperate'),
@@ -63,6 +64,7 @@
 			 * @param  {string} pasteText 数据 
 			 */
 			pasteData: function(pasteText) {
+				if (cache.clipState === "null") return;
 				clipPasteOperate(pasteText);
 			},
 		});
