@@ -1,0 +1,9 @@
+nguage: node_js
+
+repo_token: CVOERALLS.IO_TOKEN
+node_js:
+  - 0.10
+before_script:
+    - npm install -g grunt-cli
+script:
+    - grunt
