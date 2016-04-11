@@ -73,29 +73,10 @@ define(function(require) {
 		 * @return {array} 筛选结果
 		 */
 		getModelByType: function(type) {
-				return this.where({
-					selectType: type
-				});
-			}
-			//method destory
-			//
-			// getInitAlias: function(isAliasCol, isAliasRow) {
-			// 	var modelSelectRegion,
-			// 		headLineRowModelList,
-			// 		headLineColModelList,
-			// 		aliasList = {};
-
-		// 	modelSelectRegion = this.models[0];
-		// 	headLineColModelList = collections.headLineCol.models;
-		// 	headLineRowModelList = collections.headLineRow.models;
-		// 	if (isAliasCol) {
-		// 		aliasList.aliasCol = headLineColModelList[modelSelectRegion.initPosi.startX].get('alias');
-		// 	}
-		// 	if (isAliasRow) {
-		// 		aliasList.aliasRow = headLineRowModelList[modelSelectRegion.initPosi.startY].get('alias');
-		// 	}
-		// 	return aliasList;
-		// }
+			return this.where({
+				selectType: type
+			});
+		}
 	});
 	return new SelectRegions();
 });
