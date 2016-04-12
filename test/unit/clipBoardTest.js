@@ -12,7 +12,7 @@ define(function(require) {
 			SpreadSheet = require('excel');
 			spreadSheet = new SpreadSheet();
 		});
-		
+
 		it("选择剪切区域测试", function() {
 			var cutRegion,
 				clipPasteOperate;
@@ -83,8 +83,8 @@ define(function(require) {
 			var sreenView;
 			Backbone.trigger('event:screenContainer:destroy');
 			cache.clipState = 'null';
-			cache.CellsPosition.strandX=[];
-			cache.CellsPosition.strandY=[];
+			cache.CellsPosition.strandX = [];
+			cache.CellsPosition.strandY = [];
 			cells.reset(null);
 		});
 	});

@@ -1,7 +1,7 @@
 define(function(require) {
 	'use strict';
-	var Backbone = require('lib/backbone');
-	var BackboneNest = require('lib/backbone.nested');
+	var Backbone = require('lib/backbone'),
+	BackboneNest = require('lib/backbone.nested');
 
 	/**
 	 * 行模型对象

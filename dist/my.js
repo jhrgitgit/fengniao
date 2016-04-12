@@ -13582,8 +13582,8 @@
     });
     define('models/lineRow',['require','lib/backbone','lib/backbone.nested'],function(require) {
     	
-    	var Backbone = require('lib/backbone');
-    	var BackboneNest = require('lib/backbone.nested');
+    	var Backbone = require('lib/backbone'),
+    	BackboneNest = require('lib/backbone.nested');
     
     	/**
     	 * 行模型对象
@@ -32493,20 +32493,10 @@
     	}
     	return SpreadSheet;
     });
-    define('app',['require','lib/jquery','spreadsheet/spreadsheet'],function(require) {
+    define('app',['require','spreadsheet/spreadsheet'],function(require) {
     	
-    	var $ = require("lib/jquery");
     	var SpreadSheet = require('spreadsheet/spreadsheet');
     	new SpreadSheet();
-    	$(document).on('click','#test1',function(){
-    		Backbone.trigger('event:cellsContainer:startHighlight');
-    	});
-    	$(document).on('click','#test2',function(){
-    		Backbone.trigger('event:cellsContainer:stopHighlight');
-    	});
-    
-    
     });
-    
     return require('app');
 });
