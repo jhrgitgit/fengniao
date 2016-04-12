@@ -18,7 +18,7 @@ define(function(require) {
 
 			newStartPosi = startExist === false ? startPosi : region[startIndex].start;
 			newEndPosi = endExist === false ? endPosi : region[endIndex].end;
-
+			//ps:对于相应区域，未进行合并，需要改进
 			if (startIndex === endIndex) {
 				if (startExist === true && endExist === true) return;
 				len = (startExist === true || endExist === true) ? 1 : 0;

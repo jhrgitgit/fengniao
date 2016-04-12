@@ -61,7 +61,7 @@ define(function() {
 		},
 		//鼠标操作状态
 		mouseOperateState: config.mouseOperateState.select,
-		
+
 		listenerList: {}, //事件监听列表
 		/**
 		 * cellsContainer 行视图最大高度
@@ -136,8 +136,21 @@ define(function() {
 			positionX[aliasCol][aliasRow] = index;
 			positionY[aliasRow][aliasCol] = index;
 		},
+		//动态加载，已加载区域
 		rowRegionPosi: [],
-		colRegionPosi: []
+		//动态加载，已加载列区域
+		colRegionPosi: [],
+		//动态加载，已加单元格载区域
+		cellRegionPosi: {
+			transverse: [],
+			vertical: []
+		},
+		visibleRegion: {
+			top: 0,
+			bottom: 0,
+			left: 0,
+			right: 0
+		}
 	};
 
 });

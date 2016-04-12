@@ -40,6 +40,8 @@ define(function(require) {
 				modelColList = headItemCols;
 			this.listenTo(this.model, 'change', this.render);
 			this.listenTo(this.model, 'change:isDestroy', this.destroy);
+			this.listenTo(this.model, 'destroy', this.modelDestroy);
+			// this.listenTo(this.model, 'destroy', this.render);
 			this.currentRule = options.currentRule;
 			if (cache.TempProp.isFrozen !== true || this.currentRule.displayPosition.endRowIndex === undefined) {
 				this.listenTo(this.model, 'change:showState', this.changeShowState);
@@ -487,6 +489,9 @@ define(function(require) {
 			if (this.model.get('isDestroy')) {
 				this.remove();
 			}
+		},
+		modelDestroy:function(){
+			this.remove();
 		}
 	});
 	return CellContainer;

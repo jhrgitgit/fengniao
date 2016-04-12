@@ -6,6 +6,9 @@ define(function(require) {
 		cache = require('basic/tools/cache'),
 		config = require('spreadsheet/config'),
 		util = require('basic/util/clone'),
+		send = require('basic/tools/send'),
+		loadRecorder = require('basic/tools/loadRecorder'),
+		original = require('basic/tools/original'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
 		cells = require('collections/cells'),
@@ -33,6 +36,7 @@ define(function(require) {
 		 */
 		initialize: function() {
 			this.currentRule = util.clone(cache.CurrentRule);
+			Backbone.on('event:contentCellsContainer:reloadCells', this.reloadCells, this);
 			this.listenTo(cells, 'add', this.addCell);
 		},
 		/**
@@ -56,6 +60,41 @@ define(function(require) {
 			for (i = 0; i < len; i++) {
 				this.addCell(cellsList[i]);
 			}
+		},
+		/**
+		 * 重新加载后台保存cell对象
+		 */
+		reloadCells: function() {
+			var i = 0,
+				len = cells.length,
+				cellModel,
+				top,
+				bottom;
+
+			for (; i < len; i++) {
+				cellModel = cells.models[0].destroy();
+			}
+			cache.CellsPosition.strandX = {};
+			cache.CellsPosition.strandY = {};
+			cache.cellRegionPosi.vertical = [];
+			top = cache.visibleRegion.top;
+			bottom = cache.visibleRegion.bottom;
+			this.getCells(top, bottom);
+			loadRecorder.insertPosi(top, bottom, cache.cellRegionPosi.vertical);
+		},
+		getCells: function(top, bottom) {
+			send.PackAjax({
+				url: '/excel.htm?m=openExcel&excelId=' + window.SPREADSHEET_AUTHENTIC_KEY + '&rowBegin=' + top + '&rowEnd=' + bottom,
+				async: false,
+				success: function(data) {
+					if (data === '') {
+						return;
+					}
+					data = data.returndata;
+					var cells = data.spreadSheet[0].sheet.cells;
+					original.analysisCellData(cells);
+				}
+			});
 		},
 		/**
 		 * view创建一个单元格
@@ -119,9 +158,6 @@ define(function(require) {
 		 * @method destroy
 		 */
 		destroy: function() {
-			if (this.cellView) {
-				this.cellView.destroy();
-			}
 			this.remove();
 		}
 	});

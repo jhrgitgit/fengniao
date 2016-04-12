@@ -1,6 +1,11 @@
 define(function(require) {
 	'use strict';
-	var $ = require("lib/jquery");
+	var $ = require("lib/jquery"),
+		Backbone = require('lib/backbone');
 	var SpreadSheet = require('spreadsheet/spreadsheet');
-	new SpreadSheet();
+	var a=new SpreadSheet();
+
+	$("#test").click(function(){
+		a.reloadCells();
+	});
 });

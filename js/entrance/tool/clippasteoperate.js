@@ -87,6 +87,7 @@ define(function(require) {
 			endColIndex: endColIndex - relativeColIndex,
 			endRowIndex: endRowIndex - relativeRowIndex
 		});
+		clipRegion.destroy();
 		send.PackAjax({
 			url: 'plate.htm?m=' + type,
 			data: JSON.stringify({
@@ -104,7 +105,6 @@ define(function(require) {
 				}
 			})
 		});
-		clipRegion.destroy();
 	}
 
 	function cacheCellPosition(cell) {

@@ -60,7 +60,7 @@ define(function(require) {
 			Backbone.on('event:mainContainer:destroy', this.destroy, this);
 			Backbone.on('event:mainContainer:attributesRender', this.attributesRender, this);
 			Backbone.on('event:mainContainer:appointPosition', this.appointPosition, this);
-			
+
 			//ps:定位事件，只由主区域订阅
 			this.currentRule = clone.clone(cache.CurrentRule);
 
@@ -129,6 +129,8 @@ define(function(require) {
 			// }
 			this.rowsViewBottomPosi = this.boxModel.height;
 			config.displayRowHeight = this.rowsViewBottomPosi;
+			cache.visibleRegion.top = 0;
+			cache.visibleRegion.bottom = this.rowsViewBottomPosi;
 		},
 		addCellViewPublish: function(cellModel) {
 			this.publish(cellModel, 'addCellViewPublish');
@@ -243,7 +245,7 @@ define(function(require) {
 			}
 		},
 		downCellPosition: function() {
-			var rowAliasArray=[],
+			var rowAliasArray = [],
 				nextRowAlias,
 				loadStartAlias,
 				loadEndAlias,
@@ -295,7 +297,7 @@ define(function(require) {
 			//view show 
 			if (top < this.el.scrollTop + this.el.offsetHeight) return;
 			recordScrollTop = this.el.scrollTop;
-			this.el.scrollTop = (top-this.el.offsetHeight);
+			this.el.scrollTop = (top - this.el.offsetHeight);
 			this.deleteTop(recordScrollTop);
 			this.addBottom(recordScrollTop);
 		},
@@ -423,6 +425,7 @@ define(function(require) {
 					break;
 				}
 			}
+			cache.visibleRegion.top = headItemRowList[limitIndex].get("top");
 			// config.DynamicLoad.row.start = limitIndex;
 		},
 		/**
@@ -511,8 +514,7 @@ define(function(require) {
 					}
 				}
 			}
-			//	config.DynamicLoad.row.start = limitTopIndex;
-
+			cache.visibleRegion.top = headItemRowList[limitTopIndex].get("top");
 		},
 		/**
 		 * 区域数据加载函数
@@ -523,7 +525,9 @@ define(function(require) {
 		loadRegionRows: function(offsetTop, userViewTop) {
 			var limitTopPosi,
 				limitBottomPosi,
-				unloadRegions, i = 0;
+				unloadRegions,
+				unloadCellRegions,
+				i = 0;
 
 			limitTopPosi = this.el.scrollTop - config.System.prestrainHeight + offsetTop + userViewTop;
 
@@ -538,9 +542,12 @@ define(function(require) {
 				limitBottomPosi = cache.localRowPosi;
 			}
 			unloadRegions = loadRecorder.getUnloadPosi(limitTopPosi, limitBottomPosi, cache.rowRegionPosi);
-
+			unloadCellRegions = loadRecorder.getUnloadPosi(limitTopPosi, limitBottomPosi, cache.cellRegionPosi.vertical);
 			for (; i < unloadRegions.length; i++) {
 				this.requestRegionData(unloadRegions[i].start, unloadRegions[i].end);
+			}
+			for (i = 0; i < unloadCellRegions.length; i++) {
+				this.requestCellRegionData(unloadCellRegions[i].start, unloadCellRegions[i].end);
 			}
 		},
 		requestRegionData: function(getTopPosi, getBottomPosi) {
@@ -558,17 +565,11 @@ define(function(require) {
 					if (data === '') {
 						return;
 					}
-					var startRowSort, startColSort;
+					var startRowSort;
 					startRowSort = data.dataRowStartIndex;
-					startColSort = data.dataColStartIndex;
-
 					data = data.returndata;
-					var cells = data.spreadSheet[0].sheet.cells;
 					var rows = data.spreadSheet[0].sheet.glY;
-					var cols = data.spreadSheet[0].sheet.glX;
 					original.analysisRowData(rows, startRowSort);
-					original.analysisCellData(cells);
-
 				}
 			});
 			loadRecorder.insertPosi(getTopPosi, getBottomPosi, cache.rowRegionPosi);
@@ -578,7 +579,28 @@ define(function(require) {
 			this.adjustContainerHeight(height);
 			this.publish(height, 'adjustHeadItemContainerPublish');
 			this.publish(height, 'adjustContainerHeightPublish');
-
+		},
+		requestCellRegionData: function(getTopPosi, getBottomPosi) {
+			if (getBottomPosi < getTopPosi) {
+				var temp = getTopPosi;
+				getTopPosi = getBottomPosi;
+				getBottomPosi = temp;
+			}
+			//请求后台数据
+			$.ajax({
+				url: config.rootPath + '/excel.htm?m=openExcel&excelId=' + window.SPREADSHEET_AUTHENTIC_KEY + '&rowBegin=' + getTopPosi + '&rowEnd=' + getBottomPosi,
+				type: 'get',
+				async: false,
+				success: function(data) {
+					if (data === '') {
+						return;
+					}
+					data = data.returndata;
+					var cells = data.spreadSheet[0].sheet.cells;
+					original.analysisCellData(cells);
+				}
+			});
+			loadRecorder.insertPosi(getTopPosi, getBottomPosi, cache.cellRegionPosi.vertical);
 		},
 		/**
 		 * 显示行下方超出预加载区域，删除超出视图
@@ -636,6 +658,7 @@ define(function(require) {
 			}
 			this.rowsViewBottomPosi = headItemRowList[limitIndex].get('top') + headItemRowList[limitIndex].get('height') - offsetTop - userViewTop;
 			config.displayRowHeight = this.rowsViewBottomPosi;
+			cache.visibleRegion.bottom = this.rowsViewBottomPosi;
 		},
 
 		/**
@@ -724,6 +747,7 @@ define(function(require) {
 
 			this.rowsViewBottomPosi = headItemRowList[limitBottomIndex].get('top') + headItemRowList[limitBottomIndex].get('height') - offsetTop - userViewTop;
 			config.displayRowHeight = this.rowsViewBottomPosi;
+			cache.visibleRegion.bottom = this.rowsViewBottomPosi;
 		},
 		/**
 		 * 动态加载cell对象，对于一次未加载完全cell对象，重新计算cell对象physicsBox属性

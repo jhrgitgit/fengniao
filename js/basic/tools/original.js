@@ -61,6 +61,7 @@ define(function(require) {
 			}
 			this.restoreSelectRegion();
 			loadRecorder.insertPosi(0, headItemRows.models[lenRow - 1].height + headItemRows.models[lenRow - 1].top, cache.rowRegionPosi);
+			loadRecorder.insertPosi(0, headItemRows.models[lenRow - 1].height + headItemRows.models[lenRow - 1].top, cache.cellRegionPosi.vertical);
 		},
 		/**
 		 * 解析后台返回行索引数据，如果行数未满足加载区域，则生成新行，进行补充

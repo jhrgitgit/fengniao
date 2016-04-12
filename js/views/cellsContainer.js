@@ -131,7 +131,6 @@ define(function(require) {
 			e.point = point;
 
 
-
 			if (event.isDefaultPrevented() === false) {
 				data = event.originalEvent.dataTransfer.getData("text");
 				e.text = data;

@@ -29,7 +29,9 @@ define(function(require) {
 		getTextByCoordinate = require('entrance/cell/getTextByCoordinate'),
 		adaptScreen = require('entrance/sheet/adaptScreen'),
 		getFrozenState = require('entrance/sheet/getFrozenState'),
-		getSelectRegion = require('entrance/sheet/getSelectRegion');
+		getSelectRegion = require('entrance/sheet/getSelectRegion'),
+		highlight= require('entrance/extention/highlight'),
+		reloadCells= require('entrance/cell/reloadCells');
 
 
 
@@ -93,6 +95,7 @@ define(function(require) {
 			SpreadSheet.prototype.getFrozenState = getFrozenState;
 			SpreadSheet.prototype.setWordWrap = setWordWrap;
 			SpreadSheet.prototype.getSelectRegion = getSelectRegion;
+			SpreadSheet.prototype.reloadCells = reloadCells;
 		},
 		buildDataSourceOperation: function(SpreadSheet) {
 			SpreadSheet.prototype.setDataSourceRegion = operationDataSourceRegion.setDataSourceRegion;
@@ -104,7 +107,9 @@ define(function(require) {
 			SpreadSheet.prototype.removeEventListener = listener.removeEventListener;
 		},
 		buildExcelExtend: function(SpreadSheet) {
-			SpreadSheet.prototype.extend = listener.extend;
+			SpreadSheet.prototype.startHighlight = highlight.startHighlight;
+			SpreadSheet.prototype.stopHighlight = highlight.stopHighlight;
+			
 		}
 	};
 	return excelBuild;
