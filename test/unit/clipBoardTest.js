@@ -1,6 +1,7 @@
 define(function(require) {
 	var selectRegions = require('collections/selectRegion'),
 		cells = require('collections/cells'),
+		config = require('spreadsheet/config'),
 		cache = require('basic/tools/cache');
 
 	describe("剪切功能测试", function() {
@@ -12,7 +13,7 @@ define(function(require) {
 			SpreadSheet = require('excel');
 			spreadSheet = new SpreadSheet();
 		});
-		
+
 		it("选择剪切区域测试", function() {
 			var cutRegion,
 				clipPasteOperate;
@@ -78,15 +79,13 @@ define(function(require) {
 			expect(tempCell.get("content").texts).toEqual("&&**");
 
 		});
-
 		afterEach(function() {
 			var sreenView;
 			Backbone.trigger('event:screenContainer:destroy');
 			cache.clipState = 'null';
-			cache.CellsPosition.strandX=[];
-			cache.CellsPosition.strandY=[];
+			cache.CellsPosition.strandX = [];
+			cache.CellsPosition.strandY = [];
 			cells.reset(null);
 		});
 	});
-	window.onload();
 });

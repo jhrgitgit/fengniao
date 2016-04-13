@@ -235,7 +235,7 @@ define(function(require) {
 
 		clipRegion = selectRegions.getModelByType("clip")[0];
 		if (clipRegion !== null && clipRegion !== undefined) {
-			clipRegion.destory();
+			clipRegion.destroy();
 		}
 		cache.clipState = "null";
 		send.PackAjax({

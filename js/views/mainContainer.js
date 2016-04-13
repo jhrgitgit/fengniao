@@ -556,11 +556,15 @@ define(function(require) {
 				getTopPosi = getBottomPosi;
 				getBottomPosi = temp;
 			}
-			//请求后台数据
-			$.ajax({
-				url: config.rootPath + '/excel.htm?m=openExcel&excelId=' + window.SPREADSHEET_AUTHENTIC_KEY + '&rowBegin=' + getTopPosi + '&rowEnd=' + getBottomPosi,
-				type: 'get',
+			send.PackAjax({
+				url: 'excel.htm?m=openExcel',
 				async: false,
+				data: JSON.stringify({
+					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
+					sheetId: '1',
+					rowBegin: top,
+					rowEnd: bottom
+				}),
 				success: function(data) {
 					if (data === '') {
 						return;
@@ -586,11 +590,15 @@ define(function(require) {
 				getTopPosi = getBottomPosi;
 				getBottomPosi = temp;
 			}
-			//请求后台数据
-			$.ajax({
-				url: config.rootPath + '/excel.htm?m=openExcel&excelId=' + window.SPREADSHEET_AUTHENTIC_KEY + '&rowBegin=' + getTopPosi + '&rowEnd=' + getBottomPosi,
-				type: 'get',
+			send.PackAjax({
+				url: 'excel.htm?m=openExcel',
 				async: false,
+				data: JSON.stringify({
+					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
+					sheetId: '1',
+					rowBegin: top,
+					rowEnd: bottom
+				}),
 				success: function(data) {
 					if (data === '') {
 						return;

@@ -7,7 +7,7 @@ define(function(require) {
 		config = require('spreadsheet/config'),
 		util = require('basic/util/clone'),
 		send = require('basic/tools/send'),
-		loadRecorder = require('basic/tools/loadRecorder'),
+		loadRecorder = require('basic/tools/loadrecorder'),
 		original = require('basic/tools/original'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
@@ -81,11 +81,22 @@ define(function(require) {
 			bottom = cache.visibleRegion.bottom;
 			this.getCells(top, bottom);
 			loadRecorder.insertPosi(top, bottom, cache.cellRegionPosi.vertical);
+			len = cells.length;
+			i = 0;
+			for (; i < len; i++) {
+				this.addCell(cells.models[i]);
+			}
 		},
 		getCells: function(top, bottom) {
 			send.PackAjax({
-				url: '/excel.htm?m=openExcel&excelId=' + window.SPREADSHEET_AUTHENTIC_KEY + '&rowBegin=' + top + '&rowEnd=' + bottom,
+				url: 'excel.htm?m=openExcel',
 				async: false,
+				data: JSON.stringify({
+					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
+					sheetId: '1',
+					rowBegin: top,
+					rowEnd: bottom
+				}),
 				success: function(data) {
 					if (data === '') {
 						return;
