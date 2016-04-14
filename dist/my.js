@@ -32621,14 +32621,5 @@
     	}
     	return SpreadSheet;
     });
-<<<<<<< HEAD
     return require('spreadsheet/spreadsheet');
-=======
-    define('app',['require','spreadsheet/spreadsheet'],function(require) {
-    	
-    	var SpreadSheet = require('spreadsheet/spreadsheet');
-    	new SpreadSheet();
-    });
-    return require('app');
->>>>>>> ca99d0fecd7541be9ba76f7bdefc880c22b68f9c
 });
