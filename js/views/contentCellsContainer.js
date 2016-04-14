@@ -86,6 +86,7 @@ define(function(require) {
 			for (; i < len; i++) {
 				this.addCell(cells.models[i]);
 			}
+			
 		},
 		getCells: function(top, bottom) {
 			send.PackAjax({
