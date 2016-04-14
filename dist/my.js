@@ -142,7 +142,7 @@
      *
      * Date: 2014-12-18T15:11Z
      */
-    define('lib/jquery',[],function() {
+    define('lib/jquery',function() {
     	return (function(window, noGlobal) {
     		// Support: Firefox 18+
     		// Can't be in strict mode, several libs including ASP.NET trace
@@ -9377,746 +9377,11 @@
     
     	})(window, true);
     });
-    define('basic/tools/template',['require','lib/jquery'],function(require) {
-    	
-    	var $ = require('lib/jquery'),
-    		loadHtml;
-    		
-    	loadHtml = function(id) {
-    		var headDomString = '',
-    			mainDomString = '',
-    			tailDomString = '';
-    
-    		mainDomString += '<div class="main-layout">';
-    		mainDomString += '<table class="cui-grid" cellspacing="0" cellpadding="0" id="tableContainer">';
-    		mainDomString += '<tbody><tr><td><div class="left-corner"></div></td><td></td><td></td></tr><tr><td></td><td></td><td></td></tr></tbody>';
-    		mainDomString += '</table></div>';
-    		mainDomString += '<div class="sheet-layout"><div class="sheet-body">';
-    		//mainDomString += '<div class="sheet-cf-box active glyphicons glyphicon-th-list"></div>';
-    		mainDomString += '<div class="sheet-cf-list">';
-    		mainDomString += '</div></div></div>';
-    		
-    
-    		tailDomString += '<script type="text/x-handlebars-template" id="colsPanelContainer"></script>';
-    		tailDomString += '<script type="text/x-handlebars-template" id="rowsPanelContainer"></script>';
-    		tailDomString += '<script type="text/x-handlebars-template" id="mainContainer"></script>';
-    		tailDomString += '<script type="text/x-handlebars-template" id="contentList"></script>';
-    
-    		tailDomString += '<script type="text/x-handlebars-template" id="tempSheetContainer"><span>{{name}}</span></script>';
-    
-    		tailDomString += '<script type="text/x-handlebars-template" id="tempRowHeadItem"><div class="item">{{displayName}}</div></script>';
-    		tailDomString += '<script type="text/x-handlebars-template" id="tempColHeadItem"><div class="item">{{displayName}}</div></script>';
-    		tailDomString += '<script type="text/x-handlebars-template" id="multiselect"><div class="dragItem" style="top:{{top}}px;left:{{left}}px;width:{{width}}px;height:{{height}}px;"></div></script>';
-    		tailDomString += '<script type="text/x-handlebars-template" id="data">{{content.text}}</script>';
-    		tailDomString += '<script type="text/x-handlebars-template" id="textarea"><div class="textarea"><textarea class="input-container"></textarea><div></script>';
-    		tailDomString += '<script type="text/x-handlebars-template" id="tempSelectContainer"><div class="box"><div class="expand"></div><div class="bg"></div></div></script>';
-    		tailDomString += '<script type="text/x-handlebars-template" id="tempItemCell"><div class="bg" style="display:table-cell">{{cotent.texts}}</div></script>';
-    		tailDomString += '<script type="text/x-handlebars-template" id="coltemp"><div class="col" style="left:{{left}}px;"></div></script>';
-    		tailDomString += '<script type="text/x-handlebars-template" id="rowtemp"><div class="row" style="top:{{top}}px;"></div></script>';
-    		
-    		$(id)[0].innerHTML = mainDomString;
-    		$(id).after(tailDomString);
-    	};
-    	return loadHtml;
-    });
-    //attention bug, those name didn't significance
-    //attention bug, between user config and system config mix
-    define('spreadsheet/config',[],function() {
-    	
-    	/**
-    	 * 系统配置变量
-    	 * @author ray wu
-    	 * @class config
-    	 * @since 0.1.0
-    	 * @module basic
-    	 */
-    	return {
-    		/**
-    		 * 用户可配置属性
-    		 * @property {object} User
-    		 */
-    		User: {
-    			/**
-    			 * 页面初始化行数
-    			 * @property {int} initRowNum
-    			 */
-    			initRowNum: 100,
-    			/**
-    			 * 页面初始化列数
-    			 * @property {int} initColNum
-    			 */
-    			initColNum: 26,
-    			/**
-    			 * 单元格宽度
-    			 * @property {int} cellWidth
-    			 */
-    			cellWidth: 72,
-    			/**
-    			 * 单元格高度
-    			 * @property {int} cellHeight
-    			 */
-    			cellHeight: 20,
-    			/**
-    			 * excel最大支持行数
-    			 * @property {number} maxRowNum
-    			 */
-    			maxColNum: 100,
-    			/**
-    			 * excel最大支持行数
-    			 * @property {number} maxRowNum
-    			 */
-    			maxRowNum: 9999
-    
-    		},
-    		/**
-    		 * 系统配置属性
-    		 * @property {object} System
-    		 */
-    		System: {
-    			/**
-    			 * 页面左侧距离
-    			 * @property {int} outerLeft
-    			 */
-    			outerLeft: 37,
-    			/**
-    			 * 页面顶部距离
-    			 * @property {int} outerTop
-    			 */
-    			outerTop: 20,
-    			/**
-    			 * 页面底部距离
-    			 * @property {int} outerBottom
-    			 */
-    			outerBottom: 30,
-    			/**
-    			 * 单元格宽度
-    			 * @property {int} cellWidth
-    			 */
-    			cellWidth: 72,
-    			/**
-    			 * 单元格高度
-    			 * @property {int} cellHeight
-    			 */
-    			cellHeight: 20,
-    			/**
-    			 * 列调整时，鼠标手势变化的距离
-    			 * @property {int} effectDistanceCol
-    			 */
-    			effectDistanceCol: 10,
-    			/**
-    			 * 行调整时，鼠标手势变化的距离
-    			 * @property {int} effectDistanceRow
-    			 */
-    			effectDistanceRow: 5,
-    			/**
-    			 * 预加载，行隐藏的距离
-    			 * @property {int} prestrainHeight
-    			 */
-    			prestrainHeight: 200,
-    			/**
-    			 * 预加载，列隐藏的距离
-    			 * @property {number} prestrainWidth
-    			 */
-    			prestrainWidth: 100,
-    			/**
-    			 * excel最大支持行数
-    			 * @property {number} maxRowNum
-    			 */
-    			maxRowNum: 9999
-    		},
-    		mouseOperateState: {
-    			select: 'select',
-    			dataSource: 'dataSource',
-    			drag: 'drag',
-    			highlight: 'highlight'
-    		},
-    		keyboard: {
-    			backspace: 8,
-    			deleteKey: 46,
-    			enter: 13,
-    			escape: 27,
-    			pageUp: 33,
-    			pageDown: 34,
-    			leftArrow: 37,
-    			upArrow: 38,
-    			rightArrow: 39,
-    			downArrow: 40
-    		},
-    		rootPath: 'http://192.168.1.250:8080/acmrexcel-0.1.5/'
-    	};
-    });
-    define('basic/util/binary',['require'],function(require) {
-    	
-    	/**
-    	 * 二分查询工具类
-    	 * @author ray wu
-    	 * @class binary
-    	 * @module basic
-    	 * @main  binary
-    	 */
-    	return {
-    		/**
-    		 * @method modelBinary
-    		 * @deprecated 找个二分查询存在性能瓶颈，使用`newModelBinary`
-    		 */
-    		modelBinary: function(value, array, strandAttr, rangeAttr, startIndex, endIndex) {
-    			var middle,
-    				start = startIndex ? startIndex : 0,
-    				end,
-    				findValue = Math.floor(value),
-    				strandAttrByArray,
-    				rangeAttrByArray,
-    				middleArray;
-    			if (endIndex === undefined) {
-    				end = array.length - 1;
-    			} else {
-    				end = endIndex;
-    			}
-    
-    			if (start <= end) {
-    				if (array[start].get(strandAttr) === findValue) {
-    					return start;
-    				}
-    				if (array[end].get(strandAttr) === findValue) {
-    					return end;
-    				}
-    				middle = end + start >>> 1;
-    				middleArray = array[middle];
-    				strandAttrByArray = middleArray.get(strandAttr);
-    				rangeAttrByArray = middleArray.get(rangeAttr);
-    				if (strandAttrByArray <= findValue && strandAttrByArray + rangeAttrByArray >= findValue) {
-    					return middle;
-    				} else if (strandAttrByArray > findValue) {
-    					return this.modelBinary(findValue, array, strandAttr, rangeAttr, start, middle - 1);
-    				} else if (strandAttrByArray + rangeAttrByArray < findValue) {
-    					return this.modelBinary(findValue, array, strandAttr, rangeAttr, middle + 1, end);
-    				}
-    			}
-    			return -1;
-    		},
-    		/**
-    		 * 两个属性之间查询 二分查询
-    		 * @method newModelBinary
-    		 * @param  {int}       value       想查询的数据值
-    		 * @param  {array}       array     查询的list集合
-    		 * @param  {string}       strandAttr 起始属性
-    		 * @param  {string}       rangeAttr  结束属性
-    		 * @param  {int}       startIndex 起始索引
-    		 * @param  {int}       endIndex   结束索引
-    		 * @return {int} `array`中的索引值
-    		 */
-    		newModelBinary: function(value, array, strandAttr, rangeAttr, startIndex, endIndex) {
-    			var middle,
-    				start = startIndex ? startIndex : 0,
-    				end = endIndex ? endIndex : array.length,
-    				findValue = Math.floor(value),
-    				strandAttrByArray,
-    				rangeAttrByArray,
-    				middleArray;
-    			while (start < end) {
-    				middle = end + start >>> 1;
-    				middleArray = array[middle];
-    				strandAttrByArray = middleArray.get(strandAttr);
-    				rangeAttrByArray = middleArray.get(rangeAttr);
-    				if (strandAttrByArray + rangeAttrByArray < findValue) {
-    					start = middle + 1;
-    				} else {
-    					end = middle;
-    				}
-    			}
-    			return start;
-    		},
-    		/**
-    		 * 二分查询（用于插入元素，确定元素位置使用）
-    		 * @method newModelBinary
-    		 * @param  {int}       value       想查询的数据值
-    		 * @param  {array}       array     查询的list集合
-    		 * @param  {string}       strandAttr 起始属性
-    		 * @param  {string}       rangeAttr  结束属性
-    		 * @param  {int}       startIndex 起始索引
-    		 * @param  {int}       endIndex   结束索引
-    		 * @return {int} `array`中的索引值
-    		 */
-    		indexModelBinary: function(value, array, strandAttr, rangeAttr, startIndex, endIndex) {
-    			if (array.length === 0) {
-    				return 0;
-    			}
-    			var middle,
-    				start = startIndex ? startIndex : 0,
-    				end = endIndex ? endIndex : array.length - 1,
-    				findValue = Math.floor(value),
-    				strandAttrByArray,
-    				rangeAttrByArray,
-    				middleArray;
-    			if (array.length === 1) {
-    				return (array[0].get(strandAttr) + array[0].get(rangeAttr) >= findValue) ? 0 : 1;
-    			}
-    			while (start < end) {
-    				if (array[start].get(strandAttr) + array[start].get(rangeAttr) >= findValue) {
-    					return start;
-    				}
-    				if (array[end].get(strandAttr) + array[end].get(rangeAttr) === findValue) {
-    					return end;
-    				}
-    				if (array[end].get(strandAttr) + array[end].get(rangeAttr) < findValue) {
-    					return end + 1;
-    				}
-    				middle = end + start >>> 1;
-    				middleArray = array[middle];
-    				strandAttrByArray = middleArray.get(strandAttr);
-    				rangeAttrByArray = middleArray.get(rangeAttr);
-    				if (strandAttrByArray + rangeAttrByArray < findValue) {
-    					start = middle + 1;
-    				} else {
-    					end = middle;
-    				}
-    			}
-    			return start;
-    		},
-    		/**
-    		 * 生成行名称
-    		 * @method buildRowAlias
-    		 * @param  {int} 当前索引值
-    		 * @return {string} 当前显示的名称
-    		 */
-    		buildRowAlias: function(currentIndex) {
-    			return (currentIndex + 1).toString();
-    		},
-    		existArrayBinary: function(value, array, startAttr, endAttr, startIndex, endIndex) {
-    			var middle,
-    				start = startIndex ? startIndex : 0,
-    				end = endIndex ? endIndex : array.length - 1,
-    				findValue = Math.floor(value),
-    				strandAttrByArray,
-    				rangeAttrByArray,
-    				middleArray;
-    			if (array.length === 0) {
-    				return false;
-    			}
-    			if (array.length === 1) {
-    				if (array[0][endAttr] >= findValue && array[0][startAttr] <= findValue) {
-    					return true;
-    				} else {
-    					return false;
-    				}
-    			}
-    			while (start < end) {
-    				if (array[start][startAttr] <= findValue && array[start][endAttr] >= findValue) {
-    					return true;
-    				}
-    				if (array[end][startAttr] <= findValue && array[end][endAttr] >= findValue) {
-    					return true;
-    				}
-    				middle = end + start >>> 1;
-    				if (array[end][startAttr] <= findValue && array[end][endAttr] >= findValue) {
-    					return true;
-    				} else if (array[middle][endAttr] < findValue) {
-    					start = middle + 1;
-    				} else {
-    					end = middle;
-    				}
-    			}
-    			return false;
-    		},
-    		indexArrayBinary: function(value, array, startAttr, endAttr, startIndex, endIndex) {
-    			var middle,
-    				start = startIndex ? startIndex : 0,
-    				end = endIndex ? endIndex : array.length - 1,
-    				findValue = Math.floor(value),
-    				strandAttrByArray,
-    				rangeAttrByArray,
-    				middleArray;
-    			if (array.length === 0) {
-    				return 0;
-    			}
-    			if (array.length === 1) {
-    				if (array[start][endAttr] < findValue) {
-    					return 1;
-    				} else {
-    					return 0;
-    				}
-    			}
-    			while (start < end) {
-    				if (array[start][startAttr] >= findValue) {
-    					return start;
-    				}
-    				if (array[end][endAttr] < findValue) {
-    					return end + 1;
-    				}
-    
-    				middle = end + start >>> 1;
-    
-    				if (array[middle][startAttr] <= findValue && array[middle][endAttr] >= findValue) {
-    					return middle;
-    				} else if (array[middle][endAttr] < findValue) {
-    					start = middle + 1;
-    				} else {
-    					end = middle;
-    				}
-    			}
-    			return start;
-    		}
-    	};
-    
-    });
-    //attention bug , those cache objects has mix , for use 
-    define('basic/tools/cache',['spreadsheet/config'],function() {
-    	
-    	var config = require('spreadsheet/config');
-    	/**
-    	 * 系统缓存对象
-    	 * @author ray wu
-    	 * @class cache
-    	 * @since 0.1.0
-    	 * @module basic
-    	 */
-    	return {
-    		CurrentRule: {},
-    		FrozenRules: {
-    			main: [],
-    			row: [],
-    			col: []
-    		},
-    		/**
-    		 * 所有单元格位置信息
-    		 * @property {object} CellPosition
-    		 */
-    		CellsPosition: {
-    			/**
-    			 * 所有列上的单元格`alias`
-    			 * @property {object} strandX
-    			 */
-    			strandX: {},
-    			/**
-    			 * 所有行上的单元格`alias`
-    			 * @property {object} strandY
-    			 */
-    			strandY: {}
-    		},
-    		clipState: 'null', //copy：复制状态，cut:剪切状态，null:未进行剪切板操作
-    		/**
-    		 * 用户可视的区域(在Excel未冻结的情况下使用)
-    		 * @property {object} UserView
-    		 */
-    		UserView: {
-    			/**
-    			 * 可视区域左上单元格列别名
-    			 * @property {string} colAlias
-    			 */
-    			colAlias: '1',
-    			/**
-    			 * 可视区域左上单元格行别名
-    			 * @property {string} rowAlias
-    			 */
-    			rowAlias: '1',
-    			/**
-    			 * 可视区域右下单元格列别名
-    			 * @property {string} colEndAlias
-    			 */
-    			colEndAlias: '1',
-    			/**
-    			 * 可视区域右下单元格行别名
-    			 * @property {string} rowEndAlias
-    			 */
-    			rowEndAlias: '1'
-    		},
-    		//鼠标操作状态
-    		mouseOperateState: config.mouseOperateState.select,
-    		
-    		listenerList: {}, //事件监听列表
-    		/**
-    		 * cellsContainer 行视图最大高度
-    		 * @type {Number}
-    		 */
-    		displayRowHeight: 0,
-    		/**
-    		 * 后台存储excel的总高度
-    		 * @property {int} localRowPosi
-    		 */
-    		localRowPosi: 0,
-    		/**
-    		 * 后台存储excel,别名最大
-    		 */
-    		localMaxRowAlias: '',
-    		/**
-    		 * 临时代替属性，因为sheet还有做，所以sheet的冻结属性暂时由此属性替代。以后需要做成model处理
-    		 * @property {object} TempProp
-    		 */
-    		TempProp: {
-    			/**
-    			 * 冻结状态
-    			 * @property {boolean} isFrozen
-    			 */
-    			isFrozen: false,
-    			/**
-    			 * 冻结列别名
-    			 * @property {string} colAlias
-    			 */
-    			colAlias: '1',
-    			/**
-    			 * 冻结行别名
-    			 * @property {string} rowAlias
-    			 */
-    			rowAlias: '1',
-    			/**
-    			 * 行冻结状态
-    			 * @property {boolean} rowAlias
-    			 */
-    			rowFrozen: false,
-    			/**
-    			 * 列冻结状态
-    			 * @property {boolean} rowAlias
-    			 */
-    			colFrozen: false
-    		},
-    		/**
-    		 * 保存位置信息
-    		 * @method cachePosition
-    		 * @param  {string}      aliasRow 行的别名
-    		 * @param  {string}      aliasCol 列的别名
-    		 * @param  {int}      index 插入集合位置
-    		 */
-    		cachePosition: function(aliasRow, aliasCol, index) {
-    			var positionX,
-    				positionY;
-    			// cells=require('collections/cells');
-    			positionX = this.CellsPosition.strandX;
-    			if (!positionX[aliasCol]) {
-    				positionX[aliasCol] = {};
-    			}
-    			if (!positionX[aliasCol][aliasRow]) {
-    				positionX[aliasCol][aliasRow] = {};
-    			}
-    			positionY = this.CellsPosition.strandY;
-    			if (!positionY[aliasRow]) {
-    				positionY[aliasRow] = {};
-    			}
-    			if (!positionY[aliasRow][aliasCol]) {
-    				positionY[aliasRow][aliasCol] = {};
-    			}
-    			positionX[aliasCol][aliasRow] = index;
-    			positionY[aliasRow][aliasCol] = index;
-    		},
-    		rowRegionPosi: [],
-    		colRegionPosi: []
-    	};
-    
-    });
-    define('basic/tools/send',['require','lib/jquery','spreadsheet/config'],function(require) {
-    	
-    	var $ = require('lib/jquery'),
-    		systemConfig = require('spreadsheet/config');
-    	/**
-    	 * ajax工具类
-    	 * @author ray wu
-    	 * @class packAjax
-    	 * @since 0.1.0
-    	 * @module basic
-    	 */
-    	return {
-    		/**
-    		 * 封装的AJAX，为减少代码的重复内容
-    		 * 部分封装默认参数
-    		 * @method PackAjax
-    		 * @param  {object} cfg 用户自定义配置
-    		 */
-    		PackAjax: function(cfg) {
-    			var config = {},
-    				NULLFUNC = function() {};
-    			if (!cfg.url) {
-    				return;
-    			}
-    			config = {
-    				url: typeof cfg.url === 'string' ? (systemConfig.rootPath + cfg.url) : undefined,
-    				type: cfg.type || 'post',
-    				contentType: cfg.contentType || 'application/json; charset=UTF-8',
-    				dataType: cfg.dataType || 'json',
-    				data: cfg.data || '',
-    				async: cfg.async || true,
-    				timeout: cfg.timeout || 5000,
-    				success: cfg.success || NULLFUNC,
-    				error: cfg.error || NULLFUNC,
-    				complete: cfg.complete || NULLFUNC
-    			};
-    
-    			$.ajax({
-    				url: config.url,
-    				type: config.type,
-    				contentType: config.contentType,
-    				dataType: config.dataType,
-    				async: config.async,
-    				data: config.data,
-    				timeout: config.timeout,
-    				success: config.success,
-    				error: config.error,
-    				complete: function() {
-    					config.complete();
-    				}
-    			});
-    
-    		}
-    	};
-    });
-    define('basic/tools/loadrecorder',['require','basic/util/binary'],function(require) {
-    	
-    	var binary = require('basic/util/binary');
-    
-    	return {
-    		insertPosi: function(startPosi, endPosi, region) {
-    			var startIndex,
-    				endIndex,
-    				startExist,
-    				endExist,
-    				newStartPosi,
-    				newEndPosi,
-    				i, len;
-    			startIndex = binary.indexArrayBinary(startPosi, region, 'start', 'end');
-    			endIndex = binary.indexArrayBinary(endPosi, region, 'start', 'end');
-    			startExist = binary.existArrayBinary(startPosi, region, 'start', 'end');
-    			endExist = binary.existArrayBinary(endPosi, region, 'start', 'end');
-    
-    			newStartPosi = startExist === false ? startPosi : region[startIndex].start;
-    			newEndPosi = endExist === false ? endPosi : region[endIndex].end;
-    
-    			if (startIndex === endIndex) {
-    				if (startExist === true && endExist === true) return;
-    				len = (startExist === true || endExist === true) ? 1 : 0;
-    			} else {
-    				if (startExist === true && endExist === true) {
-    					len = endIndex - startIndex + 1;
-    				} else if (startExist === true || endExist === true) {
-    					len = endIndex - startIndex;
-    				} else {
-    					len = endIndex - startIndex - 1;
-    				}
-    			}
-    			region.splice(startIndex, len, {
-    				start: newStartPosi,
-    				end: newEndPosi
-    			});
-    		},
-    		adaptPosi: function(startPosi, value, region) {
-    			var startIndex,
-    				endIndex,
-    				startExist,
-    				endExist,
-    				newStartPosi,
-    				newEndPosi,
-    				i, len;
-    			startIndex = binary.indexArrayBinary(startPosi, region, 'start', 'end');
-    			startExist = binary.existArrayBinary(startPosi, region, 'start', 'end');
-    			//问题
-    			if (startExist === true && region[startIndex].start !== startPosi) {
-    				region[startIndex].end = region[startIndex].end + value;
-    				for (i = startIndex + 1; i < region.length; i++) {
-    					region[i].start += value;
-    					region[i].end += value;
-    				}
-    			} else {
-    				for (i = startIndex; i < region.length; i++) {
-    					region[i].start += value;
-    					region[i].end += value;
-    				}
-    			}
-    		},
-    		getUnloadPosi: function(startPosi, endPosi, region) {
-    			var result = [],
-    				startIndex,
-    				endIndex,
-    				startExist,
-    				endExist,
-    				newStartPosi,
-    				newEndPosi,
-    				existStartPosi,
-    				existEndPosi,
-    				i, len;
-    			startIndex = binary.indexArrayBinary(startPosi, region, 'start', 'end');
-    			endIndex = binary.indexArrayBinary(endPosi, region, 'start', 'end');
-    			startExist = binary.existArrayBinary(startPosi, region, 'start', 'end');
-    			endExist = binary.existArrayBinary(endPosi, region, 'start', 'end');
-    
-    
-    			if (startIndex === endIndex) {
-    
-    				if (startExist === false && endExist === false) {
-    					result.push({
-    						start: startPosi,
-    						end: endPosi
-    					});
-    				} else if (startExist === false && endExist === true) {
-    					newEndPosi = region[endIndex].end - 1;
-    					result.push({
-    						start: startPosi,
-    						end: newEndPosi
-    					});
-    				} else if (startExist === true && endExist === false) {
-    					newStartPosi = region[startIndex].start + 1;
-    					result.push({
-    						start: newStartPosi,
-    						end: endPosi
-    					});
-    				}
-    
-    			} else {
-    				len = endIndex - startIndex;
-    				for (i = 0; i < endIndex + 1; i++) {
-    					if (region[startIndex + i] === undefined) {
-    						result.push({
-    							start: startPosi,
-    							end: endPosi
-    						});
-    						break;
-    					}
-    					existStartPosi = region[startIndex + i].start;
-    					existEndPosi = region[startIndex + i].end;
-    					if (startPosi > endPosi) {
-    						break;
-    					} else if (existStartPosi < startPosi) {
-    						startPosi = existEndPosi + 1;
-    					} else {
-    						newStartPosi = startPosi;
-    						newEndPosi = existStartPosi - 1;
-    						if (newStartPosi <= newEndPosi) {
-    							result.push({
-    								start: newStartPosi,
-    								end: newEndPosi
-    							});
-    						}
-    						startPosi = existEndPosi + 1;
-    					}
-    				}
-    			}
-    			return result;
-    		}
-    	};
-    });
-    define('basic/tools/buildcolalias',[],function() {
-    	
-    	var buildColAlias = function(currentIndex) {
-    		var aliasCol = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
-    			displayText = '',
-    			remainder,
-    			divisible,
-    			temp = 0;
-    
-    		remainder = currentIndex % aliasCol.length;
-    		divisible = Math.floor(currentIndex / aliasCol.length);
-    		displayText = aliasCol[remainder] + displayText;
-    		while (divisible > 0) {
-    			currentIndex = divisible - 1;
-    			remainder = currentIndex % aliasCol.length;
-    			divisible = Math.floor(currentIndex / aliasCol.length);
-    			displayText = aliasCol[remainder] + displayText;
-    		}
-    		return displayText;
-    	};
-    	return buildColAlias;
-    });
     //     Underscore.js 1.7.0
     //     http://underscorejs.org
     //     (c) 2009-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
     //     Underscore may be freely distributed under the MIT license.
-    define('lib/underscore',['require'],function(require) {
+    define('lib/underscore',function() {
     
       // Baseline setup
       // --------------
@@ -11543,7 +10808,7 @@
     //     Backbone may be freely distributed under the MIT license.
     //     For all details and documentation:
     //     http://backbonejs.org
-    define('lib/backbone',['require','lib/underscore','lib/jquery'],function(require) {
+    define('lib/backbone',function() {
       var _ = require('lib/underscore'),
         $ = require('lib/jquery'),
         root = window,
@@ -13203,6 +12468,754 @@
       root.Backbone = Backbone;
       return Backbone;
     });
+    define('basic/tools/template',function() {
+    	
+    	var $ = require('lib/jquery'),
+    		loadHtml;
+    		
+    	loadHtml = function(id) {
+    		var headDomString = '',
+    			mainDomString = '',
+    			tailDomString = '';
+    
+    		mainDomString += '<div class="main-layout">';
+    		mainDomString += '<table class="cui-grid" cellspacing="0" cellpadding="0" id="tableContainer">';
+    		mainDomString += '<tbody><tr><td><div class="left-corner"></div></td><td></td><td></td></tr><tr><td></td><td></td><td></td></tr></tbody>';
+    		mainDomString += '</table></div>';
+    		mainDomString += '<div class="sheet-layout"><div class="sheet-body">';
+    		//mainDomString += '<div class="sheet-cf-box active glyphicons glyphicon-th-list"></div>';
+    		mainDomString += '<div class="sheet-cf-list">';
+    		mainDomString += '</div></div></div>';
+    		
+    
+    		tailDomString += '<script type="text/x-handlebars-template" id="colsPanelContainer"></script>';
+    		tailDomString += '<script type="text/x-handlebars-template" id="rowsPanelContainer"></script>';
+    		tailDomString += '<script type="text/x-handlebars-template" id="mainContainer"></script>';
+    		tailDomString += '<script type="text/x-handlebars-template" id="contentList"></script>';
+    
+    		tailDomString += '<script type="text/x-handlebars-template" id="tempSheetContainer"><span>{{name}}</span></script>';
+    
+    		tailDomString += '<script type="text/x-handlebars-template" id="tempRowHeadItem"><div class="item">{{displayName}}</div></script>';
+    		tailDomString += '<script type="text/x-handlebars-template" id="tempColHeadItem"><div class="item">{{displayName}}</div></script>';
+    		tailDomString += '<script type="text/x-handlebars-template" id="multiselect"><div class="dragItem" style="top:{{top}}px;left:{{left}}px;width:{{width}}px;height:{{height}}px;"></div></script>';
+    		tailDomString += '<script type="text/x-handlebars-template" id="data">{{content.text}}</script>';
+    		tailDomString += '<script type="text/x-handlebars-template" id="textarea"><div class="textarea"><textarea class="input-container"></textarea><div></script>';
+    		tailDomString += '<script type="text/x-handlebars-template" id="tempSelectContainer"><div class="box"><div class="expand"></div><div class="bg"></div></div></script>';
+    		tailDomString += '<script type="text/x-handlebars-template" id="tempItemCell"><div class="bg" style="display:table-cell">{{cotent.texts}}</div></script>';
+    		tailDomString += '<script type="text/x-handlebars-template" id="coltemp"><div class="col" style="left:{{left}}px;"></div></script>';
+    		tailDomString += '<script type="text/x-handlebars-template" id="rowtemp"><div class="row" style="top:{{top}}px;"></div></script>';
+    		
+    		$(id)[0].innerHTML = mainDomString;
+    		$(id).after(tailDomString);
+    	};
+    	return loadHtml;
+    });
+    //attention bug, those name didn't significance
+    //attention bug, between user config and system config mix
+    define('spreadsheet/config',function() {
+    	
+    	/**
+    	 * 系统配置变量
+    	 * @author ray wu
+    	 * @class config
+    	 * @since 0.1.0
+    	 * @module basic
+    	 */
+    	return {
+    		/**
+    		 * 用户可配置属性
+    		 * @property {object} User
+    		 */
+    		User: {
+    			/**
+    			 * 页面初始化行数
+    			 * @property {int} initRowNum
+    			 */
+    			initRowNum: 100,
+    			/**
+    			 * 页面初始化列数
+    			 * @property {int} initColNum
+    			 */
+    			initColNum: 26,
+    			/**
+    			 * 单元格宽度
+    			 * @property {int} cellWidth
+    			 */
+    			cellWidth: 72,
+    			/**
+    			 * 单元格高度
+    			 * @property {int} cellHeight
+    			 */
+    			cellHeight: 20,
+    			/**
+    			 * excel最大支持行数
+    			 * @property {number} maxRowNum
+    			 */
+    			maxColNum: 100,
+    			/**
+    			 * excel最大支持行数
+    			 * @property {number} maxRowNum
+    			 */
+    			maxRowNum: 9999
+    
+    		},
+    		/**
+    		 * 系统配置属性
+    		 * @property {object} System
+    		 */
+    		System: {
+    			/**
+    			 * 页面左侧距离
+    			 * @property {int} outerLeft
+    			 */
+    			outerLeft: 37,
+    			/**
+    			 * 页面顶部距离
+    			 * @property {int} outerTop
+    			 */
+    			outerTop: 20,
+    			/**
+    			 * 页面底部距离
+    			 * @property {int} outerBottom
+    			 */
+    			outerBottom: 30,
+    			/**
+    			 * 单元格宽度
+    			 * @property {int} cellWidth
+    			 */
+    			cellWidth: 72,
+    			/**
+    			 * 单元格高度
+    			 * @property {int} cellHeight
+    			 */
+    			cellHeight: 20,
+    			/**
+    			 * 列调整时，鼠标手势变化的距离
+    			 * @property {int} effectDistanceCol
+    			 */
+    			effectDistanceCol: 10,
+    			/**
+    			 * 行调整时，鼠标手势变化的距离
+    			 * @property {int} effectDistanceRow
+    			 */
+    			effectDistanceRow: 5,
+    			/**
+    			 * 预加载，行隐藏的距离
+    			 * @property {int} prestrainHeight
+    			 */
+    			prestrainHeight: 200,
+    			/**
+    			 * 预加载，列隐藏的距离
+    			 * @property {number} prestrainWidth
+    			 */
+    			prestrainWidth: 100,
+    			/**
+    			 * excel最大支持行数
+    			 * @property {number} maxRowNum
+    			 */
+    			maxRowNum: 9999
+    		},
+    		mouseOperateState: {
+    			select: 'select',
+    			dataSource: 'dataSource',
+    			drag: 'drag',
+    			highlight: 'highlight'
+    		},
+    		keyboard: {
+    			backspace: 8,
+    			deleteKey: 46,
+    			enter: 13,
+    			escape: 27,
+    			pageUp: 33,
+    			pageDown: 34,
+    			leftArrow: 37,
+    			upArrow: 38,
+    			rightArrow: 39,
+    			downArrow: 40
+    		},
+    		rootPath: 'http://192.168.1.250:8080/acmrexcel-0.1.5/'
+    	};
+    });
+    define('basic/util/binary',function() {
+    	
+    	/**
+    	 * 二分查询工具类
+    	 * @author ray wu
+    	 * @class binary
+    	 * @module basic
+    	 * @main  binary
+    	 */
+    	return {
+    		/**
+    		 * @method modelBinary
+    		 * @deprecated 找个二分查询存在性能瓶颈，使用`newModelBinary`
+    		 */
+    		modelBinary: function(value, array, strandAttr, rangeAttr, startIndex, endIndex) {
+    			var middle,
+    				start = startIndex ? startIndex : 0,
+    				end,
+    				findValue = Math.floor(value),
+    				strandAttrByArray,
+    				rangeAttrByArray,
+    				middleArray;
+    			if (endIndex === undefined) {
+    				end = array.length - 1;
+    			} else {
+    				end = endIndex;
+    			}
+    
+    			if (start <= end) {
+    				if (array[start].get(strandAttr) === findValue) {
+    					return start;
+    				}
+    				if (array[end].get(strandAttr) === findValue) {
+    					return end;
+    				}
+    				middle = end + start >>> 1;
+    				middleArray = array[middle];
+    				strandAttrByArray = middleArray.get(strandAttr);
+    				rangeAttrByArray = middleArray.get(rangeAttr);
+    				if (strandAttrByArray <= findValue && strandAttrByArray + rangeAttrByArray >= findValue) {
+    					return middle;
+    				} else if (strandAttrByArray > findValue) {
+    					return this.modelBinary(findValue, array, strandAttr, rangeAttr, start, middle - 1);
+    				} else if (strandAttrByArray + rangeAttrByArray < findValue) {
+    					return this.modelBinary(findValue, array, strandAttr, rangeAttr, middle + 1, end);
+    				}
+    			}
+    			return -1;
+    		},
+    		/**
+    		 * 两个属性之间查询 二分查询
+    		 * @method newModelBinary
+    		 * @param  {int}       value       想查询的数据值
+    		 * @param  {array}       array     查询的list集合
+    		 * @param  {string}       strandAttr 起始属性
+    		 * @param  {string}       rangeAttr  结束属性
+    		 * @param  {int}       startIndex 起始索引
+    		 * @param  {int}       endIndex   结束索引
+    		 * @return {int} `array`中的索引值
+    		 */
+    		newModelBinary: function(value, array, strandAttr, rangeAttr, startIndex, endIndex) {
+    			var middle,
+    				start = startIndex ? startIndex : 0,
+    				end = endIndex ? endIndex : array.length,
+    				findValue = Math.floor(value),
+    				strandAttrByArray,
+    				rangeAttrByArray,
+    				middleArray;
+    			while (start < end) {
+    				middle = end + start >>> 1;
+    				middleArray = array[middle];
+    				strandAttrByArray = middleArray.get(strandAttr);
+    				rangeAttrByArray = middleArray.get(rangeAttr);
+    				if (strandAttrByArray + rangeAttrByArray < findValue) {
+    					start = middle + 1;
+    				} else {
+    					end = middle;
+    				}
+    			}
+    			return start;
+    		},
+    		/**
+    		 * 二分查询（用于插入元素，确定元素位置使用）
+    		 * @method newModelBinary
+    		 * @param  {int}       value       想查询的数据值
+    		 * @param  {array}       array     查询的list集合
+    		 * @param  {string}       strandAttr 起始属性
+    		 * @param  {string}       rangeAttr  结束属性
+    		 * @param  {int}       startIndex 起始索引
+    		 * @param  {int}       endIndex   结束索引
+    		 * @return {int} `array`中的索引值
+    		 */
+    		indexModelBinary: function(value, array, strandAttr, rangeAttr, startIndex, endIndex) {
+    			if (array.length === 0) {
+    				return 0;
+    			}
+    			var middle,
+    				start = startIndex ? startIndex : 0,
+    				end = endIndex ? endIndex : array.length - 1,
+    				findValue = Math.floor(value),
+    				strandAttrByArray,
+    				rangeAttrByArray,
+    				middleArray;
+    			if (array.length === 1) {
+    				return (array[0].get(strandAttr) + array[0].get(rangeAttr) >= findValue) ? 0 : 1;
+    			}
+    			while (start < end) {
+    				if (array[start].get(strandAttr) + array[start].get(rangeAttr) >= findValue) {
+    					return start;
+    				}
+    				if (array[end].get(strandAttr) + array[end].get(rangeAttr) === findValue) {
+    					return end;
+    				}
+    				if (array[end].get(strandAttr) + array[end].get(rangeAttr) < findValue) {
+    					return end + 1;
+    				}
+    				middle = end + start >>> 1;
+    				middleArray = array[middle];
+    				strandAttrByArray = middleArray.get(strandAttr);
+    				rangeAttrByArray = middleArray.get(rangeAttr);
+    				if (strandAttrByArray + rangeAttrByArray < findValue) {
+    					start = middle + 1;
+    				} else {
+    					end = middle;
+    				}
+    			}
+    			return start;
+    		},
+    		/**
+    		 * 生成行名称
+    		 * @method buildRowAlias
+    		 * @param  {int} 当前索引值
+    		 * @return {string} 当前显示的名称
+    		 */
+    		buildRowAlias: function(currentIndex) {
+    			return (currentIndex + 1).toString();
+    		},
+    		existArrayBinary: function(value, array, startAttr, endAttr, startIndex, endIndex) {
+    			var middle,
+    				start = startIndex ? startIndex : 0,
+    				end = endIndex ? endIndex : array.length - 1,
+    				findValue = Math.floor(value),
+    				strandAttrByArray,
+    				rangeAttrByArray,
+    				middleArray;
+    			if (array.length === 0) {
+    				return false;
+    			}
+    			if (array.length === 1) {
+    				if (array[0][endAttr] >= findValue && array[0][startAttr] <= findValue) {
+    					return true;
+    				} else {
+    					return false;
+    				}
+    			}
+    			while (start < end) {
+    				if (array[start][startAttr] <= findValue && array[start][endAttr] >= findValue) {
+    					return true;
+    				}
+    				if (array[end][startAttr] <= findValue && array[end][endAttr] >= findValue) {
+    					return true;
+    				}
+    				middle = end + start >>> 1;
+    				if (array[end][startAttr] <= findValue && array[end][endAttr] >= findValue) {
+    					return true;
+    				} else if (array[middle][endAttr] < findValue) {
+    					start = middle + 1;
+    				} else {
+    					end = middle;
+    				}
+    			}
+    			return false;
+    		},
+    		indexArrayBinary: function(value, array, startAttr, endAttr, startIndex, endIndex) {
+    			var middle,
+    				start = startIndex ? startIndex : 0,
+    				end = endIndex ? endIndex : array.length - 1,
+    				findValue = Math.floor(value),
+    				strandAttrByArray,
+    				rangeAttrByArray,
+    				middleArray;
+    			if (array.length === 0) {
+    				return 0;
+    			}
+    			if (array.length === 1) {
+    				if (array[start][endAttr] < findValue) {
+    					return 1;
+    				} else {
+    					return 0;
+    				}
+    			}
+    			while (start < end) {
+    				if (array[start][startAttr] >= findValue) {
+    					return start;
+    				}
+    				if (array[end][endAttr] < findValue) {
+    					return end + 1;
+    				}
+    
+    				middle = end + start >>> 1;
+    
+    				if (array[middle][startAttr] <= findValue && array[middle][endAttr] >= findValue) {
+    					return middle;
+    				} else if (array[middle][endAttr] < findValue) {
+    					start = middle + 1;
+    				} else {
+    					end = middle;
+    				}
+    			}
+    			return start;
+    		}
+    	};
+    
+    });
+    //attention bug , those cache objects has mix , for use 
+    define('basic/tools/cache',function() {
+    	
+    	var config = require('spreadsheet/config');
+    	/**
+    	 * 系统缓存对象
+    	 * @author ray wu
+    	 * @class cache
+    	 * @since 0.1.0
+    	 * @module basic
+    	 */
+    	return {
+    		CurrentRule: {},
+    		FrozenRules: {
+    			main: [],
+    			row: [],
+    			col: []
+    		},
+    		/**
+    		 * 所有单元格位置信息
+    		 * @property {object} CellPosition
+    		 */
+    		CellsPosition: {
+    			/**
+    			 * 所有列上的单元格`alias`
+    			 * @property {object} strandX
+    			 */
+    			strandX: {},
+    			/**
+    			 * 所有行上的单元格`alias`
+    			 * @property {object} strandY
+    			 */
+    			strandY: {}
+    		},
+    		clipState: 'null', //copy：复制状态，cut:剪切状态，null:未进行剪切板操作
+    		/**
+    		 * 用户可视的区域(在Excel未冻结的情况下使用)
+    		 * @property {object} UserView
+    		 */
+    		UserView: {
+    			/**
+    			 * 可视区域左上单元格列别名
+    			 * @property {string} colAlias
+    			 */
+    			colAlias: '1',
+    			/**
+    			 * 可视区域左上单元格行别名
+    			 * @property {string} rowAlias
+    			 */
+    			rowAlias: '1',
+    			/**
+    			 * 可视区域右下单元格列别名
+    			 * @property {string} colEndAlias
+    			 */
+    			colEndAlias: '1',
+    			/**
+    			 * 可视区域右下单元格行别名
+    			 * @property {string} rowEndAlias
+    			 */
+    			rowEndAlias: '1'
+    		},
+    		//鼠标操作状态
+    		mouseOperateState: config.mouseOperateState.select,
+    
+    		listenerList: {}, //事件监听列表
+    		/**
+    		 * cellsContainer 行视图最大高度
+    		 * @type {Number}
+    		 */
+    		displayRowHeight: 0,
+    		/**
+    		 * 后台存储excel的总高度
+    		 * @property {int} localRowPosi
+    		 */
+    		localRowPosi: 0,
+    		/**
+    		 * 后台存储excel,别名最大
+    		 */
+    		localMaxRowAlias: '',
+    		/**
+    		 * 临时代替属性，因为sheet还有做，所以sheet的冻结属性暂时由此属性替代。以后需要做成model处理
+    		 * @property {object} TempProp
+    		 */
+    		TempProp: {
+    			/**
+    			 * 冻结状态
+    			 * @property {boolean} isFrozen
+    			 */
+    			isFrozen: false,
+    			/**
+    			 * 冻结列别名
+    			 * @property {string} colAlias
+    			 */
+    			colAlias: '1',
+    			/**
+    			 * 冻结行别名
+    			 * @property {string} rowAlias
+    			 */
+    			rowAlias: '1',
+    			/**
+    			 * 行冻结状态
+    			 * @property {boolean} rowAlias
+    			 */
+    			rowFrozen: false,
+    			/**
+    			 * 列冻结状态
+    			 * @property {boolean} rowAlias
+    			 */
+    			colFrozen: false
+    		},
+    		/**
+    		 * 保存位置信息
+    		 * @method cachePosition
+    		 * @param  {string}      aliasRow 行的别名
+    		 * @param  {string}      aliasCol 列的别名
+    		 * @param  {int}      index 插入集合位置
+    		 */
+    		cachePosition: function(aliasRow, aliasCol, index) {
+    			var positionX,
+    				positionY;
+    			// cells=require('collections/cells');
+    			positionX = this.CellsPosition.strandX;
+    			if (!positionX[aliasCol]) {
+    				positionX[aliasCol] = {};
+    			}
+    			if (!positionX[aliasCol][aliasRow]) {
+    				positionX[aliasCol][aliasRow] = {};
+    			}
+    			positionY = this.CellsPosition.strandY;
+    			if (!positionY[aliasRow]) {
+    				positionY[aliasRow] = {};
+    			}
+    			if (!positionY[aliasRow][aliasCol]) {
+    				positionY[aliasRow][aliasCol] = {};
+    			}
+    			positionX[aliasCol][aliasRow] = index;
+    			positionY[aliasRow][aliasCol] = index;
+    		},
+    		//动态加载，已加载区域
+    		rowRegionPosi: [],
+    		//动态加载，已加载列区域
+    		colRegionPosi: [],
+    		//动态加载，已加单元格载区域
+    		cellRegionPosi: {
+    			transverse: [],
+    			vertical: []
+    		},
+    		visibleRegion: {
+    			top: 0,
+    			bottom: 0,
+    			left: 0,
+    			right: 0
+    		}
+    	};
+    
+    });
+    define('basic/tools/send',function() {
+    	
+    	var $ = require('lib/jquery'),
+    		systemConfig = require('spreadsheet/config');
+    	/**
+    	 * ajax工具类
+    	 * @author ray wu
+    	 * @class packAjax
+    	 * @since 0.1.0
+    	 * @module basic
+    	 */
+    	return {
+    		/**
+    		 * 封装的AJAX，为减少代码的重复内容
+    		 * 部分封装默认参数
+    		 * @method PackAjax
+    		 * @param  {object} cfg 用户自定义配置
+    		 */
+    		PackAjax: function(cfg) {
+    			var config = {},
+    				NULLFUNC = function() {};
+    			if (!cfg.url) {
+    				return;
+    			}
+    			config = {
+    				url: typeof cfg.url === 'string' ? (systemConfig.rootPath + cfg.url) : undefined,
+    				type: cfg.type || 'post',
+    				contentType: cfg.contentType || 'application/json; charset=UTF-8',
+    				dataType: cfg.dataType || 'json',
+    				data: cfg.data || '',
+    				async: cfg.async !== undefined ? cfg.async : true,
+    				timeout: cfg.timeout || 5000,
+    				success: cfg.success || NULLFUNC,
+    				error: cfg.error || NULLFUNC,
+    				complete: cfg.complete || NULLFUNC
+    			};
+    
+    			$.ajax({
+    				url: config.url,
+    				type: config.type,
+    				contentType: config.contentType,
+    				dataType: config.dataType,
+    				async: config.async,
+    				data: config.data,
+    				timeout: config.timeout,
+    				success: config.success,
+    				error: config.error,
+    				complete: function() {
+    					config.complete();
+    				}
+    			});
+    
+    		}
+    	};
+    });
+    define('basic/tools/loadrecorder',function() {
+    	
+    	var binary = require('basic/util/binary');
+    
+    	return {
+    		insertPosi: function(startPosi, endPosi, region) {
+    			var startIndex,
+    				endIndex,
+    				startExist,
+    				endExist,
+    				newStartPosi,
+    				newEndPosi,
+    				i, len;
+    			startIndex = binary.indexArrayBinary(startPosi, region, 'start', 'end');
+    			endIndex = binary.indexArrayBinary(endPosi, region, 'start', 'end');
+    			startExist = binary.existArrayBinary(startPosi, region, 'start', 'end');
+    			endExist = binary.existArrayBinary(endPosi, region, 'start', 'end');
+    
+    			newStartPosi = startExist === false ? startPosi : region[startIndex].start;
+    			newEndPosi = endExist === false ? endPosi : region[endIndex].end;
+    			//ps:对于相应区域，未进行合并，需要改进
+    			if (startIndex === endIndex) {
+    				if (startExist === true && endExist === true) return;
+    				len = (startExist === true || endExist === true) ? 1 : 0;
+    			} else {
+    				if (startExist === true && endExist === true) {
+    					len = endIndex - startIndex + 1;
+    				} else if (startExist === true || endExist === true) {
+    					len = endIndex - startIndex;
+    				} else {
+    					len = endIndex - startIndex - 1;
+    				}
+    			}
+    			region.splice(startIndex, len, {
+    				start: newStartPosi,
+    				end: newEndPosi
+    			});
+    		},
+    		adaptPosi: function(startPosi, value, region) {
+    			var startIndex,
+    				endIndex,
+    				startExist,
+    				endExist,
+    				newStartPosi,
+    				newEndPosi,
+    				i, len;
+    			startIndex = binary.indexArrayBinary(startPosi, region, 'start', 'end');
+    			startExist = binary.existArrayBinary(startPosi, region, 'start', 'end');
+    			//问题
+    			if (startExist === true && region[startIndex].start !== startPosi) {
+    				region[startIndex].end = region[startIndex].end + value;
+    				for (i = startIndex + 1; i < region.length; i++) {
+    					region[i].start += value;
+    					region[i].end += value;
+    				}
+    			} else {
+    				for (i = startIndex; i < region.length; i++) {
+    					region[i].start += value;
+    					region[i].end += value;
+    				}
+    			}
+    		},
+    		getUnloadPosi: function(startPosi, endPosi, region) {
+    			var result = [],
+    				startIndex,
+    				endIndex,
+    				startExist,
+    				endExist,
+    				newStartPosi,
+    				newEndPosi,
+    				existStartPosi,
+    				existEndPosi,
+    				i, len;
+    			startIndex = binary.indexArrayBinary(startPosi, region, 'start', 'end');
+    			endIndex = binary.indexArrayBinary(endPosi, region, 'start', 'end');
+    			startExist = binary.existArrayBinary(startPosi, region, 'start', 'end');
+    			endExist = binary.existArrayBinary(endPosi, region, 'start', 'end');
+    
+    
+    			if (startIndex === endIndex) {
+    
+    				if (startExist === false && endExist === false) {
+    					result.push({
+    						start: startPosi,
+    						end: endPosi
+    					});
+    				} else if (startExist === false && endExist === true) {
+    					newEndPosi = region[endIndex].end - 1;
+    					result.push({
+    						start: startPosi,
+    						end: newEndPosi
+    					});
+    				} else if (startExist === true && endExist === false) {
+    					newStartPosi = region[startIndex].start + 1;
+    					result.push({
+    						start: newStartPosi,
+    						end: endPosi
+    					});
+    				}
+    
+    			} else {
+    				len = endIndex - startIndex;
+    				for (i = 0; i < endIndex + 1; i++) {
+    					if (region[startIndex + i] === undefined) {
+    						result.push({
+    							start: startPosi,
+    							end: endPosi
+    						});
+    						break;
+    					}
+    					existStartPosi = region[startIndex + i].start;
+    					existEndPosi = region[startIndex + i].end;
+    					if (startPosi > endPosi) {
+    						break;
+    					} else if (existStartPosi < startPosi) {
+    						startPosi = existEndPosi + 1;
+    					} else {
+    						newStartPosi = startPosi;
+    						newEndPosi = existStartPosi - 1;
+    						if (newStartPosi <= newEndPosi) {
+    							result.push({
+    								start: newStartPosi,
+    								end: newEndPosi
+    							});
+    						}
+    						startPosi = existEndPosi + 1;
+    					}
+    				}
+    			}
+    			return result;
+    		}
+    	};
+    });
+    define('basic/tools/buildcolalias',function() {
+    	
+    	var buildColAlias = function(currentIndex) {
+    		var aliasCol = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
+    			displayText = '',
+    			remainder,
+    			divisible,
+    			temp = 0;
+    
+    		remainder = currentIndex % aliasCol.length;
+    		divisible = Math.floor(currentIndex / aliasCol.length);
+    		displayText = aliasCol[remainder] + displayText;
+    		while (divisible > 0) {
+    			currentIndex = divisible - 1;
+    			remainder = currentIndex % aliasCol.length;
+    			divisible = Math.floor(currentIndex / aliasCol.length);
+    			displayText = aliasCol[remainder] + displayText;
+    		}
+    		return displayText;
+    	};
+    	return buildColAlias;
+    });
     /**
      * Backbone-Nested 2.0.3 - An extension of Backbone.js that keeps track of nested attributes
      *
@@ -13214,7 +13227,7 @@
     /*global define, require, module */
     
     
-    define('lib/backbone.nested',['require','lib/underscore','lib/jquery','lib/backbone'],function(require) {
+    define('lib/backbone.nested',function() {
       
       var _ = require('lib/underscore'),
         $ = require('lib/jquery'),
@@ -13580,7 +13593,7 @@
     
       return Backbone;
     });
-    define('models/lineRow',['require','lib/backbone','lib/backbone.nested'],function(require) {
+    define('models/lineRow',function() {
     	
     	var Backbone = require('lib/backbone');
     	var BackboneNest = require('lib/backbone.nested');
@@ -13643,7 +13656,7 @@
     	});
     	return LineRowModel;
     });
-    define('models/lineCol',['require','lib/backbone','lib/backbone.nested'],function(require) {
+    define('models/lineCol',function() {
     	
     	var Backbone = require('lib/backbone'),
     		BackboneNest = require('lib/backbone.nested');
@@ -13712,7 +13725,7 @@
     //attention bug, showState is or not exist value ?
     
     
-    define('models/cell',['require','lib/backbone','lib/backbone.nested'],function(require) {
+    define('models/cell',function() {
     	
     	var Backbone = require('lib/backbone');
     	var BackboneNest = require('lib/backbone.nested');
@@ -13880,7 +13893,7 @@
     			 * 是否允许单元格进行高亮效果（ps:此属性为外部扩展属性，后期应对此属性进行分离）
     			 * @type {Boolean}
     			 */
-    			highlight: false
+    			highlight: true
     		},
     		/**
     		 * 隐藏当前单元格
@@ -13894,7 +13907,7 @@
     });
     //attention bug, those name didn't significance
     
-    define('models/selectRegion',['require','lib/backbone','lib/backbone.nested'],function(require) {
+    define('models/selectRegion',function() {
     	
     	var Backbone = require('lib/backbone'),
     		BackboneNest = require('lib/backbone.nested'),
@@ -14017,7 +14030,7 @@
     	});
     	return SelectRegion;
     });
-    define('collections/selectRegion',['require','lib/backbone','spreadsheet/config','models/selectRegion'],function(require) {
+    define('collections/selectRegion',function() {
     	
     	var Backbone = require('lib/backbone'),
     		config = require('spreadsheet/config'),
@@ -14092,33 +14105,14 @@
     		 * @return {array} 筛选结果
     		 */
     		getModelByType: function(type) {
-    				return this.where({
-    					selectType: type
-    				});
-    			}
-    			//method destory
-    			//
-    			// getInitAlias: function(isAliasCol, isAliasRow) {
-    			// 	var modelSelectRegion,
-    			// 		headLineRowModelList,
-    			// 		headLineColModelList,
-    			// 		aliasList = {};
-    
-    		// 	modelSelectRegion = this.models[0];
-    		// 	headLineColModelList = collections.headLineCol.models;
-    		// 	headLineRowModelList = collections.headLineRow.models;
-    		// 	if (isAliasCol) {
-    		// 		aliasList.aliasCol = headLineColModelList[modelSelectRegion.initPosi.startX].get('alias');
-    		// 	}
-    		// 	if (isAliasRow) {
-    		// 		aliasList.aliasRow = headLineRowModelList[modelSelectRegion.initPosi.startY].get('alias');
-    		// 	}
-    		// 	return aliasList;
-    		// }
+    			return this.where({
+    				selectType: type
+    			});
+    		}
     	});
     	return new SelectRegions();
     });
-    define('collections/headItemCol',['require','lib/underscore','lib/backbone','basic/util/binary','models/lineCol','collections/selectRegion'],function(require) {
+    define('collections/headItemCol',function() {
     	
     	var _ = require('lib/underscore'),
     		Backbone = require('lib/backbone'),
@@ -14264,7 +14258,7 @@
     	});
     	return new HeadItemCols();
     });
-    define('collections/headItemRow',['require','lib/underscore','lib/backbone','basic/util/binary','models/lineRow','collections/selectRegion'],function(require) {
+    define('collections/headItemRow',function() {
     	
     	var _ = require('lib/underscore'),
     		Backbone = require('lib/backbone'),
@@ -14420,7 +14414,7 @@
     	});
     	return new HeadItemRows();
     });
-    define('models/siderLineCol',['require','lib/backbone','lib/backbone.nested'],function(require) {
+    define('models/siderLineCol',function() {
     	
     	var Backbone = require('lib/backbone');
     	var BackboneNest = require('lib/backbone.nested');
@@ -14451,7 +14445,7 @@
     	});
     	return SiderLineColModel;
     });
-    define('collections/siderLineCol',['require','lib/backbone','models/siderLineCol'],function(require) {
+    define('collections/siderLineCol',function() {
     	
     	var Backbone = require('lib/backbone'),
     		SiderLineColModel = require('models/siderLineCol'),
@@ -14477,7 +14471,7 @@
     	return new SiderLineCols();
     });
     
-    define('models/siderLineRow',['require','lib/backbone','lib/backbone.nested'],function(require) {
+    define('models/siderLineRow',function() {
     	
     	var Backbone = require('lib/backbone'),
     		BackboneNest = require('lib/backbone.nested'),
@@ -14508,7 +14502,7 @@
     	});
     	return SiderLineRowModel;
     });
-    define('collections/siderLineRow',['require','lib/backbone','models/siderLineRow'],function(require) {
+    define('collections/siderLineRow',function() {
     	
     	var Backbone = require('lib/backbone'),
     		SiderLineRowModel = require('models/siderLineRow'),
@@ -14534,7 +14528,7 @@
     	});
     	return new SiderLineRows();
     });
-    define('models/sheet',['require','lib/backbone','lib/backbone.nested'],function(require) {
+    define('models/sheet',function() {
         
         var Backbone = require('lib/backbone'),
             BackboneNest = require('lib/backbone.nested'),
@@ -14547,7 +14541,7 @@
         });
         return SheetModel;
     });
-    define('collections/sheets',['require','lib/backbone','models/sheet'],function(require) {
+    define('collections/sheets',function() {
     	
     	var Backbone = require('lib/backbone'),
     		SheetModel = require('models/sheet');
@@ -14572,7 +14566,7 @@
     	});
     	return new Sheets();
     });
-    define('collections/cells',['require','lib/backbone','basic/tools/cache','models/cell','collections/headItemCol','collections/headItemRow','collections/selectRegion'],function(require) {
+    define('collections/cells',function() {
     	
     	var Backbone = require('lib/backbone'),
     		cache = require('basic/tools/cache'),
@@ -15630,7 +15624,7 @@
     	});
     	return new Cells();
     });
-    define('basic/tools/original',['require','lib/jquery','spreadsheet/config','basic/util/binary','basic/tools/cache','basic/tools/send','basic/tools/loadrecorder','basic/tools/buildcolalias','models/lineRow','models/lineCol','models/cell','collections/headItemCol','collections/headItemRow','collections/siderLineCol','collections/siderLineRow','collections/selectRegion','collections/sheets','collections/cells'],function(require) {
+    define('basic/tools/original',function() {
     	
     	var $ = require('lib/jquery'),
     		config = require('spreadsheet/config'),
@@ -15693,6 +15687,7 @@
     			}
     			this.restoreSelectRegion();
     			loadRecorder.insertPosi(0, headItemRows.models[lenRow - 1].height + headItemRows.models[lenRow - 1].top, cache.rowRegionPosi);
+    			loadRecorder.insertPosi(0, headItemRows.models[lenRow - 1].height + headItemRows.models[lenRow - 1].top, cache.cellRegionPosi.vertical);
     		},
     		/**
     		 * 解析后台返回行索引数据，如果行数未满足加载区域，则生成新行，进行补充
@@ -16003,7 +15998,7 @@
     		}
     	};
     });
-    define('basic/util/listener',['require','basic/tools/cache'],function(require) {
+    define('basic/util/listener',function() {
     	
     	var cache = require('basic/tools/cache'),
     		listenerList = cache.listenerList,
@@ -16050,7 +16045,7 @@
     	};
     	return listener;
     });
-    define('basic/util/extend',['require'],function(require) {
+    define('basic/util/extend',function() {
     	
     	var extend = function(options) {
     		var target = this,
@@ -16063,7 +16058,7 @@
     	};
     	return extend;
     });
-    define('entrance/regionoperation',['require','lib/backbone','basic/tools/send','basic/tools/cache','basic/util/binary','models/cell','collections/headItemRow','collections/headItemCol','collections/cells','collections/headItemCol','collections/headItemRow','collections/selectRegion'],function(require) {
+    define('entrance/regionoperation',function() {
     	
     	var Backbone = require('lib/backbone'),
     		send = require('basic/tools/send'),
@@ -16261,7 +16256,7 @@
     	return common;
     
     });
-    define('entrance/tool/setFontColor',['require','lib/jquery','lib/backbone','basic/tools/send','collections/selectRegion','entrance/regionoperation'],function(require) {
+    define('entrance/tool/setFontColor',function() {
     	
     
     	var $ = require('lib/jquery'),
@@ -16292,7 +16287,7 @@
     	};
     	return setFontColor;
     });
-    define('entrance/tool/setFillColor',['require','lib/jquery','lib/backbone','basic/tools/send','collections/selectRegion','entrance/regionoperation'],function(require) {
+    define('entrance/tool/setFillColor',function() {
     	
     
     	var $ = require('lib/jquery'),
@@ -16326,7 +16321,7 @@
     	};
     	return setFillColor;
     });
-    define('entrance/tool/setFontFamily',['require','lib/jquery','lib/backbone','basic/tools/send','collections/selectRegion','entrance/regionoperation'],function(require) {
+    define('entrance/tool/setFontFamily',function() {
     	
     
     	var $ = require('lib/jquery'),
@@ -16358,7 +16353,7 @@
     	};
     	return setFontFamily;
     });
-    define('entrance/cell/setCellHeight',['require','lib/jquery','lib/backbone','basic/tools/send','collections/headItemRow','collections/selectRegion','entrance/regionoperation'],function(require) {
+    define('entrance/cell/setCellHeight',function() {
     	
     
     	var $ = require('lib/jquery'),
@@ -16380,7 +16375,7 @@
     	};
     	return setCellHeight;
     });
-    define('entrance/cell/setCellWidth',['require','lib/jquery','lib/backbone','basic/tools/send','collections/selectRegion','collections/headItemCol','entrance/regionoperation'],function(require) {
+    define('entrance/cell/setCellWidth',function() {
     	
     
     	var $ = require('lib/jquery'),
@@ -16401,7 +16396,7 @@
     	};
     	return setCellWidth;
     });
-    define('entrance/cell/selectCell',['require','lib/jquery','lib/backbone','basic/tools/send','basic/util/binary','collections/selectRegion','collections/siderLineRow','collections/siderLineCol','collections/cells','collections/headItemCol','collections/headItemRow','entrance/regionoperation'],function(require) {
+    define('entrance/cell/selectCell',function() {
     	
     
     	var $ = require('lib/jquery'),
@@ -16506,7 +16501,7 @@
     	};
     	return selectCell;
     });
-    define('entrance/tool/mergeCell',['require','lib/jquery','lib/backbone','basic/tools/send','basic/tools/cache','collections/selectRegion','collections/cells','collections/headItemCol','collections/headItemRow','entrance/regionoperation'],function(require) {
+    define('entrance/tool/mergeCell',function() {
     	
     
     	var $ = require('lib/jquery'),
@@ -16645,7 +16640,7 @@
     	}
     	return mergeCell;
     });
-    define('entrance/tool/splitCell',['require','lib/jquery','lib/backbone','basic/tools/send','basic/tools/cache','basic/util/binary','collections/selectRegion','collections/cells','collections/headItemCol','collections/headItemRow','entrance/regionoperation'],function(require) {
+    define('entrance/tool/splitCell',function() {
     	
     
     	var $ = require('lib/jquery'),
@@ -16792,7 +16787,7 @@
     	}
     	return splitCell;
     });
-    define('entrance/tool/setCellContent',['require','lib/jquery','lib/backbone','basic/tools/send','collections/selectRegion','entrance/regionoperation'],function(require) {
+    define('entrance/tool/setCellContent',function() {
     	
     
     	var $ = require('lib/jquery'),
@@ -16822,7 +16817,7 @@
     	};
     	return setCellContent;
     });
-    define('entrance/cell/selectCellCols',['require','lib/jquery','lib/backbone','basic/tools/send','basic/tools/cache','basic/util/listener','collections/selectRegion','collections/cells','collections/headItemCol','collections/headItemRow','collections/siderLineCol','collections/siderLineRow','entrance/regionoperation'],function(require) {
+    define('entrance/cell/selectCellCols',function() {
     	
     
     	var $ = require('lib/jquery'),
@@ -16957,7 +16952,7 @@
     	};
     	return selectCellCols;
     });
-    define('entrance/cell/selectCellRows',['require','lib/jquery','lib/backbone','basic/tools/send','basic/tools/cache','basic/util/listener','collections/selectRegion','collections/cells','collections/headItemCol','collections/headItemRow','collections/siderLineCol','collections/siderLineRow'],function(require) {
+    define('entrance/cell/selectCellRows',function() {
     	
     
     	var $ = require('lib/jquery'),
@@ -17090,7 +17085,7 @@
     	};
     	return selectCellRows;
     });
-    define('entrance/tool/setCellBorder',['require','lib/jquery','lib/backbone','basic/tools/send','collections/cells','collections/selectRegion','entrance/regionoperation'],function(require) {
+    define('entrance/tool/setCellBorder',function() {
     	
     
     	var $ = require('lib/jquery'),
@@ -17233,7 +17228,7 @@
     	};
     	return setCellBorder;
     });
-    define('entrance/tool/setFontFamilySize',['require','lib/jquery','lib/backbone','basic/tools/send','collections/selectRegion','collections/headItemRow','entrance/regionoperation','entrance/cell/setCellHeight'],function(require) {
+    define('entrance/tool/setFontFamilySize',function() {
     	
     
     	var $ = require('lib/jquery'),
@@ -17281,7 +17276,7 @@
     	};
     	return setFontFamilySize;
     });
-    define('entrance/tool/setFontWeight',['require','lib/jquery','lib/backbone','basic/tools/send','entrance/regionoperation','collections/selectRegion','collections/cells'],function(require) {
+    define('entrance/tool/setFontWeight',function() {
     	
     
     	var $ = require('lib/jquery'),
@@ -17339,7 +17334,7 @@
     	};
     	return setFontWeight;
     });
-    define('entrance/tool/setFontStyle',['require','lib/jquery','lib/backbone','basic/tools/send','entrance/regionoperation','collections/selectRegion','collections/cells'],function(require) {
+    define('entrance/tool/setFontStyle',function() {
     	
     
     	var $ = require('lib/jquery'),
@@ -17396,7 +17391,7 @@
     	};
     	return setFontStyle;
     });
-    define('entrance/sheet/setFrozen',['require','lib/jquery','lib/backbone','basic/tools/send','basic/tools/cache','collections/selectRegion','collections/cells','collections/headItemCol','collections/headItemRow','entrance/regionoperation'],function(require) {
+    define('entrance/sheet/setFrozen',function() {
     	
     
     	var $ = require('lib/jquery'),
@@ -17555,7 +17550,7 @@
     	};
     	return setFrozen;
     });
-    define('entrance/tool/setAlign',['require','lib/jquery','lib/backbone','basic/tools/send','collections/selectRegion','entrance/regionoperation'],function(require) {
+    define('entrance/tool/setAlign',function() {
     	
     
     	var $ = require('lib/jquery'),
@@ -17625,7 +17620,7 @@
     	};
     	return setAlign;
     });
-    define('entrance/tool/setTextType',['require','lib/jquery','lib/backbone','basic/tools/send','collections/selectRegion','entrance/regionoperation'],function(require) {
+    define('entrance/tool/setTextType',function() {
     	
     
     	var $ = require('lib/jquery'),
@@ -17666,7 +17661,7 @@
     	};
     	return setTextType;
     });
-    define('entrance/selectregion/dataSourceRegionOperation',['require','basic/tools/cache'],function(require) {
+    define('entrance/selectregion/dataSourceRegionOperation',function() {
     	
     	var cache = require('basic/tools/cache'),
     		operation;
@@ -17686,7 +17681,7 @@
     	};
     	return operation;
     });
-    define('entrance/sheet/getPointByPosi',['require','lib/jquery','lib/backbone','basic/tools/send','basic/tools/cache','collections/selectRegion','collections/cells','collections/headItemCol','collections/headItemRow'],function(require) {
+    define('entrance/sheet/getPointByPosi',function() {
     	
     
     	var $ = require('lib/jquery'),
@@ -17719,7 +17714,7 @@
     	};
     	return getPointByPosi;
     });
-    define('entrance/tool/setWordWrap',['require','lib/jquery','lib/backbone','basic/tools/send','entrance/regionoperation','collections/selectRegion','collections/cells'],function(require) {
+    define('entrance/tool/setWordWrap',function() {
     	
     
     	var $ = require('lib/jquery'),
@@ -17758,7 +17753,7 @@
     	};
     	return setWordWrap;
     });
-    define('entrance/cell/getTextByCoordinate',['require','lib/jquery','lib/backbone','basic/tools/cache','collections/selectRegion','collections/cells','collections/headItemCol','collections/headItemRow','entrance/regionoperation'],function(require) {
+    define('entrance/cell/getTextByCoordinate',function() {
     	
     
     	var $ = require('lib/jquery'),
@@ -17801,7 +17796,7 @@
     	};
     	return getTextByCoordinate;
     });
-    define('entrance/sheet/adaptScreen',['require','lib/backbone'],function(require) {
+    define('entrance/sheet/adaptScreen',function() {
     	
     
     	var Backbone = require('lib/backbone');
@@ -17810,7 +17805,7 @@
     	};
     	return adaptScreen;
     });
-    define('entrance/sheet/getFrozenState',['require','basic/tools/cache'],function(require) {
+    define('entrance/sheet/getFrozenState',function() {
     	
     
     	var cache = require('basic/tools/cache'),
@@ -17821,7 +17816,7 @@
     		};
     	return getFrozenState;
     });
-    define('entrance/sheet/getSelectRegion',['require','lib/jquery','lib/backbone','basic/tools/send','basic/tools/cache','collections/selectRegion','collections/headItemCol','collections/headItemRow'],function(require) {
+    define('entrance/sheet/getSelectRegion',function() {
     	
     
     	var $ = require('lib/jquery'),
@@ -17833,36 +17828,63 @@
     		headItemRows = require('collections/headItemRow'),
     		getSelectRegion;
     
+    	/**
+    	 * 获取选中区域信息
+    	 * @param  {string} sheetId sheetId
+    	 * @return {object} 
+    	 */
     	getSelectRegion = function(sheetId) {
-    		var result={},
+    		var result = {},
     			cols = [],
     			rows = [],
     			selectRegion,
     			startColIndex,
     			startRowIndex,
     			endColIndex,
-    			endRowIndex,i;
+    			endRowIndex, i;
     
     		selectRegion = selectRegions.findWhere({
     			'selectType': 'operation'
     		});
-    		startColIndex=selectRegion.get('wholePosi').startX;
-    		startRowIndex=selectRegion.get('wholePosi').startY;
-    		endColIndex=selectRegion.get('wholePosi').endX;
-    		endRowIndex=selectRegion.get('wholePosi').endY;
-    		for (i =startColIndex;i<endColIndex+1;i++) {
+    		startColIndex = selectRegion.get('wholePosi').startX;
+    		startRowIndex = selectRegion.get('wholePosi').startY;
+    		endColIndex = selectRegion.get('wholePosi').endX;
+    		endRowIndex = selectRegion.get('wholePosi').endY;
+    		for (i = startColIndex; i < endColIndex + 1; i++) {
     			cols.push(headItemCols.models[i].get('displayName'));
     		}
-    		for (i =startRowIndex;i<endRowIndex+1;i++) {
+    		for (i = startRowIndex; i < endRowIndex + 1; i++) {
     			rows.push(headItemRows.models[i].get('displayName'));
     		}
-    		result.col=cols;
-    		result.row=rows;
+    		result.col = cols;
+    		result.row = rows;
     		return result;
     	};
     	return getSelectRegion;
     });
-    define('basic/util/observer.pattern',['require'],function(require) {
+    define('entrance/extention/highlight',function() {
+    	
+    	var Backbone = require('lib/backbone');
+    	return {
+    		startHighlight: function() {
+    			Backbone.trigger('event:cellsContainer:startHighlight');
+    		},
+    		stopHighlight: function() {
+    			Backbone.trigger('event:cellsContainer:stopHighlight');
+    		}
+    	};
+    });
+    define('entrance/cell/reloadCells',function() {
+    	
+    	var cells = require('collections/cells'),
+    		cache = require('basic/tools/cache');
+    
+    	function reloadCells() {
+    		Backbone.trigger('event:contentCellsContainer:reloadCells');
+    	}
+    	return reloadCells;
+    });
+    define('basic/util/observer.pattern',function() {
     	
     
     	/**
@@ -17965,7 +17987,7 @@
     
     @license
     */
-    define('lib/handlebars',[],function() {
+    define('lib/handlebars',function() {
     	return /******/ (function(modules) { // webpackBootstrap
     			/******/ // The module cache
     			/******/
@@ -24377,7 +24399,7 @@
     			/******/
     		])
     });
-    define('views/sheetContainer',['require','lib/jquery','lib/backbone','lib/handlebars'],function(require) {
+    define('views/sheetContainer',function() {
     	
     	var $ = require('lib/jquery'),
     		Backbone = require('lib/backbone'),
@@ -24413,7 +24435,7 @@
     	});
     	return sheetContainer;
     });
-    define('views/sheetsContainer',['require','lib/backbone','collections/sheets','views/sheetContainer'],function(require) {
+    define('views/sheetsContainer',function() {
     	
     	var Backbone = require('lib/backbone'),
     		sheets = require('collections/sheets'),
@@ -24468,7 +24490,7 @@
     	});
     	return SheetsContainer;
     });
-    define('basic/util/clone',['require'],function(require) {
+    define('basic/util/clone',function() {
         
     
         var BUILTIN_OBJECT = {
@@ -24510,7 +24532,7 @@
             }
         };
     });
-    define('views/gridLineRowContainer',['require','lib/jquery','lib/underscore','lib/backbone','collections/headItemRow','basic/tools/cache','basic/util/clone','spreadsheet/config'],function(require) {
+    define('views/gridLineRowContainer',function() {
     	
     	var $ = require('lib/jquery'),
     		_ = require('lib/underscore'),
@@ -24601,7 +24623,7 @@
     // so listenTo nested model didn't done.
     
     
-    define('views/cellContainer',['require','lib/jquery','lib/handlebars','lib/backbone','collections/headItemRow','collections/headItemCol','collections/selectRegion','spreadsheet/config','basic/tools/cache','basic/tools/send','entrance/cell/setCellHeight'],function(require) {
+    define('views/cellContainer',function() {
     	
     	var $ = require('lib/jquery'),
     		Handlebars = require('lib/handlebars'),
@@ -24639,6 +24661,8 @@
     				modelColList = headItemCols;
     			this.listenTo(this.model, 'change', this.render);
     			this.listenTo(this.model, 'change:isDestroy', this.destroy);
+    			this.listenTo(this.model, 'destroy', this.modelDestroy);
+    			// this.listenTo(this.model, 'destroy', this.render);
     			this.currentRule = options.currentRule;
     			if (cache.TempProp.isFrozen !== true || this.currentRule.displayPosition.endRowIndex === undefined) {
     				this.listenTo(this.model, 'change:showState', this.changeShowState);
@@ -25086,11 +25110,14 @@
     			if (this.model.get('isDestroy')) {
     				this.remove();
     			}
+    		},
+    		modelDestroy:function(){
+    			this.remove();
     		}
     	});
     	return CellContainer;
     });
-    define('views/rowsGridContainer',['require','lib/jquery','lib/underscore','lib/backbone','spreadsheet/config','basic/tools/cache','collections/headItemRow','collections/cells','views/gridLineRowContainer'],function(require) {
+    define('views/rowsGridContainer',function() {
     	
     	var $ = require('lib/jquery'),
     		_ = require('lib/underscore'),
@@ -25205,7 +25232,7 @@
      * @since 1.0.0
      * @main view
      */
-    define('views/gridLineColContainer',['require','lib/backbone','collections/headItemCol','basic/tools/cache','spreadsheet/config','basic/util/clone'],function(require) {
+    define('views/gridLineColContainer',function() {
     	
     	var Backbone = require('lib/backbone');
     	var headItemCols = require('collections/headItemCol');
@@ -25263,7 +25290,7 @@
     });
     //attention bug , bettwen this.number has mixed and user configure file. isn't exist worth
     
-    define('views/colsGridContainer',['require','lib/backbone','spreadsheet/config','basic/util/binary','basic/tools/cache','collections/headItemCol','basic/tools/buildcolalias','views/gridLineColContainer'],function(require) {
+    define('views/colsGridContainer',function() {
     	
     	var Backbone = require('lib/backbone'),
     		config = require('spreadsheet/config'),
@@ -25372,7 +25399,7 @@
     	});
     	return ColsGridContainer;
     });
-    define('views/gridLineContainer',['require','lib/jquery','lib/underscore','lib/backbone','views/rowsGridContainer','views/colsGridContainer'],function(require) {
+    define('views/gridLineContainer',function() {
         
         var $ = require('lib/jquery'),
             _ = require('lib/underscore'),
@@ -25425,7 +25452,7 @@
         });
         return GridLineContainer;
     });
-    define('views/contentCellsContainer',['require','lib/jquery','lib/underscore','lib/backbone','basic/tools/cache','spreadsheet/config','basic/util/clone','collections/headItemCol','collections/headItemRow','collections/cells','views/cellContainer'],function(require) {
+    define('views/contentCellsContainer',function() {
     	
     	var $ = require('lib/jquery'),
     		_ = require('lib/underscore'),
@@ -25433,6 +25460,9 @@
     		cache = require('basic/tools/cache'),
     		config = require('spreadsheet/config'),
     		util = require('basic/util/clone'),
+    		send = require('basic/tools/send'),
+    		loadRecorder = require('basic/tools/loadrecorder'),
+    		original = require('basic/tools/original'),
     		headItemCols = require('collections/headItemCol'),
     		headItemRows = require('collections/headItemRow'),
     		cells = require('collections/cells'),
@@ -25460,6 +25490,7 @@
     		 */
     		initialize: function() {
     			this.currentRule = util.clone(cache.CurrentRule);
+    			Backbone.on('event:contentCellsContainer:reloadCells', this.reloadCells, this);
     			this.listenTo(cells, 'add', this.addCell);
     		},
     		/**
@@ -25483,6 +25514,53 @@
     			for (i = 0; i < len; i++) {
     				this.addCell(cellsList[i]);
     			}
+    		},
+    		/**
+    		 * 重新加载后台保存cell对象
+    		 */
+    		reloadCells: function() {
+    			var i = 0,
+    				len = cells.length,
+    				cellModel,
+    				top,
+    				bottom;
+    
+    			for (; i < len; i++) {
+    				cellModel = cells.models[0].destroy();
+    			}
+    			cache.CellsPosition.strandX = {};
+    			cache.CellsPosition.strandY = {};
+    			cache.cellRegionPosi.vertical = [];
+    			top = cache.visibleRegion.top;
+    			bottom = cache.visibleRegion.bottom;
+    			this.getCells(top, bottom);
+    			loadRecorder.insertPosi(top, bottom, cache.cellRegionPosi.vertical);
+    			len = cells.length;
+    			i = 0;
+    			for (; i < len; i++) {
+    				this.addCell(cells.models[i]);
+    			}
+    		},
+    		getCells: function(top, bottom) {
+    			send.PackAjax({
+    				url: 'excel.htm?m=openExcel',
+    				async: false,
+    				data: JSON.stringify({
+    					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
+    					sheetId: '1',
+    					rowBegin: top,
+    					rowEnd: bottom
+    				}),
+    				success: function(data) {
+    					if (data === '') {
+    						return;
+    					}
+    					data = data.returndata;
+    					var cells = data.spreadSheet[0].sheet.cells;
+    					original.analysisCellData(cells);
+    				}
+    			});
+    
     		},
     		/**
     		 * view创建一个单元格
@@ -25546,15 +25624,12 @@
     		 * @method destroy
     		 */
     		destroy: function() {
-    			if (this.cellView) {
-    				this.cellView.destroy();
-    			}
     			this.remove();
     		}
     	});
     	return ContentCellsContainer;
     });
-    define('views/inputContainer',['require','lib/jquery','lib/underscore','lib/backbone','basic/tools/cache','basic/util/clone','spreadsheet/config','basic/util/binary','basic/tools/send','collections/siderLineRow','collections/siderLineCol','collections/headItemRow','collections/headItemCol','collections/selectRegion'],function(require) {
+    define('views/inputContainer',function() {
     	
     	var $ = require('lib/jquery'),
     		_ = require('lib/underscore'),
@@ -25743,7 +25818,7 @@
     	});
     	return InputContainer;
     });
-    define('views/selectRegion',['require','lib/jquery','lib/backbone','lib/handlebars','basic/util/clone','basic/util/binary','basic/tools/cache','basic/tools/send','models/cell','collections/headItemRow','collections/headItemCol','collections/cells','views/inputContainer'],function(require) {
+    define('views/selectRegion',function() {
     			
     			var $ = require('lib/jquery'),
     				Backbone = require('lib/backbone'),
@@ -26087,7 +26162,7 @@
     					});
     				return SelectRegion;
     			});
-    define('views/cellsContainer',['require','lib/jquery','lib/underscore','lib/backbone','basic/util/binary','basic/tools/cache','spreadsheet/config','basic/util/clone','basic/util/listener','models/selectRegion','collections/headItemCol','collections/headItemRow','collections/selectRegion','collections/siderLineRow','collections/siderLineCol','collections/cells','views/gridLineContainer','views/contentCellsContainer','views/selectRegion'],function(require) {
+    define('views/cellsContainer',function() {
     	
     	var $ = require('lib/jquery'),
     		_ = require('lib/underscore'),
@@ -26218,7 +26293,6 @@
     				Row: [headItemRowList[coordinate.startRowIndex].get('displayName')],
     			};
     			e.point = point;
-    
     
     
     			if (event.isDefaultPrevented() === false) {
@@ -27385,7 +27459,7 @@
      * @since 1.0.0
      * @main view
      */
-    define('views/mainContainer',['require','lib/jquery','lib/underscore','lib/backbone','basic/util/binary','basic/tools/cache','spreadsheet/config','basic/tools/original','basic/util/clone','basic/tools/send','basic/tools/buildcolalias','basic/tools/loadrecorder','collections/headItemCol','collections/headItemRow','collections/cells','collections/selectRegion','views/gridLineRowContainer','views/cellContainer','views/cellsContainer'],function(require) {
+    define('views/mainContainer',function() {
     	
     	var $ = require('lib/jquery'),
     		_ = require('lib/underscore'),
@@ -27440,7 +27514,7 @@
     			Backbone.on('event:mainContainer:destroy', this.destroy, this);
     			Backbone.on('event:mainContainer:attributesRender', this.attributesRender, this);
     			Backbone.on('event:mainContainer:appointPosition', this.appointPosition, this);
-    			
+    
     			//ps:定位事件，只由主区域订阅
     			this.currentRule = clone.clone(cache.CurrentRule);
     
@@ -27509,6 +27583,8 @@
     			// }
     			this.rowsViewBottomPosi = this.boxModel.height;
     			config.displayRowHeight = this.rowsViewBottomPosi;
+    			cache.visibleRegion.top = 0;
+    			cache.visibleRegion.bottom = this.rowsViewBottomPosi;
     		},
     		addCellViewPublish: function(cellModel) {
     			this.publish(cellModel, 'addCellViewPublish');
@@ -27623,7 +27699,7 @@
     			}
     		},
     		downCellPosition: function() {
-    			var rowAliasArray=[],
+    			var rowAliasArray = [],
     				nextRowAlias,
     				loadStartAlias,
     				loadEndAlias,
@@ -27675,7 +27751,7 @@
     			//view show 
     			if (top < this.el.scrollTop + this.el.offsetHeight) return;
     			recordScrollTop = this.el.scrollTop;
-    			this.el.scrollTop = (top-this.el.offsetHeight);
+    			this.el.scrollTop = (top - this.el.offsetHeight);
     			this.deleteTop(recordScrollTop);
     			this.addBottom(recordScrollTop);
     		},
@@ -27803,6 +27879,7 @@
     					break;
     				}
     			}
+    			cache.visibleRegion.top = headItemRowList[limitIndex].get("top");
     			// config.DynamicLoad.row.start = limitIndex;
     		},
     		/**
@@ -27891,8 +27968,7 @@
     					}
     				}
     			}
-    			//	config.DynamicLoad.row.start = limitTopIndex;
-    
+    			cache.visibleRegion.top = headItemRowList[limitTopIndex].get("top");
     		},
     		/**
     		 * 区域数据加载函数
@@ -27903,7 +27979,9 @@
     		loadRegionRows: function(offsetTop, userViewTop) {
     			var limitTopPosi,
     				limitBottomPosi,
-    				unloadRegions, i = 0;
+    				unloadRegions,
+    				unloadCellRegions,
+    				i = 0;
     
     			limitTopPosi = this.el.scrollTop - config.System.prestrainHeight + offsetTop + userViewTop;
     
@@ -27918,9 +27996,12 @@
     				limitBottomPosi = cache.localRowPosi;
     			}
     			unloadRegions = loadRecorder.getUnloadPosi(limitTopPosi, limitBottomPosi, cache.rowRegionPosi);
-    
+    			unloadCellRegions = loadRecorder.getUnloadPosi(limitTopPosi, limitBottomPosi, cache.cellRegionPosi.vertical);
     			for (; i < unloadRegions.length; i++) {
     				this.requestRegionData(unloadRegions[i].start, unloadRegions[i].end);
+    			}
+    			for (i = 0; i < unloadCellRegions.length; i++) {
+    				this.requestCellRegionData(unloadCellRegions[i].start, unloadCellRegions[i].end);
     			}
     		},
     		requestRegionData: function(getTopPosi, getBottomPosi) {
@@ -27929,26 +28010,24 @@
     				getTopPosi = getBottomPosi;
     				getBottomPosi = temp;
     			}
-    			//请求后台数据
-    			$.ajax({
-    				url: config.rootPath + '/excel.htm?m=openExcel&excelId=' + window.SPREADSHEET_AUTHENTIC_KEY + '&rowBegin=' + getTopPosi + '&rowEnd=' + getBottomPosi,
-    				type: 'get',
+    			send.PackAjax({
+    				url: 'excel.htm?m=openExcel',
     				async: false,
+    				data: JSON.stringify({
+    					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
+    					sheetId: '1',
+    					rowBegin: top,
+    					rowEnd: bottom
+    				}),
     				success: function(data) {
     					if (data === '') {
     						return;
     					}
-    					var startRowSort, startColSort;
+    					var startRowSort;
     					startRowSort = data.dataRowStartIndex;
-    					startColSort = data.dataColStartIndex;
-    
     					data = data.returndata;
-    					var cells = data.spreadSheet[0].sheet.cells;
     					var rows = data.spreadSheet[0].sheet.glY;
-    					var cols = data.spreadSheet[0].sheet.glX;
     					original.analysisRowData(rows, startRowSort);
-    					original.analysisCellData(cells);
-    
     				}
     			});
     			loadRecorder.insertPosi(getTopPosi, getBottomPosi, cache.rowRegionPosi);
@@ -27958,7 +28037,32 @@
     			this.adjustContainerHeight(height);
     			this.publish(height, 'adjustHeadItemContainerPublish');
     			this.publish(height, 'adjustContainerHeightPublish');
-    
+    		},
+    		requestCellRegionData: function(getTopPosi, getBottomPosi) {
+    			if (getBottomPosi < getTopPosi) {
+    				var temp = getTopPosi;
+    				getTopPosi = getBottomPosi;
+    				getBottomPosi = temp;
+    			}
+    			send.PackAjax({
+    				url: 'excel.htm?m=openExcel',
+    				async: false,
+    				data: JSON.stringify({
+    					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
+    					sheetId: '1',
+    					rowBegin: top,
+    					rowEnd: bottom
+    				}),
+    				success: function(data) {
+    					if (data === '') {
+    						return;
+    					}
+    					data = data.returndata;
+    					var cells = data.spreadSheet[0].sheet.cells;
+    					original.analysisCellData(cells);
+    				}
+    			});
+    			loadRecorder.insertPosi(getTopPosi, getBottomPosi, cache.cellRegionPosi.vertical);
     		},
     		/**
     		 * 显示行下方超出预加载区域，删除超出视图
@@ -28016,6 +28120,7 @@
     			}
     			this.rowsViewBottomPosi = headItemRowList[limitIndex].get('top') + headItemRowList[limitIndex].get('height') - offsetTop - userViewTop;
     			config.displayRowHeight = this.rowsViewBottomPosi;
+    			cache.visibleRegion.bottom = this.rowsViewBottomPosi;
     		},
     
     		/**
@@ -28104,6 +28209,7 @@
     
     			this.rowsViewBottomPosi = headItemRowList[limitBottomIndex].get('top') + headItemRowList[limitBottomIndex].get('height') - offsetTop - userViewTop;
     			config.displayRowHeight = this.rowsViewBottomPosi;
+    			cache.visibleRegion.bottom = this.rowsViewBottomPosi;
     		},
     		/**
     		 * 动态加载cell对象，对于一次未加载完全cell对象，重新计算cell对象physicsBox属性
@@ -28316,7 +28422,7 @@
     	});
     	return MainContainer;
     });
-    define('views/headItemColContainer',['require','lib/jquery','lib/underscore','lib/backbone','lib/handlebars','collections/headItemCol','basic/tools/cache','spreadsheet/config','basic/util/clone'],function(require) {
+    define('views/headItemColContainer',function() {
     	
     	var $ = require('lib/jquery'),
     		_ = require('lib/underscore'),
@@ -28413,7 +28519,7 @@
     	});
     	return HeadItemColContainer;
     });
-    define('views/colsSpaceLineContainer',['require','lib/backbone'],function(require) {
+    define('views/colsSpaceLineContainer',function() {
     	
     	var Backbone = require('lib/backbone');
     	/**
@@ -28480,7 +28586,7 @@
     //attention bug, when call object , we can setting unified method
     //attention bug, adjust gridline methods , can be combin ,because of highly similarity
     //and for improve performace
-    define('views/colsHeadContainer',['require','lib/jquery','lib/underscore','lib/backbone','spreadsheet/config','basic/util/binary','basic/tools/cache','basic/tools/send','basic/tools/buildcolalias','collections/headItemRow','collections/headItemCol','collections/cells','collections/selectRegion','collections/siderLineRow','collections/siderLineCol','views/headItemColContainer','views/colsSpaceLineContainer','entrance/cell/selectCellRows'],function(require) {
+    define('views/colsHeadContainer',function() {
     	
     	var $ = require('lib/jquery'),
     		_ = require('lib/underscore'),
@@ -28916,7 +29022,7 @@
     	});
     	return ColsHeadContainer;
     });
-    define('views/siderLineColContainer',['require','lib/backbone','basic/tools/cache','basic/util/clone','collections/headItemCol'],function(require) {
+    define('views/siderLineColContainer',function() {
     	
     	var Backbone = require('lib/backbone'),
     		cache = require('basic/tools/cache'),
@@ -28974,7 +29080,7 @@
     	});
     	return SiderLineColContainer;
     });
-    define('views/colsAllHeadContainer',['require','lib/backbone','collections/siderLineCol','views/colsHeadContainer','views/siderLineColContainer'],function(require) {
+    define('views/colsAllHeadContainer',function() {
     	
     
     	var Backbone = require('lib/backbone'),
@@ -29079,7 +29185,7 @@
     	return ColsAllHeadContainer;
     
     });
-    define('views/colsPanelContainer',['require','lib/jquery','lib/underscore','lib/backbone','basic/tools/cache','spreadsheet/config','basic/util/clone','collections/headItemCol','views/colsAllHeadContainer'],function(require) {
+    define('views/colsPanelContainer',function() {
     	
     	var $ = require('lib/jquery'),
     		_ = require('lib/underscore'),
@@ -29205,7 +29311,7 @@
     	});
     	return ColsPanelContainer;
     });
-    define('views/rowsSpaceLineContainer',['require','lib/backbone'],function(require) {
+    define('views/rowsSpaceLineContainer',function() {
     	
     	var Backbone = require('lib/backbone');
     
@@ -29270,7 +29376,7 @@
     	});
     	return RowsSpaceLineContainer;
     });
-    define('views/headItemRowContainer',['require','lib/jquery','lib/underscore','lib/backbone','lib/handlebars','collections/headItemRow','basic/tools/cache','basic/util/clone','spreadsheet/config'],function(require) {
+    define('views/headItemRowContainer',function() {
     	
     	var $ = require('lib/jquery'),
     		_ = require('lib/underscore'),
@@ -29366,7 +29472,7 @@
     	});
     	return HeadItemRowContainer;
     });
-    define('views/rowsHeadContainer',['require','lib/jquery','lib/underscore','lib/backbone','spreadsheet/config','basic/tools/cache','basic/util/binary','basic/tools/send','collections/headItemRow','collections/headItemCol','collections/cells','collections/selectRegion','collections/siderLineRow','collections/siderLineCol','views/rowsSpaceLineContainer','views/headItemRowContainer','entrance/cell/selectCellCols'],function(require) {
+    define('views/rowsHeadContainer',function() {
     	
     	var $ = require('lib/jquery'),
     		_ = require('lib/underscore'),
@@ -29777,7 +29883,7 @@
     	});
     	return RowsHeadContainer;
     });
-    define('views/siderLineRowContainer',['require','lib/backbone','basic/tools/cache','basic/util/clone','collections/headItemRow'],function(require) {
+    define('views/siderLineRowContainer',function() {
     	
     	var Backbone = require('lib/backbone'),
     		cache = require('basic/tools/cache'),
@@ -29833,7 +29939,7 @@
     	});
     	return SiderLineRowContainer;
     });
-    define('views/rowsAllHeadContainer',['require','lib/jquery','lib/underscore','lib/backbone','collections/siderLineRow','views/rowsHeadContainer','views/siderLineRowContainer'],function(require) {
+    define('views/rowsAllHeadContainer',function() {
     	
     	var $ = require('lib/jquery'),
     		_ = require('lib/underscore'),
@@ -29945,7 +30051,7 @@
     	});
     	return RowsAllHeadContainer;
     });
-    define('views/rowsPanelContainer',['require','lib/jquery','lib/underscore','lib/backbone','basic/tools/cache','spreadsheet/config','basic/util/clone','collections/headItemRow','views/rowsAllHeadContainer'],function(require) {
+    define('views/rowsPanelContainer',function() {
     	
     	var $ = require('lib/jquery'),
     		_ = require('lib/underscore'),
@@ -30084,7 +30190,7 @@
     	});
     	return RowsPanelContainer;
     });
-    define('views/bodyContainer',['require','lib/jquery','lib/backbone','basic/tools/send','spreadsheet/config','basic/tools/cache','basic/util/observer.pattern','collections/headItemRow','collections/headItemCol','views/sheetsContainer','views/mainContainer','views/colsPanelContainer','views/rowsPanelContainer'],function(require) {
+    define('views/bodyContainer',function() {
     	
     	var $ = require('lib/jquery'),
     		Backbone = require('lib/backbone'),
@@ -30709,7 +30815,7 @@
     	});
     	return BodyContainer;
     });
-    define('entrance/tool/clipselectoperate',['require','lib/jquery','lib/underscore','lib/backbone','models/cell','collections/headItemCol','collections/headItemRow','collections/selectRegion','collections/cells','basic/tools/cache','basic/tools/send'],function(require) {
+    define('entrance/tool/clipselectoperate',function() {
     	
     	var $ = require('lib/jquery'),
     		_ = require('lib/underscore'),
@@ -30815,7 +30921,7 @@
     	}
     	return clipSelectOperate;
     });
-    define('entrance/tool/clippasteoperate',['require','lib/backbone','basic/tools/cache','collections/cells','models/cell','basic/tools/send','collections/headItemCol','collections/headItemRow','collections/selectRegion'],function(require) {
+    define('entrance/tool/clippasteoperate',function() {
     	
     	var Backbone = require('lib/backbone'),
     		cache = require('basic/tools/cache'),
@@ -30904,6 +31010,7 @@
     			endColIndex: endColIndex - relativeColIndex,
     			endRowIndex: endRowIndex - relativeRowIndex
     		});
+    		clipRegion.destroy();
     		send.PackAjax({
     			url: 'plate.htm?m=' + type,
     			data: JSON.stringify({
@@ -30921,7 +31028,6 @@
     				}
     			})
     		});
-    		clipRegion.destroy();
     	}
     
     	function cacheCellPosition(cell) {
@@ -31052,7 +31158,7 @@
     
     		clipRegion = selectRegions.getModelByType("clip")[0];
     		if (clipRegion !== null && clipRegion !== undefined) {
-    			clipRegion.destory();
+    			clipRegion.destroy();
     		}
     		cache.clipState = "null";
     		send.PackAjax({
@@ -31147,7 +31253,7 @@
     
     	return clipPasteOperate;
     });
-    define('views/screen',['require','lib/jquery','lib/underscore','lib/backbone','views/bodyContainer','basic/tools/send','basic/tools/cache','basic/util/listener','entrance/tool/clipselectoperate','entrance/tool/clippasteoperate'],function(require) {
+    define('views/screen',function() {
     	
     	var $ = require('lib/jquery'),
     		_ = require('lib/underscore'),
@@ -31258,52 +31364,6 @@
     			this.triggerCallback();
     		},
     		transAction: function(e) {
-    			this.toolbar(e);
-    		},
-    		/**
-    		 * 工具菜单栏选中效果
-    		 * @method toolbar
-    		 * @param  {object} e mouse的click对象
-    		 */
-    		toolbar: function(e) {
-    			var currentBar,
-    				widgetList,
-    				len,
-    				i = 0,
-    				$target,
-    				targetLen;
-    
-    			if ($(e.target).length) {
-    				$target = $(e.target);
-    			}
-    			if ($(e.target).parents('[data-toolbar]').length) {
-    				$target = $(e.target).parents('[data-toolbar]');
-    			}
-    			targetLen = $target.length;
-    			widgetList = $('.widget-list > div');
-    			widgetList.removeClass('active');
-    			$('#toolBar .fui-section,#toolBar .section,#toolBar .ico-section').removeClass('active');
-    			if (targetLen === 0) {
-    				return;
-    			}
-    			len = widgetList.length;
-    			currentBar = $target.data('toolbar');
-    			for (; i < len; i++) {
-    				var currentWidget = widgetList.eq(i);
-    				if (currentBar === currentWidget.data('widget')) {
-    					var excuHeight = 0;
-    					if ($target[0].offsetHeight > $target[0].clientHeight) {
-    						excuHeight = parseInt(($target[0].offsetHeight - $target[0].clientHeight) / 2, 0) + $target[0].clientHeight;
-    					} else {
-    						excuHeight = $target.outerHeight();
-    					}
-    					currentWidget.css({
-    						left: $target.offset().left,
-    						top: $target.offset().top + excuHeight
-    					}).addClass('active');
-    				}
-    			}
-    			$target.addClass('active');
     		},
     		/**
     		 * 绑定视图
@@ -31420,7 +31480,7 @@
     	});
     	return Screen;
     });
-    	define('widgets/clipboard/shearPlateContainer',['require','lib/jquery','lib/underscore','basic/tools/cache','lib/backbone','entrance/tool/clipselectoperate','entrance/tool/clippasteoperate'],function(require) {
+    	define('widgets/clipboard/shearPlateContainer',function() {
     		
     		var $ = require('lib/jquery'),
     			_ = require('lib/underscore'),
@@ -31492,7 +31552,7 @@
     		});
     		return ShearPlateContainer;
     	});
-    define('widgets/font/fontFamilyContainer',['require','lib/jquery','lib/underscore','lib/backbone','basic/tools/send','collections/cells','collections/selectRegion','entrance/tool/setFontFamily'],function(require) {
+    define('widgets/font/fontFamilyContainer',function() {
     	
     	var $ = require('lib/jquery'),
     		_ = require('lib/underscore'),
@@ -31545,7 +31605,7 @@
     	});
     	return FontFamilyContainer;
     });
-    define('widgets/font/fontSizeContainer',['require','lib/jquery','lib/underscore','lib/backbone','basic/tools/send','collections/selectRegion','entrance/tool/setFontFamilySize','entrance/cell/setCellHeight'],function(require) {
+    define('widgets/font/fontSizeContainer',function() {
     	
     	var $ = require('lib/jquery'),
     		_ = require('lib/underscore'),
@@ -31600,7 +31660,7 @@
     	return FontSizeContainer;
     
     });
-    define('widgets/celloperation/borderContainer',['require','lib/jquery','lib/underscore','lib/backbone','basic/tools/send','collections/cells','collections/selectRegion','entrance/tool/setCellBorder'],function(require) {
+    define('widgets/celloperation/borderContainer',function() {
     	
     	var $ = require('lib/jquery'),
     		_ = require('lib/underscore'),
@@ -31654,7 +31714,7 @@
     	});
     	return BorderContainer;
     });
-    define('widgets/celloperation/fillColorContainer',['require','lib/jquery','lib/underscore','lib/backbone','entrance/tool/setFillColor'],function(require) {
+    define('widgets/celloperation/fillColorContainer',function() {
     	
     	var $ = require('lib/jquery'),
     		_ = require('lib/underscore'),
@@ -31698,7 +31758,7 @@
     	return FillColorContainer;
     
     });
-    define('widgets/font/fontColorContainer',['require','lib/jquery','lib/backbone','basic/tools/send','collections/selectRegion','entrance/tool/setFontColor'],function(require) {
+    define('widgets/font/fontColorContainer',function() {
     	
     	var $=require('lib/jquery'),
     		Backbone = require('lib/backbone'),
@@ -31746,7 +31806,7 @@
     });
     //attention bug, new model has large question
     
-    define('widgets/align/contentAlignContainer',['require','lib/jquery','lib/underscore','lib/backbone','basic/tools/send','collections/selectRegion','entrance/tool/setAlign','entrance/tool/setWordWrap'],function(require) {
+    define('widgets/align/contentAlignContainer',function() {
     	
     	var $ = require('lib/jquery'),
     		_ = require('lib/underscore'),
@@ -31802,7 +31862,7 @@
     	});
     	return ContentAlignContainer;
     });
-    define('widgets/cellformat/textFormatContainer',['require','lib/jquery','lib/underscore','lib/backbone','basic/tools/send','collections/selectRegion','entrance/tool/setTextType'],function(require) {
+    define('widgets/cellformat/textFormatContainer',function() {
     	
     	var $ = require('lib/jquery'),
     		_ = require('lib/underscore'),
@@ -31845,7 +31905,7 @@
     	});
     	return TextFormatContainer;
     });
-    define('widgets/celloperation/mergeCellContainer',['require','lib/jquery','lib/underscore','lib/backbone','basic/tools/send','basic/tools/cache','basic/util/binary','collections/selectRegion','collections/headItemCol','collections/headItemRow','collections/cells','entrance/tool/mergeCell','entrance/tool/splitCell'],function(require) {
+    define('widgets/celloperation/mergeCellContainer',function() {
     	
     	var $ = require('lib/jquery'),
     		_ = require('lib/underscore'),
@@ -32052,7 +32112,7 @@
     	});
     	return MergeCellContainer;
     });
-    define('widgets/font/contentFontContainer',['require','lib/jquery','lib/underscore','lib/backbone','basic/tools/send','collections/cells','collections/selectRegion','entrance/tool/setFontWeight','entrance/tool/setFontStyle'],function(require) {
+    define('widgets/font/contentFontContainer',function() {
     	
     	var $=require('lib/jquery'),
     		_=require('lib/underscore'),
@@ -32133,7 +32193,7 @@
     	});
     	return ContentFontContainer;
     });
-    define('widgets/frozen/frozenContainer',['require','lib/jquery','lib/underscore','lib/backbone','basic/tools/send','basic/tools/cache','collections/selectRegion','collections/headItemRow','collections/headItemCol','entrance/sheet/setFrozen'],function(require) {
+    define('widgets/frozen/frozenContainer',function() {
     	
     	var $ = require('lib/jquery'),
     		_ = require('lib/underscore'),
@@ -32352,9 +32412,8 @@
     	});
     	return frozenContainer;
     });
-    define('spreadsheet/excelbuild',['require','basic/tools/original','basic/tools/template','basic/util/listener','basic/util/extend','entrance/tool/setFontColor','entrance/tool/setFillColor','entrance/tool/setFontFamily','entrance/cell/setCellHeight','entrance/cell/setCellWidth','entrance/cell/selectCell','entrance/tool/mergeCell','entrance/tool/splitCell','entrance/tool/setCellContent','entrance/cell/selectCellCols','entrance/cell/selectCellRows','entrance/tool/setCellBorder','entrance/tool/setFontFamilySize','entrance/tool/setFontWeight','entrance/tool/setFontStyle','entrance/sheet/setFrozen','entrance/tool/setAlign','entrance/tool/setTextType','entrance/selectregion/dataSourceRegionOperation','entrance/sheet/getPointByPosi','entrance/tool/setWordWrap','entrance/cell/getTextByCoordinate','entrance/sheet/adaptScreen','entrance/sheet/getFrozenState','entrance/sheet/getSelectRegion','views/screen','widgets/clipboard/shearPlateContainer','widgets/font/fontFamilyContainer','widgets/font/fontSizeContainer','widgets/celloperation/borderContainer','widgets/celloperation/fillColorContainer','widgets/font/fontColorContainer','widgets/align/contentAlignContainer','widgets/cellformat/textFormatContainer','widgets/celloperation/mergeCellContainer','widgets/font/contentFontContainer','widgets/frozen/frozenContainer'],function(require) {
+    define('spreadsheet/excelbuild',function() {
     	
-    
     	var original = require('basic/tools/original'),
     		domloader = require('basic/tools/template'),
     		listener = require('basic/util/listener'),
@@ -32383,7 +32442,9 @@
     		getTextByCoordinate = require('entrance/cell/getTextByCoordinate'),
     		adaptScreen = require('entrance/sheet/adaptScreen'),
     		getFrozenState = require('entrance/sheet/getFrozenState'),
-    		getSelectRegion = require('entrance/sheet/getSelectRegion');
+    		getSelectRegion = require('entrance/sheet/getSelectRegion'),
+    		highlight= require('entrance/extention/highlight'),
+    		reloadCells= require('entrance/cell/reloadCells');
     
     
     
@@ -32447,6 +32508,7 @@
     			SpreadSheet.prototype.getFrozenState = getFrozenState;
     			SpreadSheet.prototype.setWordWrap = setWordWrap;
     			SpreadSheet.prototype.getSelectRegion = getSelectRegion;
+    			SpreadSheet.prototype.reloadCells = reloadCells;
     		},
     		buildDataSourceOperation: function(SpreadSheet) {
     			SpreadSheet.prototype.setDataSourceRegion = operationDataSourceRegion.setDataSourceRegion;
@@ -32458,20 +32520,19 @@
     			SpreadSheet.prototype.removeEventListener = listener.removeEventListener;
     		},
     		buildExcelExtend: function(SpreadSheet) {
-    			SpreadSheet.prototype.extend = listener.extend;
+    			SpreadSheet.prototype.startHighlight = highlight.startHighlight;
+    			SpreadSheet.prototype.stopHighlight = highlight.stopHighlight;
+    			
     		}
     	};
     	return excelBuild;
     });
-    define('spreadsheet/spreadsheet',['require','lib/jquery','basic/tools/template','spreadsheet/config','spreadsheet/excelbuild'],function(require) {
+    define('spreadsheet/spreadsheet',function() {
     	
     	var $ = require('lib/jquery'),
     		template = require('basic/tools/template'),
     		config = require('spreadsheet/config'),
     		excelBuild = require('spreadsheet/excelbuild');
-    
-    	window.SPREADSHEET_AUTHENTIC_KEY = $('#excelId').val();
-    	window.SPREADSHEET_BUILD_STATE = $('#build').val();
     
     	function SpreadSheet(cfg) {
     		if (cfg !== undefined && window.SPREADSHEET_BUILD_STATE === true) {
@@ -32485,7 +32546,6 @@
     		template('#spreadSheet');
     		excelBuild.buildExcelOriginalData();
     		excelBuild.buildExcelView();
-    		excelBuild.buildExcelToolbar();
     		excelBuild.buildExcelPublicAPI(SpreadSheet);
     		excelBuild.buildDataSourceOperation(SpreadSheet);
     		excelBuild.buildExcelEventListener(SpreadSheet);
@@ -32493,20 +32553,5 @@
     	}
     	return SpreadSheet;
     });
-    define('app',['require','lib/jquery','spreadsheet/spreadsheet'],function(require) {
-    	
-    	var $ = require("lib/jquery");
-    	var SpreadSheet = require('spreadsheet/spreadsheet');
-    	new SpreadSheet();
-    	$(document).on('click','#test1',function(){
-    		Backbone.trigger('event:cellsContainer:startHighlight');
-    	});
-    	$(document).on('click','#test2',function(){
-    		Backbone.trigger('event:cellsContainer:stopHighlight');
-    	});
-    
-    
-    });
-    
-    return require('app');
+    return require('spreadsheet/spreadsheet');
 });

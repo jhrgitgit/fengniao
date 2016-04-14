@@ -2,22 +2,8 @@ define(function(require) {
 	var selectRegions = require('collections/selectRegion'),
 		cells = require('collections/cells'),
 		config = require('spreadsheet/config'),
-		cache = require('basic/tools/cache'),
-		mock = require('mock');
-	mock.mock('http://192.168.1.250:8080/acmrexcel-0.1.5/excel.htm?m=openExcel', {
-		returndata: {
-			spreadSheet: [{
-				sheet: {
-					cells: [{
-						occupy: {
-							x: ['1'],
-							y: ['1']
-						}
-					}]
-				}
-			}]
-		}
-	});
+		cache = require('basic/tools/cache');
+
 	describe("重新加载cell数据测试", function() {
 		var spreadSheet;
 
@@ -28,7 +14,22 @@ define(function(require) {
 			SpreadSheet = require('excel');
 			spreadSheet = new SpreadSheet();
 
-
+			Mock.mock(
+				"http://localhost:4711/excel.htm?m=openExcel", {
+					returndata: {
+						spreadSheet: [{
+							sheet: {
+								cells: [{
+									occupy: {
+										x: ['2'],
+										y: ['1']
+									}
+								}]
+							}
+						}]
+					}
+				}
+			);
 			cells.add({
 				occupy: {
 					x: ['1'],
@@ -43,32 +44,11 @@ define(function(require) {
 				}
 			});
 			cache.cachePosition('2', '1', 1);
-			cells.add({
-				occupy: {
-					x: ['1'],
-					y: ['2']
-				}
-			});
-			cache.cachePosition('1', '2', 2);
-			cells.add({
-				occupy: {
-					x: ['2'],
-					y: ['2']
-				}
-			});
-			cache.cachePosition('2', '2', 3);
-			cells.add({
-				occupy: {
-					x: ['3'],
-					y: ['3']
-				}
-			});
-			cache.cachePosition('2', '2', 4);
 		});
 
-		it("判断原有对象是否清空", function() {
+		it("", function() {
 			spreadSheet.reloadCells();
-			expect(cells.length).toEqual(0);
+			expect(cells.length).toEqual(1);
 		});
 
 		afterEach(function() {

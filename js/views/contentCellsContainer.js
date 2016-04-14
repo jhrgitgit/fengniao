@@ -106,6 +106,7 @@ define(function(require) {
 					original.analysisCellData(cells);
 				}
 			});
+
 		},
 		/**
 		 * view创建一个单元格
