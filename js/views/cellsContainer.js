@@ -225,8 +225,9 @@ define(function(require) {
 				startRowPosi,
 				endRowPosi,
 				direction,
-				selectRegionModel,
+				hightlightModel,
 				left, top, width, right, height, bottom;
+
 			selectBox = this.getCoordinateByMouseEvent(event);
 			cellModel = selectBox.model;
 			if (cellModel !== undefined && cellModel.get("highlight") === true) {
@@ -237,31 +238,38 @@ define(function(require) {
 				right = left + width;
 				bottom = top + height;
 			} else {
+				cache.highlightDirection = 'null';
+				if (this.hightlightView !== null && this.hightlightView !== undefined){
+					this.hightlightModel.destroy();
+					this.hightlightView = null;
+				}
 				return;
 			}
 			direction = getLightDirection();
 			if (this.hightlightView === null || this.hightlightView === undefined) {
-				selectRegionModel = new SelectRegionModel();
-				this.hightlightModel = selectRegionModel;
-				selectRegionModel.set("selectType", "extend");
-				selectRegionModel.set("physicsPosi", {
-					left: left,
-					top: top,
-					bottom: bottom,
-					right: right
-				});
-				selectRegionModel.set("physicsBox", {
-					height: height,
-					width: width
-				});
+				hightlightModel = new SelectRegionModel();
+				this.hightlightModel = hightlightModel;
+				hightlightModel.set("selectType", "extend");
 				this.hightlightView = new SelectRegionView({
-					model: selectRegionModel,
+					model: hightlightModel,
 					className: 'highlight-container',
 				});
 				this.$el.append(this.hightlightView.render().el);
 			}
+
+			this.hightlightModel.set("physicsPosi", {
+				left: left,
+				top: top,
+				bottom: bottom,
+				right: right
+			});
+			this.hightlightModel.set("physicsBox", {
+				height: height,
+				width: width
+			});
 			clearHighlight();
 			this.hightlightView.$el.addClass('highlight-' + direction);
+			cache.highlightDirection = direction;
 
 			function getLightDirection() {
 				var mouseColPosi = self.getMouseColRelativePosi(event),
@@ -304,11 +312,12 @@ define(function(require) {
 			this.$el.off('mousemove', this.highlightRegionMove);
 			//绑定视图原有事件
 			this.delegateEvents();
-
-			this.hightlightModel.destroy();
-			this.hightlightView = null;
+			if (this.hightlightView !== null && this.hightlightView !== undefined){
+				this.hightlightModel.destroy();
+				this.hightlightView = null;
+			}
 		},
-		getMouseColRelativePosi: function(posi) {
+		getMouseColRelativePosi: function(event) {
 			var currentColModel = headItemCols.getModelByAlias(cache.TempProp.colAlias),
 				headLineColModelList = headItemCols.models,
 				reduceLeftValue,
@@ -328,7 +337,7 @@ define(function(require) {
 			mainMousePosiX = event.clientX - config.System.outerLeft - $('#spreadSheet').offset().left + this.parentView.el.scrollLeft - this.currentRule.displayPosition.offsetLeft + reduceLeftValue;
 			return mainMousePosiX;
 		},
-		getMouseRowRelativePosi: function(posi) {
+		getMouseRowRelativePosi: function(event) {
 			var currentRowModel = headItemRows.getModelByAlias(cache.TempProp.rowAlias),
 				headLineRowModelList = headItemRows.models,
 				reduceTopValue,
@@ -365,8 +374,8 @@ define(function(require) {
 				startPosiX, startPosiY, endPosiX, endPosiY,
 				left, width, top, height;
 
-			mainMousePosiX = this.getMouseColRelativePosi();
-			mainMousePosiY = this.getMouseRowRelativePosi();
+			mainMousePosiX = this.getMouseColRelativePosi(event);
+			mainMousePosiY = this.getMouseRowRelativePosi(event);
 
 			//this model index of gridline
 			modelIndexCol = binary.modelBinary(mainMousePosiX, headLineColModelList, 'left', 'width', 0, headLineColModelList.length - 1);
@@ -966,7 +975,7 @@ define(function(require) {
 		 * 自适应选中框大小
 		 */
 		adaptSelectRegion: function() {
-			var	headLineRowModelList = headItemRows.models,
+			var headLineRowModelList = headItemRows.models,
 				headLineColModelList = headItemCols.models,
 				selectRegionModel,
 				startX,
@@ -975,7 +984,7 @@ define(function(require) {
 				endY,
 				len,
 				options,
-				flag=true,
+				flag = true,
 				i;
 
 			selectRegionModel = selectRegions.getModelByType("operation")[0];

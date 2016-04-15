@@ -24,6 +24,7 @@ define(function(require) {
 		excelBuild.buildExcelPublicAPI(SpreadSheet);
 		excelBuild.buildDataSourceOperation(SpreadSheet);
 		excelBuild.buildExcelEventListener(SpreadSheet);
+		excelBuild.buildExcelExtend(SpreadSheet);
 		
 	}
 	return SpreadSheet;

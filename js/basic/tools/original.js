@@ -76,7 +76,7 @@ define(function(require) {
 				j,
 				len,
 				rowLen;
-			
+
 			for (i = 0; i < rows.length; i++) {
 				index = binary.indexModelBinary(rows[i].top, headItemRows.models, 'top', 'height');
 				if (headItemRows.getIndexByAlias(rows[i].aliasY) != -1) {
@@ -318,7 +318,6 @@ define(function(require) {
 				startRowSort,
 				startColSort,
 				sheetNames = [],
-				mainContainerHeight = $("#tableContainer").height - 19,
 				self = this,
 				i;
 
@@ -327,18 +326,23 @@ define(function(require) {
 				cache.localRowPosi = 0;
 				return;
 			}
-			
 
-			$.ajax({
-				url: config.rootPath + 'excel.htm?m=position&excelId=' + excelId + '&sheetId=1&containerHeight=' + $('#spreadSheet').height(),
+			send.PackAjax({
+				url: 'excel.htm?m=position',
+				async: false,
+				data: JSON.stringify({
+					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
+					sheetId: '1',
+					containerHeight: $('#spreadSheet').height()
+				}),
 				async: false,
 				dataType: 'json',
 				success: function(data) {
 					if (data === '') {
 						return;
 					}
-					cache.UserView.colAlias = data.displayRowStartAlias;
-					cache.UserView.rowAlias = data.displayColStartAlias;
+					cache.UserView.rowAlias = data.displayRowStartAlias;
+					cache.UserView.colAlias = data.displayColStartAlias;
 
 					if (data.returndata.spreadSheet[0].sheet.frozen.state === "1") {
 						cache.TempProp = {
@@ -364,11 +368,10 @@ define(function(require) {
 					self.analysisColData(cols, startColSort);
 					self.analysisCellData(cellModels);
 					self.restoreSelectRegion();
-
 				}
-
 			});
 			loadRecorder.insertPosi(headItemRows.models[0].get('top'), headItemRows.models[headItemRows.length - 1].get('top') + headItemRows.models[headItemRows.length - 1].get('height'), cache.rowRegionPosi);
+			loadRecorder.insertPosi(headItemRows.models[0].get('top'), headItemRows.models[headItemRows.length - 1].get('top') + headItemRows.models[headItemRows.length - 1].get('height'), cache.cellRegionPosi.vertical);
 		}
 	};
 });

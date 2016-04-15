@@ -9377,6 +9377,755 @@
     
     	})(window, true);
     });
+    define('basic/tools/template',function() {
+    	
+    	var $ = require('lib/jquery'),
+    		loadHtml;
+    		
+    	loadHtml = function(id) {
+    		var headDomString = '',
+    			mainDomString = '',
+    			tailDomString = '';
+    
+    		mainDomString += '<div class="main-layout">';
+    		mainDomString += '<table class="cui-grid" cellspacing="0" cellpadding="0" id="tableContainer">';
+    		mainDomString += '<tbody><tr><td><div class="left-corner"></div></td><td></td><td></td></tr><tr><td></td><td></td><td></td></tr></tbody>';
+    		mainDomString += '</table></div>';
+    		mainDomString += '<div class="sheet-layout"><div class="sheet-body">';
+    		//mainDomString += '<div class="sheet-cf-box active glyphicons glyphicon-th-list"></div>';
+    		mainDomString += '<div class="sheet-cf-list">';
+    		mainDomString += '</div></div></div>';
+    		
+    
+    		tailDomString += '<script type="text/x-handlebars-template" id="colsPanelContainer"></script>';
+    		tailDomString += '<script type="text/x-handlebars-template" id="rowsPanelContainer"></script>';
+    		tailDomString += '<script type="text/x-handlebars-template" id="mainContainer"></script>';
+    		tailDomString += '<script type="text/x-handlebars-template" id="contentList"></script>';
+    
+    		tailDomString += '<script type="text/x-handlebars-template" id="tempSheetContainer"><span>{{name}}</span></script>';
+    
+    		tailDomString += '<script type="text/x-handlebars-template" id="tempRowHeadItem"><div class="item">{{displayName}}</div></script>';
+    		tailDomString += '<script type="text/x-handlebars-template" id="tempColHeadItem"><div class="item">{{displayName}}</div></script>';
+    		tailDomString += '<script type="text/x-handlebars-template" id="multiselect"><div class="dragItem" style="top:{{top}}px;left:{{left}}px;width:{{width}}px;height:{{height}}px;"></div></script>';
+    		tailDomString += '<script type="text/x-handlebars-template" id="data">{{content.text}}</script>';
+    		tailDomString += '<script type="text/x-handlebars-template" id="textarea"><div class="textarea"><textarea class="input-container"></textarea><div></script>';
+    		tailDomString += '<script type="text/x-handlebars-template" id="tempSelectContainer"><div class="box"><div class="expand"></div><div class="bg"></div></div></script>';
+    		tailDomString += '<script type="text/x-handlebars-template" id="tempItemCell"><div class="bg" style="display:table-cell">{{cotent.texts}}</div></script>';
+    		tailDomString += '<script type="text/x-handlebars-template" id="coltemp"><div class="col" style="left:{{left}}px;"></div></script>';
+    		tailDomString += '<script type="text/x-handlebars-template" id="rowtemp"><div class="row" style="top:{{top}}px;"></div></script>';
+    		
+    		$(id)[0].innerHTML = mainDomString;
+    		$(id).after(tailDomString);
+    	};
+    	return loadHtml;
+    });
+    //attention bug, those name didn't significance
+    //attention bug, between user config and system config mix
+    define('spreadsheet/config',function() {
+    	
+    	/**
+    	 * 系统配置变量
+    	 * @author ray wu
+    	 * @class config
+    	 * @since 0.1.0
+    	 * @module basic
+    	 */
+    	return {
+    		/**
+    		 * 用户可配置属性
+    		 * @property {object} User
+    		 */
+    		User: {
+    			/**
+    			 * 页面初始化行数
+    			 * @property {int} initRowNum
+    			 */
+    			initRowNum: 100,
+    			/**
+    			 * 页面初始化列数
+    			 * @property {int} initColNum
+    			 */
+    			initColNum: 26,
+    			/**
+    			 * 单元格宽度
+    			 * @property {int} cellWidth
+    			 */
+    			cellWidth: 72,
+    			/**
+    			 * 单元格高度
+    			 * @property {int} cellHeight
+    			 */
+    			cellHeight: 20,
+    			/**
+    			 * excel最大支持行数
+    			 * @property {number} maxRowNum
+    			 */
+    			maxColNum: 100,
+    			/**
+    			 * excel最大支持行数
+    			 * @property {number} maxRowNum
+    			 */
+    			maxRowNum: 9999
+    
+    		},
+    		/**
+    		 * 系统配置属性
+    		 * @property {object} System
+    		 */
+    		System: {
+    			/**
+    			 * 页面左侧距离
+    			 * @property {int} outerLeft
+    			 */
+    			outerLeft: 37,
+    			/**
+    			 * 页面顶部距离
+    			 * @property {int} outerTop
+    			 */
+    			outerTop: 20,
+    			/**
+    			 * 页面底部距离
+    			 * @property {int} outerBottom
+    			 */
+    			outerBottom: 30,
+    			/**
+    			 * 单元格宽度
+    			 * @property {int} cellWidth
+    			 */
+    			cellWidth: 72,
+    			/**
+    			 * 单元格高度
+    			 * @property {int} cellHeight
+    			 */
+    			cellHeight: 20,
+    			/**
+    			 * 列调整时，鼠标手势变化的距离
+    			 * @property {int} effectDistanceCol
+    			 */
+    			effectDistanceCol: 10,
+    			/**
+    			 * 行调整时，鼠标手势变化的距离
+    			 * @property {int} effectDistanceRow
+    			 */
+    			effectDistanceRow: 5,
+    			/**
+    			 * 预加载，行隐藏的距离
+    			 * @property {int} prestrainHeight
+    			 */
+    			prestrainHeight: 200,
+    			/**
+    			 * 预加载，列隐藏的距离
+    			 * @property {number} prestrainWidth
+    			 */
+    			prestrainWidth: 100,
+    			/**
+    			 * excel最大支持行数
+    			 * @property {number} maxRowNum
+    			 */
+    			maxRowNum: 9999
+    		},
+    		mouseOperateState: {
+    			select: 'select',
+    			dataSource: 'dataSource',
+    			drag: 'drag',
+    			highlight: 'highlight'
+    		},
+    		keyboard: {
+    			backspace: 8,
+    			deleteKey: 46,
+    			enter: 13,
+    			escape: 27,
+    			pageUp: 33,
+    			pageDown: 34,
+    			leftArrow: 37,
+    			upArrow: 38,
+    			rightArrow: 39,
+    			downArrow: 40
+    		},
+    		rootPath: 'http://192.168.1.250:8080/0.3.0/'
+    	};
+    });
+    define('basic/util/binary',function() {
+    	
+    	/**
+    	 * 二分查询工具类
+    	 * @author ray wu
+    	 * @class binary
+    	 * @module basic
+    	 * @main  binary
+    	 */
+    	return {
+    		/**
+    		 * @method modelBinary
+    		 * @deprecated 找个二分查询存在性能瓶颈，使用`newModelBinary`
+    		 */
+    		modelBinary: function(value, array, strandAttr, rangeAttr, startIndex, endIndex) {
+    			var middle,
+    				start = startIndex ? startIndex : 0,
+    				end,
+    				findValue = Math.floor(value),
+    				strandAttrByArray,
+    				rangeAttrByArray,
+    				middleArray;
+    			if (endIndex === undefined) {
+    				end = array.length - 1;
+    			} else {
+    				end = endIndex;
+    			}
+    
+    			if (start <= end) {
+    				if (array[start].get(strandAttr) === findValue) {
+    					return start;
+    				}
+    				if (array[end].get(strandAttr) === findValue) {
+    					return end;
+    				}
+    				middle = end + start >>> 1;
+    				middleArray = array[middle];
+    				strandAttrByArray = middleArray.get(strandAttr);
+    				rangeAttrByArray = middleArray.get(rangeAttr);
+    				if (strandAttrByArray <= findValue && strandAttrByArray + rangeAttrByArray >= findValue) {
+    					return middle;
+    				} else if (strandAttrByArray > findValue) {
+    					return this.modelBinary(findValue, array, strandAttr, rangeAttr, start, middle - 1);
+    				} else if (strandAttrByArray + rangeAttrByArray < findValue) {
+    					return this.modelBinary(findValue, array, strandAttr, rangeAttr, middle + 1, end);
+    				}
+    			}
+    			return -1;
+    		},
+    		/**
+    		 * 两个属性之间查询 二分查询
+    		 * @method newModelBinary
+    		 * @param  {int}       value       想查询的数据值
+    		 * @param  {array}       array     查询的list集合
+    		 * @param  {string}       strandAttr 起始属性
+    		 * @param  {string}       rangeAttr  结束属性
+    		 * @param  {int}       startIndex 起始索引
+    		 * @param  {int}       endIndex   结束索引
+    		 * @return {int} `array`中的索引值
+    		 */
+    		newModelBinary: function(value, array, strandAttr, rangeAttr, startIndex, endIndex) {
+    			var middle,
+    				start = startIndex ? startIndex : 0,
+    				end = endIndex ? endIndex : array.length,
+    				findValue = Math.floor(value),
+    				strandAttrByArray,
+    				rangeAttrByArray,
+    				middleArray;
+    			while (start < end) {
+    				middle = end + start >>> 1;
+    				middleArray = array[middle];
+    				strandAttrByArray = middleArray.get(strandAttr);
+    				rangeAttrByArray = middleArray.get(rangeAttr);
+    				if (strandAttrByArray + rangeAttrByArray < findValue) {
+    					start = middle + 1;
+    				} else {
+    					end = middle;
+    				}
+    			}
+    			return start;
+    		},
+    		/**
+    		 * 二分查询（用于插入元素，确定元素位置使用）
+    		 * @method newModelBinary
+    		 * @param  {int}       value       想查询的数据值
+    		 * @param  {array}       array     查询的list集合
+    		 * @param  {string}       strandAttr 起始属性
+    		 * @param  {string}       rangeAttr  结束属性
+    		 * @param  {int}       startIndex 起始索引
+    		 * @param  {int}       endIndex   结束索引
+    		 * @return {int} `array`中的索引值
+    		 */
+    		indexModelBinary: function(value, array, strandAttr, rangeAttr, startIndex, endIndex) {
+    			if (array.length === 0) {
+    				return 0;
+    			}
+    			var middle,
+    				start = startIndex ? startIndex : 0,
+    				end = endIndex ? endIndex : array.length - 1,
+    				findValue = Math.floor(value),
+    				strandAttrByArray,
+    				rangeAttrByArray,
+    				middleArray;
+    			if (array.length === 1) {
+    				return (array[0].get(strandAttr) + array[0].get(rangeAttr) >= findValue) ? 0 : 1;
+    			}
+    			while (start < end) {
+    				if (array[start].get(strandAttr) + array[start].get(rangeAttr) >= findValue) {
+    					return start;
+    				}
+    				if (array[end].get(strandAttr) + array[end].get(rangeAttr) === findValue) {
+    					return end;
+    				}
+    				if (array[end].get(strandAttr) + array[end].get(rangeAttr) < findValue) {
+    					return end + 1;
+    				}
+    				middle = end + start >>> 1;
+    				middleArray = array[middle];
+    				strandAttrByArray = middleArray.get(strandAttr);
+    				rangeAttrByArray = middleArray.get(rangeAttr);
+    				if (strandAttrByArray + rangeAttrByArray < findValue) {
+    					start = middle + 1;
+    				} else {
+    					end = middle;
+    				}
+    			}
+    			return start;
+    		},
+    		/**
+    		 * 生成行名称
+    		 * @method buildRowAlias
+    		 * @param  {int} 当前索引值
+    		 * @return {string} 当前显示的名称
+    		 */
+    		buildRowAlias: function(currentIndex) {
+    			return (currentIndex + 1).toString();
+    		},
+    		existArrayBinary: function(value, array, startAttr, endAttr, startIndex, endIndex) {
+    			var middle,
+    				start = startIndex ? startIndex : 0,
+    				end = endIndex ? endIndex : array.length - 1,
+    				findValue = Math.floor(value),
+    				strandAttrByArray,
+    				rangeAttrByArray,
+    				middleArray;
+    			if (array.length === 0) {
+    				return false;
+    			}
+    			if (array.length === 1) {
+    				if (array[0][endAttr] >= findValue && array[0][startAttr] <= findValue) {
+    					return true;
+    				} else {
+    					return false;
+    				}
+    			}
+    			while (start < end) {
+    				if (array[start][startAttr] <= findValue && array[start][endAttr] >= findValue) {
+    					return true;
+    				}
+    				if (array[end][startAttr] <= findValue && array[end][endAttr] >= findValue) {
+    					return true;
+    				}
+    				middle = end + start >>> 1;
+    				if (array[end][startAttr] <= findValue && array[end][endAttr] >= findValue) {
+    					return true;
+    				} else if (array[middle][endAttr] < findValue) {
+    					start = middle + 1;
+    				} else {
+    					end = middle;
+    				}
+    			}
+    			return false;
+    		},
+    		indexArrayBinary: function(value, array, startAttr, endAttr, startIndex, endIndex) {
+    			var middle,
+    				start = startIndex ? startIndex : 0,
+    				end = endIndex ? endIndex : array.length - 1,
+    				findValue = Math.floor(value),
+    				strandAttrByArray,
+    				rangeAttrByArray,
+    				middleArray;
+    			if (array.length === 0) {
+    				return 0;
+    			}
+    			if (array.length === 1) {
+    				if (array[start][endAttr] < findValue) {
+    					return 1;
+    				} else {
+    					return 0;
+    				}
+    			}
+    			while (start < end) {
+    				if (array[start][startAttr] >= findValue) {
+    					return start;
+    				}
+    				if (array[end][endAttr] < findValue) {
+    					return end + 1;
+    				}
+    
+    				middle = end + start >>> 1;
+    
+    				if (array[middle][startAttr] <= findValue && array[middle][endAttr] >= findValue) {
+    					return middle;
+    				} else if (array[middle][endAttr] < findValue) {
+    					start = middle + 1;
+    				} else {
+    					end = middle;
+    				}
+    			}
+    			return start;
+    		}
+    	};
+    
+    });
+    //attention bug , those cache objects has mix , for use 
+    define('basic/tools/cache',function() {
+    	
+    	var config = require('spreadsheet/config');
+    	/**
+    	 * 系统缓存对象
+    	 * @author ray wu
+    	 * @class cache
+    	 * @since 0.1.0
+    	 * @module basic
+    	 */
+    	return {
+    		CurrentRule: {},
+    		FrozenRules: {
+    			main: [],
+    			row: [],
+    			col: []
+    		},
+    		/**
+    		 * 所有单元格位置信息
+    		 * @property {object} CellPosition
+    		 */
+    		CellsPosition: {
+    			/**
+    			 * 所有列上的单元格`alias`
+    			 * @property {object} strandX
+    			 */
+    			strandX: {},
+    			/**
+    			 * 所有行上的单元格`alias`
+    			 * @property {object} strandY
+    			 */
+    			strandY: {}
+    		},
+    		clipState: 'null', //copy：复制状态，cut:剪切状态，null:未进行剪切板操作
+    		/**
+    		 * 用户可视的区域(在Excel未冻结的情况下使用)
+    		 * @property {object} UserView
+    		 */
+    		UserView: {
+    			/**
+    			 * 可视区域左上单元格列别名
+    			 * @property {string} colAlias
+    			 */
+    			colAlias: '1',
+    			/**
+    			 * 可视区域左上单元格行别名
+    			 * @property {string} rowAlias
+    			 */
+    			rowAlias: '1',
+    			/**
+    			 * 可视区域右下单元格列别名
+    			 * @property {string} colEndAlias
+    			 */
+    			colEndAlias: '1',
+    			/**
+    			 * 可视区域右下单元格行别名
+    			 * @property {string} rowEndAlias
+    			 */
+    			rowEndAlias: '1'
+    		},
+    		highlightDirection: 'null',
+    		//鼠标操作状态
+    		mouseOperateState: config.mouseOperateState.select,
+    
+    		listenerList: {}, //事件监听列表
+    		/**
+    		 * cellsContainer 行视图最大高度
+    		 * @type {Number}
+    		 */
+    		displayRowHeight: 0,
+    		/**
+    		 * 后台存储excel的总高度
+    		 * @property {int} localRowPosi
+    		 */
+    		localRowPosi: 0,
+    		/**
+    		 * 后台存储excel,别名最大
+    		 */
+    		localMaxRowAlias: '',
+    		/**
+    		 * 临时代替属性，因为sheet还有做，所以sheet的冻结属性暂时由此属性替代。以后需要做成model处理
+    		 * @property {object} TempProp
+    		 */
+    		TempProp: {
+    			/**
+    			 * 冻结状态
+    			 * @property {boolean} isFrozen
+    			 */
+    			isFrozen: false,
+    			/**
+    			 * 冻结列别名
+    			 * @property {string} colAlias
+    			 */
+    			colAlias: '1',
+    			/**
+    			 * 冻结行别名
+    			 * @property {string} rowAlias
+    			 */
+    			rowAlias: '1',
+    			/**
+    			 * 行冻结状态
+    			 * @property {boolean} rowAlias
+    			 */
+    			rowFrozen: false,
+    			/**
+    			 * 列冻结状态
+    			 * @property {boolean} rowAlias
+    			 */
+    			colFrozen: false
+    		},
+    		/**
+    		 * 保存位置信息
+    		 * @method cachePosition
+    		 * @param  {string}      aliasRow 行的别名
+    		 * @param  {string}      aliasCol 列的别名
+    		 * @param  {int}      index 插入集合位置
+    		 */
+    		cachePosition: function(aliasRow, aliasCol, index) {
+    			var positionX,
+    				positionY;
+    			// cells=require('collections/cells');
+    			positionX = this.CellsPosition.strandX;
+    			if (!positionX[aliasCol]) {
+    				positionX[aliasCol] = {};
+    			}
+    			if (!positionX[aliasCol][aliasRow]) {
+    				positionX[aliasCol][aliasRow] = {};
+    			}
+    			positionY = this.CellsPosition.strandY;
+    			if (!positionY[aliasRow]) {
+    				positionY[aliasRow] = {};
+    			}
+    			if (!positionY[aliasRow][aliasCol]) {
+    				positionY[aliasRow][aliasCol] = {};
+    			}
+    			positionX[aliasCol][aliasRow] = index;
+    			positionY[aliasRow][aliasCol] = index;
+    		},
+    		//动态加载，已加载区域
+    		rowRegionPosi: [],
+    		//动态加载，已加载列区域
+    		colRegionPosi: [],
+    		//动态加载，已加单元格载区域
+    		cellRegionPosi: {
+    			transverse: [],
+    			vertical: []
+    		},
+    		visibleRegion: {
+    			top: 0,
+    			bottom: 0,
+    			left: 0,
+    			right: 0
+    		}
+    	};
+    
+    });
+    define('basic/tools/send',function() {
+    	
+    	var $ = require('lib/jquery'),
+    		systemConfig = require('spreadsheet/config');
+    	/**
+    	 * ajax工具类
+    	 * @author ray wu
+    	 * @class packAjax
+    	 * @since 0.1.0
+    	 * @module basic
+    	 */
+    	return {
+    		/**
+    		 * 封装的AJAX，为减少代码的重复内容
+    		 * 部分封装默认参数
+    		 * @method PackAjax
+    		 * @param  {object} cfg 用户自定义配置
+    		 */
+    		PackAjax: function(cfg) {
+    			var config = {},
+    				NULLFUNC = function() {};
+    			if (!cfg.url) {
+    				return;
+    			}
+    			config = {
+    				url: typeof cfg.url === 'string' ? (systemConfig.rootPath + cfg.url) : undefined,
+    				type: cfg.type || 'post',
+    				contentType: cfg.contentType || 'application/json; charset=UTF-8',
+    				dataType: cfg.dataType || 'json',
+    				data: cfg.data || '',
+    				async: cfg.async !== undefined ? cfg.async : true,
+    				timeout: cfg.timeout || 5000,
+    				success: cfg.success || NULLFUNC,
+    				error: cfg.error || NULLFUNC,
+    				complete: cfg.complete || NULLFUNC
+    			};
+    
+    			$.ajax({
+    				url: config.url,
+    				type: config.type,
+    				contentType: config.contentType,
+    				dataType: config.dataType,
+    				async: config.async,
+    				data: config.data,
+    				timeout: config.timeout,
+    				success: config.success,
+    				error: config.error,
+    				complete: function() {
+    					config.complete();
+    				}
+    			});
+    
+    		}
+    	};
+    });
+    define('basic/tools/loadrecorder',function() {
+    	
+    	var binary = require('basic/util/binary');
+    
+    	return {
+    		insertPosi: function(startPosi, endPosi, region) {
+    			var startIndex,
+    				endIndex,
+    				startExist,
+    				endExist,
+    				newStartPosi,
+    				newEndPosi,
+    				i, len;
+    			startIndex = binary.indexArrayBinary(startPosi, region, 'start', 'end');
+    			endIndex = binary.indexArrayBinary(endPosi, region, 'start', 'end');
+    			startExist = binary.existArrayBinary(startPosi, region, 'start', 'end');
+    			endExist = binary.existArrayBinary(endPosi, region, 'start', 'end');
+    
+    			newStartPosi = startExist === false ? startPosi : region[startIndex].start;
+    			newEndPosi = endExist === false ? endPosi : region[endIndex].end;
+    			//ps:对于相应区域，未进行合并，需要改进
+    			if (startIndex === endIndex) {
+    				if (startExist === true && endExist === true) return;
+    				len = (startExist === true || endExist === true) ? 1 : 0;
+    			} else {
+    				if (startExist === true && endExist === true) {
+    					len = endIndex - startIndex + 1;
+    				} else if (startExist === true || endExist === true) {
+    					len = endIndex - startIndex;
+    				} else {
+    					len = endIndex - startIndex - 1;
+    				}
+    			}
+    			region.splice(startIndex, len, {
+    				start: newStartPosi,
+    				end: newEndPosi
+    			});
+    		},
+    		adaptPosi: function(startPosi, value, region) {
+    			var startIndex,
+    				endIndex,
+    				startExist,
+    				endExist,
+    				newStartPosi,
+    				newEndPosi,
+    				i, len;
+    			startIndex = binary.indexArrayBinary(startPosi, region, 'start', 'end');
+    			startExist = binary.existArrayBinary(startPosi, region, 'start', 'end');
+    			//问题
+    			if (startExist === true && region[startIndex].start !== startPosi) {
+    				region[startIndex].end = region[startIndex].end + value;
+    				for (i = startIndex + 1; i < region.length; i++) {
+    					region[i].start += value;
+    					region[i].end += value;
+    				}
+    			} else {
+    				for (i = startIndex; i < region.length; i++) {
+    					region[i].start += value;
+    					region[i].end += value;
+    				}
+    			}
+    		},
+    		getUnloadPosi: function(startPosi, endPosi, region) {
+    			var result = [],
+    				startIndex,
+    				endIndex,
+    				startExist,
+    				endExist,
+    				newStartPosi,
+    				newEndPosi,
+    				existStartPosi,
+    				existEndPosi,
+    				i, len;
+    			startIndex = binary.indexArrayBinary(startPosi, region, 'start', 'end');
+    			endIndex = binary.indexArrayBinary(endPosi, region, 'start', 'end');
+    			startExist = binary.existArrayBinary(startPosi, region, 'start', 'end');
+    			endExist = binary.existArrayBinary(endPosi, region, 'start', 'end');
+    
+    
+    			if (startIndex === endIndex) {
+    
+    				if (startExist === false && endExist === false) {
+    					result.push({
+    						start: startPosi,
+    						end: endPosi
+    					});
+    				} else if (startExist === false && endExist === true) {
+    					newEndPosi = region[endIndex].end - 1;
+    					result.push({
+    						start: startPosi,
+    						end: newEndPosi
+    					});
+    				} else if (startExist === true && endExist === false) {
+    					newStartPosi = region[startIndex].start + 1;
+    					result.push({
+    						start: newStartPosi,
+    						end: endPosi
+    					});
+    				}
+    
+    			} else {
+    				len = endIndex - startIndex;
+    				for (i = 0; i < endIndex + 1; i++) {
+    					if (region[startIndex + i] === undefined) {
+    						result.push({
+    							start: startPosi,
+    							end: endPosi
+    						});
+    						break;
+    					}
+    					existStartPosi = region[startIndex + i].start;
+    					existEndPosi = region[startIndex + i].end;
+    					if (startPosi > endPosi) {
+    						break;
+    					} else if (existStartPosi < startPosi) {
+    						startPosi = existEndPosi + 1;
+    					} else {
+    						newStartPosi = startPosi;
+    						newEndPosi = existStartPosi - 1;
+    						if (newStartPosi <= newEndPosi) {
+    							result.push({
+    								start: newStartPosi,
+    								end: newEndPosi
+    							});
+    						}
+    						startPosi = existEndPosi + 1;
+    					}
+    				}
+    			}
+    			return result;
+    		}
+    	};
+    });
+    define('basic/tools/buildcolalias',function() {
+    	
+    	var buildColAlias = function(currentIndex) {
+    		var aliasCol = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
+    			displayText = '',
+    			remainder,
+    			divisible,
+    			temp = 0;
+    
+    		remainder = currentIndex % aliasCol.length;
+    		divisible = Math.floor(currentIndex / aliasCol.length);
+    		displayText = aliasCol[remainder] + displayText;
+    		while (divisible > 0) {
+    			currentIndex = divisible - 1;
+    			remainder = currentIndex % aliasCol.length;
+    			divisible = Math.floor(currentIndex / aliasCol.length);
+    			displayText = aliasCol[remainder] + displayText;
+    		}
+    		return displayText;
+    	};
+    	return buildColAlias;
+    });
     //     Underscore.js 1.7.0
     //     http://underscorejs.org
     //     (c) 2009-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -12468,754 +13217,6 @@
       root.Backbone = Backbone;
       return Backbone;
     });
-    define('basic/tools/template',function() {
-    	
-    	var $ = require('lib/jquery'),
-    		loadHtml;
-    		
-    	loadHtml = function(id) {
-    		var headDomString = '',
-    			mainDomString = '',
-    			tailDomString = '';
-    
-    		mainDomString += '<div class="main-layout">';
-    		mainDomString += '<table class="cui-grid" cellspacing="0" cellpadding="0" id="tableContainer">';
-    		mainDomString += '<tbody><tr><td><div class="left-corner"></div></td><td></td><td></td></tr><tr><td></td><td></td><td></td></tr></tbody>';
-    		mainDomString += '</table></div>';
-    		mainDomString += '<div class="sheet-layout"><div class="sheet-body">';
-    		//mainDomString += '<div class="sheet-cf-box active glyphicons glyphicon-th-list"></div>';
-    		mainDomString += '<div class="sheet-cf-list">';
-    		mainDomString += '</div></div></div>';
-    		
-    
-    		tailDomString += '<script type="text/x-handlebars-template" id="colsPanelContainer"></script>';
-    		tailDomString += '<script type="text/x-handlebars-template" id="rowsPanelContainer"></script>';
-    		tailDomString += '<script type="text/x-handlebars-template" id="mainContainer"></script>';
-    		tailDomString += '<script type="text/x-handlebars-template" id="contentList"></script>';
-    
-    		tailDomString += '<script type="text/x-handlebars-template" id="tempSheetContainer"><span>{{name}}</span></script>';
-    
-    		tailDomString += '<script type="text/x-handlebars-template" id="tempRowHeadItem"><div class="item">{{displayName}}</div></script>';
-    		tailDomString += '<script type="text/x-handlebars-template" id="tempColHeadItem"><div class="item">{{displayName}}</div></script>';
-    		tailDomString += '<script type="text/x-handlebars-template" id="multiselect"><div class="dragItem" style="top:{{top}}px;left:{{left}}px;width:{{width}}px;height:{{height}}px;"></div></script>';
-    		tailDomString += '<script type="text/x-handlebars-template" id="data">{{content.text}}</script>';
-    		tailDomString += '<script type="text/x-handlebars-template" id="textarea"><div class="textarea"><textarea class="input-container"></textarea><div></script>';
-    		tailDomString += '<script type="text/x-handlebars-template" id="tempSelectContainer"><div class="box"><div class="expand"></div><div class="bg"></div></div></script>';
-    		tailDomString += '<script type="text/x-handlebars-template" id="tempItemCell"><div class="bg" style="display:table-cell">{{cotent.texts}}</div></script>';
-    		tailDomString += '<script type="text/x-handlebars-template" id="coltemp"><div class="col" style="left:{{left}}px;"></div></script>';
-    		tailDomString += '<script type="text/x-handlebars-template" id="rowtemp"><div class="row" style="top:{{top}}px;"></div></script>';
-    		
-    		$(id)[0].innerHTML = mainDomString;
-    		$(id).after(tailDomString);
-    	};
-    	return loadHtml;
-    });
-    //attention bug, those name didn't significance
-    //attention bug, between user config and system config mix
-    define('spreadsheet/config',function() {
-    	
-    	/**
-    	 * 系统配置变量
-    	 * @author ray wu
-    	 * @class config
-    	 * @since 0.1.0
-    	 * @module basic
-    	 */
-    	return {
-    		/**
-    		 * 用户可配置属性
-    		 * @property {object} User
-    		 */
-    		User: {
-    			/**
-    			 * 页面初始化行数
-    			 * @property {int} initRowNum
-    			 */
-    			initRowNum: 100,
-    			/**
-    			 * 页面初始化列数
-    			 * @property {int} initColNum
-    			 */
-    			initColNum: 26,
-    			/**
-    			 * 单元格宽度
-    			 * @property {int} cellWidth
-    			 */
-    			cellWidth: 72,
-    			/**
-    			 * 单元格高度
-    			 * @property {int} cellHeight
-    			 */
-    			cellHeight: 20,
-    			/**
-    			 * excel最大支持行数
-    			 * @property {number} maxRowNum
-    			 */
-    			maxColNum: 100,
-    			/**
-    			 * excel最大支持行数
-    			 * @property {number} maxRowNum
-    			 */
-    			maxRowNum: 9999
-    
-    		},
-    		/**
-    		 * 系统配置属性
-    		 * @property {object} System
-    		 */
-    		System: {
-    			/**
-    			 * 页面左侧距离
-    			 * @property {int} outerLeft
-    			 */
-    			outerLeft: 37,
-    			/**
-    			 * 页面顶部距离
-    			 * @property {int} outerTop
-    			 */
-    			outerTop: 20,
-    			/**
-    			 * 页面底部距离
-    			 * @property {int} outerBottom
-    			 */
-    			outerBottom: 30,
-    			/**
-    			 * 单元格宽度
-    			 * @property {int} cellWidth
-    			 */
-    			cellWidth: 72,
-    			/**
-    			 * 单元格高度
-    			 * @property {int} cellHeight
-    			 */
-    			cellHeight: 20,
-    			/**
-    			 * 列调整时，鼠标手势变化的距离
-    			 * @property {int} effectDistanceCol
-    			 */
-    			effectDistanceCol: 10,
-    			/**
-    			 * 行调整时，鼠标手势变化的距离
-    			 * @property {int} effectDistanceRow
-    			 */
-    			effectDistanceRow: 5,
-    			/**
-    			 * 预加载，行隐藏的距离
-    			 * @property {int} prestrainHeight
-    			 */
-    			prestrainHeight: 200,
-    			/**
-    			 * 预加载，列隐藏的距离
-    			 * @property {number} prestrainWidth
-    			 */
-    			prestrainWidth: 100,
-    			/**
-    			 * excel最大支持行数
-    			 * @property {number} maxRowNum
-    			 */
-    			maxRowNum: 9999
-    		},
-    		mouseOperateState: {
-    			select: 'select',
-    			dataSource: 'dataSource',
-    			drag: 'drag',
-    			highlight: 'highlight'
-    		},
-    		keyboard: {
-    			backspace: 8,
-    			deleteKey: 46,
-    			enter: 13,
-    			escape: 27,
-    			pageUp: 33,
-    			pageDown: 34,
-    			leftArrow: 37,
-    			upArrow: 38,
-    			rightArrow: 39,
-    			downArrow: 40
-    		},
-    		rootPath: 'http://192.168.1.250:8080/acmrexcel-0.1.5/'
-    	};
-    });
-    define('basic/util/binary',function() {
-    	
-    	/**
-    	 * 二分查询工具类
-    	 * @author ray wu
-    	 * @class binary
-    	 * @module basic
-    	 * @main  binary
-    	 */
-    	return {
-    		/**
-    		 * @method modelBinary
-    		 * @deprecated 找个二分查询存在性能瓶颈，使用`newModelBinary`
-    		 */
-    		modelBinary: function(value, array, strandAttr, rangeAttr, startIndex, endIndex) {
-    			var middle,
-    				start = startIndex ? startIndex : 0,
-    				end,
-    				findValue = Math.floor(value),
-    				strandAttrByArray,
-    				rangeAttrByArray,
-    				middleArray;
-    			if (endIndex === undefined) {
-    				end = array.length - 1;
-    			} else {
-    				end = endIndex;
-    			}
-    
-    			if (start <= end) {
-    				if (array[start].get(strandAttr) === findValue) {
-    					return start;
-    				}
-    				if (array[end].get(strandAttr) === findValue) {
-    					return end;
-    				}
-    				middle = end + start >>> 1;
-    				middleArray = array[middle];
-    				strandAttrByArray = middleArray.get(strandAttr);
-    				rangeAttrByArray = middleArray.get(rangeAttr);
-    				if (strandAttrByArray <= findValue && strandAttrByArray + rangeAttrByArray >= findValue) {
-    					return middle;
-    				} else if (strandAttrByArray > findValue) {
-    					return this.modelBinary(findValue, array, strandAttr, rangeAttr, start, middle - 1);
-    				} else if (strandAttrByArray + rangeAttrByArray < findValue) {
-    					return this.modelBinary(findValue, array, strandAttr, rangeAttr, middle + 1, end);
-    				}
-    			}
-    			return -1;
-    		},
-    		/**
-    		 * 两个属性之间查询 二分查询
-    		 * @method newModelBinary
-    		 * @param  {int}       value       想查询的数据值
-    		 * @param  {array}       array     查询的list集合
-    		 * @param  {string}       strandAttr 起始属性
-    		 * @param  {string}       rangeAttr  结束属性
-    		 * @param  {int}       startIndex 起始索引
-    		 * @param  {int}       endIndex   结束索引
-    		 * @return {int} `array`中的索引值
-    		 */
-    		newModelBinary: function(value, array, strandAttr, rangeAttr, startIndex, endIndex) {
-    			var middle,
-    				start = startIndex ? startIndex : 0,
-    				end = endIndex ? endIndex : array.length,
-    				findValue = Math.floor(value),
-    				strandAttrByArray,
-    				rangeAttrByArray,
-    				middleArray;
-    			while (start < end) {
-    				middle = end + start >>> 1;
-    				middleArray = array[middle];
-    				strandAttrByArray = middleArray.get(strandAttr);
-    				rangeAttrByArray = middleArray.get(rangeAttr);
-    				if (strandAttrByArray + rangeAttrByArray < findValue) {
-    					start = middle + 1;
-    				} else {
-    					end = middle;
-    				}
-    			}
-    			return start;
-    		},
-    		/**
-    		 * 二分查询（用于插入元素，确定元素位置使用）
-    		 * @method newModelBinary
-    		 * @param  {int}       value       想查询的数据值
-    		 * @param  {array}       array     查询的list集合
-    		 * @param  {string}       strandAttr 起始属性
-    		 * @param  {string}       rangeAttr  结束属性
-    		 * @param  {int}       startIndex 起始索引
-    		 * @param  {int}       endIndex   结束索引
-    		 * @return {int} `array`中的索引值
-    		 */
-    		indexModelBinary: function(value, array, strandAttr, rangeAttr, startIndex, endIndex) {
-    			if (array.length === 0) {
-    				return 0;
-    			}
-    			var middle,
-    				start = startIndex ? startIndex : 0,
-    				end = endIndex ? endIndex : array.length - 1,
-    				findValue = Math.floor(value),
-    				strandAttrByArray,
-    				rangeAttrByArray,
-    				middleArray;
-    			if (array.length === 1) {
-    				return (array[0].get(strandAttr) + array[0].get(rangeAttr) >= findValue) ? 0 : 1;
-    			}
-    			while (start < end) {
-    				if (array[start].get(strandAttr) + array[start].get(rangeAttr) >= findValue) {
-    					return start;
-    				}
-    				if (array[end].get(strandAttr) + array[end].get(rangeAttr) === findValue) {
-    					return end;
-    				}
-    				if (array[end].get(strandAttr) + array[end].get(rangeAttr) < findValue) {
-    					return end + 1;
-    				}
-    				middle = end + start >>> 1;
-    				middleArray = array[middle];
-    				strandAttrByArray = middleArray.get(strandAttr);
-    				rangeAttrByArray = middleArray.get(rangeAttr);
-    				if (strandAttrByArray + rangeAttrByArray < findValue) {
-    					start = middle + 1;
-    				} else {
-    					end = middle;
-    				}
-    			}
-    			return start;
-    		},
-    		/**
-    		 * 生成行名称
-    		 * @method buildRowAlias
-    		 * @param  {int} 当前索引值
-    		 * @return {string} 当前显示的名称
-    		 */
-    		buildRowAlias: function(currentIndex) {
-    			return (currentIndex + 1).toString();
-    		},
-    		existArrayBinary: function(value, array, startAttr, endAttr, startIndex, endIndex) {
-    			var middle,
-    				start = startIndex ? startIndex : 0,
-    				end = endIndex ? endIndex : array.length - 1,
-    				findValue = Math.floor(value),
-    				strandAttrByArray,
-    				rangeAttrByArray,
-    				middleArray;
-    			if (array.length === 0) {
-    				return false;
-    			}
-    			if (array.length === 1) {
-    				if (array[0][endAttr] >= findValue && array[0][startAttr] <= findValue) {
-    					return true;
-    				} else {
-    					return false;
-    				}
-    			}
-    			while (start < end) {
-    				if (array[start][startAttr] <= findValue && array[start][endAttr] >= findValue) {
-    					return true;
-    				}
-    				if (array[end][startAttr] <= findValue && array[end][endAttr] >= findValue) {
-    					return true;
-    				}
-    				middle = end + start >>> 1;
-    				if (array[end][startAttr] <= findValue && array[end][endAttr] >= findValue) {
-    					return true;
-    				} else if (array[middle][endAttr] < findValue) {
-    					start = middle + 1;
-    				} else {
-    					end = middle;
-    				}
-    			}
-    			return false;
-    		},
-    		indexArrayBinary: function(value, array, startAttr, endAttr, startIndex, endIndex) {
-    			var middle,
-    				start = startIndex ? startIndex : 0,
-    				end = endIndex ? endIndex : array.length - 1,
-    				findValue = Math.floor(value),
-    				strandAttrByArray,
-    				rangeAttrByArray,
-    				middleArray;
-    			if (array.length === 0) {
-    				return 0;
-    			}
-    			if (array.length === 1) {
-    				if (array[start][endAttr] < findValue) {
-    					return 1;
-    				} else {
-    					return 0;
-    				}
-    			}
-    			while (start < end) {
-    				if (array[start][startAttr] >= findValue) {
-    					return start;
-    				}
-    				if (array[end][endAttr] < findValue) {
-    					return end + 1;
-    				}
-    
-    				middle = end + start >>> 1;
-    
-    				if (array[middle][startAttr] <= findValue && array[middle][endAttr] >= findValue) {
-    					return middle;
-    				} else if (array[middle][endAttr] < findValue) {
-    					start = middle + 1;
-    				} else {
-    					end = middle;
-    				}
-    			}
-    			return start;
-    		}
-    	};
-    
-    });
-    //attention bug , those cache objects has mix , for use 
-    define('basic/tools/cache',function() {
-    	
-    	var config = require('spreadsheet/config');
-    	/**
-    	 * 系统缓存对象
-    	 * @author ray wu
-    	 * @class cache
-    	 * @since 0.1.0
-    	 * @module basic
-    	 */
-    	return {
-    		CurrentRule: {},
-    		FrozenRules: {
-    			main: [],
-    			row: [],
-    			col: []
-    		},
-    		/**
-    		 * 所有单元格位置信息
-    		 * @property {object} CellPosition
-    		 */
-    		CellsPosition: {
-    			/**
-    			 * 所有列上的单元格`alias`
-    			 * @property {object} strandX
-    			 */
-    			strandX: {},
-    			/**
-    			 * 所有行上的单元格`alias`
-    			 * @property {object} strandY
-    			 */
-    			strandY: {}
-    		},
-    		clipState: 'null', //copy：复制状态，cut:剪切状态，null:未进行剪切板操作
-    		/**
-    		 * 用户可视的区域(在Excel未冻结的情况下使用)
-    		 * @property {object} UserView
-    		 */
-    		UserView: {
-    			/**
-    			 * 可视区域左上单元格列别名
-    			 * @property {string} colAlias
-    			 */
-    			colAlias: '1',
-    			/**
-    			 * 可视区域左上单元格行别名
-    			 * @property {string} rowAlias
-    			 */
-    			rowAlias: '1',
-    			/**
-    			 * 可视区域右下单元格列别名
-    			 * @property {string} colEndAlias
-    			 */
-    			colEndAlias: '1',
-    			/**
-    			 * 可视区域右下单元格行别名
-    			 * @property {string} rowEndAlias
-    			 */
-    			rowEndAlias: '1'
-    		},
-    		//鼠标操作状态
-    		mouseOperateState: config.mouseOperateState.select,
-    
-    		listenerList: {}, //事件监听列表
-    		/**
-    		 * cellsContainer 行视图最大高度
-    		 * @type {Number}
-    		 */
-    		displayRowHeight: 0,
-    		/**
-    		 * 后台存储excel的总高度
-    		 * @property {int} localRowPosi
-    		 */
-    		localRowPosi: 0,
-    		/**
-    		 * 后台存储excel,别名最大
-    		 */
-    		localMaxRowAlias: '',
-    		/**
-    		 * 临时代替属性，因为sheet还有做，所以sheet的冻结属性暂时由此属性替代。以后需要做成model处理
-    		 * @property {object} TempProp
-    		 */
-    		TempProp: {
-    			/**
-    			 * 冻结状态
-    			 * @property {boolean} isFrozen
-    			 */
-    			isFrozen: false,
-    			/**
-    			 * 冻结列别名
-    			 * @property {string} colAlias
-    			 */
-    			colAlias: '1',
-    			/**
-    			 * 冻结行别名
-    			 * @property {string} rowAlias
-    			 */
-    			rowAlias: '1',
-    			/**
-    			 * 行冻结状态
-    			 * @property {boolean} rowAlias
-    			 */
-    			rowFrozen: false,
-    			/**
-    			 * 列冻结状态
-    			 * @property {boolean} rowAlias
-    			 */
-    			colFrozen: false
-    		},
-    		/**
-    		 * 保存位置信息
-    		 * @method cachePosition
-    		 * @param  {string}      aliasRow 行的别名
-    		 * @param  {string}      aliasCol 列的别名
-    		 * @param  {int}      index 插入集合位置
-    		 */
-    		cachePosition: function(aliasRow, aliasCol, index) {
-    			var positionX,
-    				positionY;
-    			// cells=require('collections/cells');
-    			positionX = this.CellsPosition.strandX;
-    			if (!positionX[aliasCol]) {
-    				positionX[aliasCol] = {};
-    			}
-    			if (!positionX[aliasCol][aliasRow]) {
-    				positionX[aliasCol][aliasRow] = {};
-    			}
-    			positionY = this.CellsPosition.strandY;
-    			if (!positionY[aliasRow]) {
-    				positionY[aliasRow] = {};
-    			}
-    			if (!positionY[aliasRow][aliasCol]) {
-    				positionY[aliasRow][aliasCol] = {};
-    			}
-    			positionX[aliasCol][aliasRow] = index;
-    			positionY[aliasRow][aliasCol] = index;
-    		},
-    		//动态加载，已加载区域
-    		rowRegionPosi: [],
-    		//动态加载，已加载列区域
-    		colRegionPosi: [],
-    		//动态加载，已加单元格载区域
-    		cellRegionPosi: {
-    			transverse: [],
-    			vertical: []
-    		},
-    		visibleRegion: {
-    			top: 0,
-    			bottom: 0,
-    			left: 0,
-    			right: 0
-    		}
-    	};
-    
-    });
-    define('basic/tools/send',function() {
-    	
-    	var $ = require('lib/jquery'),
-    		systemConfig = require('spreadsheet/config');
-    	/**
-    	 * ajax工具类
-    	 * @author ray wu
-    	 * @class packAjax
-    	 * @since 0.1.0
-    	 * @module basic
-    	 */
-    	return {
-    		/**
-    		 * 封装的AJAX，为减少代码的重复内容
-    		 * 部分封装默认参数
-    		 * @method PackAjax
-    		 * @param  {object} cfg 用户自定义配置
-    		 */
-    		PackAjax: function(cfg) {
-    			var config = {},
-    				NULLFUNC = function() {};
-    			if (!cfg.url) {
-    				return;
-    			}
-    			config = {
-    				url: typeof cfg.url === 'string' ? (systemConfig.rootPath + cfg.url) : undefined,
-    				type: cfg.type || 'post',
-    				contentType: cfg.contentType || 'application/json; charset=UTF-8',
-    				dataType: cfg.dataType || 'json',
-    				data: cfg.data || '',
-    				async: cfg.async !== undefined ? cfg.async : true,
-    				timeout: cfg.timeout || 5000,
-    				success: cfg.success || NULLFUNC,
-    				error: cfg.error || NULLFUNC,
-    				complete: cfg.complete || NULLFUNC
-    			};
-    
-    			$.ajax({
-    				url: config.url,
-    				type: config.type,
-    				contentType: config.contentType,
-    				dataType: config.dataType,
-    				async: config.async,
-    				data: config.data,
-    				timeout: config.timeout,
-    				success: config.success,
-    				error: config.error,
-    				complete: function() {
-    					config.complete();
-    				}
-    			});
-    
-    		}
-    	};
-    });
-    define('basic/tools/loadrecorder',function() {
-    	
-    	var binary = require('basic/util/binary');
-    
-    	return {
-    		insertPosi: function(startPosi, endPosi, region) {
-    			var startIndex,
-    				endIndex,
-    				startExist,
-    				endExist,
-    				newStartPosi,
-    				newEndPosi,
-    				i, len;
-    			startIndex = binary.indexArrayBinary(startPosi, region, 'start', 'end');
-    			endIndex = binary.indexArrayBinary(endPosi, region, 'start', 'end');
-    			startExist = binary.existArrayBinary(startPosi, region, 'start', 'end');
-    			endExist = binary.existArrayBinary(endPosi, region, 'start', 'end');
-    
-    			newStartPosi = startExist === false ? startPosi : region[startIndex].start;
-    			newEndPosi = endExist === false ? endPosi : region[endIndex].end;
-    			//ps:对于相应区域，未进行合并，需要改进
-    			if (startIndex === endIndex) {
-    				if (startExist === true && endExist === true) return;
-    				len = (startExist === true || endExist === true) ? 1 : 0;
-    			} else {
-    				if (startExist === true && endExist === true) {
-    					len = endIndex - startIndex + 1;
-    				} else if (startExist === true || endExist === true) {
-    					len = endIndex - startIndex;
-    				} else {
-    					len = endIndex - startIndex - 1;
-    				}
-    			}
-    			region.splice(startIndex, len, {
-    				start: newStartPosi,
-    				end: newEndPosi
-    			});
-    		},
-    		adaptPosi: function(startPosi, value, region) {
-    			var startIndex,
-    				endIndex,
-    				startExist,
-    				endExist,
-    				newStartPosi,
-    				newEndPosi,
-    				i, len;
-    			startIndex = binary.indexArrayBinary(startPosi, region, 'start', 'end');
-    			startExist = binary.existArrayBinary(startPosi, region, 'start', 'end');
-    			//问题
-    			if (startExist === true && region[startIndex].start !== startPosi) {
-    				region[startIndex].end = region[startIndex].end + value;
-    				for (i = startIndex + 1; i < region.length; i++) {
-    					region[i].start += value;
-    					region[i].end += value;
-    				}
-    			} else {
-    				for (i = startIndex; i < region.length; i++) {
-    					region[i].start += value;
-    					region[i].end += value;
-    				}
-    			}
-    		},
-    		getUnloadPosi: function(startPosi, endPosi, region) {
-    			var result = [],
-    				startIndex,
-    				endIndex,
-    				startExist,
-    				endExist,
-    				newStartPosi,
-    				newEndPosi,
-    				existStartPosi,
-    				existEndPosi,
-    				i, len;
-    			startIndex = binary.indexArrayBinary(startPosi, region, 'start', 'end');
-    			endIndex = binary.indexArrayBinary(endPosi, region, 'start', 'end');
-    			startExist = binary.existArrayBinary(startPosi, region, 'start', 'end');
-    			endExist = binary.existArrayBinary(endPosi, region, 'start', 'end');
-    
-    
-    			if (startIndex === endIndex) {
-    
-    				if (startExist === false && endExist === false) {
-    					result.push({
-    						start: startPosi,
-    						end: endPosi
-    					});
-    				} else if (startExist === false && endExist === true) {
-    					newEndPosi = region[endIndex].end - 1;
-    					result.push({
-    						start: startPosi,
-    						end: newEndPosi
-    					});
-    				} else if (startExist === true && endExist === false) {
-    					newStartPosi = region[startIndex].start + 1;
-    					result.push({
-    						start: newStartPosi,
-    						end: endPosi
-    					});
-    				}
-    
-    			} else {
-    				len = endIndex - startIndex;
-    				for (i = 0; i < endIndex + 1; i++) {
-    					if (region[startIndex + i] === undefined) {
-    						result.push({
-    							start: startPosi,
-    							end: endPosi
-    						});
-    						break;
-    					}
-    					existStartPosi = region[startIndex + i].start;
-    					existEndPosi = region[startIndex + i].end;
-    					if (startPosi > endPosi) {
-    						break;
-    					} else if (existStartPosi < startPosi) {
-    						startPosi = existEndPosi + 1;
-    					} else {
-    						newStartPosi = startPosi;
-    						newEndPosi = existStartPosi - 1;
-    						if (newStartPosi <= newEndPosi) {
-    							result.push({
-    								start: newStartPosi,
-    								end: newEndPosi
-    							});
-    						}
-    						startPosi = existEndPosi + 1;
-    					}
-    				}
-    			}
-    			return result;
-    		}
-    	};
-    });
-    define('basic/tools/buildcolalias',function() {
-    	
-    	var buildColAlias = function(currentIndex) {
-    		var aliasCol = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
-    			displayText = '',
-    			remainder,
-    			divisible,
-    			temp = 0;
-    
-    		remainder = currentIndex % aliasCol.length;
-    		divisible = Math.floor(currentIndex / aliasCol.length);
-    		displayText = aliasCol[remainder] + displayText;
-    		while (divisible > 0) {
-    			currentIndex = divisible - 1;
-    			remainder = currentIndex % aliasCol.length;
-    			divisible = Math.floor(currentIndex / aliasCol.length);
-    			displayText = aliasCol[remainder] + displayText;
-    		}
-    		return displayText;
-    	};
-    	return buildColAlias;
-    });
     /**
      * Backbone-Nested 2.0.3 - An extension of Backbone.js that keeps track of nested attributes
      *
@@ -13893,7 +13894,7 @@
     			 * 是否允许单元格进行高亮效果（ps:此属性为外部扩展属性，后期应对此属性进行分离）
     			 * @type {Boolean}
     			 */
-    			highlight: true
+    			highlight: false
     		},
     		/**
     		 * 隐藏当前单元格
@@ -15624,7 +15625,7 @@
     	});
     	return new Cells();
     });
-    define('basic/tools/original',function() {
+    define('basic/tools/original',function(require) {
     	
     	var $ = require('lib/jquery'),
     		config = require('spreadsheet/config'),
@@ -15702,7 +15703,7 @@
     				j,
     				len,
     				rowLen;
-    			
+    
     			for (i = 0; i < rows.length; i++) {
     				index = binary.indexModelBinary(rows[i].top, headItemRows.models, 'top', 'height');
     				if (headItemRows.getIndexByAlias(rows[i].aliasY) != -1) {
@@ -15944,7 +15945,6 @@
     				startRowSort,
     				startColSort,
     				sheetNames = [],
-    				mainContainerHeight = $("#tableContainer").height - 19,
     				self = this,
     				i;
     
@@ -15953,18 +15953,23 @@
     				cache.localRowPosi = 0;
     				return;
     			}
-    			
     
-    			$.ajax({
-    				url: config.rootPath + 'excel.htm?m=position&excelId=' + excelId + '&sheetId=1&containerHeight=' + $('#spreadSheet').height(),
+    			send.PackAjax({
+    				url: 'excel.htm?m=position',
+    				async: false,
+    				data: JSON.stringify({
+    					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
+    					sheetId: '1',
+    					containerHeight: $('#spreadSheet').height()
+    				}),
     				async: false,
     				dataType: 'json',
     				success: function(data) {
     					if (data === '') {
     						return;
     					}
-    					cache.UserView.colAlias = data.displayRowStartAlias;
-    					cache.UserView.rowAlias = data.displayColStartAlias;
+    					cache.UserView.rowAlias = data.displayRowStartAlias;
+    					cache.UserView.colAlias = data.displayColStartAlias;
     
     					if (data.returndata.spreadSheet[0].sheet.frozen.state === "1") {
     						cache.TempProp = {
@@ -15992,9 +15997,9 @@
     					self.restoreSelectRegion();
     
     				}
-    
     			});
     			loadRecorder.insertPosi(headItemRows.models[0].get('top'), headItemRows.models[headItemRows.length - 1].get('top') + headItemRows.models[headItemRows.length - 1].get('height'), cache.rowRegionPosi);
+    			loadRecorder.insertPosi(headItemRows.models[0].get('top'), headItemRows.models[headItemRows.length - 1].get('top') + headItemRows.models[headItemRows.length - 1].get('height'), cache.cellRegionPosi.vertical);
     		}
     	};
     });
@@ -17664,6 +17669,7 @@
     define('entrance/selectregion/dataSourceRegionOperation',function() {
     	
     	var cache = require('basic/tools/cache'),
+    		selectRegions = require('collections/selectRegion'),
     		operation;
     
     	operation = {
@@ -17864,13 +17870,17 @@
     });
     define('entrance/extention/highlight',function() {
     	
-    	var Backbone = require('lib/backbone');
+    	var Backbone = require('lib/backbone'),
+    		cache = require('basic/tools/cache');
     	return {
     		startHighlight: function() {
     			Backbone.trigger('event:cellsContainer:startHighlight');
     		},
     		stopHighlight: function() {
     			Backbone.trigger('event:cellsContainer:stopHighlight');
+    		},
+    		getHighlightDirection: function(){
+    			return cache.highlightDirection;
     		}
     	};
     });
@@ -26382,85 +26392,93 @@
     			//监听鼠标移动事件
     			this.$el.on('mousemove', this.highlightRegionMove);
     		},
-    		highlightRegionMove: function(event) {
-    			var self = this,
-    				cellModel,
-    				selectBox,
-    				startColPosi,
-    				endColPosi,
-    				startRowPosi,
-    				endRowPosi,
-    				direction,
-    				selectRegionModel,
-    				left, top, width, right, height, bottom;
-    			selectBox = this.getCoordinateByMouseEvent(event);
-    			cellModel = selectBox.model;
-    			if (cellModel !== undefined && cellModel.get("highlight") === true) {
-    				left = cellModel.get('physicsBox').left;
-    				top = cellModel.get('physicsBox').top;
-    				height = cellModel.get('physicsBox').height;
-    				width = cellModel.get('physicsBox').width;
-    				right = left + width;
-    				bottom = top + height;
-    			} else {
-    				return;
-    			}
-    			direction = getLightDirection();
-    			if (this.hightlightView === null || this.hightlightView === undefined) {
-    				selectRegionModel = new SelectRegionModel();
-    				this.hightlightModel = selectRegionModel;
-    				selectRegionModel.set("selectType", "extend");
-    				selectRegionModel.set("physicsPosi", {
-    					left: left,
-    					top: top,
-    					bottom: bottom,
-    					right: right
-    				});
-    				selectRegionModel.set("physicsBox", {
-    					height: height,
-    					width: width
-    				});
-    				this.hightlightView = new SelectRegionView({
-    					model: selectRegionModel,
-    					className: 'highlight-container',
-    				});
-    				this.$el.append(this.hightlightView.render().el);
-    			}
-    			clearHighlight();
-    			this.hightlightView.$el.addClass('highlight-' + direction);
-    
-    			function getLightDirection() {
-    				var mouseColPosi = self.getMouseColRelativePosi(event),
-    					mouseRowPosi = self.getMouseRowRelativePosi(event),
-    					rightDistance = right - mouseColPosi,
-    					leftDistance = mouseColPosi - left,
-    					topDistance = mouseRowPosi - top,
-    					bottomDistance = bottom - mouseRowPosi,
-    					temp = rightDistance,
-    					direction = "right";
-    
-    				if (temp > leftDistance) {
-    					temp = leftDistance;
-    					direction = "left";
-    				}
-    				if (temp > topDistance) {
-    					temp = topDistance;
-    					direction = "top";
-    				}
-    				if (temp > bottomDistance) {
-    					temp = bottomDistance;
-    					direction = "bottom";
-    				}
-    				return direction;
-    			}
-    
-    			function clearHighlight() {
-    				self.hightlightView.$el.removeClass("highlight-right");
-    				self.hightlightView.$el.removeClass("highlight-left");
-    				self.hightlightView.$el.removeClass("highlight-top");
-    				self.hightlightView.$el.removeClass("highlight-bottom");
-    			}
-    		},
+            highlightRegionMove: function(event) {
+                var self = this,
+                    cellModel,
+                    selectBox,
+                    startColPosi,
+                    endColPosi,
+                    startRowPosi,
+                    endRowPosi,
+                    direction,
+                    hightlightModel,
+                    left, top, width, right, height, bottom;
+
+                selectBox = this.getCoordinateByMouseEvent(event);
+                cellModel = selectBox.model;
+                if (cellModel !== undefined && cellModel.get("highlight") === true) {
+                    left = cellModel.get('physicsBox').left;
+                    top = cellModel.get('physicsBox').top;
+                    height = cellModel.get('physicsBox').height;
+                    width = cellModel.get('physicsBox').width;
+                    right = left + width;
+                    bottom = top + height;
+                } else {
+                    cache.highlightDirection = 'null';
+                    if (this.hightlightView !== null && this.hightlightView !== undefined){
+                        this.hightlightModel.destroy();
+                        this.hightlightView = null;
+                    }
+                    return;
+                }
+                direction = getLightDirection();
+                if (this.hightlightView === null || this.hightlightView === undefined) {
+                    hightlightModel = new SelectRegionModel();
+                    this.hightlightModel = hightlightModel;
+                    hightlightModel.set("selectType", "extend");
+                    this.hightlightView = new SelectRegionView({
+                        model: hightlightModel,
+                        className: 'highlight-container',
+                    });
+                    this.$el.append(this.hightlightView.render().el);
+                }
+
+                this.hightlightModel.set("physicsPosi", {
+                    left: left,
+                    top: top,
+                    bottom: bottom,
+                    right: right
+                });
+                this.hightlightModel.set("physicsBox", {
+                    height: height,
+                    width: width
+                });
+                clearHighlight();
+                this.hightlightView.$el.addClass('highlight-' + direction);
+                cache.highlightDirection = direction;
+
+                function getLightDirection() {
+                    var mouseColPosi = self.getMouseColRelativePosi(event),
+                        mouseRowPosi = self.getMouseRowRelativePosi(event),
+                        rightDistance = right - mouseColPosi,
+                        leftDistance = mouseColPosi - left,
+                        topDistance = mouseRowPosi - top,
+                        bottomDistance = bottom - mouseRowPosi,
+                        temp = rightDistance,
+                        direction = "right";
+
+                    if (temp > leftDistance) {
+                        temp = leftDistance;
+                        direction = "left";
+                    }
+                    if (temp > topDistance) {
+                        temp = topDistance;
+                        direction = "top";
+                    }
+                    if (temp > bottomDistance) {
+                        temp = bottomDistance;
+                        direction = "bottom";
+                    }
+                    return direction;
+                }
+
+                function clearHighlight() {
+                    self.hightlightView.$el.removeClass("highlight-right");
+                    self.hightlightView.$el.removeClass("highlight-left");
+                    self.hightlightView.$el.removeClass("highlight-top");
+                    self.hightlightView.$el.removeClass("highlight-bottom");
+                }
+            },
     		/**
     		 * 停止单元格边框高亮功能
     		 * @return {[type]} [description]
@@ -26470,11 +26488,12 @@
     			this.$el.off('mousemove', this.highlightRegionMove);
     			//绑定视图原有事件
     			this.delegateEvents();
-    
-    			this.hightlightModel.destroy();
-    			this.hightlightView = null;
+    			if (this.hightlightView !== null && this.hightlightView !== undefined){
+    				this.hightlightModel.destroy();
+    				this.hightlightView = null;
+    			}
     		},
-    		getMouseColRelativePosi: function(posi) {
+    		getMouseColRelativePosi: function(event) {
     			var currentColModel = headItemCols.getModelByAlias(cache.TempProp.colAlias),
     				headLineColModelList = headItemCols.models,
     				reduceLeftValue,
@@ -26494,7 +26513,7 @@
     			mainMousePosiX = event.clientX - config.System.outerLeft - $('#spreadSheet').offset().left + this.parentView.el.scrollLeft - this.currentRule.displayPosition.offsetLeft + reduceLeftValue;
     			return mainMousePosiX;
     		},
-    		getMouseRowRelativePosi: function(posi) {
+    		getMouseRowRelativePosi: function(event) {
     			var currentRowModel = headItemRows.getModelByAlias(cache.TempProp.rowAlias),
     				headLineRowModelList = headItemRows.models,
     				reduceTopValue,
@@ -26531,8 +26550,8 @@
     				startPosiX, startPosiY, endPosiX, endPosiY,
     				left, width, top, height;
     
-    			mainMousePosiX = this.getMouseColRelativePosi();
-    			mainMousePosiY = this.getMouseRowRelativePosi();
+    			mainMousePosiX = this.getMouseColRelativePosi(event);
+    			mainMousePosiY = this.getMouseRowRelativePosi(event);
     
     			//this model index of gridline
     			modelIndexCol = binary.modelBinary(mainMousePosiX, headLineColModelList, 'left', 'width', 0, headLineColModelList.length - 1);
@@ -27132,7 +27151,7 @@
     		 * 自适应选中框大小
     		 */
     		adaptSelectRegion: function() {
-    			var	headLineRowModelList = headItemRows.models,
+    			var headLineRowModelList = headItemRows.models,
     				headLineColModelList = headItemCols.models,
     				selectRegionModel,
     				startX,
@@ -27141,7 +27160,7 @@
     				endY,
     				len,
     				options,
-    				flag=true,
+    				flag = true,
     				i;
     
     			selectRegionModel = selectRegions.getModelByType("operation")[0];
@@ -31046,19 +31065,20 @@
     			for (j = startColIndex; j < endColIndex + 1; j++) {
     				clipColAlias = headItemCols.models[j].get('alias');
     				clipRowAlias = headItemRows.models[i].get('alias');
+    				if (j - relativeColIndex > headItemCols.models.length - 1) continue;
+    				if (i - relativeRowIndex > headItemRows.models.length - 1) continue;
     				selectColAlias = headItemCols.models[j - relativeColIndex].get('alias');
     				selectRowAlias = headItemRows.models[i - relativeRowIndex].get('alias');
-    
     				tempCellModel = cells.getCellByAlias(selectColAlias, selectRowAlias);
     
     				CellModel = cells.getCellByAlias(clipColAlias, clipRowAlias);
     
-    				deletePosi(selectColAlias, selectRowAlias);
+    				if (tempCellModel !== null) {
+    					tempCellModel.set('isDestroy', true);
+    					deletePosi(selectColAlias, selectRowAlias);
+    				}
     				if (type === "cut") deletePosi(clipColAlias, clipRowAlias);
     				if (CellModel !== null && CellModel.get('occupy').x[0] === clipColAlias && CellModel.get('occupy').y[0] === clipRowAlias) {
-    					if (tempCellModel !== null) {
-    						tempCellModel.set('isDestroy', true);
-    					}
     					tempCopyCellModel = CellModel.clone();
     					if (type === "cut") {
     						CellModel.set('isDestroy', true);
@@ -31070,11 +31090,12 @@
     			}
     		}
     		cache.clipState = "null";
+    
     		Backbone.trigger('event:cellsContainer:adjustSelectRegion', {
     			startColIndex: startColIndex - relativeColIndex,
     			startRowIndex: startRowIndex - relativeRowIndex,
-    			endColIndex: endColIndex - relativeColIndex,
-    			endRowIndex: endRowIndex - relativeRowIndex
+    			endColIndex: endColIndex - relativeColIndex < headItemCols.models.length - 1 ? endColIndex - relativeColIndex : headItemCols.models.length - 1,
+    			endRowIndex: endRowIndex - relativeRowIndex < headItemRows.models.length - 1 ? endRowIndex - relativeRowIndex : headItemRows.models.length - 1
     		});
     		clipRegion.destroy();
     		send.PackAjax({
@@ -31163,20 +31184,38 @@
     			rowEndIndex,
     			colEndIndex,
     			cellModelArray,
-    			i = 0;
+    			startColAlias,
+    			startRowAlias,
+    			clipRegion,
+    			result = true;
     
+    		// clipRegion = selectRegions.getModelByType('clip')[0];
+    
+    		// clipColStartIndex = clipRegion.get('wholePosi').startX;
+    		// clipRowStartIndex = clipRegion.get('wholePosi').startY;
     		colStartIndex = selectRegions.models[0].get('wholePosi').startX;
     		rowStartIndex = selectRegions.models[0].get('wholePosi').startY;
-    		rowEndIndex = rowStartIndex + rowlen - 1;
-    		colEndIndex = colStartIndex + collen - 1;
-    		cellModelArray = cells.getRegionCells(colStartIndex, rowStartIndex, colEndIndex, rowEndIndex);
-    		for (; i < cellModelArray.length; i++) {
-    			if (cellModelArray[i] === null) continue;
-    			if (cellModelArray[i].get('occupy').x.length > 1 || cellModelArray[i].get('occupy').y.length > 1) {
-    				return false;
-    			}
-    		}
-    		return true;
+    
+    		send.PackAjax({
+    			url: 'plate.htm?m=paste',
+    			async: false,
+    			data: JSON.stringify({
+    				excelId: window.SPREADSHEET_AUTHENTIC_KEY,
+    				sheetId: '1',
+    				startColAlias: startColAlias,
+    				startRowAlias: startRowAlias,
+    				pasteData: sendData
+    			})
+    		});
+    
+    		// cellModelArray = cells.getRegionCells(colStartIndex, rowStartIndex, colEndIndex, rowEndIndex);
+    		// for (; i < cellModelArray.length; i++) {
+    		// 	if (cellModelArray[i] === null) continue;
+    		// 	if (cellModelArray[i].get('occupy').x.length > 1 || cellModelArray[i].get('occupy').y.length > 1) {
+    		// 		return false;
+    		// 	}
+    		// }
+    		return result;
     	}
     
     	function deletePosi(aliasCol, aliasRow) {
@@ -31207,6 +31246,9 @@
     			tempCellData = [],
     			decodeText,
     			sendData = [],
+    			startRowAlias,
+    			startColAlias,
+    			selectRegion,
     			clipRegion;
     
     		encodeText = encodeURI(pasteText);
@@ -31223,6 +31265,10 @@
     		}
     
     		clipRegion = selectRegions.getModelByType("clip")[0];
+    		selectRegion = selectRegions.getModelByType("operation")[0];
+    		startRowAlias = headItemRows.models[selectRegion.get('wholePosi').startY].get('alias');
+    		startColAlias = headItemRows.models[selectRegion.get('wholePosi').startX].get('alias');
+    
     		if (clipRegion !== null && clipRegion !== undefined) {
     			clipRegion.destroy();
     		}
@@ -31232,6 +31278,8 @@
     			data: JSON.stringify({
     				excelId: window.SPREADSHEET_AUTHENTIC_KEY,
     				sheetId: '1',
+    				startColAlias: startColAlias,
+    				startRowAlias: startRowAlias,
     				pasteData: sendData
     			})
     		});
@@ -31281,6 +31329,15 @@
     		indexCol = selectRegions.models[0].get('wholePosi').startX + relativeColIndex;
     		indexRow = selectRegions.models[0].get('wholePosi').startY + relativeRowIndex;
     
+    		result = {
+    			relativeColIndex: relativeColIndex,
+    			relativeRowIndex: relativeRowIndex,
+    			text: text
+    		};
+    		if ((indexCol > headItemCols.length - 1) || (indexRow > headItemRows.length - 1)) {
+    			return result;
+    		}
+    
     		tempCell = cells.getCellByX(indexCol, indexRow)[0];
     
     		if (tempCell !== undefined && tempCell.get("isDestroy") === false) {
@@ -31292,6 +31349,7 @@
     		left = gridLineColList[indexCol].get('left');
     		width = gridLineColList[indexCol].get('width');
     		height = gridLineRowList[indexRow].get('height');
+    
     		cacheCell = new Cell();
     		//判断是否已经存在单元格
     		aliasCol = gridLineColList[indexCol].get('alias');
@@ -31309,11 +31367,6 @@
     		cacheCell.set("content.texts", text);
     		cache.cachePosition(aliasRow, aliasCol, cells.length);
     		cells.add(cacheCell);
-    		result = {
-    			aliasCol: aliasCol,
-    			aliasRow: aliasRow,
-    			text: text
-    		};
     		return result;
     	}
     
@@ -31430,8 +31483,9 @@
     			this.triggerCallback();
     		},
     		transAction: function(e) {
-    			// this.toolbar(e);
+    			
     		},
+
     		/**
     		 * 绑定视图
     		 * @method triggerCallback
@@ -32511,8 +32565,8 @@
     		adaptScreen = require('entrance/sheet/adaptScreen'),
     		getFrozenState = require('entrance/sheet/getFrozenState'),
     		getSelectRegion = require('entrance/sheet/getSelectRegion'),
-    		highlight= require('entrance/extention/highlight'),
-    		reloadCells= require('entrance/cell/reloadCells');
+    		highlight = require('entrance/extention/highlight'),
+    		reloadCells = require('entrance/cell/reloadCells');
     
     
     
@@ -32590,7 +32644,7 @@
     		buildExcelExtend: function(SpreadSheet) {
     			SpreadSheet.prototype.startHighlight = highlight.startHighlight;
     			SpreadSheet.prototype.stopHighlight = highlight.stopHighlight;
-    			
+    			SpreadSheet.prototype.getHighlightDirection = highlight.getHighlightDirection;
     		}
     	};
     	return excelBuild;
@@ -32617,6 +32671,7 @@
     		excelBuild.buildExcelPublicAPI(SpreadSheet);
     		excelBuild.buildDataSourceOperation(SpreadSheet);
     		excelBuild.buildExcelEventListener(SpreadSheet);
+    		excelBuild.buildExcelExtend(SpreadSheet);
     		
     	}
     	return SpreadSheet;

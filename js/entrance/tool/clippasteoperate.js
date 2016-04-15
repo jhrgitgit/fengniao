@@ -57,19 +57,20 @@ define(function(require) {
 			for (j = startColIndex; j < endColIndex + 1; j++) {
 				clipColAlias = headItemCols.models[j].get('alias');
 				clipRowAlias = headItemRows.models[i].get('alias');
+				if (j - relativeColIndex > headItemCols.models.length - 1) continue;
+				if (i - relativeRowIndex > headItemRows.models.length - 1) continue;
 				selectColAlias = headItemCols.models[j - relativeColIndex].get('alias');
 				selectRowAlias = headItemRows.models[i - relativeRowIndex].get('alias');
-
 				tempCellModel = cells.getCellByAlias(selectColAlias, selectRowAlias);
 
 				CellModel = cells.getCellByAlias(clipColAlias, clipRowAlias);
 
-				deletePosi(selectColAlias, selectRowAlias);
+				if (tempCellModel !== null) {
+					tempCellModel.set('isDestroy', true);
+					deletePosi(selectColAlias, selectRowAlias);
+				}
 				if (type === "cut") deletePosi(clipColAlias, clipRowAlias);
 				if (CellModel !== null && CellModel.get('occupy').x[0] === clipColAlias && CellModel.get('occupy').y[0] === clipRowAlias) {
-					if (tempCellModel !== null) {
-						tempCellModel.set('isDestroy', true);
-					}
 					tempCopyCellModel = CellModel.clone();
 					if (type === "cut") {
 						CellModel.set('isDestroy', true);
@@ -81,11 +82,12 @@ define(function(require) {
 			}
 		}
 		cache.clipState = "null";
+
 		Backbone.trigger('event:cellsContainer:adjustSelectRegion', {
 			startColIndex: startColIndex - relativeColIndex,
 			startRowIndex: startRowIndex - relativeRowIndex,
-			endColIndex: endColIndex - relativeColIndex,
-			endRowIndex: endRowIndex - relativeRowIndex
+			endColIndex: endColIndex - relativeColIndex < headItemCols.models.length - 1 ? endColIndex - relativeColIndex : headItemCols.models.length - 1,
+			endRowIndex: endRowIndex - relativeRowIndex < headItemRows.models.length - 1 ? endRowIndex - relativeRowIndex : headItemRows.models.length - 1
 		});
 		clipRegion.destroy();
 		send.PackAjax({
@@ -174,20 +176,36 @@ define(function(require) {
 			rowEndIndex,
 			colEndIndex,
 			cellModelArray,
-			i = 0;
+			startColAlias,
+			startRowAlias,
+			clipRegion,
+			result = false;
 
+		// clipRegion = selectRegions.getModelByType('clip')[0];
+
+		// clipColStartIndex = clipRegion.get('wholePosi').startX;
+		// clipRowStartIndex = clipRegion.get('wholePosi').startY;
 		colStartIndex = selectRegions.models[0].get('wholePosi').startX;
 		rowStartIndex = selectRegions.models[0].get('wholePosi').startY;
-		rowEndIndex = rowStartIndex + rowlen - 1;
-		colEndIndex = colStartIndex + collen - 1;
-		cellModelArray = cells.getRegionCells(colStartIndex, rowStartIndex, colEndIndex, rowEndIndex);
-		for (; i < cellModelArray.length; i++) {
-			if (cellModelArray[i] === null) continue;
-			if (cellModelArray[i].get('occupy').x.length > 1 || cellModelArray[i].get('occupy').y.length > 1) {
-				return false;
+		startColAlias = headItemCols.models[colStartIndex].get('alias');
+		startRowAlias = headItemRows.models[rowStartIndex].get('alias');
+		send.PackAjax({
+			url: "plate.htm?m=isAblePaste",
+			async: false,
+			data: JSON.stringify({
+				excelId: window.SPREADSHEET_AUTHENTIC_KEY,
+				sheetId: '1',
+				startColAlias: startColAlias,
+				startRowAlias: startRowAlias,
+				colLen: collen,
+				rowLen: rowlen
+			}),
+			success: function(data) {
+				result = data.returndata;
 			}
-		}
-		return true;
+		});
+
+		return result;
 	}
 
 	function deletePosi(aliasCol, aliasRow) {
@@ -218,6 +236,9 @@ define(function(require) {
 			tempCellData = [],
 			decodeText,
 			sendData = [],
+			startRowAlias,
+			startColAlias,
+			selectRegion,
 			clipRegion;
 
 		encodeText = encodeURI(pasteText);
@@ -234,6 +255,10 @@ define(function(require) {
 		}
 
 		clipRegion = selectRegions.getModelByType("clip")[0];
+		selectRegion = selectRegions.getModelByType("operation")[0];
+		startRowAlias = headItemRows.models[selectRegion.get('wholePosi').startY].get('alias');
+		startColAlias = headItemRows.models[selectRegion.get('wholePosi').startX].get('alias');
+
 		if (clipRegion !== null && clipRegion !== undefined) {
 			clipRegion.destroy();
 		}
@@ -243,6 +268,8 @@ define(function(require) {
 			data: JSON.stringify({
 				excelId: window.SPREADSHEET_AUTHENTIC_KEY,
 				sheetId: '1',
+				startColAlias: startColAlias,
+				startRowAlias: startRowAlias,
 				pasteData: sendData
 			})
 		});
@@ -292,6 +319,15 @@ define(function(require) {
 		indexCol = selectRegions.models[0].get('wholePosi').startX + relativeColIndex;
 		indexRow = selectRegions.models[0].get('wholePosi').startY + relativeRowIndex;
 
+		result = {
+			relativeColIndex: relativeColIndex,
+			relativeRowIndex: relativeRowIndex,
+			text: text
+		};
+		if ((indexCol > headItemCols.length - 1) || (indexRow > headItemRows.length - 1)) {
+			return result;
+		}
+
 		tempCell = cells.getCellByX(indexCol, indexRow)[0];
 
 		if (tempCell !== undefined && tempCell.get("isDestroy") === false) {
@@ -303,6 +339,7 @@ define(function(require) {
 		left = gridLineColList[indexCol].get('left');
 		width = gridLineColList[indexCol].get('width');
 		height = gridLineRowList[indexRow].get('height');
+
 		cacheCell = new Cell();
 		//判断是否已经存在单元格
 		aliasCol = gridLineColList[indexCol].get('alias');
@@ -320,11 +357,6 @@ define(function(require) {
 		cacheCell.set("content.texts", text);
 		cache.cachePosition(aliasRow, aliasCol, cells.length);
 		cells.add(cacheCell);
-		result = {
-			aliasCol: aliasCol,
-			aliasRow: aliasRow,
-			text: text
-		};
 		return result;
 	}
 

@@ -59,6 +59,7 @@ define(function() {
 			 */
 			rowEndAlias: '1'
 		},
+		highlightDirection: 'null',
 		//鼠标操作状态
 		mouseOperateState: config.mouseOperateState.select,
 
