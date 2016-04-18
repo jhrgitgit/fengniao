@@ -31,7 +31,7 @@ define(function(require) {
 			len, i;
 
 		if (displayName !== null) {
-			modelIndexCol = headModelCol.getIndexByDisplayname(displayName);
+			modelIndexCol = headItemCols.getIndexByDisplayname(displayName);
 		} else {
 			modelIndexCol = index;
 		}

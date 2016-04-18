@@ -65,20 +65,6 @@ define(function(require) {
 		transAction: function(e) {
 			var frozenPositon = $(e.currentTarget).data('frozen');
 			setFrozen('1', frozenPositon);
-			// switch (frozenPositon) {
-			// 	case 'custom':
-			// 		this.setCustom();
-			// 		break;
-			// 	case 'row':
-			// 		this.setRow();
-			// 		break;
-			// 	case 'col':
-			// 		this.setCol();
-			// 		break;
-			// 	case 'unfrozen':
-			// 		this.setUnfrozen();
-			// 		break;
-			// }
 			this.changeState();
 		},
 		/**
@@ -173,7 +159,6 @@ define(function(require) {
 				colAlias: '1',
 				rowAlias: '1'
 			};
-
 			this.requestUnfrozen();
 		},
 		/**

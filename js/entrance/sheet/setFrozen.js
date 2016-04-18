@@ -21,8 +21,6 @@ define(function(require) {
 		} else {
 			operationRegion.startColIndex = selectRegions.models[0].get('wholePosi').startX;
 			operationRegion.startRowIndex = selectRegions.models[0].get('wholePosi').startY;
-			operationRegion.endColIndex = selectRegions.models[0].get('wholePosi').endX;
-			operationRegion.endRowIndex = selectRegions.models[0].get('wholePosi').endY;
 		}
 		switch (frozenPositon) {
 			case 'custom':
@@ -37,9 +35,13 @@ define(function(require) {
 			case 'unfrozen':
 				setUnfrozen();
 				break;
+			default:
+				setCustom(operationRegion);
+				break;
 		}
 		Backbone.trigger('event:bodyContainer:executiveFrozen');
 	};
+	
 	/**
 	 * 过滤超出用户可视区域操作
 	 * @method filterOutUserView
@@ -124,7 +126,6 @@ define(function(require) {
 			colAlias: '1',
 			rowAlias: '1'
 		};
-
 		requestUnfrozen();
 	};
 	/**

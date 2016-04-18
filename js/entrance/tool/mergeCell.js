@@ -61,6 +61,7 @@ define(function(require) {
 			success: function(data) {}
 		});
 		len = selectRegionCells.length;
+		//bug
 		for (i = 0; i < len; i++) {
 			if (selectRegionCells[i].get('content').texts !== '') {
 				textNum++;
@@ -68,6 +69,9 @@ define(function(require) {
 			}
 		}
 		if (textNum > 1) return;
+		if (textNum === 0) {
+			cacheCell = selectRegionCells[0].clone();
+		}
 		if (len) {
 			//销毁选中的单元格
 			for (i = 0; i < len; i++) {

@@ -54,6 +54,7 @@ define(function(require) {
 		 * @param  allAttributes 容器属性
 		 */
 		initialize: function(options) {
+
 			Backbone.on('call:cellsContainer', this.callCellsContainer, this);
 			Backbone.on('event:cellsContainer:createDataSourceRegion', this.createDataSourceRegion, this);
 			Backbone.on('event:cellsContainer:adjustSelectRegion', this.adjustSelectRegion, this);
