@@ -45,7 +45,7 @@ define(function(require) {
 		 */
 		events: {
 			'blur': 'close',
-			'input': 'adjustWidth',
+			'input': 'adapt',
 			'propertychange': 'adjustWidth',
 			'keydown': 'keyHandle'
 		},
@@ -87,11 +87,50 @@ define(function(require) {
 			return this;
 		},
 		/**
+		 * 自适应输入框的大小
+		 */
+		adapt: function() {
+			if (this.model.get("content").wordWrap === false) {
+				this.adjustWidth();
+			} else {
+				this.adjustHight();
+			}
+		},
+		/**
+		 * 调整输入框高度
+		 */
+		adjustHight: function() {
+			var tempDiv,
+				height,
+				fontSize,
+				width,
+				text;
+			text = this.$el.val();
+			tempDiv = $('<div/>').text(text);
+			fontSize = this.model.get("content").size;
+			width = this.model.get("physicsBox").width;
+			tempDiv.css({
+				"display": "none",
+				"font-size": fontSize,
+				"word-wrap": "break-word",
+				"width": width
+			});
+			$("body").append(tempDiv);
+			console.log(text.lastIndexOf("\r\n"));
+			if (text.lastIndexOf("\r\n") === 0) {
+				this.$el.css("height", tempDiv.height() + fontSize);
+			} else {
+				this.$el.css("height", tempDiv.height());
+			}
+			tempDiv.remove();
+		},
+		/**
 		 * 调整输入框宽度
 		 * @method adjustWidth
 		 * @param e {event} propertychange函数
 		 */
 		adjustWidth: function(e) {
+			//ps:字体改变时存在问题
 			var tempSpan,
 				currentWidth,
 				tempSpanWidth;
@@ -160,12 +199,12 @@ define(function(require) {
 				len, i, isShortKey, keyboard;
 			keyboard = config.keyboard;
 			isShortKey = this.isShortKey(e.keyCode);
-
 			if (isShortKey) {
 				switch (e.keyCode) {
 					case keyboard.enter:
 						if (e.altKey) {
-							this.$el.val(this.$el.val()+'\r\n');
+							this.$el.val(this.$el.val() + '\r\n');
+							this.adjustHight();
 							return;
 						} else {
 							this.close();
