@@ -233,6 +233,7 @@ define(function(require) {
 			this.viewRowsAllHeadContainer.$el.css({
 				height: headItemRows.getMaxDistanceHeight()
 			});
+			// this.requstAdjust();
 		},
 		/**
 		 * 向后台发送请求，调整列宽

@@ -4,6 +4,7 @@ define(function(require) {
 		_ = require('lib/underscore'),
 		Backbone = require('lib/backbone'),
 		cache = require('basic/tools/cache'),
+		getTextBox = require('basic/tools/gettextbox'),
 		util = require('basic/util/clone'),
 		config = require('spreadsheet/config'),
 		binary = require('basic/util/binary'),
@@ -46,7 +47,7 @@ define(function(require) {
 		events: {
 			'blur': 'close',
 			'input': 'adapt',
-			'propertychange': 'adjustWidth',
+			'propertychange': 'adapt',
 			'keydown': 'keyHandle'
 		},
 		/**
@@ -90,39 +91,23 @@ define(function(require) {
 		 * 自适应输入框的大小
 		 */
 		adapt: function() {
-			if (this.model.get("content").wordWrap === false) {
-				this.adjustWidth();
-			} else {
-				this.adjustHight();
-			}
+			this.adjustWidth();
+			this.adjustHight();
 		},
 		/**
 		 * 调整输入框高度
 		 */
 		adjustHight: function() {
-			var tempDiv,
-				height,
+			var height,
 				fontSize,
 				width,
 				text;
 			text = this.$el.val();
-			tempDiv = $('<div/>').text(text);
 			fontSize = this.model.get("content").size;
 			width = this.model.get("physicsBox").width;
-			tempDiv.css({
-				"display": "none",
-				"font-size": fontSize,
-				"word-wrap": "break-word",
-				"width": width
-			});
-			$("body").append(tempDiv);
-			console.log(text.lastIndexOf("\r\n"));
-			if (text.lastIndexOf("\r\n") === 0) {
-				this.$el.css("height", tempDiv.height() + fontSize);
-			} else {
-				this.$el.css("height", tempDiv.height());
-			}
-			tempDiv.remove();
+			height = getTextBox.getTextHeight(text, this.model.get("content").wordWrap, fontSize, width);
+			this.$el.css("height", height);
+			return height;
 		},
 		/**
 		 * 调整输入框宽度
@@ -130,18 +115,35 @@ define(function(require) {
 		 * @param e {event} propertychange函数
 		 */
 		adjustWidth: function(e) {
-			//ps:字体改变时存在问题
-			var tempSpan,
+			var text,
+				texts,
+				inputText,
+				tempDiv,
 				currentWidth,
-				tempSpanWidth;
-			tempSpan = $('<span/>').text(this.el.value);
-			$('body').append(tempSpan);
-			currentWidth = parseInt(this.el.offsetWidth, 0);
-			tempSpanWidth = tempSpan[0].offsetWidth;
-			if (currentWidth - 10 < tempSpanWidth && this.model.get('physicsBox').width < tempSpanWidth) {
-				this.$el.width(tempSpanWidth + 50);
+				fontSize,
+				tempDivWidth,
+				len, i;
+			if (this.model.get("content").wordWrap === true) return;
+			inputText = this.$el.val();
+			texts = inputText.split('\n');
+			len = texts.length;
+			for (i = 0; i < len; i++) {
+				text += texts[i] + '<br>';
 			}
-			tempSpan.remove();
+
+			tempDiv = $('<div/>').html(text);
+			fontSize = this.model.get("content").size;
+			tempDiv.css({
+				"display": "none",
+				"font-size": fontSize
+			});
+			$('body').append(tempDiv);
+			currentWidth = parseInt(this.el.offsetWidth, 0);
+			tempDivWidth = tempDiv.width();
+			if (currentWidth - 10 < tempDivWidth && this.model.get('physicsBox').width < tempDivWidth) {
+				this.$el.width(tempDivWidth + 30);
+			}
+			tempDiv.remove();
 		},
 		/**
 		 * 输入框移除输入焦点，视图销毁
@@ -203,7 +205,7 @@ define(function(require) {
 				switch (e.keyCode) {
 					case keyboard.enter:
 						if (e.altKey) {
-							this.$el.val(this.$el.val() + '\r\n');
+							this.$el.val(this.$el.val() + '\n');
 							this.adjustHight();
 							return;
 						} else {

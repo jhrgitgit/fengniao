@@ -69,7 +69,7 @@ define(function(require) {
 			}
 		}
 		if (textNum > 1) return;
-		if (textNum === 0) {
+		if (textNum === 0 && selectRegionCells.length >0) {
 			cacheCell = selectRegionCells[0].clone();
 		}
 		if (len) {

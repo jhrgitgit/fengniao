@@ -108,7 +108,7 @@ define(function(require) {
 				 */
 				texts: '',
 				
-				wordWrap : null
+				wordWrap : false
 			},
 			/**
 			 * 边线属性

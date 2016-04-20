@@ -13,6 +13,7 @@ define(function(require) {
 		config = require('spreadsheet/config'),
 		cache = require('basic/tools/cache'),
 		send = require('basic/tools/send'),
+		getTextBox = require('basic/tools/gettextbox'),
 		setCellHeight = require('entrance/cell/setCellHeight');
 
 	/**
@@ -113,10 +114,12 @@ define(function(require) {
 				occupyY = modelJSON.occupy.y,
 				headModelCol,
 				headModelRow,
+				inputText,
 				texts,
 				i = 0,
 				height;
-			if (text.indexOf("\n") > 0 && (this.model.get('content').wordWrap === null)) {
+			inputText = text;
+			if (text.indexOf("\n") > 0 && (this.model.get('content').wordWrap === false)) {
 				this.model.set({
 					'content.wordWrap': true
 				});
@@ -135,26 +138,14 @@ define(function(require) {
 
 
 			if (occupyX.length > 1 || occupyY.length > 1) return text;
-
-			if (this.model.get("content").wordWrap === true) {
+			if (this.model.get("content").wordWrap === true && occupyX.length === 1 && occupyY.length === 1) {
 				headModelCol = headItemCols.getModelByAlias(occupyX[0]);
 				headModelRow = headItemRows.getModelByAlias(occupyY[0]);
-				height = getHeight(text, fontsize, headModelCol.get('width')) + 4;
-				if (headModelRow.get('height') < height) setCellHeight('sheetId', headModelRow.get('displayName'), height);
+				height = getTextBox.getTextHeight(inputText, true, fontsize, headModelCol.get('width'));
+
+				if (height > 17 && headModelRow.get('height') < height) setCellHeight('sheetId', headModelRow.get('displayName'), height);
 			}
 			return text;
-
-			function getHeight(text, fontsize, containerWidth) {
-				var div = $("#__getHeight"),
-					height;
-				if (div.get(0) === undefined) {
-					$("body").append('<div id="__getHeight" style="visibility: hidden; word-break: break-all;font-size:' + fontsize + ';width:' + containerWidth + 'px">' + text + '</div>');
-					div = $("#__getHeight");
-				}
-				height = div.get(0).offsetHeight;
-				div.remove();
-				return height;
-			}
 		},
 		/**
 		 * 设置单元格背景颜色
@@ -490,7 +481,7 @@ define(function(require) {
 				this.remove();
 			}
 		},
-		modelDestroy:function(){
+		modelDestroy: function() {
 			this.remove();
 		}
 	});

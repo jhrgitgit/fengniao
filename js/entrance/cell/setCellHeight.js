@@ -17,6 +17,7 @@ define(function(require) {
 			// adjustHeight = height - headItemRows.models[index].get('height');
 			Backbone.trigger('event:rowHeightAdjust', index, height);
 		}
+
 	};
 	return setCellHeight;
 });
