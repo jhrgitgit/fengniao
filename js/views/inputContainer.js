@@ -99,6 +99,7 @@ define(function(require) {
 		 */
 		adjustHight: function() {
 			var height,
+				cellHeight,
 				fontSize,
 				width,
 				text;
@@ -106,6 +107,8 @@ define(function(require) {
 			fontSize = this.model.get("content").size;
 			width = this.model.get("physicsBox").width;
 			height = getTextBox.getTextHeight(text, this.model.get("wordWrap"), fontSize, width);
+			cellHeight = this.model.get("physicsBox").height;
+			height = height > cellHeight ? height : cellHeight;
 			this.$el.css("height", height);
 			return height;
 		},
