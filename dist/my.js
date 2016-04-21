@@ -17749,7 +17749,9 @@
     			if (tempCellList === null || tempCellList === undefined || tempCellList.length === 0) {
     				wordWrap = true;
     			} else {
-    				wordWrap = !tempCellList[0].get('content').wordWrap;
+    				wordWrap = !tempCellList[0].
+
+get('wordWrap');
     			}
     		}
     
@@ -24748,14 +24750,18 @@
     				texts,
     				i = 0,
     				height;
-    			if (text.indexOf("\n") > 0 && (this.model.get('content').wordWrap === null)) {
+    			if (text.indexOf("\n") > 0 && (this.model.
+
+get('wordWrap') === null)) {
     				this.model.set({
     					'content.wordWrap': true
     				});
     			}
     			texts = text.split('\n');
     			text = '';
-    			if (this.model.get('content').wordWrap === false) {
+    			if (this.model.
+
+get('wordWrap') === false) {
     				for (i = 0; i < texts.length; i++) {
     					text += texts[i];
     				}
@@ -26687,7 +26693,9 @@
     			// 	alignCol: modelCell ? modelCell.get('content').alignCol : 'middle',
     			// 	background: modelCell ? modelCell.get('customProp').background : "#fff",
     			// 	format: modelCell ? modelCell.get('customProp').format : 'text',
-    			// 	wordWrap: modelCell ? modelCell.get('content').wordWrap : false
+    			// 	wordWrap: modelCell ? modelCell.
+
+get('wordWrap') : false
     			// };
     			// result.border = {
     			// 	top: modelCell ? modelCell.get('border').top : false,
@@ -26967,7 +26975,9 @@
     				alignCol: modelCell ? modelCell.get('content').alignCol : 'middle',
     				background: modelCell ? modelCell.get('customProp').background : "#fff",
     				format: modelCell ? modelCell.get('customProp').format : 'text',
-    				wordWrap: modelCell ? modelCell.get('content').wordWrap : false
+    				wordWrap: modelCell ? modelCell.
+
+get('wordWrap') : false
     			};
     			result.border = {
     				top: modelCell ? modelCell.get('border').top : false,

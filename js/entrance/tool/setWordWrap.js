@@ -33,11 +33,11 @@ define(function(require) {
 			if (tempCellList === null || tempCellList === undefined || tempCellList.length === 0) {
 				wordWrap = true;
 			} else {
-				wordWrap = !tempCellList[0].get('content').wordWrap;
+				wordWrap = !tempCellList[0].get('wordWrap');
 			}
 		}
 		sendRegion = common.regionOperation(sheetId, region, function(cell) {
-			cell.set('content.wordWrap', wordWrap);
+			cell.set('wordWrap', wordWrap);
 		});
 		startColAlias=headItemCols.models[startColIndex].get("alias");
 		startRowAlias=headItemRows.models[startRowIndex].get("alias");

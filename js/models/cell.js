@@ -108,8 +108,9 @@ define(function(require) {
 				 */
 				texts: '',
 				
-				wordWrap : false
+				
 			},
+			wordWrap : false,
 			/**
 			 * 边线属性
 			 * @property {object} border

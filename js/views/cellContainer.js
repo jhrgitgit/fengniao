@@ -42,7 +42,6 @@ define(function(require) {
 			this.listenTo(this.model, 'change', this.render);
 			this.listenTo(this.model, 'change:isDestroy', this.destroy);
 			this.listenTo(this.model, 'destroy', this.modelDestroy);
-			// this.listenTo(this.model, 'destroy', this.render);
 			this.currentRule = options.currentRule;
 			if (cache.TempProp.isFrozen !== true || this.currentRule.displayPosition.endRowIndex === undefined) {
 				this.listenTo(this.model, 'change:showState', this.changeShowState);
@@ -81,7 +80,6 @@ define(function(require) {
 			// this is improve poiont , marinottejs itemview function can be replace this bug
 			this.$contentBody = $('.bg', this.$el);
 			//end
-
 			this.editStatus(modelJSON);
 			this.changeTopBorder(modelJSON);
 			this.changeLeftBorder(modelJSON);
@@ -119,14 +117,15 @@ define(function(require) {
 				i = 0,
 				height;
 			inputText = text;
-			if (text.indexOf("\n") > 0 && (this.model.get('content').wordWrap === false)) {
+/*			//ps:bug，无法区分为wordWarp单独设置，还是文本内容初始化
+			if (text.indexOf("\n") > 0 && (this.model.get('wordWrap') === false)) {
 				this.model.set({
-					'content.wordWrap': true
+					'wordWrap': true
 				});
-			}
+			}*/
 			texts = text.split('\n');
 			text = '';
-			if (this.model.get('content').wordWrap === false) {
+			if (this.model.get('wordWrap') === false) {
 				for (i = 0; i < texts.length; i++) {
 					text += texts[i];
 				}
@@ -138,7 +137,7 @@ define(function(require) {
 
 
 			if (occupyX.length > 1 || occupyY.length > 1) return text;
-			if (this.model.get("content").wordWrap === true && occupyX.length === 1 && occupyY.length === 1) {
+			if (this.model.get("wordWrap") === true && occupyX.length === 1 && occupyY.length === 1) {
 				headModelCol = headItemCols.getModelByAlias(occupyX[0]);
 				headModelRow = headItemRows.getModelByAlias(occupyY[0]);
 				height = getTextBox.getTextHeight(inputText, true, fontsize, headModelCol.get('width'));
@@ -442,7 +441,7 @@ define(function(require) {
 			}
 		},
 		wordWrap: function(modelJSON) {
-			if (modelJSON.content.wordWrap === true) {
+			if (modelJSON.wordWrap === true) {
 				this.$contentBody.css({
 					'word-break': 'break-all'
 				});

@@ -512,7 +512,7 @@ define(function(require) {
 			// 	alignCol: modelCell ? modelCell.get('content').alignCol : 'middle',
 			// 	background: modelCell ? modelCell.get('customProp').background : "#fff",
 			// 	format: modelCell ? modelCell.get('customProp').format : 'text',
-			// 	wordWrap: modelCell ? modelCell.get('content').wordWrap : false
+			// 	wordWrap: modelCell ? modelCell.get('wordWrap') : false
 			// };
 			// result.border = {
 			// 	top: modelCell ? modelCell.get('border').top : false,
@@ -792,7 +792,7 @@ define(function(require) {
 				alignCol: modelCell ? modelCell.get('content').alignCol : 'middle',
 				background: modelCell ? modelCell.get('customProp').background : "#fff",
 				format: modelCell ? modelCell.get('customProp').format : 'text',
-				wordWrap: modelCell ? modelCell.get('content').wordWrap : false
+				wordWrap: modelCell ? modelCell.get('wordWrap') : false
 			};
 			result.border = {
 				top: modelCell ? modelCell.get('border').top : false,

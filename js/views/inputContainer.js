@@ -105,7 +105,7 @@ define(function(require) {
 			text = this.$el.val();
 			fontSize = this.model.get("content").size;
 			width = this.model.get("physicsBox").width;
-			height = getTextBox.getTextHeight(text, this.model.get("content").wordWrap, fontSize, width);
+			height = getTextBox.getTextHeight(text, this.model.get("wordWrap"), fontSize, width);
 			this.$el.css("height", height);
 			return height;
 		},
@@ -123,7 +123,7 @@ define(function(require) {
 				fontSize,
 				tempDivWidth,
 				len, i;
-			if (this.model.get("content").wordWrap === true) return;
+			if (this.model.get("wordWrap") === true) return;
 			inputText = this.$el.val();
 			texts = inputText.split('\n');
 			len = texts.length;
@@ -175,6 +175,25 @@ define(function(require) {
 				})
 			});
 			this.model.set('content.texts', currentTexts);
+			if (currentTexts.indexOf("\n") > 0 && (this.model.get('wordWrap') === false)) {
+				this.model.set({
+					'wordWrap': true
+				});
+				send.PackAjax({
+					url: 'text.htm?m=wordWrap',
+					data: JSON.stringify({
+						excelId: window.SPREADSHEET_AUTHENTIC_KEY,
+						sheetId: '1',
+						coordinate: {
+							startX: headItemCols.models[modelIndexCol].get("alias"),
+							startY: headItemRows.models[modelIndexRow].get("alias"),
+							endX: headItemCols.models[modelIndexCol].get("alias"),
+							endY: headItemRows.models[modelIndexRow].get("alias")
+						},
+						wordWrap: true
+					})
+				});
+			}
 			this.destroy();
 		},
 		isShortKey: function(needle) {
@@ -198,6 +217,7 @@ define(function(require) {
 				width,
 				height,
 				currentTexts,
+				self = this,
 				len, i, isShortKey, keyboard;
 			keyboard = config.keyboard;
 			isShortKey = this.isShortKey(e.keyCode);
@@ -205,7 +225,7 @@ define(function(require) {
 				switch (e.keyCode) {
 					case keyboard.enter:
 						if (e.altKey) {
-							this.$el.val(this.$el.val() + '\n');
+							insertAtCursor('\n');
 							this.adjustHight();
 							return;
 						} else {
@@ -216,6 +236,29 @@ define(function(require) {
 						break;
 				}
 			}
+
+			function insertAtCursor(myValue) {
+				var $t = self.$el[0];
+				if (document.selection) {
+					self.$el.focus();
+					sel = document.selection.createRange();
+					sel.text = myValue;
+					self.$el.focus();
+				} else if ($t.selectionStart || $t.selectionStart == '0') {
+					var startPos = $t.selectionStart;
+					var endPos = $t.selectionEnd;
+					var scrollTop = $t.scrollTop;
+					$t.value = $t.value.substring(0, startPos) + myValue + $t.value.substring(endPos, $t.value.length);
+					self.$el.focus();
+					$t.selectionStart = startPos + myValue.length;
+					$t.selectionEnd = startPos + myValue.length;
+					$t.scrollTop = scrollTop;
+				} else {
+					self.value += myValue;
+					self.$el.focus();
+				}
+			}
+
 		},
 		/**
 		 * 视图销毁

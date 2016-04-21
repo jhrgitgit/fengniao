@@ -5,6 +5,6 @@ requirejs.config({
 	}
 });
 requirejs(['./lib/backbone',
-	// '../test/unit/clipBoardTest',
+	'../test/unit/clipBoardTest',
 	'../test/unit/reloadCellTest'], function() {
 });
