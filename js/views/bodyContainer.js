@@ -43,7 +43,9 @@ define(function(require) {
 		 */
 		initialize: function() {
 			Backbone.on('call:bodyContainer', this.callBodyContainer, this);
-			Backbone.on('event:bodyContainer:executiveFrozen', this.executiveFrozen, this);
+			Backbone.on('event:bodyContainer:executiveFrozen',
+				this.executiveFrozen, this);
+
 		},
 		/**
 		 * 渲染页面

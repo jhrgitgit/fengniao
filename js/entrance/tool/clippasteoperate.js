@@ -204,7 +204,6 @@ define(function(require) {
 				result = data.returndata;
 			}
 		});
-
 		return result;
 	}
 

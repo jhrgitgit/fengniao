@@ -5,6 +5,10 @@ requirejs.config({
 	}
 });
 requirejs(['./lib/backbone',
-	'../test/unit/clipBoardTest',
-	'../test/unit/reloadCellTest'], function() {
+	// '../test/unit/clipBoardTest',
+	// '../test/unit/reloadCellTest',
+	// '../test/unit/wordWrapTest',
+	'../test/unit/textTypeTest'
+], function() {
+	window.onload();
 });

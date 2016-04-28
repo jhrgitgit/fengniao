@@ -36,7 +36,8 @@ define(function(require) {
 		setContentFormat: function(e) {
 			this.$el.removeClass('active');
 			var formatPosition = $(e.currentTarget).data('format');
-			setTextType('1',formatPosition);
+			// setTextType('1',formatPosition);
+			setTextType.setNum(true,123);
 		}
 	});
 	return TextFormatContainer;

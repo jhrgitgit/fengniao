@@ -10,9 +10,7 @@ define(function(require) {
 		headItemRows = require('collections/headItemRow'),
 		headItemCols = require('collections/headItemCol'),
 		selectRegions = require('collections/selectRegion'),
-		config = require('spreadsheet/config'),
 		cache = require('basic/tools/cache'),
-		send = require('basic/tools/send'),
 		getTextBox = require('basic/tools/gettextbox'),
 		setCellHeight = require('entrance/cell/setCellHeight');
 
@@ -43,7 +41,8 @@ define(function(require) {
 			this.listenTo(this.model, 'change:isDestroy', this.destroy);
 			this.listenTo(this.model, 'destroy', this.modelDestroy);
 			this.currentRule = options.currentRule;
-			if (cache.TempProp.isFrozen !== true || this.currentRule.displayPosition.endRowIndex === undefined) {
+			if (cache.TempProp.isFrozen !== true || 
+				this.currentRule.displayPosition.endRowIndex === undefined) {
 				this.listenTo(this.model, 'change:showState', this.changeShowState);
 			}
 			this.currentRule = options.currentRule;
@@ -51,7 +50,9 @@ define(function(require) {
 			this.offsetTop = cache.TempProp.isFrozen ? (this.currentRule.displayPosition.offsetTop || 0) : 0;
 			this.userViewLeft = cache.TempProp.isFrozen ? modelColList.getModelByAlias(cache.UserView.colAlias).get('left') : 0;
 			this.userViewTop = cache.TempProp.isFrozen ? modelRowList.getModelByAlias(cache.UserView.rowAlias).get('top') : 0;
+			
 		},
+
 		/**
 		 * 渲染单元格
 		 * @method render 
@@ -64,8 +65,9 @@ define(function(require) {
 			 * @property template
 			 * @type {html}
 			 */
-			clipRegion = selectRegions.getModelByType("clip")[0];
+			clipRegion = selectRegions.getModelByType('clip')[0];
 			if (clipRegion !== undefined) {
+				cache.clipState = 'null';
 				clipRegion.destroy();
 			}
 			this.template = Handlebars.compile($('#tempItemCell').html());
@@ -106,7 +108,7 @@ define(function(require) {
 				this.remove();
 			}
 		},
-		getDisplayText: function(modelJSON, text) {
+		getDisplayText: function(modelJSON) {
 			var fontsize = modelJSON.content.size,
 				occupyX = modelJSON.occupy.x,
 				occupyY = modelJSON.occupy.y,
@@ -114,15 +116,11 @@ define(function(require) {
 				headModelRow,
 				inputText,
 				texts,
+				text,
 				i = 0,
 				height;
-			inputText = text;
-/*			//ps:bug，无法区分为wordWarp单独设置，还是文本内容初始化
-			if (text.indexOf("\n") > 0 && (this.model.get('wordWrap') === false)) {
-				this.model.set({
-					'wordWrap': true
-				});
-			}*/
+			inputText = modelJSON.content.texts;
+			text = modelJSON.content.displayTexts;
 			texts = text.split('\n');
 			text = '';
 			if (this.model.get('wordWrap') === false) {
@@ -134,7 +132,6 @@ define(function(require) {
 					text += texts[i] + '<br>';
 				}
 			}
-
 
 			if (occupyX.length > 1 || occupyY.length > 1) return text;
 			if (this.model.get("wordWrap") === true && occupyX.length === 1 && occupyY.length === 1) {
@@ -457,19 +454,7 @@ define(function(require) {
 		 * @param modelJSON {modelJSON} 对象属性集合
 		 */
 		changeTexts: function(modelJSON) {
-			this.$contentBody.html(this.getDisplayText(modelJSON, this.getFormatTexts()));
-		},
-		/**
-		 * 显示输入框，编辑文本内容
-		 * @method editting 
-		 */
-		editting: function() {
-			var inputContainer = new app.View.InputContainer({
-				model: model
-			});
-			this.$cellsContainer.append(inputContainer.render().el);
-
-			inputContainer.$el.focus();
+			this.$contentBody.html(this.getDisplayText(modelJSON, modelJSON.content.displayTexts));
 		},
 		/**
 		 * 移除视图

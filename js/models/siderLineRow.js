@@ -1,8 +1,6 @@
-
+'use strict';
 define(function(require) {
-	'use strict';
-	var Backbone = require('lib/backbone'),
-		BackboneNest = require('lib/backbone.nested'),
+	var BackboneNest = require('lib/backbone.nested'),
 		SiderLineRowModel;
 	
 	/**
@@ -14,7 +12,7 @@ define(function(require) {
 	 * @extends Backbone.Model
 	 * @constructor
 	 */
-	SiderLineRowModel = Backbone.Model.extend({
+	SiderLineRowModel = BackboneNest.NestedModel.extend({
 		defaults: {
 			/**
 			 * 相对位置`top`值

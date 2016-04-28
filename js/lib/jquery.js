@@ -195,7 +195,6 @@ define(function() {
 							if (copyIsArray) {
 								copyIsArray = false;
 								clone = src && jQuery.isArray(src) ? src : [];
-
 							} else {
 								clone = src && jQuery.isPlainObject(src) ? src : {};
 							}

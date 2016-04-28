@@ -66,8 +66,12 @@ define(function(require) {
 			Backbone.on('event:cellsContainer:selectRegionChange', this.selectRegionChange, this);
 			Backbone.on('event:cellsContainer:addClipRegionView', this.addClipRegionView, this);
 			Backbone.on('event:cellsContainer:getCoordinate', this.getCoordinate, this);
+
+			//
 			Backbone.on('event:cellsContainer:startHighlight', this.startHighlight, this);
+			
 			Backbone.on('event:cellsContainer:stopHighlight', this.stopHighlight, this);
+			
 
 			_.bindAll(this, 'callView', 'drag', 'highlightRegionMove');
 			this.currentRule = util.clone(cache.CurrentRule);
@@ -75,6 +79,10 @@ define(function(require) {
 			this.boxAttributes = options.boxAttributes;
 			this.parentView = options.parentView;
 			// this.posiX = this.posiY = 0;
+		},
+		a:function(){
+			Backbone.on('event:cellsContainer:startHighlight', this.startHighlight, this);
+			Backbone.on('event:cellsContainer:stopHighlight', this.stopHighlight, this);
 		},
 		/**
 		 * 渲染方法
@@ -846,6 +854,7 @@ define(function(require) {
 				currentColModel = modelColList.getModelByAlias(cache.TempProp.colAlias),
 				reduceLeftValue,
 				reduceTopValue;
+			//输入操作状态不能进行操作
 			this.userViewTop = cache.TempProp.isFrozen ? modelRowList.getModelByAlias(cache.UserView.rowAlias).get('top') : 0;
 			this.userViewLeft = cache.TempProp.isFrozen ? modelColList.getModelByAlias(cache.UserView.colAlias).get('left') : 0;
 			//if this offset value equal 0 ,that position isn't consider frozen point

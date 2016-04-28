@@ -57,7 +57,6 @@ define(function(require) {
 			cache.CellsPosition.strandX = [];
 			cache.CellsPosition.strandY = [];
 			cells.reset(null);
-		});
-		window.onload();
+		});	
 	});
 });

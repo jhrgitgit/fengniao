@@ -6,6 +6,7 @@ define(function(require) {
 		BodyContainer = require('views/bodyContainer'),
 		send = require('basic/tools/send'),
 		cache = require('basic/tools/cache'),
+		config = require('spreadsheet/config'),
 		listener = require('basic/util/listener'),
 		clipSelectOperate = require('entrance/tool/clipselectoperate'),
 		clipPasteOperate = require('entrance/tool/clippasteoperate'),
@@ -35,9 +36,6 @@ define(function(require) {
 			'resize': 'attributesRender',
 			'mouseup': 'realseDrag',
 			'beforeunload': 'closeWindow',
-			'paste': 'pasteData',
-			'copy': 'copyData',
-			'cut': 'cutData',
 			'mousedown': 'transAction',
 			'keydown': 'onKeyDown'
 		},
@@ -51,6 +49,15 @@ define(function(require) {
 			Backbone.on('call:screenContainer', this.screenContainer, this);
 			Backbone.on('event:screenContainer:destroy', this.destroy, this);
 			Backbone.on('call:screenContainer:adaptScreen', this.attributesRender, this);
+			if(config.shortcuts.cut){
+				this.$el.on('cut',this.cutData);
+			}
+			if(config.shortcuts.copy){
+				this.$el.on('copy',this.copyData);
+			}
+			if(config.shortcuts.paste){
+				this.$el.on('paste',this.pasteData);
+			}
 			_.bindAll(this, 'callView');
 			this.render();
 		},

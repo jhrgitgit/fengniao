@@ -1,12 +1,13 @@
-//attention bug, this `models` need to `Models` , this is error , secound phease correction
+//attention bug, this `models` need to `Models` , this is error 
+//, secound phease correction
 //attention bug, remarket lack isn't exist `remarket` property .
 //attention bug, showState is or not exist value ?
 
-
+'use strict';
 define(function(require) {
-	'use strict';
-	var Backbone = require('lib/backbone');
-	var BackboneNest = require('lib/backbone.nested');
+
+	var BackboneNest = require('lib/backbone.nested'),
+		CellModel;
 
 
 	/**
@@ -18,7 +19,7 @@ define(function(require) {
 	 * @extends Backbone.Collection
 	 * @constructor
 	 */
-	var CellModel = BackboneNest.NestedModel.extend({
+	CellModel = BackboneNest.NestedModel.extend({
 		defaults: {
 			/**
 			 * 单元格物理盒模型
@@ -71,12 +72,12 @@ define(function(require) {
 				 * 字号
 				 * @property {string} size
 				 */
-				size: "11pt",
+				size: '11pt',
 				/**
 				 * 字体风格
 				 * @property {string} family
 				 */
-				family: "SimSun",
+				family: 'SimSun',
 				/**
 				 * 字体加粗
 				 * @property {boolean} bd
@@ -91,7 +92,7 @@ define(function(require) {
 				 * 字体颜色RGB
 				 * @property {string} color
 				 */
-				color: "#000",
+				color: '#000',
 				/**
 				 * 左右对齐
 				 * @property {string} alignRow
@@ -101,16 +102,19 @@ define(function(require) {
 				 * 上下对齐
 				 * @property {string} alignLine
 				 */
-				alignCol: "middle",
+				alignCol: 'middle',
 				/**
-				 * 文本内容
+				 * 文本保存内容，编辑状态内容
 				 * @property {string} texts
 				 */
 				texts: '',
-				
-				
+				/**
+				 * 单元格显示内容
+				 * @property {string} displayTexts
+				 */
+				displayTexts: ''
 			},
-			wordWrap : false,
+			wordWrap: false,
 			/**
 			 * 边线属性
 			 * @property {object} border
@@ -146,17 +150,25 @@ define(function(require) {
 				 * 单元格背景颜色RGB
 				 * @property {string} background
 				 */
-				background: "#fff",
+				background: '#fff',
 				/**
-				 * 单元格格式
-				 * @property {string} format
+				 * 单元格数据类型: 货币 Y   数字 num   日期 date  文本 text   百分比 %
+				 * @property {string} format 
 				 */
-				format: "text",
+				format: 'text',
+				/**
+				 * 小数点位数：仅在数字，货币，百分比类型中有用
+				 */
+				decimal: 2,
+				/**
+				 * 是否显示千分位：仅在数字，货币，百分比类型中有用
+				 */
+				thousands: false,
 				/**
 				 * 单元格备注内容
 				 * @property {string} remarket
 				 */
-				remarket: ""
+				remarket: ''
 			},
 			/**
 			 * 单元格是否显示

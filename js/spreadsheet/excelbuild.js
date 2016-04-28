@@ -44,7 +44,8 @@ define(function(require) {
 		},
 		buildExcelView: function(id) {
 			var Screen = require('views/screen');
-			new Screen();
+			var a =new Screen();
+			console.log(a);
 		},
 		buildExcelToolbar: function() {
 			var ShearPlateContainer = require('widgets/clipboard/shearPlateContainer'),

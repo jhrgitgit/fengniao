@@ -1,9 +1,7 @@
 //attention bug, those name didn't significance
-
+'use strict';
 define(function(require) {
-	'use strict';
-	var Backbone = require('lib/backbone'),
-		BackboneNest = require('lib/backbone.nested'),
+	var BackboneNest = require('lib/backbone.nested'),
 		SelectRegion;
 
 	/**
@@ -15,7 +13,7 @@ define(function(require) {
 	 * @extends Backbone.NestedModel
 	 * @constructor
 	 */
-	SelectRegion = Backbone.NestedModel.extend({
+	SelectRegion = BackboneNest.NestedModel.extend({
 		defaults: {
 			/**
 			 * 鼠标相对位置信息，索引值，初始化信息

@@ -1052,7 +1052,160 @@ define(function(require) {
 				}
 			}
 			return cacheCellModelList;
-		}
+		},
+		/**
+		 * 根据传入显示行号，列号，判断操作区域，通过回调函数对单元格进行操作操作
+		 */
+		operateCellByDisplayName: function(sheetId, regionLabel, callback) {
+			var region = {},
+				resultRegion,
+				regionCellsList,
+				headLineColModelList,
+				headLineRowModelList,
+				colLen,
+				rowLen,
+				startRowIndex,
+				startColIndex,
+				endRowIndex,
+				endColIndex,
+				cellList,
+				currentCell,
+				i, j, h = 0;
+			if (regionLabel !== null && regionLabel !== undefined) {
+				region = analysisLabel(regionLabel);
+				region = this.getFullOperationRegion(region.startColIndex, region.startRowIndex, region.endColIndex, region.endRowIndex);
+			} else {
+				region.startColIndex = selectRegions.models[0].get('wholePosi').startX;
+				region.startRowIndex = selectRegions.models[0].get('wholePosi').startY;
+				region.endColIndex = selectRegions.models[0].get('wholePosi').endX;
+				region.endRowIndex = selectRegions.models[0].get('wholePosi').endY;
+			}
+
+			startRowIndex = region.startRowIndex;
+			startColIndex = region.startColIndex;
+			endColIndex = region.endColIndex;
+			endRowIndex = region.endRowIndex;
+			cellList = this.getRegionCells(startColIndex, startRowIndex, endColIndex, endRowIndex);
+			for (i = startRowIndex; i < endRowIndex + 1; i++) {
+				for (j = startColIndex; j < endColIndex + 1; j++) {
+					currentCell = cellList[h];
+					if (currentCell === null) {
+						currentCell = this.createCellModel(j, i);
+					}
+					callback(currentCell);
+					h++;
+				}
+			}
+			/**
+			 * 将行列displayName 转化为行列索引
+			 * @param  {string} Label 行号列号
+			 */
+			function analysisLabel (Label) {
+				var region = {},
+					startColIndex,
+					startRowIndex,
+					endColIndex,
+					endRowIndex;
+				if (regionLabel instanceof Array) {
+					region.startColIndex = headItemCol.getIndexByDisplayname(getDisplayName(regionLabel[0], 'col'));
+					region.startRowIndex = headItemRow.getIndexByDisplayname(getDisplayName(regionLabel[0], 'row'));
+					region.endColIndex = headItemCol.getIndexByDisplayname(getDisplayName(regionLabel[1], 'col'));
+					region.endRowIndex = headItemRow.getIndexByDisplayname(getDisplayName(regionLabel[1], 'row'));
+				} else {
+					region.startColIndex = region.endColIndex = headItemCol.getIndexByDisplayname(getDisplayName(regionLabel, 'col'));
+					region.startRowIndex = region.endRowIndex = headItemRow.getIndexByDisplayname(getDisplayName(regionLabel, 'row'));
+				}
+				return region;
+				/**
+				 * 解析字符串,将混合字符拆分，例如：A1 拆分为 A  1
+				 * @param  {string} Label    行列标识
+				 * @param  {string} lineType 处理类型
+				 * @return {string} 处理后结果         
+				 */
+				function getDisplayName(Label, lineType) {
+					var result = '',
+						len = 0;
+					if (/[A-Z]/i.test(Label)) {
+						len = Label.match(/[A-Z]/ig).length;
+					}
+					if (lineType === 'col') {
+						result = Label.substring(0, len);
+					} else if (lineType === 'row') {
+						result = Label.substring(len);
+					}
+					return result;
+				}
+			}
+		},
+		/**
+		 * 获取完成的操作区域：操作区域内，若存在合并单元格超出操作区域，操作区域应按照单元格扩大，
+		 * 直到没有单元格超出区域
+		 * @param  {[type]} startColIndex [description]
+		 * @param  {[type]} startRowIndex [description]
+		 * @param  {[type]} endColIndex   [description]
+		 * @param  {[type]} endRowIndex   [description]
+		 * @return {[type]}               [description]
+		 */
+		getFullOperationRegion: function(startColIndex, startRowIndex, endColIndex, endRowIndex) {
+			var headItemRowList = headItemRows.models,
+				headItemColList = headItemCols.models,
+				tempCellList,
+				cellstartColIndex,
+				cellstartRowIndex,
+				cellendColIndex,
+				cellendRowIndex,
+				cache, region,
+				flag = true,
+				i = 0;
+
+			if (startColIndex > endColIndex) {
+				cache = startColIndex;
+				startColIndex = endColIndex;
+				endColIndex = cache;
+			}
+			if (startRowIndex > endRowIndex) {
+				cache = startRowIndex;
+				startRowIndex = endRowIndex;
+				endRowIndex = cache;
+			}
+			while (flag) {
+				flag = false;
+				tempCellList = cells.getCellByX(startColIndex, startRowIndex, endColIndex, endRowIndex);
+				for (; i < tempCellList.length; i++) {
+					cellstartRowIndex = binary.modelBinary(tempCellList[i].get('physicsBox').top, headItemRowList, 'top', 'height', 0, headItemRowList.length - 1);
+					cellstartColIndex = binary.modelBinary(tempCellList[i].get('physicsBox').left, headItemColList, 'left', 'width', 0, headItemColList.length - 1);
+					cellendRowIndex = binary.modelBinary(tempCellList[i].get('physicsBox').top + tempCellList[i].get('physicsBox').height, headItemRowList, 'top', 'height', 0, headItemRowList.length - 1);
+					cellendColIndex = binary.modelBinary(tempCellList[i].get('physicsBox').left + tempCellList[i].get('physicsBox').width, headItemColList, 'left', 'width', 0, headItemColList.length - 1);
+					if (cellstartColIndex < startColIndex) {
+						startColIndex = cellstartColIndex;
+						flag = true;
+						break;
+					}
+					if (cellstartRowIndex < startRowIndex) {
+						startRowIndex = cellstartRowIndex;
+						flag = true;
+						break;
+					}
+					if (cellendRowIndex > endRowIndex) {
+						endRowIndex = cellendRowIndex;
+						flag = true;
+						break;
+					}
+					if (cellendColIndex > endColIndex) {
+						endColIndex = cellendColIndex;
+						flag = true;
+						break;
+					}
+				}
+			}
+			region = {
+				startRowIndex: startRowIndex,
+				startColIndex: startColIndex,
+				endRowIndex: endRowIndex,
+				endColIndex: endColIndex
+			};
+			return region;
+		},
 	});
 	return new Cells();
 });

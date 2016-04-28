@@ -178,6 +178,8 @@ define(function(require) {
 				})
 			});
 			this.model.set('content.texts', currentTexts);
+			this.model.set('content.texts', currentTexts);
+			//ps：增加设置显示内容
 			if (currentTexts.indexOf("\n") > 0 && (this.model.get('wordWrap') === false)) {
 				this.model.set({
 					'wordWrap': true
@@ -225,18 +227,16 @@ define(function(require) {
 			keyboard = config.keyboard;
 			isShortKey = this.isShortKey(e.keyCode);
 			if (isShortKey) {
-				switch (e.keyCode) {
-					case keyboard.enter:
-						if (e.altKey) {
-							insertAtCursor('\n');
-							this.adjustHight();
-							return;
-						} else {
-							this.close();
-							Backbone.trigger('event:mainContainer:nextCellPosition', 'DOWN');
-							Backbone.trigger('event:cellsContainer:selectRegionChange', 'DOWN');
-						}
-						break;
+				if(e.keyCode = keyboard.enter){
+					if(config.shortcuts.enter && e.altKey===false){
+						this.close();
+						Backbone.trigger('event:mainContainer:nextCellPosition', 'DOWN');
+						Backbone.trigger('event:cellsContainer:selectRegionChange', 'DOWN');
+					}else if(config.shortcuts.altEnter && e.altKey){
+						insertAtCursor('\n');
+						this.adjustHight();
+						return;
+					}
 				}
 			}
 
