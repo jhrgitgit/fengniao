@@ -185,7 +185,7 @@ define(function(require) {
 				month,
 				day,
 				result;
-			if (!isDate(value)) return value;
+			if (!this.isDate(value)) return value;
 			year = value.match(/\d{4}/)[0];
 			month = value.match(/(-|\u5e74)\d{1,2}(-|\u6708)/);
 			if (month !== null) {

@@ -69,5 +69,6 @@ define(function(require) {
 			expect(textTypeHandler.getFormatDate("2016年10月11日","yyyy-mm-dd")).toEqual("2016-10-11");
 			expect(textTypeHandler.getFormatDate("2016年10月11日","yyyy-mm")).toEqual("2016-10");
 			expect(textTypeHandler.getFormatDate("2016年10月11日","yyyy")).toEqual("2016");
+		});
 	});
 });
