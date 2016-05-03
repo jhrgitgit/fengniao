@@ -2,7 +2,6 @@ define(function(require) {
 	'use strict';
 
 	var $ = require('lib/jquery'),
-		Backbone = require('lib/backbone'),
 		send = require('basic/tools/send'),
 		cells = require('collections/cells'),
 		config = require('spreadsheet/config'),
