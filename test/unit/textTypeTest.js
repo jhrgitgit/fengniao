@@ -58,18 +58,18 @@ define(function(require) {
 			expect(textTypeHandler.isDate("YYYY-MM-DD")).toEqual(false);
 		});
 		it("日期格式转换测试", function() {
-			expect(textTypeHandler.getFormatDate("2001年02月29日", "yyyy-mm-dd")).toEqual("2001年02月29日");
-			expect(textTypeHandler.getFormatDate("2016", "yyyy-mm-dd")).toEqual("2016-01-01");
-			expect(textTypeHandler.getFormatDate("2016", "yyyy-mm")).toEqual("2016-01");
+			expect(textTypeHandler.getFormatDate("2001年02月29日", "yyyy-MM-dd")).toEqual("2001年02月29日");
+			expect(textTypeHandler.getFormatDate("2016", "yyyy-MM-dd")).toEqual("2016-01-01");
+			expect(textTypeHandler.getFormatDate("2016", "yyyy-MM")).toEqual("2016-01");
 			expect(textTypeHandler.getFormatDate("2016", "yyyy")).toEqual("2016");
-			expect(textTypeHandler.getFormatDate("2016", "yyyy年mm月dd日")).toEqual("2016年01月01日");
-			expect(textTypeHandler.getFormatDate("2016", "yyyy年mm月")).toEqual("2016年01月");
+			expect(textTypeHandler.getFormatDate("2016", "yyyy年MM月dd日")).toEqual("2016年01月01日");
+			expect(textTypeHandler.getFormatDate("2016", "yyyy年MM月")).toEqual("2016年01月");
 			expect(textTypeHandler.getFormatDate("2016", "yyyy年")).toEqual("2016年");
-			expect(textTypeHandler.getFormatDate("2016-01-01", "yyyy年mm月dd日")).toEqual("2016年01月01日");
-			expect(textTypeHandler.getFormatDate("2016-01-01", "yyyy年mm月")).toEqual("2016年01月");
+			expect(textTypeHandler.getFormatDate("2016-01-01", "yyyy年MM月dd日")).toEqual("2016年01月01日");
+			expect(textTypeHandler.getFormatDate("2016-01-01", "yyyy年MM月")).toEqual("2016年01月");
 			expect(textTypeHandler.getFormatDate("2016-01-01", "yyyy年")).toEqual("2016年");
-			expect(textTypeHandler.getFormatDate("2016年10月11日", "yyyy-mm-dd")).toEqual("2016-10-11");
-			expect(textTypeHandler.getFormatDate("2016年10月11日", "yyyy-mm")).toEqual("2016-10");
+			expect(textTypeHandler.getFormatDate("2016年10月11日", "yyyy-MM-dd")).toEqual("2016-10-11");
+			expect(textTypeHandler.getFormatDate("2016年10月11日", "yyyy-MM")).toEqual("2016-10");
 			expect(textTypeHandler.getFormatDate("2016年10月11日", "yyyy")).toEqual("2016");
 		});
 		it("货币格式校验测试", function() {

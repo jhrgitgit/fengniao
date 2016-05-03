@@ -22,7 +22,6 @@ define(function(require) {
 		setFontStyle = require('entrance/tool/setFontStyle'),
 		setFrozen = require('entrance/sheet/setFrozen'),
 		setAlign = require('entrance/tool/setAlign'),
-		setTextType = require('entrance/tool/setTextType'),
 		operationDataSourceRegion = require('entrance/selectregion/dataSourceRegionOperation'),
 		getPointByPosi = require('entrance/sheet/getPointByPosi'),
 		setWordWrap = require('entrance/tool/setWordWrap'),
@@ -31,7 +30,8 @@ define(function(require) {
 		getFrozenState = require('entrance/sheet/getFrozenState'),
 		getSelectRegion = require('entrance/sheet/getSelectRegion'),
 		highlight = require('entrance/extention/highlight'),
-		reloadCells = require('entrance/cell/reloadCells');
+		reloadCells = require('entrance/cell/reloadCells'),
+		setTextType = require('entrance/tool/settexttype');
 
 
 
@@ -88,7 +88,13 @@ define(function(require) {
 			SpreadSheet.prototype.setFontStyle = setFontStyle;
 			SpreadSheet.prototype.setFontWeight = setFontWeight;
 			SpreadSheet.prototype.setFrozen = setFrozen;
-			SpreadSheet.prototype.setTextType = setTextType;
+
+			SpreadSheet.prototype.setTextType = setTextType.setText;
+			SpreadSheet.prototype.setNumType = setTextType.setNum;
+			SpreadSheet.prototype.setDateType = setTextType.setDate;
+			SpreadSheet.prototype.setPercentType = setTextType.setPercent;
+			SpreadSheet.prototype.setCoinType = setTextType.setCoin;
+
 			SpreadSheet.prototype.getPointByPosi = getPointByPosi;
 			SpreadSheet.prototype.adaptScreen = adaptScreen;
 			SpreadSheet.prototype.getTextByCoordinate = getTextByCoordinate;

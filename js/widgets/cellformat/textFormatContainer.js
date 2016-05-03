@@ -1,10 +1,8 @@
+'use strict';
 define(function(require) {
-	'use strict';
 	var $ = require('lib/jquery'),
-		_ = require('lib/underscore'),
 		Backbone = require('lib/backbone'),
-		send = require('basic/tools/send'),
-		selectRegions = require('collections/selectRegion'),
+		config = require('spreadsheet/config'),
 		setTextType = require('entrance/tool/settexttype');
 	/**
 	 * 文本类型视图类
@@ -20,7 +18,7 @@ define(function(require) {
 		 * 绑定视图
 		 * @property {string} el
 		 */
-		el: "#contentFormat",
+		el: '#contentFormat',
 		/**
 		 * 绑定鼠标事件
 		 * @method events
@@ -41,11 +39,32 @@ define(function(require) {
 				case 'text':
 					setTextType.setText();
 					break;
-				case 'number':
+				case 'number-1':
+					setTextType.setNum(true, 0);
+					break;
+				case 'number-2':
 					setTextType.setNum(true, 2);
 					break;
-				case 'date':
-					setTextType.setDate("yyyy-MM-dd");
+				case 'number-3':
+					setTextType.setNum(true, 4);
+					break;
+				case 'date-1':
+					setTextType.setDate(config.dateFormatType.frist);
+					break;
+				case 'date-2':
+					setTextType.setDate(config.dateFormatType.second);
+					break;
+				case 'date-3':
+					setTextType.setDate(config.dateFormatType.third);
+					break;
+				case 'date-4':
+					setTextType.setDate(config.dateFormatType.fourth);
+					break;
+				case 'date-5':
+					setTextType.setDate(config.dateFormatType.fifth);
+					break;
+				case 'date-6':
+					setTextType.setDate(config.dateFormatType.sixth);
 					break;
 				case 'percent':
 					setTextType.setPercent(2);
