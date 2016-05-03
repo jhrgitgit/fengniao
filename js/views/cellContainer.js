@@ -12,7 +12,8 @@ define(function(require) {
 		selectRegions = require('collections/selectRegion'),
 		cache = require('basic/tools/cache'),
 		getTextBox = require('basic/tools/gettextbox'),
-		setCellHeight = require('entrance/cell/setCellHeight');
+		setCellHeight = require('entrance/cell/setCellHeight'),
+		textTypeHandler = require('entrance/tool/settexttype');
 
 	/**
 	 * 单元格视图类，用于显示单元格对象
@@ -41,7 +42,7 @@ define(function(require) {
 			this.listenTo(this.model, 'change:isDestroy', this.destroy);
 			this.listenTo(this.model, 'destroy', this.modelDestroy);
 			this.currentRule = options.currentRule;
-			if (cache.TempProp.isFrozen !== true || 
+			if (cache.TempProp.isFrozen !== true ||
 				this.currentRule.displayPosition.endRowIndex === undefined) {
 				this.listenTo(this.model, 'change:showState', this.changeShowState);
 			}
@@ -50,7 +51,7 @@ define(function(require) {
 			this.offsetTop = cache.TempProp.isFrozen ? (this.currentRule.displayPosition.offsetTop || 0) : 0;
 			this.userViewLeft = cache.TempProp.isFrozen ? modelColList.getModelByAlias(cache.UserView.colAlias).get('left') : 0;
 			this.userViewTop = cache.TempProp.isFrozen ? modelRowList.getModelByAlias(cache.UserView.rowAlias).get('top') : 0;
-			
+
 		},
 
 		/**
@@ -96,7 +97,8 @@ define(function(require) {
 			this.setFont(modelJSON);
 			this.setFontSize(modelJSON);
 			this.wordWrap(modelJSON);
-			this.changeTexts(modelJSON);
+			this.changeTexts(modelJSON, this.getFormatText());
+			// console.log(this.model.get('content').displayTexts);
 			return this;
 		},
 		/**
@@ -108,6 +110,43 @@ define(function(require) {
 				this.remove();
 			}
 		},
+		getFormatText: function() {
+			var modelJSON = this.model.toJSON(),
+				text = modelJSON.content.texts,
+				format = modelJSON.customProp.format,
+				decimal = modelJSON.customProp.decimal,
+				thousands = modelJSON.customProp.thousands,
+				dateFormat = modelJSON.customProp.dateFormat;
+
+			if (decimal === 'null') decimal = -1;
+			switch (format) {
+				case 'num':
+					if (thousands === 'null' && text.indexOf(',') !== -1) {
+						thousands = true;
+					} else if (thousands === 'null') {
+						thousands = false;
+					}
+					this.model.set("content.displayTexts", textTypeHandler.getFormatNumber(text, thousands, decimal));
+					break;
+				case 'date':
+					if (dateFormat === 'null') {
+						this.model.set("content.displayTexts", text);
+					} else {
+						this.model.set("content.displayTexts", textTypeHandler.getFormatDate(text, dateFormat));
+					}
+					break;
+				case 'coin':
+					this.model.set("content.displayTexts", textTypeHandler.getFormatCoin(text,decimal));
+					break;
+				case 'percent':
+					this.model.set("content.displayTexts", textTypeHandler.getFormatPercent(text, decimal));
+					break;
+				default:
+					this.model.set("content.displayTexts", text);
+					break;
+			}
+
+		},
 		getDisplayText: function(modelJSON) {
 			var fontsize = modelJSON.content.size,
 				occupyX = modelJSON.occupy.x,
@@ -117,10 +156,12 @@ define(function(require) {
 				inputText,
 				texts,
 				text,
+				temp,
 				i = 0,
 				height;
-			inputText = modelJSON.content.texts;
+			// inputText = modelJSON.content.texts;
 			text = modelJSON.content.displayTexts;
+			temp = text;
 			texts = text.split('\n');
 			text = '';
 			if (this.model.get('wordWrap') === false) {
@@ -137,8 +178,7 @@ define(function(require) {
 			if (this.model.get("wordWrap") === true && occupyX.length === 1 && occupyY.length === 1) {
 				headModelCol = headItemCols.getModelByAlias(occupyX[0]);
 				headModelRow = headItemRows.getModelByAlias(occupyY[0]);
-				height = getTextBox.getTextHeight(inputText, true, fontsize, headModelCol.get('width'));
-
+				height = getTextBox.getTextHeight(temp, true, fontsize, headModelCol.get('width'));
 				if (height > 17 && headModelRow.get('height') < height) setCellHeight('sheetId', headModelRow.get('displayName'), height);
 			}
 			return text;
@@ -219,10 +259,19 @@ define(function(require) {
 		 * @param modelJSON {modelJSON} 对象属性集合
 		 */
 		setTransverseAlign: function(modelJSON) {
-			var alignRowPosi = modelJSON.content.alignRow;
+
+			var format = modelJSON.customProp.format,
+				alignRowPosi = modelJSON.content.alignRow;
+
 			if (alignRowPosi === 'center' || alignRowPosi === 'right') {
 				this.$el.css({
 					'text-align': alignRowPosi
+				});
+				return;
+			}
+			if (alignRowPosi === '' && format !== 'text') {
+				this.$el.css({
+					'text-align': 'right'
 				});
 				return;
 			}
@@ -252,32 +301,32 @@ define(function(require) {
 				});
 			}
 		},
-		/**
-		 * 设置单元格文本格式
-		 * @method getModelDisplayTexts 
-		 */
-		getFormatTexts: function() {
-			//获取当前文本
+		// /**
+		//  * 设置单元格文本格式
+		//  * @method getModelDisplayTexts 
+		//  */
+		// getFormatTexts: function() {
+		// 	//获取当前文本
 
-			var modelJSON = this.model.toJSON(),
-				cellContent = modelJSON.content.texts,
-				cellFormat = modelJSON.customProp.format,
-				displayContent = '',
-				texts, i = 0;
-			//ps:设置显示文本
-			switch (cellFormat) {
-				case 'num':
-					displayContent = this.contentToDigital();
-					break;
-				case 'time':
-					displayContent = this.contentToDate();
-					break;
-				default:
-					displayContent = this.contentToText();
-					break;
-			}
-			return displayContent;
-		},
+		// 	var modelJSON = this.model.toJSON(),
+		// 		cellContent = modelJSON.content.texts,
+		// 		cellFormat = modelJSON.customProp.format,
+		// 		displayContent = '',
+		// 		texts, i = 0;
+		// 	//ps:设置显示文本
+		// 	switch (cellFormat) {
+		// 		case 'num':
+		// 			displayContent = this.contentToDigital();
+		// 			break;
+		// 		case 'time':
+		// 			displayContent = this.contentToDate();
+		// 			break;
+		// 		default:
+		// 			displayContent = this.contentToText();
+		// 			break;
+		// 	}
+		// 	return displayContent;
+		// },
 		/**
 		 * 转换单元格内容格式为数字
 		 * @method contentToDigital 
@@ -454,7 +503,7 @@ define(function(require) {
 		 * @param modelJSON {modelJSON} 对象属性集合
 		 */
 		changeTexts: function(modelJSON) {
-			this.$contentBody.html(this.getDisplayText(modelJSON, modelJSON.content.displayTexts));
+			this.$contentBody.html(this.getDisplayText(modelJSON));
 		},
 		/**
 		 * 移除视图

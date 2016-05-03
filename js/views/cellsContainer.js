@@ -80,10 +80,6 @@ define(function(require) {
 			this.parentView = options.parentView;
 			// this.posiX = this.posiY = 0;
 		},
-		a:function(){
-			Backbone.on('event:cellsContainer:startHighlight', this.startHighlight, this);
-			Backbone.on('event:cellsContainer:stopHighlight', this.stopHighlight, this);
-		},
 		/**
 		 * 渲染方法
 		 * @method render 

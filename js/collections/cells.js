@@ -2,6 +2,7 @@ define(function(require) {
 	'use strict';
 	var Backbone = require('lib/backbone'),
 		cache = require('basic/tools/cache'),
+		binary = require('basic/util/binary'), 
 		CellModel = require('models/cell'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
@@ -1071,16 +1072,11 @@ define(function(require) {
 				cellList,
 				currentCell,
 				i, j, h = 0;
-			if (regionLabel !== null && regionLabel !== undefined) {
-				region = analysisLabel(regionLabel);
-				region = this.getFullOperationRegion(region.startColIndex, region.startRowIndex, region.endColIndex, region.endRowIndex);
-			} else {
-				region.startColIndex = selectRegions.models[0].get('wholePosi').startX;
-				region.startRowIndex = selectRegions.models[0].get('wholePosi').startY;
-				region.endColIndex = selectRegions.models[0].get('wholePosi').endX;
-				region.endRowIndex = selectRegions.models[0].get('wholePosi').endY;
-			}
-
+			// if (regionLabel !== null && regionLabel !== undefined) {
+				region = this.analysisLabel(regionLabel);
+			// }else{
+				
+			// }
 			startRowIndex = region.startRowIndex;
 			startColIndex = region.startColIndex;
 			endColIndex = region.endColIndex;
@@ -1096,45 +1092,52 @@ define(function(require) {
 					h++;
 				}
 			}
+
+		},
+		/**
+		 * 将行列displayName 转化为行列索引
+		 * @param  {string} Label 行号列号
+		 */
+		analysisLabel: function(regionLabel) {
+			var region = {},
+				startColIndex,
+				startRowIndex,
+				endColIndex,
+				endRowIndex;
+			if (regionLabel === undefined) {
+				region.startColIndex = selectRegions.models[0].get('wholePosi').startX;
+				region.startRowIndex = selectRegions.models[0].get('wholePosi').startY;
+				region.endColIndex = selectRegions.models[0].get('wholePosi').endX;
+				region.endRowIndex = selectRegions.models[0].get('wholePosi').endY;
+			} else if (regionLabel instanceof Array) {
+				region.startColIndex = headItemCol.getIndexByDisplayname(getDisplayName(regionLabel[0], 'col'));
+				region.startRowIndex = headItemRow.getIndexByDisplayname(getDisplayName(regionLabel[0], 'row'));
+				region.endColIndex = headItemCol.getIndexByDisplayname(getDisplayName(regionLabel[1], 'col'));
+				region.endRowIndex = headItemRow.getIndexByDisplayname(getDisplayName(regionLabel[1], 'row'));
+			} else {
+				region.startColIndex = region.endColIndex = headItemCol.getIndexByDisplayname(getDisplayName(regionLabel, 'col'));
+				region.startRowIndex = region.endRowIndex = headItemRow.getIndexByDisplayname(getDisplayName(regionLabel, 'row'));
+			}
+			region = this.getFullOperationRegion(region.startColIndex, region.startRowIndex, region.endColIndex, region.endRowIndex);
+			return region;
 			/**
-			 * 将行列displayName 转化为行列索引
-			 * @param  {string} Label 行号列号
+			 * 解析字符串,将混合字符拆分，例如：A1 拆分为 A  1
+			 * @param  {string} Label    行列标识
+			 * @param  {string} lineType 处理类型
+			 * @return {string} 处理后结果         
 			 */
-			function analysisLabel (Label) {
-				var region = {},
-					startColIndex,
-					startRowIndex,
-					endColIndex,
-					endRowIndex;
-				if (regionLabel instanceof Array) {
-					region.startColIndex = headItemCol.getIndexByDisplayname(getDisplayName(regionLabel[0], 'col'));
-					region.startRowIndex = headItemRow.getIndexByDisplayname(getDisplayName(regionLabel[0], 'row'));
-					region.endColIndex = headItemCol.getIndexByDisplayname(getDisplayName(regionLabel[1], 'col'));
-					region.endRowIndex = headItemRow.getIndexByDisplayname(getDisplayName(regionLabel[1], 'row'));
-				} else {
-					region.startColIndex = region.endColIndex = headItemCol.getIndexByDisplayname(getDisplayName(regionLabel, 'col'));
-					region.startRowIndex = region.endRowIndex = headItemRow.getIndexByDisplayname(getDisplayName(regionLabel, 'row'));
+			function getDisplayName(Label, lineType) {
+				var result = '',
+					len = 0;
+				if (/[A-Z]/i.test(Label)) {
+					len = Label.match(/[A-Z]/ig).length;
 				}
-				return region;
-				/**
-				 * 解析字符串,将混合字符拆分，例如：A1 拆分为 A  1
-				 * @param  {string} Label    行列标识
-				 * @param  {string} lineType 处理类型
-				 * @return {string} 处理后结果         
-				 */
-				function getDisplayName(Label, lineType) {
-					var result = '',
-						len = 0;
-					if (/[A-Z]/i.test(Label)) {
-						len = Label.match(/[A-Z]/ig).length;
-					}
-					if (lineType === 'col') {
-						result = Label.substring(0, len);
-					} else if (lineType === 'row') {
-						result = Label.substring(len);
-					}
-					return result;
+				if (lineType === 'col') {
+					result = Label.substring(0, len);
+				} else if (lineType === 'row') {
+					result = Label.substring(len);
 				}
+				return result;
 			}
 		},
 		/**
@@ -1170,7 +1173,7 @@ define(function(require) {
 			}
 			while (flag) {
 				flag = false;
-				tempCellList = cells.getCellByX(startColIndex, startRowIndex, endColIndex, endRowIndex);
+				tempCellList = this.getCellByX(startColIndex, startRowIndex, endColIndex, endRowIndex);
 				for (; i < tempCellList.length; i++) {
 					cellstartRowIndex = binary.modelBinary(tempCellList[i].get('physicsBox').top, headItemRowList, 'top', 'height', 0, headItemRowList.length - 1);
 					cellstartColIndex = binary.modelBinary(tempCellList[i].get('physicsBox').left, headItemColList, 'left', 'width', 0, headItemColList.length - 1);

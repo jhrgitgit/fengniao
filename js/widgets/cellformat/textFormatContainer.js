@@ -5,7 +5,7 @@ define(function(require) {
 		Backbone = require('lib/backbone'),
 		send = require('basic/tools/send'),
 		selectRegions = require('collections/selectRegion'),
-		setTextType=require('entrance/tool/setTextType');
+		setTextType = require('entrance/tool/settexttype');
 	/**
 	 * 文本类型视图类
 	 * @author ray wu
@@ -37,7 +37,26 @@ define(function(require) {
 			this.$el.removeClass('active');
 			var formatPosition = $(e.currentTarget).data('format');
 			// setTextType('1',formatPosition);
-			setTextType.setNum(true,123);
+			switch (formatPosition) {
+				case 'text':
+					setTextType.setText();
+					break;
+				case 'number':
+					setTextType.setNum(true, 2);
+					break;
+				case 'date':
+					setTextType.setDate("yyyy-MM-dd");
+					break;
+				case 'percent':
+					setTextType.setPercent(2);
+					break;
+				case 'coin':
+					setTextType.setCoin(2);
+					break;
+				default:
+					setTextType.setText();
+					break;
+			}
 		}
 	});
 	return TextFormatContainer;

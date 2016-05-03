@@ -6,59 +6,100 @@ define(function(require) {
 		send = require('basic/tools/send'),
 		cells = require('collections/cells'),
 		config = require('spreadsheet/config'),
+		headItemCols = require('collections/headItemCol'),
+		headItemRows = require('collections/headItemRow'),
 		textTypeHandler;
 
-
-	// var setTextType = function(sheetId, format, region) {
-	// 	var tempValue;
-	// 	if (format === 'number') {
-	// 		tempValue = 'num';
-	// 	} else if (format === 'time') {
-	// 		tempValue = 'time';
-	// 	} else {
-	// 		tempValue = 'text';
-	// 	}
-	// 	sendRegion = common.regionOperation(sheetId, region, function(cell) {
-	// 		cell.set('customProp.format', tempValue);
-	// 	});
-	// 	send.PackAjax({
-	// 		url: 'text.htm?m=date_format',
-	// 		data: JSON.stringify({
-	// 			excelId: window.SPREADSHEET_AUTHENTIC_KEY,
-	// 			sheetId: '1',
-	// 			coordinate: {
-	// 				startX: sendRegion.startColIndex,
-	// 				startY: sendRegion.startRowIndex,
-	// 				endX: sendRegion.endColIndex,
-	// 				endY: sendRegion.endRowIndex
-	// 			},
-	// 			format: tempValue
-	// 		})
-	// 	});
-
-	// };
-	// return setTextType;
 	textTypeHandler = {
-		setText: function() {
-			cells.operateCellByDisplayName('1', null, function(cell) {
-
-			});
-		},
-		setNum: function(thousands, decimal) {
-			var self=this,
+		setText: function(label) {
+			var self = this,
 				text;
-			cells.operateCellByDisplayName('1', null, function(cell) {
+			cells.operateCellByDisplayName('1', label, function(cell) {
+				text = cell.get("content").texts;
+				cell.set("customProp.format", "text");
+				cell.set("customProp.decimal", 'null');
+				cell.set("customProp.thousands", 'null');
+				cell.set("customProp.dateFormat", 'null');
+			});
+			this.sendData('text', null, null, null, label);
+		},
+		setNum: function(thousands, decimal, label) {
+			var self = this,
+				text;
+			cells.operateCellByDisplayName('1', label, function(cell) {
 				text = cell.get("content").texts;
 				if (self.isNum(text)) {
 					cell.set("customProp.format", "num");
 					cell.set("customProp.decimal", decimal);
-					cell.set("content.displayTexts", self.getFormatNumber(text, true, 4));
+					cell.set("customProp.thousands", thousands);
+					cell.set("customProp.dateFormat", 'null');
 				}
 			});
+			this.sendData('num', decimal, thousands, null, label);
 		},
-		setDate: function() {
+		setDate: function(dateFormat, label) {
+			var self = this,
+				text;
+			cells.operateCellByDisplayName('1', label, function(cell) {
+				text = cell.get("content").texts;
+				if (self.isDate(text)) {
+					cell.set("customProp.format", "date");
+					cell.set("customProp.decimal", 'null');
+					cell.set("customProp.thousands", 'null');
+					cell.set("customProp.dateFormat", dateFormat);
+				}
+			});
+			this.sendData('date', null, null, dateFormat, label);
+		},
+		setPercent: function(decimal, label) {
+			var self = this,
+				text;
+			cells.operateCellByDisplayName('1', label, function(cell) {
+				text = cell.get("content").texts;
+				if (self.isPercent(text)) {
+					cell.set("customProp.format", "percent");
+					cell.set("customProp.decimal", decimal);
+					cell.set("customProp.thousands", false);
+					cell.set("customProp.dateFormat", 'null');
+				}
+			});
+			this.sendData('percent', decimal, false, null, label);
+		},
 
+		setCoin: function(decimal, label) {
+			var self = this,
+				text;
+			cells.operateCellByDisplayName('1', label, function(cell) {
+				text = cell.get("content").texts;
+				if (self.isCoin(text)) {
+					cell.set("customProp.format", "coin");
+					cell.set("customProp.decimal", decimal);
+					cell.set("customProp.thousands", true);
+					cell.set("customProp.dateFormat", 'null');
+				}
+			});
+			this.sendData('coin', decimal, true, null, label);
 		},
+		sendData: function(format, decimal, thousands, dateFormat, label) {
+			var region = cells.analysisLabel(label);
+			send.PackAjax({
+				url: 'text.htm?m=date_format',
+				data: JSON.stringify({
+					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
+					sheetId: '1',
+					startRowAlais: headItemRows.models[region.startRowIndex].get('alias'),
+					endRowAlais: headItemRows.models[region.endRowIndex].get('alias'),
+					startColAlais: headItemCols.models[region.startColIndex].get('alias'),
+					endColAlais: headItemCols.models[region.endColIndex].get('alias'),
+					format: format,
+					decimalPoint: decimal || 0,
+					thousandPoint: thousands || false,
+					currencySymbol: '¥',
+					dateFormat: dateFormat || ''
+				})
+			});
+		},
+		//ps:空格问题
 		isNum: function(value) {
 			var values,
 				tail,
@@ -97,7 +138,7 @@ define(function(require) {
 				temp = "",
 				sign = "", //正负号
 				values;
-			if (!this.isNum(value)) return value;
+			if (!this.isNum(value) || value === "") return value;
 			values = value.split(".");
 			head = values[0];
 			//去除符号
@@ -143,6 +184,10 @@ define(function(require) {
 					}
 				}
 			}
+			if (decimal < 0 && values.length > 1) {
+				head += ".";
+				tail = values[1];
+			}
 			return sign + head + tail;
 		},
 		isDate: function(value) {
@@ -185,7 +230,7 @@ define(function(require) {
 				month,
 				day,
 				result;
-			if (!this.isDate(value)) return value;
+			if (!this.isDate(value) || value === "") return value;
 			year = value.match(/\d{4}/)[0];
 			month = value.match(/(-|\u5e74)\d{1,2}(-|\u6708)/);
 			if (month !== null) {
@@ -224,6 +269,49 @@ define(function(require) {
 			}
 			return result;
 		},
-	};
+		isCoin: function(value) {
+			if (value.charAt(0) === "¥") {
+				value = value.substring(1, value.length);
+			}
+			return this.isNum(value);
+		},
+		getFormatCoin: function(value, decimal) {
+			var temp = value;
+			if (value === "") return value;
+			if (this.isCoin(value)) {
+				if (value.charAt(0) === "¥") {
+					value = value.substring(1, value.length);
+				}
+				return "¥" + this.getFormatNumber(value, true, decimal);
+			}
+			return temp;
+		},
+		isPercent: function(value) {
+			if (value.charAt(value.length - 1) === "%") {
+				value = value.substring(0, value.length - 1);
+			}
+			return this.isNum(value);
+		},
+		getFormatPercent: function(value, decimal) {
+			var temp = value;
+			if (value === "") return value;
+			if (value.charAt(value.length - 1) === "%") {
+				value = value.substring(0, value.length - 1);
+				if (this.isNum(value)) {
+					value = this.getFormatNumber(value, false, decimal);
+					return value + '%';
+				}
+			} else {
+				if (this.isNum(value)) {
+					value = (parseInt(value) * 100).toString();
+					value = this.getFormatNumber(value, false, decimal);
+					return value + '%';
+				}
+			}
+
+			return temp;
+		}
+	}
+
 	return textTypeHandler;
 });

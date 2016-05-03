@@ -152,18 +152,22 @@ define(function(require) {
 				 */
 				background: '#fff',
 				/**
-				 * 单元格数据类型: 货币 Y   数字 num   日期 date  文本 text   百分比 %
+				 * 单元格数据类型: 货币 coin   数字 num   日期 date  文本 text   百分比 percent
 				 * @property {string} format 
 				 */
 				format: 'text',
 				/**
 				 * 小数点位数：仅在数字，货币，百分比类型中有用
 				 */
-				decimal: 2,
+				decimal: 'null',
 				/**
 				 * 是否显示千分位：仅在数字，货币，百分比类型中有用
 				 */
-				thousands: false,
+				thousands: 'null',
+				/**
+				 * 日期显示格式：仅在日期类型数据中有用
+				 */
+				dateFormat: 'null',
 				/**
 				 * 单元格备注内容
 				 * @property {string} remarket

@@ -110,11 +110,11 @@ define(function() {
 			highlight: 'highlight'
 		},
 		dateFormatType: {
-			frist: 'yyyy-mm-dd',
-			second: 'yyyy-mm',
+			frist: 'yyyy-MM-dd',
+			second: 'yyyy-MM',
 			third: 'yyyy',
-			fourth: 'yyyy年mm月dd日',
-			fifth: 'yyyy年mm月',
+			fourth: 'yyyy年MM月dd日',
+			fifth: 'yyyy年MM月',
 			sixth: 'yyyy年'
 		},
 		keyboard: {
