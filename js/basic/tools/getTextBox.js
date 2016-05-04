@@ -28,7 +28,6 @@ define(function(require) {
 				});
 			}
 			$("body").append(tempDiv);
-			height = tempDiv.height();
 
 			tempDiv.remove();
 			return height;
