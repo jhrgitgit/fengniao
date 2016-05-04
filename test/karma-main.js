@@ -1,6 +1,5 @@
 var tests = [],
     file;
-for (file in window.__karma__.files) {
     console.info(file);
     if (/.*\.spec\.js$/.test(file)) {
         tests.push(file);

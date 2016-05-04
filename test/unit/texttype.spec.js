@@ -59,7 +59,6 @@ define(function(require) {
 			expect(textTypeHandler.isDate('YYYY-MM-DD')).toEqual(false);
 		});
 		it('日期格式转换测试', function() {
-
 			expect(textTypeHandler.getFormatDate('2001年02月29日', 'yyyy-mm-dd')).toEqual('2001年02月29日');
 			expect(textTypeHandler.getFormatDate('2016', 'yyyy-mm-dd')).toEqual('2016-01-01');
 			expect(textTypeHandler.getFormatDate('2016', 'yyyy-mm')).toEqual('2016-01');
