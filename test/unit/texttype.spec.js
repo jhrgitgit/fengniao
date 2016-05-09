@@ -75,13 +75,7 @@ define(function(require) {
 			expect(textTypeHandler.isCoin("¥@123")).toEqual(false);
 			expect(textTypeHandler.isCoin("￥123")).toEqual(false);
 		});
-		it("货币格式转换测试", function() {
-			expect(textTypeHandler.getFormatCoin("1234", 2, '¥')).toEqual("¥1,234.00");
-			expect(textTypeHandler.getFormatCoin("123", 2, '¥')).toEqual("¥123.00");
-			expect(textTypeHandler.getFormatCoin("¥1234", 2, '¥')).toEqual("¥1,234.00");
-			expect(textTypeHandler.getFormatCoin("¥@123", 2, '$')).toEqual("¥@123");
-			expect(textTypeHandler.getFormatCoin("$123", 2, '$')).toEqual("$123.00");
-		});
+
 		it("百分比格式校验测试", function() {
 			expect(textTypeHandler.isPercent("123")).toEqual(true);
 			expect(textTypeHandler.isPercent("123%")).toEqual(true);

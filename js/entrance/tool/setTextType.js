@@ -1,3 +1,4 @@
+
 'use strict';
 define(function(require) {
 	var send = require('basic/tools/send'),
@@ -306,12 +307,12 @@ define(function(require) {
 				return false;
 			}
 			year = value.match(/\d{4}/)[0];
-
 			month = value.match(/(\/|\u5e74)\d{1,2}(\/|\u6708)/);
 			if (month !== null) {
 				month = month[0].substring(1, month[0].length - 1);
 			}
 			day = value.match(/\d{1,2}\u65e5/);
+
 			if (day === null) {
 				day = value.match(/\d{1,2}$/);
 			}
