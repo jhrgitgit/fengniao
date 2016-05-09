@@ -6,7 +6,7 @@ define(function(require) {
 		send = require('basic/tools/send'),
 		cells = require('collections/cells'),
 		selectRegions = require('collections/selectRegion'),
-		setCellBorder=require('entrance/tool/setCellBorder');
+		setCellBorder=require('entrance/tool/setcellBorder');
 
 	/**
 	 * 边框功能视图

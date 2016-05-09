@@ -110,8 +110,8 @@ define(function() {
 			highlight: 'highlight'
 		},
 		dateFormatType: {
-			frist: 'yyyy-MM-dd',
-			second: 'yyyy-MM',
+			frist: 'yyyy/MM/dd',
+			second: 'yyyy/MM',
 			third: 'yyyy',
 			fourth: 'yyyy年MM月dd日',
 			fifth: 'yyyy年MM月',

@@ -6,8 +6,8 @@ define(function(require) {
 		send = require('basic/tools/send'),
 		cells = require('collections/cells'),
 		selectRegions = require('collections/selectRegion'),
-		setFontWeight=require('entrance/tool/setFontWeight'),
-		setFontStyle=require('entrance/tool/setFontStyle');
+		setFontWeight=require('entrance/tool/setfontweight'),
+		setFontStyle=require('entrance/tool/setfontstyle');
 
 	/**
 	 * 设置字体功能监听类

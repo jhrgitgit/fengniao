@@ -8,7 +8,7 @@ define(function(require) {
 		selectRegions = require('collections/selectRegion'),
 		headItemRows = require('collections/headItemRow'),
 		headItemCols = require('collections/headItemCol'),
-		setFrozen = require('entrance/sheet/setFrozen');
+		setFrozen = require('entrance/sheet/setfrozen');
 
 	/**
 	 * 冻结功能视图类

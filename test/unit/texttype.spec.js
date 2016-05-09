@@ -9,7 +9,7 @@ define(function(require) {
 			expect(textTypeHandler.isNum("-1")).toEqual(true); //正确负数
 			expect(textTypeHandler.isNum(".001")).toEqual(true); //小数点开始
 			expect(textTypeHandler.isNum("112.")).toEqual(true); //小数点结尾
-			expect(textTypeHandler.isNum("")).toEqual(true); //空
+			expect(textTypeHandler.isNum("")).toEqual(false); //空
 			expect(textTypeHandler.isNum("345,123,123.00")).toEqual(true); //含千分位小数
 			expect(textTypeHandler.isNum("123.-123")).toEqual(false); //小数点后数字含有符号
 			expect(textTypeHandler.isNum("123.123.123")).toEqual(false); //小数点标记错误数字
@@ -39,10 +39,12 @@ define(function(require) {
 			expect(textTypeHandler.getFormatNumber(".", true, 2)).toEqual("."); //错误数据
 		});
 		it("日期合法性校验测试", function() {
-			expect(textTypeHandler.isDate("2016")).toEqual(true);
-			expect(textTypeHandler.isDate("2016-03")).toEqual(true);
-			expect(textTypeHandler.isDate("2016-03-09")).toEqual(true);
-			expect(textTypeHandler.isDate("1999年")).toEqual(true);
+			expect(textTypeHandler.isDate("2016")).toEqual(false);
+			expect(textTypeHandler.isDate("2016-03")).toEqual(false);
+			expect(textTypeHandler.isDate("2016/03")).toEqual(false);
+			expect(textTypeHandler.isDate("2016/03/09")).toEqual(true);
+			expect(textTypeHandler.isDate("1999/3/9")).toEqual(true);
+			expect(textTypeHandler.isDate("1999年")).toEqual(false);
 			expect(textTypeHandler.isDate("1999年01月11日")).toEqual(true);
 			expect(textTypeHandler.isDate("2000年02月29日")).toEqual(true);
 			expect(textTypeHandler.isDate("1999年01月11日")).toEqual(true);
@@ -58,19 +60,14 @@ define(function(require) {
 			expect(textTypeHandler.isDate("YYYY-MM-DD")).toEqual(false);
 		});
 		it("日期格式转换测试", function() {
-			expect(textTypeHandler.getFormatDate("2001年02月29日", "yyyy-MM-dd")).toEqual("2001年02月29日");
-			expect(textTypeHandler.getFormatDate("2016", "yyyy-MM-dd")).toEqual("2016-01-01");
-			expect(textTypeHandler.getFormatDate("2016", "yyyy-MM")).toEqual("2016-01");
-			expect(textTypeHandler.getFormatDate("2016", "yyyy")).toEqual("2016");
-			expect(textTypeHandler.getFormatDate("2016", "yyyy年MM月dd日")).toEqual("2016年01月01日");
-			expect(textTypeHandler.getFormatDate("2016", "yyyy年MM月")).toEqual("2016年01月");
-			expect(textTypeHandler.getFormatDate("2016", "yyyy年")).toEqual("2016年");
-			expect(textTypeHandler.getFormatDate("2016-01-01", "yyyy年MM月dd日")).toEqual("2016年01月01日");
-			expect(textTypeHandler.getFormatDate("2016-01-01", "yyyy年MM月")).toEqual("2016年01月");
-			expect(textTypeHandler.getFormatDate("2016-01-01", "yyyy年")).toEqual("2016年");
-			expect(textTypeHandler.getFormatDate("2016年10月11日", "yyyy-MM-dd")).toEqual("2016-10-11");
-			expect(textTypeHandler.getFormatDate("2016年10月11日", "yyyy-MM")).toEqual("2016-10");
-			expect(textTypeHandler.getFormatDate("2016年10月11日", "yyyy")).toEqual("2016");
+			expect(textTypeHandler.getFormatDate("2001年02月29日", "yyyy/MM/dd")).toEqual("2001年02月29日");
+			expect(textTypeHandler.getFormatDate("2016/01/01", "yyyy/MM/dd")).toEqual("2016/01/01");
+			expect(textTypeHandler.getFormatDate("2016/01/01", "yyyy年MM月dd日")).toEqual("2016年01月01日");
+			expect(textTypeHandler.getFormatDate("2016/01/01", "yyyy年MM月")).toEqual("2016年01月");
+			expect(textTypeHandler.getFormatDate("2016/01/01", "yyyy年MM月dd日")).toEqual("2016年01月01日");
+			expect(textTypeHandler.getFormatDate("2016/01/01", "yyyy年MM月")).toEqual("2016年01月");
+			expect(textTypeHandler.getFormatDate("2016/1/1", "yyyy年MM月")).toEqual("2016年1月");
+			expect(textTypeHandler.getFormatDate("2016年10月11日", "yyyy/MM/dd")).toEqual("2016/10/11");
 		});
 		it("货币格式校验测试", function() {
 			expect(textTypeHandler.isCoin("123")).toEqual(true);
@@ -79,11 +76,11 @@ define(function(require) {
 			expect(textTypeHandler.isCoin("￥123")).toEqual(false);
 		});
 		it("货币格式转换测试", function() {
-			expect(textTypeHandler.getFormatCoin("1234",2)).toEqual("¥1,234.00");
-			expect(textTypeHandler.getFormatCoin("123",2)).toEqual("¥123.00");
-			expect(textTypeHandler.getFormatCoin("¥1234",2)).toEqual("¥1,234.00");
-			expect(textTypeHandler.getFormatCoin("¥@123",2)).toEqual("¥@123");
-			expect(textTypeHandler.getFormatCoin("$123",2)).toEqual("$123");
+			expect(textTypeHandler.getFormatCoin("1234", 2, '¥')).toEqual("¥1,234.00");
+			expect(textTypeHandler.getFormatCoin("123", 2, '¥')).toEqual("¥123.00");
+			expect(textTypeHandler.getFormatCoin("¥1234", 2, '¥')).toEqual("¥1,234.00");
+			expect(textTypeHandler.getFormatCoin("¥@123", 2, '$')).toEqual("¥@123");
+			expect(textTypeHandler.getFormatCoin("$123", 2, '$')).toEqual("$123.00");
 		});
 		it("百分比格式校验测试", function() {
 			expect(textTypeHandler.isPercent("123")).toEqual(true);
@@ -94,11 +91,19 @@ define(function(require) {
 			expect(textTypeHandler.isPercent("￥123")).toEqual(false);
 		});
 		it("百分比格式转化测试", function() {
-			expect(textTypeHandler.getFormatPercent("123",2)).toEqual("12300.00%");
-			expect(textTypeHandler.getFormatPercent("123%",5)).toEqual("123.00000%");
+			expect(textTypeHandler.getFormatPercent("123", 2)).toEqual("12300.00%");
+			expect(textTypeHandler.getFormatPercent("123%", 5)).toEqual("123.00000%");
 			expect(textTypeHandler.getFormatPercent("%123.001%")).toEqual("%123.001%");
 			expect(textTypeHandler.getFormatPercent("¥123")).toEqual("¥123");
 		});
+		it("获取浮点数末尾非零结束长度", function() {
+			expect(textTypeHandler.getNoZeroDecimal("123")).toEqual(0);
+			expect(textTypeHandler.getNoZeroDecimal("AB")).toEqual(0);
+			expect(textTypeHandler.getNoZeroDecimal("123.000")).toEqual(0);
+			expect(textTypeHandler.getNoZeroDecimal("123.000123")).toEqual(6);
+			expect(textTypeHandler.getNoZeroDecimal("123.000A123")).toEqual(0);
+		});
+		
 
 	});
 });

@@ -36,44 +36,41 @@ define(function(require) {
 			var formatPosition = $(e.currentTarget).data('format');
 			// setTextType('1',formatPosition);
 			switch (formatPosition) {
+				case 'normal':
+					setTextType.setNormal('1');
+					break;
 				case 'text':
-					setTextType.setText();
+					setTextType.setText('1');
 					break;
 				case 'number-1':
-					setTextType.setNum(true, 0);
+					setTextType.setNum('1', false, 0);
 					break;
 				case 'number-2':
-					setTextType.setNum(true, 2);
+					setTextType.setNum('1', false, 2);
 					break;
 				case 'number-3':
-					setTextType.setNum(true, 4);
+					setTextType.setNum('1', false, 4);
 					break;
 				case 'date-1':
-					setTextType.setDate(config.dateFormatType.frist);
+					setTextType.setDate('1', config.dateFormatType.frist);
 					break;
 				case 'date-2':
-					setTextType.setDate(config.dateFormatType.second);
+					setTextType.setDate('1', config.dateFormatType.fourth);
 					break;
 				case 'date-3':
-					setTextType.setDate(config.dateFormatType.third);
-					break;
-				case 'date-4':
-					setTextType.setDate(config.dateFormatType.fourth);
-					break;
-				case 'date-5':
-					setTextType.setDate(config.dateFormatType.fifth);
-					break;
-				case 'date-6':
-					setTextType.setDate(config.dateFormatType.sixth);
+					setTextType.setDate('1', config.dateFormatType.fifth);
 					break;
 				case 'percent':
-					setTextType.setPercent(2);
+					setTextType.setPercent('1', 2);
 					break;
-				case 'coin':
-					setTextType.setCoin(2);
+				case 'coin-1':
+					setTextType.setCoin('1', 2, '$');
+					break;
+				case 'coin-2':
+					setTextType.setCoin('1', 2, '¥');
 					break;
 				default:
-					setTextType.setText();
+					setTextType.setText('1');
 					break;
 			}
 		}

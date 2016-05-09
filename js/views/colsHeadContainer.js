@@ -19,7 +19,7 @@ define(function(require) {
 		siderLineCols = require('collections/siderLineCol'),
 		HeadItemColContainer = require('views/headItemColContainer'),
 		ColsSpaceLineContainer = require('views/colsSpaceLineContainer'),
-		selectCellRows = require('entrance/cell/selectCellRows'),
+		selectCellRows = require('entrance/cell/selectcellrows'),
 		ColsHeadContainer;
 	/**
 	 * ColsHeadContainer

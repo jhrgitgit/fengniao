@@ -8,7 +8,7 @@ requirejs(['./lib/backbone',
 	// '../test/unit/clipBoardTest',
 	// '../test/unit/reloadCellTest',
 	// '../test/unit/wordWrapTest',
-	'../test/unit/textTypeTest'
+	'../test/unit/texttype.spec'
 ], function() {
 	window.onload();
 });

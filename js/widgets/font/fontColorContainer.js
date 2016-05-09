@@ -4,7 +4,7 @@ define(function(require) {
 		Backbone = require('lib/backbone'),
 		send = require('basic/tools/send'),
 		selectRegions = require('collections/selectRegion'),
-		setFontColor=require('entrance/tool/setFontColor');
+		setFontColor=require('entrance/tool/setfontcolor');
 
 	/**
 	 * 设置字体颜色功能监听类

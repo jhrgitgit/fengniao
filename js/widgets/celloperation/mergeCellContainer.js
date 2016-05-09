@@ -10,8 +10,8 @@ define(function(require) {
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
 		cells = require('collections/cells'),
-		mergeCell = require('entrance/tool/mergeCell'),
-		splitCell = require('entrance/tool/splitCell');
+		mergeCell = require('entrance/tool/mergecell'),
+		splitCell = require('entrance/tool/splitcell');
 
 	/**
 	 * 合并，拆分单元格视图类

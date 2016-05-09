@@ -49,7 +49,7 @@ define(function(require) {
 			'blur': 'close',
 			'input': 'adapt',
 			'propertychange': 'adapt',
-			// 'keydown': 'keyHandle'
+			'keydown': 'keyHandle'
 		},
 		/**
 		 * 类初始化函数
@@ -150,57 +150,21 @@ define(function(require) {
 			tempDiv.remove();
 		},
 		/**
-		 * 通过文本框内容，进行自动格式转换
-		 * @param  {string} value 文本值 
-		 */
-		textTypeHandle: function(value) {
-			var text,
-				displayText,
-				type = this.model.get('customProp.format');
-			if (value !== "" && textTypeHandler.isNum(value) && (type === "text" || type === "num")) {
-				text = textTypeHandler.getFormatNumber(value, false, -1);
-				this.model.set('content.texts', text);
-				this.model.set('customProp.format', 'num');
-				this.model.set('customProp.dateFormat', 'null');
-				return text;
-			}
-			if (value !== "" && textTypeHandler.isDate(value) && (type === "text" || type === "date")) {
-				this.model.set('content.texts', value);
-				this.model.set('customProp.format', 'date');
-				this.model.set('customProp.decimal', 'null');
-				this.model.set('customProp.thousands', 'null');
-				return value;
-			}
-			if(type=== "coin" && textTypeHandler.isCoin(value)){
-				this.model.set('content.texts', value);
-				return value;
-			}
-			if(type === "percent" && textTypeHandler.isPercent(value)){
-				this.model.set('content.texts', value);
-				return value;
-			}
-			this.model.set('content.texts', value);
-			this.model.set('customProp.format', 'text');
-			this.model.set('customProp.decimal', 'null');
-			this.model.set('customProp.thousands', 'null');
-			this.model.set('customProp.dateFormat', 'null');
-			return value;
-		},
-		/**
 		 * 输入框移除输入焦点，视图销毁
 		 * @method close
 		 * @param e {event}  输入焦点移除
 		 */
 		close: function(e) {
 			var text, currentTexts, headLineRowModelList, headLineColModelList, modelIndexCol, modelIndexRow;
-			currentTexts = this.$el.val();
+			text = this.$el.val();
 			headLineRowModelList = headItemRows.models;
 			headLineColModelList = headItemCols.models;
 			modelIndexCol = binary.modelBinary(this.model.get('physicsBox').left,
 				headLineColModelList, 'left', 'width', 0, headLineColModelList.length - 1);
 			modelIndexRow = binary.modelBinary(this.model.get('physicsBox').top,
 				headLineRowModelList, 'top', 'height', 0, headLineRowModelList.length - 1);
-			text = this.textTypeHandle(currentTexts);
+			this.model.set('content.texts', text);
+			text = textTypeHandler.textTypeRecognize(this.model);
 			send.PackAjax({
 				url: 'text.htm?m=data',
 				data: JSON.stringify({

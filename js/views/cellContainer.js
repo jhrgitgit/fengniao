@@ -11,8 +11,9 @@ define(function(require) {
 		headItemCols = require('collections/headItemCol'),
 		selectRegions = require('collections/selectRegion'),
 		cache = require('basic/tools/cache'),
+		config = require('spreadsheet/config'),
 		getTextBox = require('basic/tools/gettextbox'),
-		setCellHeight = require('entrance/cell/setCellHeight'),
+		setCellHeight = require('entrance/cell/setcellheight'),
 		textTypeHandler = require('entrance/tool/settexttype');
 
 	/**
@@ -83,7 +84,6 @@ define(function(require) {
 			// this is improve poiont , marinottejs itemview function can be replace this bug
 			this.$contentBody = $('.bg', this.$el);
 			//end
-			this.editStatus(modelJSON);
 			this.changeTopBorder(modelJSON);
 			this.changeLeftBorder(modelJSON);
 			this.changeBottomBorder(modelJSON);
@@ -97,56 +97,114 @@ define(function(require) {
 			this.setFont(modelJSON);
 			this.setFontSize(modelJSON);
 			this.wordWrap(modelJSON);
-			this.changeTexts(modelJSON, this.getFormatText());
-			// console.log(this.model.get('content').displayTexts);
+			this.getFormatText(modelJSON);
+			this.changeTexts(modelJSON);
 			return this;
+		},
+		/**
+		 * 根据不同单元格类型，生成不同displaytext
+		 * @return {[type]} [description]
+		 */
+		getFormatText: function(modelJSON) {
+			var text = modelJSON.content.texts,
+				format = modelJSON.customProp.format,
+				decimal = modelJSON.customProp.decimal,
+				thousands = modelJSON.customProp.thousands || false,
+				dateFormat = modelJSON.customProp.dateFormat,
+				currencySign = modelJSON.customProp.currencySign,
+				isValid = modelJSON.customProp.isValid,
+				displayTexts;
+			switch (format) {
+				case 'normal':
+					if (textTypeHandler.isNum(text)) {
+						decimal = textTypeHandler.getNoZeroDecimal(text);
+						decimal = decimal < 6 ? decimal : 6;
+						this.model.set("content.displayTexts", textTypeHandler.getFormatNumber(text, thousands, decimal));
+					} else {
+						this.model.set("content.displayTexts", text);
+					}
+					break;
+				case 'text':
+					this.model.set("content.displayTexts", text);
+					break;
+				case 'date':
+					if (isValid) {
+						this.model.set("content.displayTexts", textTypeHandler.getFormatDate(text, dateFormat));
+					} else {
+						this.model.set("content.displayTexts", text);
+					}
+					break;
+				case 'num':
+					if (isValid) {
+						this.model.set("content.displayTexts", textTypeHandler.getFormatNumber(text, thousands, decimal));
+					} else {
+						this.model.set("content.displayTexts", text);
+					}
+					break;
+				case 'coin':
+					if (isValid) {
+						this.model.set("content.displayTexts", textTypeHandler.getFormatCoin(text, decimal, currencySign));
+					} else {
+						this.model.set("content.displayTexts", text);
+					}
+					break;
+				case 'percent':
+					if (isValid) {
+						this.model.set("content.displayTexts", textTypeHandler.getFormatPercent(text, decimal));
+					} else {
+						this.model.set("content.displayTexts", text);
+					}
+					break;
+				default:
+					break;
+			}
 		},
 		/**
 		 * 更新单元格显示状态
 		 * @method changeShowState 
 		 */
-		changeShowState: function() {
-			if (this.model.get('showState') === false) {
-				this.remove();
-			}
-		},
-		getFormatText: function() {
-			var modelJSON = this.model.toJSON(),
-				text = modelJSON.content.texts,
-				format = modelJSON.customProp.format,
-				decimal = modelJSON.customProp.decimal,
-				thousands = modelJSON.customProp.thousands,
-				dateFormat = modelJSON.customProp.dateFormat;
+		// changeShowState: function() {
+		// 	if (this.model.get('showState') === false) {
+		// 		this.remove();
+		// 	}
+		// },
+		// getFormatText: function() {
+		// 	var modelJSON = this.model.toJSON(),
+		// 		text = modelJSON.content.texts,
+		// 		format = modelJSON.customProp.format,
+		// 		decimal = modelJSON.customProp.decimal,
+		// 		thousands = modelJSON.customProp.thousands,
+		// 		dateFormat = modelJSON.customProp.dateFormat;
 
-			if (decimal === 'null') decimal = -1;
-			switch (format) {
-				case 'num':
-					if (thousands === 'null' && text.indexOf(',') !== -1) {
-						thousands = true;
-					} else if (thousands === 'null') {
-						thousands = false;
-					}
-					this.model.set("content.displayTexts", textTypeHandler.getFormatNumber(text, thousands, decimal));
-					break;
-				case 'date':
-					if (dateFormat === 'null') {
-						this.model.set("content.displayTexts", text);
-					} else {
-						this.model.set("content.displayTexts", textTypeHandler.getFormatDate(text, dateFormat));
-					}
-					break;
-				case 'coin':
-					this.model.set("content.displayTexts", textTypeHandler.getFormatCoin(text,decimal));
-					break;
-				case 'percent':
-					this.model.set("content.displayTexts", textTypeHandler.getFormatPercent(text, decimal));
-					break;
-				default:
-					this.model.set("content.displayTexts", text);
-					break;
-			}
+		// 	if (decimal === 'null') decimal = -1;
+		// 	switch (format) {
+		// 		case 'num':
+		// 			if (thousands === 'null' && text.indexOf(',') !== -1) {
+		// 				thousands = true;
+		// 			} else if (thousands === 'null') {
+		// 				thousands = false;
+		// 			}
+		// 			this.model.set("content.displayTexts", textTypeHandler.getFormatNumber(text, thousands, decimal));
+		// 			break;
+		// 		case 'date':
+		// 			if (dateFormat === 'null') {
+		// 				this.model.set("content.displayTexts", text);
+		// 			} else {
+		// 				this.model.set("content.displayTexts", textTypeHandler.getFormatDate(text, dateFormat));
+		// 			}
+		// 			break;
+		// 		case 'coin':
+		// 			this.model.set("content.displayTexts", textTypeHandler.getFormatCoin(text,decimal));
+		// 			break;
+		// 		case 'percent':
+		// 			this.model.set("content.displayTexts", textTypeHandler.getFormatPercent(text, decimal));
+		// 			break;
+		// 		default:
+		// 			this.model.set("content.displayTexts", text);
+		// 			break;
+		// 	}
 
-		},
+		// },
 		getDisplayText: function(modelJSON) {
 			var fontsize = modelJSON.content.size,
 				occupyX = modelJSON.occupy.x,
@@ -159,7 +217,6 @@ define(function(require) {
 				temp,
 				i = 0,
 				height;
-			// inputText = modelJSON.content.texts;
 			text = modelJSON.content.displayTexts;
 			temp = text;
 			texts = text.split('\n');
@@ -259,17 +316,24 @@ define(function(require) {
 		 * @param modelJSON {modelJSON} 对象属性集合
 		 */
 		setTransverseAlign: function(modelJSON) {
-
 			var format = modelJSON.customProp.format,
+				text = modelJSON.content.texts,
+				isValid = modelJSON.customProp.isValid,
 				alignRowPosi = modelJSON.content.alignRow;
 
-			if (alignRowPosi === 'center' || alignRowPosi === 'right') {
+			if (alignRowPosi === 'center' || alignRowPosi === 'right' || alignRowPosi === 'left') {
 				this.$el.css({
 					'text-align': alignRowPosi
 				});
 				return;
 			}
-			if (alignRowPosi === '' && format !== 'text') {
+			if (format !== 'text' && format !== 'normal' && isValid === true) {
+				this.$el.css({
+					'text-align': 'right'
+				});
+				return;
+			}
+			if (format === 'normal' && textTypeHandler.isNum(text)) {
 				this.$el.css({
 					'text-align': 'right'
 				});
@@ -280,13 +344,11 @@ define(function(require) {
 			});
 		},
 		/**
-		 * 设置单元格内容水平对齐方式
+		 * 设置单元格内容垂直对齐方式
 		 * @method setVerticalAlign 
 		 * @param modelJSON {modelJSON} 对象属性集合
 		 */
 		setVerticalAlign: function(modelJSON) {
-			// console.log(modelJSON.content.alignCol);
-			// console.log(modelJSON.content.alignRow);
 			if (modelJSON.content.alignCol === 'middle') {
 				this.$el.children('div').css({
 					"vertical-align": "middle",
@@ -301,111 +363,6 @@ define(function(require) {
 				});
 			}
 		},
-		// /**
-		//  * 设置单元格文本格式
-		//  * @method getModelDisplayTexts 
-		//  */
-		// getFormatTexts: function() {
-		// 	//获取当前文本
-
-		// 	var modelJSON = this.model.toJSON(),
-		// 		cellContent = modelJSON.content.texts,
-		// 		cellFormat = modelJSON.customProp.format,
-		// 		displayContent = '',
-		// 		texts, i = 0;
-		// 	//ps:设置显示文本
-		// 	switch (cellFormat) {
-		// 		case 'num':
-		// 			displayContent = this.contentToDigital();
-		// 			break;
-		// 		case 'time':
-		// 			displayContent = this.contentToDate();
-		// 			break;
-		// 		default:
-		// 			displayContent = this.contentToText();
-		// 			break;
-		// 	}
-		// 	return displayContent;
-		// },
-		/**
-		 * 转换单元格内容格式为数字
-		 * @method contentToDigital 
-		 */
-		contentToDigital: function() {
-			var modelJSON = this.model.toJSON(),
-				cellContent = modelJSON.content.texts,
-				cellAlignRow = modelJSON.content.alignRow,
-				//校验是否而合法数字
-				digitalReg = new RegExp(/^(-?\d+)(\.\d+)?$/),
-				tempValue;
-
-			if (digitalReg.test(cellContent) === false) {
-				return this.contentToText();
-			}
-
-			//去除为0的首字母
-			if (/^0\./.test(cellContent) === false) {
-				cellContent = cellContent.replace(/\b(0+)/gi, '');
-				this.model.set('content.texts', cellContent);
-			}
-
-			//数字格式文本右对齐
-			if (cellAlignRow === undefined || cellAlignRow === '') {
-				this.$el.css({
-					'text-align': 'right'
-				});
-			}
-			tempValue = Number(cellContent);
-			return tempValue.toFixed(2);
-		},
-		/**
-		 * 转换单元格内容格式为日期
-		 * @method contentToDate 
-		 * @param cellContent {string} 文本
-		 */
-		contentToDate: function() {
-			var modelJSON = this.model.toJSON(),
-				cellContent = modelJSON.content.texts,
-				cellAlignRow = modelJSON.content.alignRow;
-			var result = cellContent.match(/^(\d{1,4})(-|\/)(\d{1,2})\2(\d{1,2})$/);
-
-			if (result === null) {
-				return this.contentToText();
-			}
-			var tempDate = new Date(result[1], result[3] - 1, result[4]);
-			if (tempDate.getFullYear() == result[1] && (tempDate.getMonth() + 1) == result[3] && tempDate.getDate() == result[4]) {
-				//时间格式文本右对齐
-				if (cellAlignRow === undefined || cellAlignRow === '') {
-					this.$el.css({
-						'text-align': 'right'
-					});
-				}
-				return result[1] + '/' + result[3] + '/' + result[4];
-			} else {
-				return this.contentToText();
-			}
-		},
-		/**
-		 * 转换单元格内容格式为文本
-		 * @method contentToDate 
-		 */
-		contentToText: function() {
-			var modelJSON,
-				cellContent,
-				cellAlignRow;
-
-			modelJSON = this.model.toJSON();
-			cellContent = modelJSON.content.texts;
-			cellAlignRow = modelJSON.content.alignRow;
-			//文本左对齐
-			if (cellAlignRow === undefined || cellAlignRow === '') {
-				this.$el.css({
-					'text-align': 'left'
-				});
-			}
-			return cellContent;
-		},
-		editStatus: function(modelJSON) {},
 		/**
 		 * 渲染上边框
 		 * @method changeTopBorder 
