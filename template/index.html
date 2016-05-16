@@ -16,8 +16,9 @@
 			</div>
 			<div class="fui-control">
 				<ul class="fui-control-list">
-					<li><span class="active">开始</span></li>
-					<li><span>下载</span></li>
+					<li><span id="homeTool" class="active">开始</span></li>
+					<li><span id="reviewTool">审阅</span></li>
+					<li><span id="download">下载</span></li>
 				</ul>
 			</div>
 			<div class="excel-name">
@@ -25,7 +26,7 @@
 			</div>
 		</div>
 		<div class="toolBar" id="toolBar">
-			<ul class="tabContainer">
+			<ul class="tabContainer homeToolContainer">
 				<li class="fui-group" id="shearPlateContainer">
 					<span class="fui-container">
 						<div class="fui-body">
@@ -169,6 +170,39 @@
 					</span>
 					<span class="fui-separator"></span>
 				</li>
+			</ul>
+			<ul class="tabContainer reviewToolContainer" style="display:none">
+				<li class="fui-group" id="reviewContainer">
+					<span class="fui-container">
+						<div class="fui-body">
+							<span class="fui-layout">
+								<div class="fui-section fui-alone" data-toolbar="addComment">
+									<div class="fui-cf-extend-ico ico-frozencustomized fui-cf-alone"></div>
+									<div class="fui-cf-desc">
+										<div class="fui-cf-text">增加批注</div>
+									</div>
+								</div>
+							</span>
+							<span class="fui-layout">
+								<div class="fui-section fui-alone" data-toolbar="editComment">
+									<div class="fui-cf-extend-ico ico-frozencustomized fui-cf-alone"></div>
+									<div class="fui-cf-desc">
+										<div class="fui-cf-text">编辑批注</div>
+									</div>
+								</div>
+							</span>
+							<span class="fui-layout">
+								<div class="fui-section fui-alone" data-toolbar="deleteComment">
+									<div class="fui-cf-extend-ico ico-frozencustomized fui-cf-alone"></div>
+									<div class="fui-cf-desc">
+										<div class="fui-cf-text">删除批注</div>
+									</div>
+								</div>
+							</span>
+							<span class="fui-separator"></span>
+						</div>
+					</span>
+				<li/>
 			</ul>
 		</div>
 		<div id="spreadSheet" style="width:100%;height:calc(100% - 130px);position:relative;"></div>

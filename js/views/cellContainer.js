@@ -14,7 +14,8 @@ define(function(require) {
 		config = require('spreadsheet/config'),
 		getTextBox = require('basic/tools/gettextbox'),
 		setCellHeight = require('entrance/cell/setcellheight'),
-		textTypeHandler = require('entrance/tool/settexttype');
+		textTypeHandler = require('entrance/tool/settexttype'),
+		commentContainer = require('views/commentcontainer');
 
 	/**
 	 * 单元格视图类，用于显示单元格对象
@@ -37,6 +38,7 @@ define(function(require) {
 		 * @method initialize 
 		 */
 		initialize: function(options) {
+
 			var modelRowList = headItemRows,
 				modelColList = headItemCols;
 			this.listenTo(this.model, 'change', this.render);
@@ -52,9 +54,50 @@ define(function(require) {
 			this.offsetTop = cache.TempProp.isFrozen ? (this.currentRule.displayPosition.offsetTop || 0) : 0;
 			this.userViewLeft = cache.TempProp.isFrozen ? modelColList.getModelByAlias(cache.UserView.colAlias).get('left') : 0;
 			this.userViewTop = cache.TempProp.isFrozen ? modelRowList.getModelByAlias(cache.UserView.rowAlias).get('top') : 0;
-
+			_.bindAll(this, 'showComment', 'hideComment');
 		},
+		showComment: function() {
+			var self = this;
+			this.overTime = true;
+			setTimeout(function() {
+				if (self.overTime && $('.comment').length === 0) {
+					self.newCommentView();
+				}
+			}, 1000);
+		},
+		newCommentView: function() {
+			var rowAlias,
+				colAlias,
+				rowIndex,
+				colIndex,
+				occupy = this.model.get('occupy'),
+				comment = this.model.get('customProp').comment,
+				options;
 
+			if (cache.commentState) return;
+
+			rowAlias = occupy.y[0];
+			colAlias = occupy.x[occupy.x.length - 1];
+			rowIndex = headItemRows.getIndexByAlias(rowAlias);
+			colIndex = headItemCols.getIndexByAlias(colAlias);
+			//冻结问题
+			options = {
+				colIndex: colIndex,
+				rowIndex: rowIndex,
+				comment: comment,
+				startLeft: this.offsetLeft + this.userViewLeft,
+				startTop: this.offsetTop + this.userViewTop
+			};
+			this.commentView = new commentContainer(options);
+			$(this.el.parentNode.parentNode).append(this.commentView.render().el);
+		},
+		hideComment: function(event) {
+			this.overTime = false;
+			if (this.commentView !== undefined && this.commentView !== null) {
+				this.commentView.close();
+				this.commentView = null;
+			}
+		},
 		/**
 		 * 渲染单元格
 		 * @method render 
@@ -84,6 +127,7 @@ define(function(require) {
 			// this is improve poiont , marinottejs itemview function can be replace this bug
 			this.$contentBody = $('.bg', this.$el);
 			//end
+			this.listenToHover(modelJSON);
 			this.changeTopBorder(modelJSON);
 			this.changeLeftBorder(modelJSON);
 			this.changeBottomBorder(modelJSON);
@@ -99,8 +143,27 @@ define(function(require) {
 			this.wordWrap(modelJSON);
 			this.getFormatText(modelJSON);
 			this.changeTexts(modelJSON);
+			this.showCommentSign(modelJSON);
 			return this;
 		},
+		listenToHover: function(modelJSON) {
+			//避免重复绑定
+			this.$el.off('mouseover');
+			this.$el.off('mouseout');
+			if (modelJSON.customProp.comment === null || modelJSON.customProp.comment === undefined) {
+				return;
+			} else {
+				this.$el.on('mouseover', this.showComment);
+				this.$el.on('mouseout', this.hideComment);
+			}
+		},
+		showCommentSign:function(modelJSON){
+			if(modelJSON.customProp.comment!==null){
+				this.$el.append('<div class="comment-ico"><div class="comment-ico-triangle"></div></div>');
+			}
+			
+		},
+		
 		/**
 		 * 根据不同单元格类型，生成不同displaytext
 		 * @return {[type]} [description]
@@ -134,14 +197,14 @@ define(function(require) {
 						this.model.set("content.displayTexts", text);
 					}
 					break;
-				case 'num':
+				case 'number':
 					if (isValid) {
 						this.model.set("content.displayTexts", textTypeHandler.getFormatNumber(text, thousands, decimal));
 					} else {
 						this.model.set("content.displayTexts", text);
 					}
 					break;
-				case 'coin':
+				case 'currency':
 					if (isValid) {
 						this.model.set("content.displayTexts", textTypeHandler.getFormatCoin(text, decimal, currencySign));
 					} else {
@@ -159,52 +222,6 @@ define(function(require) {
 					break;
 			}
 		},
-		/**
-		 * 更新单元格显示状态
-		 * @method changeShowState 
-		 */
-		// changeShowState: function() {
-		// 	if (this.model.get('showState') === false) {
-		// 		this.remove();
-		// 	}
-		// },
-		// getFormatText: function() {
-		// 	var modelJSON = this.model.toJSON(),
-		// 		text = modelJSON.content.texts,
-		// 		format = modelJSON.customProp.format,
-		// 		decimal = modelJSON.customProp.decimal,
-		// 		thousands = modelJSON.customProp.thousands,
-		// 		dateFormat = modelJSON.customProp.dateFormat;
-
-		// 	if (decimal === 'null') decimal = -1;
-		// 	switch (format) {
-		// 		case 'num':
-		// 			if (thousands === 'null' && text.indexOf(',') !== -1) {
-		// 				thousands = true;
-		// 			} else if (thousands === 'null') {
-		// 				thousands = false;
-		// 			}
-		// 			this.model.set("content.displayTexts", textTypeHandler.getFormatNumber(text, thousands, decimal));
-		// 			break;
-		// 		case 'date':
-		// 			if (dateFormat === 'null') {
-		// 				this.model.set("content.displayTexts", text);
-		// 			} else {
-		// 				this.model.set("content.displayTexts", textTypeHandler.getFormatDate(text, dateFormat));
-		// 			}
-		// 			break;
-		// 		case 'coin':
-		// 			this.model.set("content.displayTexts", textTypeHandler.getFormatCoin(text,decimal));
-		// 			break;
-		// 		case 'percent':
-		// 			this.model.set("content.displayTexts", textTypeHandler.getFormatPercent(text, decimal));
-		// 			break;
-		// 		default:
-		// 			this.model.set("content.displayTexts", text);
-		// 			break;
-		// 	}
-
-		// },
 		getDisplayText: function(modelJSON) {
 			var fontsize = modelJSON.content.size,
 				occupyX = modelJSON.occupy.x,
@@ -247,7 +264,7 @@ define(function(require) {
 		 */
 		setFontColor: function(modelJSON) {
 			if (modelJSON.content.color !== '') {
-				this.$el.css({
+				this.$contentBody.css({
 					"color": modelJSON.content.color
 				});
 			}
@@ -260,7 +277,7 @@ define(function(require) {
 		 */
 		setFont: function(modelJSON) {
 			if (modelJSON.content.family !== '') {
-				this.$el.css({
+				this.$contentBody.css({
 					"font-family": modelJSON.content.family
 				});
 			}
@@ -272,7 +289,7 @@ define(function(require) {
 		 */
 		setFontSize: function(modelJSON) {
 			if (modelJSON.content.size !== '') {
-				this.$el.css({
+				this.$contentBody.css({
 					"font-size": modelJSON.content.size
 				});
 			}
@@ -284,11 +301,11 @@ define(function(require) {
 		 */
 		setItalic: function(modelJSON) {
 			if (modelJSON.content.italic) {
-				this.$el.css({
+				this.$contentBody.css({
 					'font-style': 'italic'
 				});
 			} else {
-				this.$el.css({
+				this.$contentBody.css({
 					'font-style': 'normal'
 				});
 			}
@@ -300,11 +317,11 @@ define(function(require) {
 		 */
 		setBold: function(modelJSON) {
 			if (modelJSON.content.bd) {
-				this.$el.css({
+				this.$contentBody.css({
 					'font-weight': 'bold'
 				});
 			} else {
-				this.$el.css({
+				this.$contentBody.css({
 					'font-weight': 'normal'
 				});
 			}
@@ -322,24 +339,24 @@ define(function(require) {
 				alignRowPosi = modelJSON.content.alignRow;
 
 			if (alignRowPosi === 'center' || alignRowPosi === 'right' || alignRowPosi === 'left') {
-				this.$el.css({
+				this.$contentBody.css({
 					'text-align': alignRowPosi
 				});
 				return;
 			}
 			if (format !== 'text' && format !== 'normal' && isValid === true) {
-				this.$el.css({
+				this.$contentBody.css({
 					'text-align': 'right'
 				});
 				return;
 			}
 			if (format === 'normal' && textTypeHandler.isNum(text)) {
-				this.$el.css({
+				this.$contentBody.css({
 					'text-align': 'right'
 				});
 				return;
 			}
-			this.$el.css({
+			this.$contentBody.css({
 				'text-align': 'left'
 			});
 		},
@@ -350,15 +367,15 @@ define(function(require) {
 		 */
 		setVerticalAlign: function(modelJSON) {
 			if (modelJSON.content.alignCol === 'middle') {
-				this.$el.children('div').css({
+				this.$contentBody.children('div').css({
 					"vertical-align": "middle",
 				});
 			} else if (modelJSON.content.alignCol === 'bottom') {
-				this.$el.children('div').css({
+				this.$contentBody.children('div').css({
 					"vertical-align": "bottom"
 				});
 			} else {
-				this.$el.children('div').css({
+				this.$contentBody.children('div').css({
 					"vertical-align": "top"
 				});
 			}
@@ -370,11 +387,11 @@ define(function(require) {
 		 */
 		changeTopBorder: function(modelJSON) {
 			if (modelJSON.border.top) {
-				this.$el.css({
+				this.$contentBody.css({
 					'borderTopColor': '#000'
 				});
 			} else {
-				this.$el.css({
+				this.$contentBody.css({
 					'borderTopColor': 'transparent'
 				});
 			}
@@ -386,11 +403,11 @@ define(function(require) {
 		 */
 		changeLeftBorder: function(modelJSON) {
 			if (modelJSON.border.left) {
-				this.$el.css({
+				this.$contentBody.css({
 					'borderLeftColor': '#000'
 				});
 			} else {
-				this.$el.css({
+				this.$contentBody.css({
 					'borderLeftColor': 'transparent'
 				});
 			}
@@ -402,11 +419,11 @@ define(function(require) {
 		 */
 		changeBottomBorder: function(modelJSON) {
 			if (modelJSON.border.bottom) {
-				this.$el.css({
+				this.$contentBody.css({
 					'borderBottomColor': '#000'
 				});
 			} else {
-				this.$el.css({
+				this.$contentBody.css({
 					'borderBottomColor': 'transparent'
 				});
 			}
@@ -418,11 +435,11 @@ define(function(require) {
 		 */
 		changeRightBorder: function(modelJSON) {
 			if (modelJSON.border.right) {
-				this.$el.css({
+				this.$contentBody.css({
 					'borderRightColor': '#000'
 				});
 			} else {
-				this.$el.css({
+				this.$contentBody.css({
 					'borderRightColor': 'transparent'
 				});
 			}

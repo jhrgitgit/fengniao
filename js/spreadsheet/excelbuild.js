@@ -16,7 +16,7 @@ define(function(require) {
 		setCellContent = require('entrance/tool/setcellcontent'),
 		selectCellCols = require('entrance/cell/selectcellcols'),
 		selectCellRows = require('entrance/cell/selectcellrows'),
-		setCellBorder = require('entrance/tool/setcellBorder'),
+		setCellBorder = require('entrance/tool/setcellborder'),
 		setFontFamilySize = require('entrance/tool/setfontfamilysize'),
 		setFontWeight = require('entrance/tool/setfontweight'),
 		setFontStyle = require('entrance/tool/setfontstyle'),
@@ -57,7 +57,8 @@ define(function(require) {
 				TextFormatContainer = require('widgets/cellformat/textFormatContainer'),
 				MergeCellContainer = require('widgets/celloperation/mergeCellContainer'),
 				ContentFontContainer = require('widgets/font/contentFontContainer'),
-				FrozenContainer = require('widgets/frozen/frozenContainer');
+				FrozenContainer = require('widgets/frozen/frozenContainer'),
+				CommentContainer =require('widgets/celloperation/commentcontainer');
 			new ShearPlateContainer();
 			new FontFamilyContainer();
 			new FontSizeContainer();
@@ -69,6 +70,7 @@ define(function(require) {
 			new MergeCellContainer();
 			new ContentFontContainer();
 			new FrozenContainer();
+			new CommentContainer();
 		},
 		buildExcelPublicAPI: function(SpreadSheet) {
 			SpreadSheet.prototype.setFontColor = setFontColor;

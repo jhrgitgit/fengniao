@@ -22,7 +22,6 @@ app.configure(function() {
 	}));
 });
 
-app.get
 
 // app.get('/excel.htm/openExcel', function(request, response) {
 // 	return ContainerModel.find(function(err, container) {

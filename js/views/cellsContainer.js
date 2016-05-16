@@ -66,13 +66,8 @@ define(function(require) {
 			Backbone.on('event:cellsContainer:selectRegionChange', this.selectRegionChange, this);
 			Backbone.on('event:cellsContainer:addClipRegionView', this.addClipRegionView, this);
 			Backbone.on('event:cellsContainer:getCoordinate', this.getCoordinate, this);
-
-			//
 			Backbone.on('event:cellsContainer:startHighlight', this.startHighlight, this);
-			
 			Backbone.on('event:cellsContainer:stopHighlight', this.stopHighlight, this);
-			
-
 			_.bindAll(this, 'callView', 'drag', 'highlightRegionMove');
 			this.currentRule = util.clone(cache.CurrentRule);
 			// this.listenTo(selectRegions, 'add', this.addSelectRegion);
@@ -258,6 +253,7 @@ define(function(require) {
 				this.hightlightView = new SelectRegionView({
 					model: hightlightModel,
 					className: 'highlight-container',
+					parentView: this
 				});
 				this.$el.append(this.hightlightView.render().el);
 			}
@@ -568,7 +564,8 @@ define(function(require) {
 			clipView = new SelectRegionView({
 				model: clipModel,
 				className: 'clip-container',
-				currentRule: this.currentRule
+				currentRule: this.currentRule,
+				parentView: this
 			});
 			this.clipView = clipView;
 			this.$el.append(clipView.render().el);
@@ -587,7 +584,8 @@ define(function(require) {
 			this.selectRegion = new SelectRegionView({
 				model: modelSelectRegion,
 				className: className,
-				currentRule: this.currentRule
+				currentRule: this.currentRule,
+				parentView: this
 			});
 			this.$el.append(this.selectRegion.render().el);
 		},
@@ -714,6 +712,7 @@ define(function(require) {
 			// this is question , need deprecated
 			// 
 			// when input data time avoid trigger this effect.
+			if(cache.commentState) return;
 			if ($(event.target).attr('class') === 'edit-frame') {
 				return;
 			}
@@ -1072,7 +1071,8 @@ define(function(require) {
 				this.dragView = new SelectRegionView({
 					model: dragRegion,
 					className: 'datasource-container',
-					currentRule: this.currentRule
+					currentRule: this.currentRule,
+					parentView: this
 				});
 				this.$el.append(this.dragView.render().el);
 			}
@@ -1231,7 +1231,8 @@ define(function(require) {
 				this.dataSoureRegionView = new SelectRegionView({
 					model: dataSourceRegion,
 					className: 'datasource-container',
-					currentRule: this.currentRule
+					currentRule: this.currentRule,
+					parentView: this
 				});
 				this.$el.append(this.dataSoureRegionView.render().el);
 			}
@@ -1327,7 +1328,8 @@ define(function(require) {
 				this.dataSoureRegionView = new SelectRegionView({
 					model: selectRegions.getModelByType("dataSource")[0],
 					className: 'datasource-container',
-					currentRule: this.currentRule
+					currentRule: this.currentRule,
+					parentView: this
 				});
 				this.$el.append(this.dataSoureRegionView.render().el);
 			}

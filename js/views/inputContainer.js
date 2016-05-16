@@ -228,7 +228,7 @@ define(function(require) {
 			keyboard = config.keyboard;
 			isShortKey = this.isShortKey(e.keyCode);
 			if (isShortKey) {
-				if (e.keyCode = keyboard.enter) {
+				if (e.keyCode === keyboard.enter) {
 					if (config.shortcuts.enter && e.altKey === false) {
 						this.close();
 						Backbone.trigger('event:mainContainer:nextCellPosition', 'DOWN');

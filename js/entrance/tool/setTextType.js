@@ -64,7 +64,7 @@ define(function(require) {
 			cells.operateCellByDisplayName('1', label, function(cell) {
 				text = cell.get('content').texts;
 				isValid = self.isNum(text);
-				cell.set('customProp.format', 'num');
+				cell.set('customProp.format', 'number');
 				cell.set('customProp.isValid', isValid);
 				cell.set('customProp.decimal', decimal);
 				cell.set('customProp.thousands', thousands);
@@ -114,7 +114,7 @@ define(function(require) {
 			cells.operateCellByDisplayName('1', label, function(cell) {
 				text = cell.get('content').texts;
 				isValid = self.isCoin(text);
-				cell.set('customProp.format', 'coin');
+				cell.set('customProp.format', 'currency');
 				cell.set('customProp.isValid', isValid);
 				cell.set('customProp.decimal', decimal);
 				cell.set('customProp.thousands', true);

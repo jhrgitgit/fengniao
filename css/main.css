@@ -20,7 +20,6 @@ body {
 table {
 	border-spacing: 0;
 }
-
 td {
 	vertical-align: top
 }
@@ -206,7 +205,7 @@ textarea {
 	border: none;
 	margin: 0;
 	padding: 0 0 0 2px;
-	z-index: 100;
+	z-index: 1000;
 	background: #fff;
 }
 
@@ -231,6 +230,7 @@ textarea {
 
 .cells-container {
 	position: relative;
+	/*position: absolute;*/
 }
 
 .row-container,
@@ -284,7 +284,6 @@ textarea {
 .content-list .item .bg {
 	height: inherit;
 	width: inherit;
-
 }
 
 .frozen-right-border {
@@ -414,7 +413,32 @@ textarea {
 .sheet-cf-box.active {
 	background: #fff;
 }
-
+.comment{
+	position: absolute;
+	font-size: 16px;
+	width: 150px;
+	height: 150px;
+	resize: none;
+	border-color: gray;
+	border-width: 2px;
+	border-style: solid;
+	background-color: white;
+	z-index:1000;
+}
+.comment-ico{
+	position:absolute;
+	height: inherit;
+	width: inherit;
+}
+.comment-ico-triangle{
+	position: absolute;
+	right: 0;
+	width: 0;
+	height: 0;
+	border-style: solid;
+	border-width: 3px;
+	border-color:red red transparent transparent;
+}
 /**extend project style**/
 .highlight-container{
 	position: absolute;

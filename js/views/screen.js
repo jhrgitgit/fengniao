@@ -49,14 +49,14 @@ define(function(require) {
 			Backbone.on('call:screenContainer', this.screenContainer, this);
 			Backbone.on('event:screenContainer:destroy', this.destroy, this);
 			Backbone.on('call:screenContainer:adaptScreen', this.attributesRender, this);
-			if(config.shortcuts.cut){
-				this.$el.on('cut',this.cutData);
+			if (config.shortcuts.cut) {
+				this.$el.on('cut', this.cutData);
 			}
-			if(config.shortcuts.copy){
-				this.$el.on('copy',this.copyData);
+			if (config.shortcuts.copy) {
+				this.$el.on('copy', this.copyData);
 			}
-			if(config.shortcuts.paste){
-				this.$el.on('paste',this.pasteData);
+			if (config.shortcuts.paste) {
+				this.$el.on('paste', this.pasteData);
 			}
 			_.bindAll(this, 'callView');
 			this.render();
@@ -116,7 +116,25 @@ define(function(require) {
 			this.triggerCallback();
 		},
 		transAction: function(e) {
+			this.switchToolbar(e);
 			this.toolbar(e);
+		},
+		/**
+		 * 切换工具菜单栏
+		 * @param  {event} e 点击事件
+		 */
+		switchToolbar: function(e) {
+			var $target = $(e.target),
+				id;
+			if ($target.parents('.fui-control-list').length) {
+				id = $target.prop('id');
+				$('.fui-control-list > li > span').removeClass('active');
+				if (id === 'download') {
+					return;
+				}
+				$('.tabContainer').css('display', 'none');
+				$('.' + id + 'Container').css('display', 'block');
+			}
 		},
 		/**
 		 * 工具菜单栏选中效果
@@ -129,6 +147,7 @@ define(function(require) {
 				len,
 				i = 0,
 				$target,
+				toolContainer,
 				targetLen;
 
 			if ($(e.target).length) {
@@ -140,7 +159,7 @@ define(function(require) {
 			targetLen = $target.length;
 			widgetList = $('.widget-list > div');
 			widgetList.removeClass('active');
-			$('#toolBar .fui-section,#toolBar .section,#toolBar .ico-section').removeClass('active');
+			$('#toolBar .fui-section,#toolBar .section,#toolBar .ico-section ').removeClass('active');
 			if (targetLen === 0) {
 				return;
 			}
@@ -268,7 +287,7 @@ define(function(require) {
 		mouseMoveHeadContainer: function(e, args, moveEvent) {
 			this.$el.on('mousemove', args, moveEvent);
 		},
-		destroy: function(){
+		destroy: function() {
 			Backbone.off('call:screenContainer');
 			Backbone.off('call:screenContainer:adaptScreen');
 			this.bodyContainer.destroy();

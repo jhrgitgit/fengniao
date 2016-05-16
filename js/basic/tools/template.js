@@ -32,6 +32,7 @@ define(function(require) {
 		tailDomString += '<script type="text/x-handlebars-template" id="textarea"><div class="textarea"><textarea class="input-container"></textarea><div></script>';
 		tailDomString += '<script type="text/x-handlebars-template" id="tempSelectContainer"><div class="box"><div class="expand"></div><div class="bg"></div></div></script>';
 		tailDomString += '<script type="text/x-handlebars-template" id="tempItemCell"><div class="bg" style="display:table-cell">{{cotent.texts}}</div></script>';
+		tailDomString += '<script type="text/x-handlebars-template" id="comment"><div></div></script>';
 		tailDomString += '<script type="text/x-handlebars-template" id="coltemp"><div class="col" style="left:{{left}}px;"></div></script>';
 		tailDomString += '<script type="text/x-handlebars-template" id="rowtemp"><div class="row" style="top:{{top}}px;"></div></script>';
 		

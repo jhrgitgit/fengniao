@@ -12,6 +12,7 @@ define(function(require) {
 		headItemCols = require('collections/headItemCol'),
 		cells = require('collections/cells'),
 		InputContainer = require('views/inputContainer'),
+		commentContainer = require('views/commentcontainer'),
 		SelectRegion;
 
 	/**
@@ -37,16 +38,20 @@ define(function(require) {
 		 * @type {Object}
 		 */
 		events: {
-			'dblclick': 'editState'
+			'dblclick': 'editState',
+			'mousemove': 'showComment',
+			'mouseout': 'hideComment'
 		},
 		/**
 		 * 视图初始化函数
 		 * @method initialize
 		 */
 		initialize: function(options) {
+			this.viewCellsContainer = options.parentView;
 			if (this.model.get("selectType") === "operation") {
 				Backbone.on('event:selectRegion:patchOprCell', this.patchOprCell, this);
 				Backbone.on('event:selectRegion:createInputContainer', this.addInputContainer, this);
+				Backbone.on('event:selectRegion:createCommentContainer', this.createCommentContainer, this);
 			}
 			this.listenTo(this.model, 'change', this.changePosition);
 			this.listenTo(this.model, 'destroy', this.destroy);
@@ -68,8 +73,95 @@ define(function(require) {
 			this.changePosition();
 			this.template = Handlebars.compile($('#tempSelectContainer').html());
 			this.$el.html(this.template());
-			this.triggerCallback();
 			return this;
+		},
+		showComment: function(event) {
+			var model;
+			model = this.viewCellsContainer.getCoordinateByMouseEvent(event).model;
+			if (cache.commentState) return;
+			if (model === undefined || model.get('customProp').comment !== null) {
+				if (this.commentView !== undefined && this.commentView !== null) {
+					this.commentView.close();
+					this.commentView = null;
+				}
+			} else {
+				if (this.MouseModel !== model) {
+					this.commentView = this.createCommentContainer(model);
+				}
+			}
+			this.MouseModel = model;
+		},
+		/**
+		 * 创建备注视图
+		 * @param  {object} model 单元格模型
+		 * @param  {string} type  'eidt':编辑状态, 'show':显示状态 ,'add':添加
+		 */
+		createCommentContainer: function(model, state) {
+			var rowAlias,
+				colAlias,
+				rowIndex,
+				colIndex,
+				occupy,
+				comment = '',
+				options,
+				commentView;
+			if (model !== undefined) {
+				occupy = model.get('occupy');
+				comment = model.get('customProp').comment;
+				rowAlias = occupy.y[0];
+				colAlias = occupy.x[occupy.x.length - 1];
+				rowIndex = headItemRows.getIndexByAlias(rowAlias);
+				colIndex = headItemCols.getIndexByAlias(colAlias);
+			} else { //选中区域编辑单元格
+				rowIndex = this.model.get('wholePosi').startY;
+				colIndex = this.model.get('wholePosi').endX;
+				if (rowIndex === this.model.get('wholePosi').endY &&
+					colIndex === this.model.get('wholePosi').startX &&
+					state === 'edit') {
+					model = cells.getCellByX(colIndex, rowIndex);
+					if (model.length > 0) {
+						comment = model[0].get('customProp').comment || '';
+					}
+				}
+			}
+
+			options = {
+				colIndex: colIndex,
+				rowIndex: rowIndex,
+				startLeft: this.offsetLeft + this.userViewLeft,
+				startTop: this.offsetTop + this.userViewTop,
+				comment: comment,
+				state: state
+			};
+			if (this.commentView !== undefined && this.commentView !== null) {
+				this.commentView.close();
+				this.commentView = null;
+			}
+			//判断在冻结状态是否超出范围
+			if (cache.TempProp.isFrozen === true) {
+				if ((rowIndex < this.currentRule.displayPosition.startRowIndex || colIndex < this.currentRule.displayPosition.startColIndex)) {
+					return;
+				}
+				if (this.currentRule.displayPosition.endColIndex !== undefined && colIndex > (this.currentRule.displayPosition.endColIndex - 1)) {
+					return;
+				}
+				if (this.currentRule.displayPosition.endRowIndex !== undefined && rowIndex > (this.currentRule.displayPosition.endRowIndex - 1)) {
+					return;
+				}
+			}
+			commentView = new commentContainer(options);
+			$(this.parentNode).append(commentView.render().el);
+			if (state !== 'show') {
+				commentView.$el.focus();
+			}
+			return commentView;
+		},
+		hideComment: function() {
+			if (this.commentView !== undefined && this.commentView !== null) {
+				this.commentView.close();
+				this.commentView = null;
+			}
+			this.MouseModel = null;
 		},
 		addInputContainer: function(text) {
 			var gridLineRowModelList,
@@ -83,7 +175,6 @@ define(function(require) {
 				modelCol,
 				aliasRow,
 				aliasCol;
-
 			gridLineColModelList = headItemCols.models;
 			gridLineRowModelList = headItemRows.models;
 
@@ -153,13 +244,6 @@ define(function(require) {
 				left: left - this.offsetLeft - this.userViewLeft,
 				top: top - this.offsetTop - this.userViewTop
 			});
-		},
-		/**
-		 * 绑定其他视图
-		 * @method triggerCallback
-		 */
-		triggerCallback: function() {
-			Backbone.trigger('call:cellsContainer', this.callView('viewCellsContainer'));
 		},
 		callView: function(name) {
 			var object = this;
