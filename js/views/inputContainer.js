@@ -230,9 +230,9 @@ define(function(require) {
 			if (isShortKey) {
 				if (e.keyCode === keyboard.enter) {
 					if (config.shortcuts.enter && e.altKey === false) {
-						this.close();
 						Backbone.trigger('event:mainContainer:nextCellPosition', 'DOWN');
 						Backbone.trigger('event:cellsContainer:selectRegionChange', 'DOWN');
+						this.close();
 					} else if (config.shortcuts.altEnter && e.altKey) {
 						insertAtCursor('\n');
 						this.adjustHight();

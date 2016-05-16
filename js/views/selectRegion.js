@@ -86,7 +86,7 @@ define(function(require) {
 				}
 			} else {
 				if (this.MouseModel !== model) {
-					this.commentView = this.createCommentContainer(model);
+					this.createCommentContainer(model);
 				}
 			}
 			this.MouseModel = model;
@@ -154,7 +154,7 @@ define(function(require) {
 			if (state !== 'show') {
 				commentView.$el.focus();
 			}
-			return commentView;
+			this.commentView = commentView;
 		},
 		hideComment: function() {
 			if (this.commentView !== undefined && this.commentView !== null) {

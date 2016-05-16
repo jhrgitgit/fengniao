@@ -31,8 +31,8 @@ define(function(require) {
 		getSelectRegion = require('entrance/sheet/getselectregion'),
 		highlight = require('entrance/extention/highlight'),
 		reloadCells = require('entrance/cell/reloadcells'),
-		setTextType = require('entrance/tool/settexttype');
-
+		setTextType = require('entrance/tool/settexttype'),
+		comment = require('entrance/tool/comment');
 
 
 	var excelBuild = {
@@ -104,6 +104,11 @@ define(function(require) {
 			SpreadSheet.prototype.setWordWrap = setWordWrap;
 			SpreadSheet.prototype.getSelectRegion = getSelectRegion;
 			SpreadSheet.prototype.reloadCells = reloadCells;
+
+			SpreadSheet.prototype.addComment =comment.addComment;
+			SpreadSheet.prototype.editComment =comment.editComment;
+			SpreadSheet.prototype.deleteComment =comment.deleteComment;
+			
 		},
 		buildDataSourceOperation: function(SpreadSheet) {
 			SpreadSheet.prototype.setDataSourceRegion = operationDataSourceRegion.setDataSourceRegion;

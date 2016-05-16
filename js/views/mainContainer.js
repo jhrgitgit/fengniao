@@ -114,19 +114,6 @@ define(function(require) {
 			this.boxModel.height = modelLastHeadLineRow.get('top') + modelLastHeadLineRow.get('height') - modelsHeadLineRowRegionList[0].get('top');
 			this.boxModel.width = modelLastHeadLineCol.get('left') + modelLastHeadLineCol.get('width') - modelsHeadLineColRegionList[0].get('left');
 
-			// if (this.currentRule.displayPosition.startRowIndex > 0) {
-			// 	modelStartHeadLineRow = modelsHeadLineRowList[this.currentRule.displayPosition.startRowIndex - 1];
-			// 	this.boxModel.height = modelLastHeadLineRow.get('top') + modelLastHeadLineRow.get('height') -modelStartHeadLineRow.get('top')-modelStartHeadLineRow.get('height')-1;
-			// } else {
-			// 	this.boxModel.height = modelLastHeadLineRow.get('top') + modelLastHeadLineRow.get('height');
-			// }
-
-			// if (this.currentRule.displayPosition.startColIndex > 0) {
-			// 	modelStartHeadLineCol = modelsHeadLineColList[this.currentRule.displayPosition.startColIndex - 1];
-			// 	this.boxModel.width = modelLastHeadLineCol.get('left') + modelLastHeadLineCol.get('width')-modelStartHeadLineCol.get('left')-modelStartHeadLineCol.get('width')-1;
-			// } else {
-			// 	this.boxModel.width = modelLastHeadLineCol.get('left') + modelLastHeadLineCol.get('width');
-			// }
 			this.rowsViewBottomPosi = this.boxModel.height;
 			config.displayRowHeight = this.rowsViewBottomPosi;
 			cache.visibleRegion.top = 0;
@@ -244,10 +231,13 @@ define(function(require) {
 					break;
 			}
 		},
+		/**
+		 * 输入回车，选中区域超出容器显示范围，进行向下滚动
+		 */
 		downCellPosition: function() {
 			var rowAliasArray = [],
 				nextRowAlias,
-				loadStartAlias,
+				loadStartAlias = [],
 				loadEndAlias,
 				offsetTop,
 				userViewTop,
@@ -260,7 +250,13 @@ define(function(require) {
 				i, len, load;
 
 
-			//ps:需处理冻结状况
+			//处理冻结情况,只有主区域能够进行滚动
+			if (cache.TempProp.isFrozen &&
+				(this.currentRule.displayPosition.endRowIndex ||
+					this.currentRule.displayPosition.endColIndex)) {
+				return;
+			}
+			//判断是否存在单元格未全部初始化
 			cellModel = cells.getCellsByWholeSelectRegion()[0];
 			if (cellModel === null) {
 				rowAliasArray.push(headItemRows.models[selectRegions.models[0].get('wholePosi').startY].get('alias'));
@@ -277,7 +273,7 @@ define(function(require) {
 			}
 			if (loadStartAlias !== undefined) {
 				loadEndAlias = rowAliasArray[len - 1];
-				//ajax get rows data by alias
+				//ajax
 			}
 			bottomHeadRowItem = headItemRows.getModelByAlias(rowAliasArray[len - 1]);
 			//判断Excel冻结状态，非冻结状态(冻结高度为0，用户可视起点高度为0)
@@ -288,13 +284,9 @@ define(function(require) {
 				offsetTop = 0;
 				userViewTop = 0;
 			}
-			// visibleTop
 			//重新定位，可视区域底部高度值
 			top = bottomHeadRowItem.get('top') + bottomHeadRowItem.get('height') + config.User.cellHeight + 10 - offsetTop - userViewTop;
 
-			//ajax get rows data by posi
-			//add rows data
-			//view show 
 			if (top < this.el.scrollTop + this.el.offsetHeight) return;
 			recordScrollTop = this.el.scrollTop;
 			this.el.scrollTop = (top - this.el.offsetHeight);
