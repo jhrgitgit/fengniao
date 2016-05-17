@@ -5,11 +5,8 @@
 
 'use strict';
 define(function(require) {
-
 	var BackboneNest = require('lib/backbone.nested'),
 		CellModel;
-
-
 	/**
 	 * 单元格模型对象
 	 * @author ray wu
@@ -159,7 +156,7 @@ define(function(require) {
 				/**
 				 * 文本内容，与设置类型是否匹配
 				 */
-				isValid : true,
+				isValid: true,
 				/**
 				 * 小数点位数：仅在数字，货币，百分比类型中有用
 				 */
@@ -197,7 +194,12 @@ define(function(require) {
 			 * 是否允许单元格进行高亮效果（ps:此属性为外部扩展属性，后期应对此属性进行分离）
 			 * @type {Boolean}
 			 */
-			highlight: false
+			highlight: false,
+			/**
+			 * 单元格备注显示状态
+			 * @type {Boolean}
+			 */
+			commentShowState: false
 		},
 		/**
 		 * 隐藏当前单元格

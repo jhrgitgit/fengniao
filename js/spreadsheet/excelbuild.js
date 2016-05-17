@@ -105,9 +105,10 @@ define(function(require) {
 			SpreadSheet.prototype.getSelectRegion = getSelectRegion;
 			SpreadSheet.prototype.reloadCells = reloadCells;
 
-			SpreadSheet.prototype.addComment =comment.addComment;
-			SpreadSheet.prototype.editComment =comment.editComment;
-			SpreadSheet.prototype.deleteComment =comment.deleteComment;
+			SpreadSheet.prototype.modifyComment =comment.modifyComment;
+			SpreadSheet.prototype.createAddCommentView =comment.createAddCommentView;
+			SpreadSheet.prototype.createEditComment =comment.createEditComment;
+			SpreadSheet.prototype.deleteComment=comment.deleteComment;
 			
 		},
 		buildDataSourceOperation: function(SpreadSheet) {

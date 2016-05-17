@@ -45,7 +45,6 @@ define(function(require) {
 			Backbone.on('call:bodyContainer', this.callBodyContainer, this);
 			Backbone.on('event:bodyContainer:executiveFrozen',
 				this.executiveFrozen, this);
-
 		},
 		/**
 		 * 渲染页面
@@ -99,9 +98,7 @@ define(function(require) {
 		 * @method adaptScreen
 		 */
 		adaptScreen: function() {
-			// var rowsPanelContainer,
-			// 	colsPanelContainer,
-			// 	mainContainer;
+			//ps:修改（应该把不冻结情况下代码独立）
 			this.executiveFrozen();
 		},
 		/**
@@ -286,6 +283,7 @@ define(function(require) {
 		ruleRow: function() {
 			var modelList, currentIndex, currentModel, tempRule, currentModelTop, userViewModel, userViewIndex;
 			modelList = headItemRows;
+
 			currentIndex = modelList.getIndexByAlias(cache.TempProp.rowAlias);
 			if (currentIndex === -1) {
 				currentModelTop = 0;

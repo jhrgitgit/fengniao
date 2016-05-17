@@ -10,6 +10,7 @@ define(function() {
 	 * @module basic
 	 */
 	return {
+		//ps:CurrentRule ，FrozenRules ，TempProp 都存有冻结信息，具体功能，需要说明
 		CurrentRule: {},
 		FrozenRules: {
 			main: [],

@@ -68,12 +68,12 @@ define(function() {
 			 */
 			outerBottom: 30,
 			/**
-			 * 单元格宽度
+			 * 单元格默认宽度
 			 * @property {int} cellWidth
 			 */
 			cellWidth: 72,
 			/**
-			 * 单元格高度
+			 * 单元格默认高度
 			 * @property {int} cellHeight
 			 */
 			cellHeight: 20,

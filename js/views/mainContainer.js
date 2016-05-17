@@ -64,8 +64,6 @@ define(function(require) {
 			//ps:定位事件，只由主区域订阅
 			this.currentRule = clone.clone(cache.CurrentRule);
 
-			// headItemRowList=headItemRows;
-			// headItemColList=headItemCols;
 			if (this.currentRule.eventScroll) {
 				/**
 				 * 绑定滚动事件
@@ -76,13 +74,6 @@ define(function(require) {
 					'scroll': 'syncScroll'
 				});
 				Backbone.on('event:mainContainer:nextCellPosition', this.nextCellPosition, this);
-				// userViewRowModel = headItemRowList.getModelByAlias(cache.UserView.rowAlias);
-				// userViewEndRowModel = headItemRowList.getModelByPosition(userViewRowModel.get('top') + this.el.offsetHeight);
-				// cache.UserView.rowEndAlias = userViewEndRowModel.get('alias');
-
-				// userViewColModel = headItemColList.getModelByAlias(cache.UserView.colAlias);
-				// userViewEndColModel = headItemColList.getModelByPosition(userViewColModel.get('left') + this.el.offsetWidth);
-				// cache.UserView.colEndAlias = userViewEndColModel.get('alias');
 			}
 			this.boxModel = {};
 			this.boxAttributes = this.currentRule.boxAttributes;
@@ -110,7 +101,7 @@ define(function(require) {
 			modelLastHeadLineRow = modelsHeadLineRowRegionList[len - 1];
 			len = modelsHeadLineColRegionList.length;
 			modelLastHeadLineCol = modelsHeadLineColRegionList[len - 1];
-
+			//ps:计算问题
 			this.boxModel.height = modelLastHeadLineRow.get('top') + modelLastHeadLineRow.get('height') - modelsHeadLineRowRegionList[0].get('top');
 			this.boxModel.width = modelLastHeadLineCol.get('left') + modelLastHeadLineCol.get('width') - modelsHeadLineColRegionList[0].get('left');
 

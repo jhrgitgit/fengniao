@@ -78,15 +78,15 @@ define(function(require) {
 		showComment: function(event) {
 			var model;
 			model = this.viewCellsContainer.getCoordinateByMouseEvent(event).model;
-			if (cache.commentState) return;
-			if (model === undefined || model.get('customProp').comment === null) {
-				if (this.commentView !== undefined && this.commentView !== null) {
-					this.commentView.close();
-					this.commentView = null;
+			if (cache.commentState) {
+				return;
+			}
+			if (this.MouseModel !== model && model !== undefined) {
+				if (model.get('customProp').comment !== null) {
+					model.set('commentShowState', true);
 				}
-			} else {
-				if (this.MouseModel !== model) {
-					this.createCommentContainer(model);
+				if (this.MouseModel !== null && this.MouseModel !== undefined) {
+					this.MouseModel.set('commentShowState', false);
 				}
 			}
 			this.MouseModel = model;
@@ -105,6 +105,7 @@ define(function(require) {
 				comment = '',
 				options,
 				commentView;
+
 			if (model !== undefined) {
 				occupy = model.get('occupy');
 				comment = model.get('customProp').comment;
@@ -134,7 +135,7 @@ define(function(require) {
 				state: state
 			};
 			if (this.commentView !== undefined && this.commentView !== null) {
-				this.commentView.close();
+				this.commentView.remove();
 				this.commentView = null;
 			}
 			//判断在冻结状态是否超出范围
@@ -157,10 +158,18 @@ define(function(require) {
 			this.commentView = commentView;
 		},
 		hideComment: function() {
-			if (this.commentView !== undefined && this.commentView !== null) {
-				this.commentView.close();
-				this.commentView = null;
+			if (cache.commentState) {
+				return;
 			}
+			if (this.MouseModel !== null &&
+				this.MouseModel !== undefined &&
+				this.MouseModel.get('commentShowState')) {
+				this.MouseModel.set('commentShowState', false)
+			}
+			// if (this.commentView !== undefined && this.commentView !== null) {
+			// 	this.commentView.remove();
+			// 	this.commentView = null;
+			// }
 			this.MouseModel = null;
 		},
 		addInputContainer: function(text) {
@@ -412,8 +421,9 @@ define(function(require) {
 		 */
 		destroy: function() {
 			if (this.model.get("selectType") === "operation") {
-				Backbone.off('event:selectRegion:patchOprCell', this.patchOprCell, this);
-				Backbone.off('event:selectRegion:createInputContainer', this.addInputContainer, this);
+				Backbone.off('event:selectRegion:patchOprCell');
+				Backbone.off('event:selectRegion:createCommentContainer');
+				Backbone.off('event:selectRegion:createInputContainer');
 			}
 			if (this.model.get('selectType') === 'drag') {
 				this.viewCellsContainer.dragView = null;

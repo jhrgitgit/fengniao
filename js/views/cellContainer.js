@@ -33,6 +33,10 @@ define(function(require) {
 		 * @type {string}
 		 */
 		className: 'item',
+		events: {
+			'mouseover': 'overCellView',
+			'mouseout': 'outCellView'
+		},
 		/**
 		 * 监听model事件
 		 * @method initialize 
@@ -44,6 +48,7 @@ define(function(require) {
 			this.listenTo(this.model, 'change', this.render);
 			this.listenTo(this.model, 'change:isDestroy', this.destroy);
 			this.listenTo(this.model, 'destroy', this.modelDestroy);
+			this.listenTo(this.model, 'change:commentShowState', this.commentViewHandler)
 			this.currentRule = options.currentRule;
 			if (cache.TempProp.isFrozen !== true ||
 				this.currentRule.displayPosition.endRowIndex === undefined) {
@@ -56,6 +61,24 @@ define(function(require) {
 			this.userViewTop = cache.TempProp.isFrozen ? modelRowList.getModelByAlias(cache.UserView.rowAlias).get('top') : 0;
 			_.bindAll(this, 'showComment', 'hideComment');
 		},
+		overCellView: function() {
+			if (this.model.get('customProp').comment !== null) {
+				this.model.set('commentShowState', true);
+			}
+		},
+		outCellView: function() {
+			this.model.set('commentShowState', false);
+		},
+		commentViewHandler: function() {
+			if (this.model.get('commentShowState')) {
+				this.showComment();
+			} else {
+				this.hideComment();
+			}
+		},
+		/**
+		 * 显示备注视图
+		 */
 		showComment: function() {
 			var self = this;
 			this.overTime = true;
@@ -65,6 +88,7 @@ define(function(require) {
 				}
 			}, 1000);
 		},
+
 		newCommentView: function() {
 			var rowAlias,
 				colAlias,
@@ -74,7 +98,9 @@ define(function(require) {
 				comment = this.model.get('customProp').comment,
 				options;
 
-			if (cache.commentState) return;
+			if (cache.commentState) {
+				return;
+			}
 
 			rowAlias = occupy.y[0];
 			colAlias = occupy.x[occupy.x.length - 1];
@@ -91,10 +117,13 @@ define(function(require) {
 			this.commentView = new commentContainer(options);
 			$(this.el.parentNode.parentNode).append(this.commentView.render().el);
 		},
-		hideComment: function(event) {
+		hideComment: function() {
 			this.overTime = false;
+			if (cache.commentState) {
+				return;
+			}
 			if (this.commentView !== undefined && this.commentView !== null) {
-				this.commentView.close();
+				this.commentView.remove();
 				this.commentView = null;
 			}
 		},
@@ -127,7 +156,6 @@ define(function(require) {
 			// this is improve poiont , marinottejs itemview function can be replace this bug
 			this.$contentBody = $('.bg', this.$el);
 			//end
-			this.listenToHover(modelJSON);
 			this.changeTopBorder(modelJSON);
 			this.changeLeftBorder(modelJSON);
 			this.changeBottomBorder(modelJSON);
@@ -146,23 +174,12 @@ define(function(require) {
 			this.showCommentSign(modelJSON);
 			return this;
 		},
-		listenToHover: function(modelJSON) {
-			//避免重复绑定
-			this.$el.off('mouseover');
-			this.$el.off('mouseout');
-			if (modelJSON.customProp.comment === null || modelJSON.customProp.comment === undefined) {
-				return;
-			} else {
-				this.$el.on('mouseover', this.showComment);
-				this.$el.on('mouseout', this.hideComment);
-			}
-		},
-		showCommentSign:function(modelJSON){
-			if(modelJSON.customProp.comment!==null){
+		showCommentSign: function(modelJSON) {
+			if (modelJSON.customProp.comment !== null) {
 				this.$el.prepend('<div class="comment-ico"><div class="comment-ico-triangle"></div></div>');
 			}
 		},
-		
+
 		/**
 		 * 根据不同单元格类型，生成不同displaytext
 		 * @return {[type]} [description]

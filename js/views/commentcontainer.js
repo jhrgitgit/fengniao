@@ -4,6 +4,7 @@ define(function(require) {
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
 		selectRegions = require('collections/selectRegion'),
+		cells = require('collections/cells'),
 		send = require('basic/tools/send'),
 		cache = require('basic/tools/cache'),
 		commentContainer;
@@ -44,39 +45,51 @@ define(function(require) {
 		},
 
 		close: function() {
-			var comment;
+			var comment,
+				select,
+				cellsList,
+				i;
+
 			if (this.state !== 'show') {
 				cache.commentState = false;
 				comment = this.$el.val();
 				comment = comment || '';
-				Backbone.trigger('event:selectRegion:patchOprCell', function(cell) {
-					cell.set('customProp.comment', comment);
-				});
+				select = selectRegions.getModelByType('operation')[0];
+				cellsList = cells.getFillCellsByRegion(
+					select.get('wholePosi').startY,
+					select.get('wholePosi').startX,
+					select.get('wholePosi').endY,
+					select.get('wholePosi').endX
+				);
+				for (i in cellsList) {
+					cellsList[i].set('customProp.comment', comment);
+				}
+				this.sendData(comment);
 			}
-			this.sendData(comment);
 			this.remove();
 		},
-		sendData: function(comment){
+		sendData: function(comment) {
 			var select,
 				startColAlias,
 				startRowAlias,
 				endColAlias,
 				endRowAlias;
 			select = selectRegions.getModelByType('operation')[0];
-			startColAlias = headItemCols.models[select.get('wholePosi').startX].get('alias'); 
-			startRowAlias = headItemRows.models[select.get('wholePosi').startY].get('alias'); 
-			endColAlias = headItemCols.models[select.get('wholePosi').endX].get('alias'); 
-			endRowAlias = headItemRows.models[select.get('wholePosi').endY].get('alias'); 
+
+			startColAlias = headItemCols.models[select.get('wholePosi').startX].get('alias');
+			startRowAlias = headItemRows.models[select.get('wholePosi').startY].get('alias');
+			endColAlias = headItemCols.models[select.get('wholePosi').endX].get('alias');
+			endRowAlias = headItemRows.models[select.get('wholePosi').endY].get('alias');
 			send.PackAjax({
 				url: 'text.htm?m=comment_set',
 				data: JSON.stringify({
 					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
 					sheetId: '1',
 					coordinate: {
-						startRowAlais:startRowAlias,
-						endRowAlais:endRowAlias,
-						startColAlais:startColAlias,
-						endColAlais:endColAlias
+						startRowAlais: startRowAlias,
+						endRowAlais: endRowAlias,
+						startColAlais: startColAlias,
+						endColAlais: endColAlias
 					},
 					comment: comment
 				})

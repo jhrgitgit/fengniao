@@ -33,10 +33,10 @@ define(function(require) {
 			action = $(e.currentTarget).data('toolbar');
 			switch (action) {
 				case 'addComment':
-					commentOpr.addComment();
+					commentOpr.createAddCommentView();
 					break;
 				case 'editComment':
-					commentOpr.editComment();
+					commentOpr.createEditComment();
 					break;
 				case 'deleteComment':
 					commentOpr.deleteComment();

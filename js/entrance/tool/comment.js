@@ -9,47 +9,58 @@ define(function(require) {
 		commentHandler;
 
 	commentHandler = {
-		addComment: function(sheetId) {
-			Backbone.trigger('event:selectRegion:createCommentContainer', undefined, 'add');
-
+		modifyComment: function(sheetId, comment, label) {
+			var region;
+			region = cells.operateCellByDisplayName('1', label, function(cell) {
+				cell.set('customProp.comment', comment);
+			});
+			this.sendData(region, comment, 'text.htm?m=comment_set');
 		},
-		editComment: function(sheetId) {
+
+		createAddCommentView: function(sheetId) {
+			Backbone.trigger('event:selectRegion:createCommentContainer', undefined, 'add');
+		},
+
+		createEditComment: function(sheetId) {
 			Backbone.trigger('event:selectRegion:createCommentContainer', undefined, 'edit');
 		},
-		deleteComment: function(sheetId) {
-			var cellList,
-				i;
-			cellList = cells.getCellsByWholeSelectRegion();
-			for (i in cellList) {
-				if (cellList[i] !== null) {
-					cellList[i].set('customProp.comment', null);
-				}
-			}
-			this.sendData();
+
+		deleteComment: function(sheetId, label) {
+			var region;
+			region = cells.operateCellByDisplayName('1', label, function(cell) {
+				cell.set('customProp.comment', null);
+			});
+			this.sendData(region, undefined, 'text.htm?m=comment_del');
 		},
-		sendData: function() {
-			var select,
-				startColAlias,
+		sendData: function(region, comment, url) {
+			var startColAlias,
 				startRowAlias,
 				endColAlias,
-				endRowAlias;
-			select = selectRegions.getModelByType('operation')[0];
-			startColAlias = headItemCols.models[select.get('wholePosi').startX].get('alias');
-			startRowAlias = headItemRows.models[select.get('wholePosi').startY].get('alias');
-			endColAlias = headItemCols.models[select.get('wholePosi').endX].get('alias');
-			endRowAlias = headItemRows.models[select.get('wholePosi').endY].get('alias');
+				endRowAlias,
+				data;
+
+			startColAlias = headItemCols.models[region.startColIndex].get('alias');
+			startRowAlias = headItemRows.models[region.startRowIndex].get('alias');
+			endColAlias = headItemCols.models[region.endColIndex].get('alias');
+			endRowAlias = headItemRows.models[region.endRowIndex].get('alias');
+
+			data = {
+				excelId: window.SPREADSHEET_AUTHENTIC_KEY,
+				sheetId: '1',
+				coordinate: {
+					startRowAlais: startRowAlias,
+					endRowAlais: endRowAlias,
+					startColAlais: startColAlias,
+					endColAlais: endColAlias
+				}
+			};
+			if (comment !== undefined) {
+				data.comment = comment;
+			}
+
 			send.PackAjax({
-				url: 'text.htm?m=comment_del',
-				data: JSON.stringify({
-					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
-					sheetId: '1',
-					coordinate: {
-						startRowAlais: startRowAlias,
-						endRowAlais: endRowAlias,
-						startColAlais: startColAlias,
-						endColAlais: endColAlias
-					},
-				})
+				url: url,
+				data: JSON.stringify(data)
 			});
 		}
 	};

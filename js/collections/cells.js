@@ -2,7 +2,7 @@ define(function(require) {
 	'use strict';
 	var Backbone = require('lib/backbone'),
 		cache = require('basic/tools/cache'),
-		binary = require('basic/util/binary'), 
+		binary = require('basic/util/binary'),
 		CellModel = require('models/cell'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
@@ -680,27 +680,6 @@ define(function(require) {
 			}
 			return result;
 		},
-		// getAliasByWholeSelectRegion: function() {
-		// 	var aliasList = [],
-		// 		i,
-		// 		j,
-		// 		modelSelectRegion = selectRegions.models[0],
-		// 		betweenRow = modelSelectRegion.get('wholePosi').endY - modelSelectRegion.get('wholePosi').startY + 1,
-		// 		betweenCol = modelSelectRegion.get('wholePosi').endX - modelSelectRegion.get('wholePosi').startX + 1,
-		// 		headModelListRow = headItemRows.models,
-		// 		headModelListCol = headItemCols.models,
-		// 		aliasRow,
-		// 		aliasCol,
-		// 		modelAlias;
-		// 	for (i = 0; i < betweenRow; i++) {
-		// 		for (j = 0; j < betweenCol; j++) {
-		// 			modelAlias.aliasRow = headModelListRow[modelSelectRegion.get('wholePosi').startY + i].get('alias');
-		// 			modelAlias.aliasCol = headModelListCol[modelSelectRegion.get('wholePosi').startX + j].get('alias');
-		// 			aliasList.push(modelAlias);
-		// 		}
-		// 	}
-		// 	return aliasList;
-		// },
 
 		/**
 		 * 获取单元格相邻单元格
@@ -741,7 +720,47 @@ define(function(require) {
 			return modelCelllList[0];
 		},
 		/**
-		 * 获取选中区域初始化单元格对象
+		 * 获取区域内所有单元格对象，如果区域内存在不含有单元格位置，则新建单元格填充为
+		 * @param  {[type]} startRowIndex [description]
+		 * @param  {[type]} startColIndex [description]
+		 * @param  {[type]} endRowIndex   [description]
+		 * @param  {[type]} endColIndex   [description]
+		 * @return {[type]}               [description]
+		 */
+		getFillCellsByRegion: function(startIndexRow, startIndexCol, endIndexRow, endIndexCol) {
+			if (endIndexCol === undefined) {
+				endIndexCol = startIndexCol;
+			}
+			if (endIndexRow === undefined) {
+				endIndexRow = startIndexRow;
+			}
+			var cellList = [],
+				i = 0,
+				j = 0,
+				aliasCol,
+				aliasRow,
+				betweenRow = endIndexRow - startIndexRow + 1,
+				betweenCol = endIndexCol - startIndexCol + 1,
+				gridModelListRow = headItemRows.models,
+				gridModelListCol = headItemCols.models,
+				cellsPositionX = cache.CellsPosition.strandX;
+
+			for (; i < betweenRow; i++) {
+				for (j = 0; j < betweenCol; j++) {
+					aliasRow = gridModelListRow[startIndexRow + i].get('alias');
+					aliasCol = gridModelListCol[startIndexCol + j].get('alias');
+					if (cellsPositionX[aliasCol] !== undefined && cellsPositionX[aliasCol][aliasRow] !== undefined) {
+						cellList.push(this.models[cellsPositionX[aliasCol][aliasRow]]);
+					} else {
+						cellList.push(this.createCellModel(startIndexCol + j,startIndexRow + i));
+					}
+				}
+
+			}
+			return cellList;
+		},
+		/**
+		 * 获取选中区域初始化单元格对象 
 		 * @method getInitCellBySelectRegion 
 		 * @return  {Cell} 单元格对象
 		 */
@@ -1072,11 +1091,9 @@ define(function(require) {
 				cellList,
 				currentCell,
 				i, j, h = 0;
-			// if (regionLabel !== null && regionLabel !== undefined) {
-				region = this.analysisLabel(regionLabel);
-			// }else{
-				
-			// }
+
+			region = this.analysisLabel(regionLabel);
+
 			startRowIndex = region.startRowIndex;
 			startColIndex = region.startColIndex;
 			endColIndex = region.endColIndex;
@@ -1092,7 +1109,7 @@ define(function(require) {
 					h++;
 				}
 			}
-
+			return region;
 		},
 		/**
 		 * 将行列displayName 转化为行列索引
@@ -1141,7 +1158,7 @@ define(function(require) {
 			}
 		},
 		/**
-		 * 获取完成的操作区域：操作区域内，若存在合并单元格超出操作区域，操作区域应按照单元格扩大，
+		 * 获取完整的操作区域：操作区域内，若存在合并单元格超出操作区域，操作区域应按照单元格扩大，
 		 * 直到没有单元格超出区域
 		 * @param  {[type]} startColIndex [description]
 		 * @param  {[type]} startRowIndex [description]
