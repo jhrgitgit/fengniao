@@ -79,14 +79,14 @@ define(function(require) {
 			var model;
 			model = this.viewCellsContainer.getCoordinateByMouseEvent(event).model;
 			if (cache.commentState) return;
-			if (model === undefined || model.get('customProp').comment !== null) {
+			if (model === undefined || model.get('customProp').comment === null) {
 				if (this.commentView !== undefined && this.commentView !== null) {
 					this.commentView.close();
 					this.commentView = null;
 				}
 			} else {
 				if (this.MouseModel !== model) {
-					this.commentView = this.createCommentContainer(model);
+					this.createCommentContainer(model);
 				}
 			}
 			this.MouseModel = model;
@@ -150,11 +150,11 @@ define(function(require) {
 				}
 			}
 			commentView = new commentContainer(options);
-			$(this.parentNode).append(commentView.render().el);
+			$(this.el.parentNode).append(commentView.render().el);
 			if (state !== 'show') {
 				commentView.$el.focus();
 			}
-			return commentView;
+			this.commentView = commentView;
 		},
 		hideComment: function() {
 			if (this.commentView !== undefined && this.commentView !== null) {

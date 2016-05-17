@@ -63,7 +63,6 @@ define(function(require) {
 			Backbone.on('event:cellsContainer:destroy', this.destroy, this);
 			Backbone.on('event:cellsContainer:unBindDrag', this.unBindDrag, this);
 			Backbone.on('event:cellsContainer:bindDrag', this.bindDrag, this);
-			Backbone.on('event:cellsContainer:selectRegionChange', this.selectRegionChange, this);
 			Backbone.on('event:cellsContainer:addClipRegionView', this.addClipRegionView, this);
 			Backbone.on('event:cellsContainer:getCoordinate', this.getCoordinate, this);
 			Backbone.on('event:cellsContainer:startHighlight', this.startHighlight, this);
@@ -73,7 +72,12 @@ define(function(require) {
 			// this.listenTo(selectRegions, 'add', this.addSelectRegion);
 			this.boxAttributes = options.boxAttributes;
 			this.parentView = options.parentView;
-			// this.posiX = this.posiY = 0;
+			//处理冻结情况,只有主区域能够进行滚动
+			if (!cache.TempProp.isFrozen ||
+				(this.currentRule.displayPosition.endRowIndex &&
+					this.currentRule.displayPosition.endColIndex)) {
+				Backbone.on('event:cellsContainer:selectRegionChange', this.selectRegionChange, this);
+			}
 		},
 		/**
 		 * 渲染方法
@@ -239,7 +243,7 @@ define(function(require) {
 				bottom = top + height;
 			} else {
 				cache.highlightDirection = 'null';
-				if (this.hightlightView !== null && this.hightlightView !== undefined){
+				if (this.hightlightView !== null && this.hightlightView !== undefined) {
 					this.hightlightModel.destroy();
 					this.hightlightView = null;
 				}
@@ -313,7 +317,7 @@ define(function(require) {
 			this.$el.off('mousemove', this.highlightRegionMove);
 			//绑定视图原有事件
 			this.delegateEvents();
-			if (this.hightlightView !== null && this.hightlightView !== undefined){
+			if (this.hightlightView !== null && this.hightlightView !== undefined) {
 				this.hightlightModel.destroy();
 				this.hightlightView = null;
 			}
@@ -435,8 +439,6 @@ define(function(require) {
 		downSelectRegion: function() {
 			var endRowIndex,
 				startColIndex,
-				aliasRow,
-				aliasCol,
 				modelCell,
 				startPosiX,
 				startPosiY,
@@ -445,10 +447,11 @@ define(function(require) {
 				cellsPositionX,
 				aliasGridRow,
 				aliasGridCol,
-				options;
+				options,
+				left, top, height, width;
 
-			this.userViewTop = cache.TempProp.isFrozen ? modelRowList.getModelByAlias(cache.UserView.rowAlias).get('top') : 0;
-			this.userViewLeft = cache.TempProp.isFrozen ? modelColList.getModelByAlias(cache.UserView.colAlias).get('left') : 0;
+			this.userViewTop = cache.TempProp.isFrozen ? headItemRows.getModelByAlias(cache.UserView.rowAlias).get('top') : 0;
+			this.userViewLeft = cache.TempProp.isFrozen ? headItemCols.getModelByAlias(cache.UserView.colAlias).get('left') : 0;
 
 			endRowIndex = selectRegions.models[0].get('wholePosi').endY;
 			startColIndex = selectRegions.models[0].get('wholePosi').startX;
@@ -464,15 +467,14 @@ define(function(require) {
 			}
 
 			if (modelCell) {
-				// left = modelCell.get('physicsBox').left;
-				// top = modelCell.get('physicsBox').top;
-				// width = modelCell.get('physicsBox').width;
-				// height = modelCell.get('physicsBox').height;
-				startPosiX = binary.modelBinary(left, headLineColModelList, 'left', 'width', 0, headLineColModelList.length - 1);
-				startPosiY = binary.modelBinary(top, headLineRowModelList, 'top', 'height', 0, headLineRowModelList.length - 1);
-				endPosiX = binary.modelBinary(left + width, headLineColModelList, 'left', 'width', 0, headLineColModelList.length - 1);
-				endPosiY = binary.modelBinary(top + height, headLineRowModelList, 'top', 'height', 0, headLineRowModelList.length - 1);
-				text = modelCell.get('content').texts;
+				left = modelCell.get('physicsBox').left;
+				top = modelCell.get('physicsBox').top;
+				width = modelCell.get('physicsBox').width;
+				height = modelCell.get('physicsBox').height;
+				startPosiX = binary.modelBinary(left, headItemCols.models, 'left', 'width', 0, headItemCols.models.length - 1);
+				startPosiY = binary.modelBinary(top, headItemRows.models, 'top', 'height', 0, headItemRows.models.length - 1);
+				endPosiX = binary.modelBinary(left + width, headItemCols.models, 'left', 'width', 0, headItemCols.models.length - 1);
+				endPosiY = binary.modelBinary(top + height, headItemRows.models, 'top', 'height', 0, headItemRows.models.length - 1);
 			} else {
 				startPosiX = endPosiX = startColIndex;
 				startPosiY = endPosiY = endRowIndex + 1;
@@ -488,38 +490,6 @@ define(function(require) {
 				endRowIndex: endPosiY
 			};
 			this.adjustOperationRegion(options);
-
-			// var result = {};
-			// for (i = startPosiX; i < endPosiX + 1; i++) {
-			// 	colDisplayNames.push(headLineColModelList[i].get('displayName'));
-			// }
-			// for (i = startPosiY; i < endPosiY + 1; i++) {
-			// 	rowDisplayNames.push(headLineRowModelList[i].get('displayName'));
-			// }
-			// result.point = {
-			// 	col: colDisplayNames,
-			// 	row: rowDisplayNames
-			// };
-
-			// result.text = text;
-			// result.property = {
-			// 	size: modelCell ? modelCell.get('content').size : '11pt',
-			// 	family: modelCell ? modelCell.get('content').family : "SimSun",
-			// 	bd: modelCell ? modelCell.get('content').bd : false,
-			// 	italic: modelCell ? modelCell.get('content').italic : false,
-			// 	color: modelCell ? modelCell.get('content').color : "#000",
-			// 	alignRow: modelCell ? modelCell.get('content').alignRow : 'left',
-			// 	alignCol: modelCell ? modelCell.get('content').alignCol : 'middle',
-			// 	background: modelCell ? modelCell.get('customProp').background : "#fff",
-			// 	format: modelCell ? modelCell.get('customProp').format : 'text',
-			// 	wordWrap: modelCell ? modelCell.get('wordWrap') : false
-			// };
-			// result.border = {
-			// 	top: modelCell ? modelCell.get('border').top : false,
-			// 	right: modelCell ? modelCell.get('border').right : false,
-			// 	bottom: modelCell ? modelCell.get('border').bottom : false,
-			// 	left: modelCell ? modelCell.get('border').left : false
-			// };
 		},
 		/**
 		 * 移除鼠标移动监听事件
@@ -712,7 +682,7 @@ define(function(require) {
 			// this is question , need deprecated
 			// 
 			// when input data time avoid trigger this effect.
-			if(cache.commentState) return;
+			if (cache.commentState) return;
 			if ($(event.target).attr('class') === 'edit-frame') {
 				return;
 			}
@@ -1236,7 +1206,6 @@ define(function(require) {
 				});
 				this.$el.append(this.dataSoureRegionView.render().el);
 			}
-
 			width = headItemColList[endColIndex].get('width') + headItemColList[endColIndex].get('left') - headItemColList[startColIndex].get('left');
 			height = headItemRowList[endRowIndex].get('height') + headItemRowList[endRowIndex].get('top') - headItemRowList[startRowIndex].get('top');
 			if (options.initColIndex !== undefined) {
@@ -1359,6 +1328,7 @@ define(function(require) {
 		destroy: function() {
 			Backbone.off('call:cellsContainer');
 			Backbone.off('event:cellsContainer:destroy');
+			Backbone.off('event:cellsContainer:selectRegionChange');
 			this.contentCellsContainer.destroy();
 			this.selectRegion.destroy();
 			if (this.clipView !== undefined && this.clipView !== null) this.clipView.destroy();

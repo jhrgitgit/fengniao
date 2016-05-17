@@ -159,9 +159,8 @@ define(function(require) {
 		},
 		showCommentSign:function(modelJSON){
 			if(modelJSON.customProp.comment!==null){
-				this.$el.append('<div class="comment-ico"><div class="comment-ico-triangle"></div></div>');
+				this.$el.prepend('<div class="comment-ico"><div class="comment-ico-triangle"></div></div>');
 			}
-			
 		},
 		
 		/**
