@@ -152,7 +152,13 @@ define(function(require) {
 				 */
 				background: '#fff',
 				/**
-				 * 单元格数据类型: 货币 currency   数字 number    日期 date  文本 text   百分比 percent  常规 normal
+				 * 单元格数据类型: 
+				 * 货币 currency
+				 * 数字 number
+				 * 日期 date
+				 * 文本 text
+				 * 百分比 percent
+				 * 常规 normal
 				 * @property {string} format 
 				 */
 				format: 'normal',
