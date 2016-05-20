@@ -116,25 +116,7 @@ define(function(require) {
 			this.triggerCallback();
 		},
 		transAction: function(e) {
-			this.switchToolbar(e);
 			this.toolbar(e);
-		},
-		/**
-		 * 切换工具菜单栏
-		 * @param  {event} e 点击事件
-		 */
-		switchToolbar: function(e) {
-			var $target = $(e.target),
-				id;
-			if ($target.parents('.fui-control-list').length) {
-				id = $target.prop('id');
-				$('.fui-control-list > li > span').removeClass('active');
-				if (id === 'download') {
-					return;
-				}
-				$('.tabContainer').css('display', 'none');
-				$('.' + id + 'Container').css('display', 'block');
-			}
 		},
 		/**
 		 * 工具菜单栏选中效果
