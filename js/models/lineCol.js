@@ -29,7 +29,7 @@ define(function(require) {
 			 * 相对位置`left`值
 			 * @property {number} left
 			 */
-			left: 0,
+			left: 0, 
 			/**
 			 * 宽度
 			 * @property {number} width

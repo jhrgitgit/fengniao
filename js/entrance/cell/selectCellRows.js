@@ -47,7 +47,7 @@ define(function(require) {
 		top = 0;
 		width = headModelCol.toJSON().width;
 		height = headLineRowModelList[len - 1].get('top') + headLineRowModelList[len - 1].get('height');
-		
+
 		rowDisplayNames.push('1');
 		rowDisplayNames.push(headLineRowModelList[len - 1].get('displayName'));
 		colDisplayNames.push(headLineColModelList[modelIndexCol].get('displayName'));
@@ -74,8 +74,8 @@ define(function(require) {
 					}
 				});
 				if (e !== undefined) {
-					e={};
-					e.point=point;
+					e = {};
+					e.point = point;
 					listener.excute('dataSourceRegionChange', e);
 					listener.excute('regionChange', e);
 					listener.excute('mousedown', e);
@@ -120,7 +120,7 @@ define(function(require) {
 				});
 				if (e !== undefined) {
 					e = {};
-					e.point=point;
+					e.point = point;
 					listener.excute('selectRegionChange', e);
 					listener.excute('regionChange', e);
 					listener.excute('mousedown', e);

@@ -59,6 +59,7 @@ define(function(require) {
 			return _.indexOf(this.models, model);
 		},
 		/**
+		 * @deprecated 因为废弃了索引的方式，进行查询，所以该方法过时了
 		 * 获取区域的所有列对象
 		 * @method getModelListByIndex
 		 * @return {Array} lineCol数组
@@ -114,9 +115,10 @@ define(function(require) {
 			return this.models[currentIndex];
 		},
 		/**
-		 * 获取相邻标线的对象
+		 * 获取相邻标线的对象 
 		 * @method getNeighborModelByAlias
 		 * @param  {number} alias 坐标
+		 * @param {string} redirction 方向
 		 * @return {app.Models.LineCol} 对象
 		 */
 		getNeighborModelByAlias: function(alias, redirction) {
