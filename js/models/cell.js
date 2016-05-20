@@ -114,6 +114,7 @@ define(function(require) {
 				 */
 				displayTexts: ''
 			},
+			wordWrap: false,
 			/**
 			 * 边线属性
 			 * @property {object} border
@@ -164,7 +165,7 @@ define(function(require) {
 				/**
 				 * 文本内容，与设置类型是否匹配
 				 */
-				isValid: true,
+				isValid : true,
 				/**
 				 * 小数点位数：仅在数字，货币，百分比类型中有用
 				 */
@@ -188,11 +189,6 @@ define(function(require) {
 				 */
 				comment: null
 			},
-			/**
-			 * 是否自动换行
-			 * @type {Boolean} wordWrap
-			 */
-			wordWrap: false,
 			/**
 			 * 单元格是否显示
 			 * @property {boolean} showState

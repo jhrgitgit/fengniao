@@ -157,11 +157,12 @@ define(function(require) {
 				this.$el.on('mouseout', this.hideComment);
 			}
 		},
-		showCommentSign: function(modelJSON) {
-			if (modelJSON.customProp.comment !== null) {
+		showCommentSign:function(modelJSON){
+			if(modelJSON.customProp.comment!==null){
 				this.$el.prepend('<div class="comment-ico"><div class="comment-ico-triangle"></div></div>');
 			}
 		},
+		
 		/**
 		 * 根据不同单元格类型，生成不同displaytext
 		 * @return {[type]} [description]
@@ -266,6 +267,7 @@ define(function(require) {
 					"color": modelJSON.content.color
 				});
 			}
+
 		},
 		/**
 		 * 设置单元格内容字体
@@ -322,6 +324,7 @@ define(function(require) {
 					'font-weight': 'normal'
 				});
 			}
+
 		},
 		/**
 		 * 设置单元格内容水平对齐方式

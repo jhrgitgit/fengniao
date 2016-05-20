@@ -39,12 +39,12 @@ define(function(require) {
 		sendRegion = common.regionOperation(sheetId, region, function(cell) {
 			cell.set('wordWrap', wordWrap);
 		});
-		startColAlias = headItemCols.models[startColIndex].get("alias");
-		startRowAlias = headItemRows.models[startRowIndex].get("alias");
-		endColAlias = headItemCols.models[endColIndex].get("alias");
-		endRowAlias = headItemRows.models[endRowIndex].get("alias");
+		startColAlias=headItemCols.models[startColIndex].get("alias");
+		startRowAlias=headItemRows.models[startRowIndex].get("alias");
+		endColAlias=headItemCols.models[endColIndex].get("alias");
+		endRowAlias=headItemRows.models[endRowIndex].get("alias");
 
-		send.PackAjax({
+	    send.PackAjax({
 			url: 'text.htm?m=wordWrap',
 			data: JSON.stringify({
 				excelId: window.SPREADSHEET_AUTHENTIC_KEY,
