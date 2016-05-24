@@ -174,12 +174,7 @@ define(function(require) {
 		triggerCallback: function() {
 			_.bindAll(this, 'callView');
 			Backbone.trigger('call:bodyContainer', this.callView('viewBodyContainer'));
-			// Backbone.trigger('call:rowsHeadContainer', this.callView('viewRowsHeadContainer'));
-			// Backbone.trigger('call:rowsGridContainer', this.callView('viewRowsGridLineContainer'));
-			// Backbone.trigger('call:rowsAllHeadContainer', this.callView('viewRowsAllHeadContainer'));
 			Backbone.trigger('call:colsAllHeadContainer', this.callView('viewColsAllHeadContainer'));
-			// Backbone.trigger('call:contentCellsContainer', this.callView('viewContentCellsContainer'));
-
 		},
 		callView: function(name) {
 			var object = this;
@@ -451,6 +446,7 @@ define(function(require) {
 			}
 
 			this.loadRegionRows(offsetTop, userViewTop);
+
 
 			limitTopPosi = this.el.scrollTop - config.System.prestrainHeight + offsetTop + userViewTop;
 			limitTopPosi = limitTopPosi < 0 ? 0 : limitTopPosi;
@@ -876,7 +872,6 @@ define(function(require) {
 				width,
 				height,
 				len, i = 0;
-
 			//冻结情况，计算视图的偏移量
 			if (cache.TempProp.isFrozen === true) {
 				offsetTop = this.currentRule.displayPosition.offsetTop;
