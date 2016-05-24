@@ -12,7 +12,6 @@ define(function(require) {
 		headItemRows = require('collections/headItemRow'),
 		siderLineCols = require('collections/siderLineCol'),
 		siderLineRows = require('collections/siderLineRow'),
-		regionOperation = require('entrance/regionoperation'),
 		sendRegion;
 
 	var selectCellCols = function(sheetId, displayName, index, e) {

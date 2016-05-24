@@ -74,9 +74,6 @@ define(function(require) {
 				object[name] = callback;
 			};
 		},
-		outerDraghandle: function(e) {
-			console.log(e);
-		},
 		/**
 		 * 关闭Excel时候，保存用户可视区域
 		 * @method saveUserView
@@ -211,10 +208,7 @@ define(function(require) {
 				}
 
 			}
-			//consider , when time reset scroll to diff position
-			// if (cache.UserView.colAlias !== '1') {
 			this.initMainView();
-			// }
 		},
 		/**
 		 * 生成列冻结操作规则
@@ -242,6 +236,8 @@ define(function(require) {
 					displayPosition: {
 						offsetLeft: 0, // must
 						startIndex: userViewIndex,
+						startAlias: cache.UserView.colAlias,
+						endAlias: cache.TempProp.colAlias,
 						endIndex: currentIndex
 					},
 					boxAttributes: {
@@ -256,6 +252,7 @@ define(function(require) {
 			tempRule = {
 				displayPosition: {
 					offsetLeft: currentModelLeft,
+					startAlias: cache.TempProp.colAlias,
 					startIndex: currentIndex
 				},
 				boxAttributes: {
@@ -294,11 +291,14 @@ define(function(require) {
 
 			userViewModel = modelList.getModelByAlias(cache.UserView.rowAlias);
 			userViewIndex = modelList.getIndexByAlias(cache.UserView.rowAlias);
+
 			// 如果索引不是0，说明锁定需要分为两块
 			if (cache.TempProp.isFrozen && cache.TempProp.rowFrozen) {
 				tempRule = {
 					displayPosition: {
 						offsetTop: 0, // must
+						startAlias: cache.UserView.rowAlias,
+						endAlias: cache.TempProp.rowAlias,
 						startIndex: userViewIndex,
 						endIndex: currentIndex
 					},
@@ -314,7 +314,8 @@ define(function(require) {
 			tempRule = {
 				displayPosition: {
 					offsetTop: currentModelTop,
-					startIndex: currentIndex
+					startIndex: currentIndex,
+					startAlias: cache.TempProp.rowAlias
 				},
 				boxAttributes: {
 					height: this.scrollHeight - this.scrollbarWidth - currentModelTop
@@ -398,6 +399,10 @@ define(function(require) {
 							endColIndex: currentColIndex,
 							startRowIndex: userViewRowIndex,
 							endRowIndex: currentRowIndex,
+							startColAlias: cache.UserView.colAlias,
+							startRowAlias: cache.UserView.rowAlias,
+							endColAlias: cache.TempProp.colAlias,
+							endRowAlias: cache.TempProp.rowAlias,
 							offsetTop: 0,
 							offsetLeft: 0
 						}
@@ -415,6 +420,10 @@ define(function(require) {
 							startRowIndex: userViewRowIndex,
 							endRowIndex: currentRowIndex,
 							startColIndex: currentColIndex,
+
+							startColAlias: cache.TempProp.colAlias,
+							startRowAlias: cache.UserView.rowAlias,
+							endRowAlias: cache.TempProp.rowAlias,
 							offsetLeft: currentColModelLeft,
 							offsetTop: 0
 						},
@@ -446,6 +455,9 @@ define(function(require) {
 							startColIndex: userViewColIndex,
 							endColIndex: currentColIndex,
 							startRowIndex: currentRowIndex,
+							startColAlias: cache.UserView.colAlias,
+							startRowAlias: cache.TempProp.rowAlias,
+							endColAlias: cache.TempProp.colAlias,
 							offsetLeft: 0,
 							offsetTop: currentRowModelTop
 						},
@@ -491,6 +503,8 @@ define(function(require) {
 				displayPosition: {
 					startColIndex: currentColIndex,
 					startRowIndex: currentRowIndex,
+					startColAlias: cache.TempProp.colAlias,
+					startRowAlias: cache.TempProp.rowAlias,
 					offsetLeft: currentColModelLeft,
 					offsetTop: currentRowModelTop,
 				},

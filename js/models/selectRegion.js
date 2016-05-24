@@ -16,7 +16,7 @@ define(function(require) {
 	SelectRegion = BackboneNest.NestedModel.extend({
 		defaults: {
 			/**
-			 * 鼠标相对位置信息，索引值，初始化信息
+			 * 进行选中操作，初始点击位置，保存值为索引值
 			 * @property {object} initPosi
 			 */
 			initPosi: {
@@ -32,7 +32,7 @@ define(function(require) {
 				startY: 0,
 			},
 			/**
-			 * 鼠标相对位置信息，索引值，最终结束信息
+			 * 鼠标位置，保存值为索引值
 			 * @property {object} mousePosi
 			 */
 			mousePosi: {
@@ -58,20 +58,10 @@ define(function(require) {
 				 */
 				top: 0,
 				/**
-				 * 相对位置`bottom`值
-				 * @property {number} bottom
-				 */
-				bottom: 0,
-				/**
 				 * 相对位置`left`值
 				 * @property {number} left
 				 */
 				left: 0,
-				/**
-				 * 相对位置`right`值
-				 * @property {number} right
-				 */
-				right: 0
 			},
 			/**
 			 * 宽高属性

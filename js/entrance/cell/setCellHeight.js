@@ -6,7 +6,6 @@ define(function(require) {
 		send = require('basic/tools/send'),
 		headItemRows = require('collections/headItemRow'),
 		selectRegions = require('collections/selectRegion'),
-		common = require('entrance/regionoperation'),
 		sendRegion;
 
 

@@ -42,12 +42,11 @@ define(function(require) {
 		} else if (type === "cut") {
 			cache.clipState = "cut";
 		}
-		selectRegion = selectRegions.getModelByType("operation")[0];
 
-		startColIndex = selectRegion.get("wholePosi").startX;
-		startRowIndex = selectRegion.get("wholePosi").startY;
-		endColIndex = selectRegion.get("wholePosi").endX;
-		endRowIndex = selectRegion.get("wholePosi").endY;
+		startColIndex = headItemCols.getIndexByAlias(clipModel.get("wholePosi").startX);
+		startRowIndex = headItemRows.getIndexByAlias(clipModel.get("wholePosi").startY);
+		endColIndex = headItemCols.getIndexByAlias(clipModel.get("wholePosi").endX);
+		endRowIndex = headItemRows.getIndexByAlias(clipModel.get("wholePosi").endY);
 
 		for (i = startRowIndex; i < endRowIndex + 1; i++) {
 			for (j = startColIndex; j < endColIndex + 1; j++) {

@@ -1,54 +1,68 @@
 define(function(require) {
 	'use strict';
 
-	var $ = require('lib/jquery'),
-		Backbone = require('lib/backbone'),
-		send = require('basic/tools/send'),
+	var send = require('basic/tools/send'),
 		selectRegions = require('collections/selectRegion'),
-		common = require('entrance/regionoperation'),
-		sendRegion;
+		headItemCols = require('collections/headItemCol'),
+		headItemRows = require('collections/headItemRow'),
+		cells = require('collections/cells'),
+		analysisLabel = require('basic/tools/analysislabel');
 
 
-	var setAlign = function(sheetId, alignType, region) {
+	var setAlign = function(sheetId, alignType, label) {
 		var url,
+			type,
 			transverse,
-			vertical;
+			vertical,
+			region = {},
+			select;
+
 		switch (alignType) {
 			case 'left':
-				url = "cells.htm?m=align_level";
+				url = 'cells.htm?m=align_level';
 				transverse = 'left';
 				break;
 			case 'center':
-				url = "cells.htm?m=align_level";
+				url = 'cells.htm?m=align_level';
 				transverse = 'center';
 				break;
 			case 'right':
-				url = "cells.htm?m=align_level";
+				url = 'cells.htm?m=align_level';
 				transverse = 'right';
 				break;
 			case 'top':
-				url = "cells.htm?m=align_vertical";
+				url = 'cells.htm?m=align_vertical';
 				vertical = 'top';
 				break;
 			case 'middle':
-				url = "cells.htm?m=align_vertical";
+				url = 'cells.htm?m=align_vertical';
 				vertical = 'middle';
 				break;
 			case 'bottom':
-				url = "cells.htm?m=align_vertical";
+				url = 'cells.htm?m=align_vertical';
 				vertical = 'bottom';
 				break;
 			default:
 				return;
 		}
-		sendRegion = common.regionOperation(sheetId, region, function(cell) {
+		if (label !== undefined) {
+			region = analysisLabel(label);
+			region = cells.getFullOperationRegion(region);
+		} else {
+			select = selectRegions.getModelByType('operation')[0];
+			region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
+			region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
+			region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
+			region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
+		}
+
+		cells.operateCellsByRegion(region, function(cell) {
 			if (transverse !== undefined) {
 				cell.set('content.alignRow', transverse);
 			} else {
 				cell.set('content.alignCol', vertical);
 			}
 		});
-		var type;
 		type = transverse || vertical;
 		send.PackAjax({
 			url: url,
@@ -56,10 +70,10 @@ define(function(require) {
 				excelId: window.SPREADSHEET_AUTHENTIC_KEY,
 				sheetId: '1',
 				coordinate: {
-					startX: sendRegion.startColIndex,
-					startY: sendRegion.startRowIndex,
-					endX: sendRegion.endColIndex,
-					endY: sendRegion.endRowIndex
+					startX: region.startColIndex,
+					startY: region.startRowIndex,
+					endX: region.endColIndex,
+					endY: region.endRowIndex
 				},
 				alignStyle: type
 			})

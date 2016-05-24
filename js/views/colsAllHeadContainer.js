@@ -95,7 +95,6 @@ define(function(require) {
 		},
 		destroy: function() {
 			Backbone.off('call:colsAllHeadContainer');
-			this.siderLineColContainer.destroy();
 			this.colsHeadContainer.destroy();
 			this.remove();
 		}

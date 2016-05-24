@@ -8,7 +8,7 @@ define(function(require) {
 		send = require('basic/tools/send'),
 		cache = require('basic/tools/cache'),
 		commentContainer;
-
+	
 	commentContainer = Backbone.View.extend({
 		tagName: 'textarea',
 		className: 'comment',
@@ -48,6 +48,10 @@ define(function(require) {
 			var comment,
 				select,
 				cellsList,
+				startColIndex,
+				startRowIndex,
+				endColIndex,
+				endRowIndex,
 				i;
 
 			if (this.state !== 'show') {
@@ -55,11 +59,17 @@ define(function(require) {
 				comment = this.$el.val();
 				comment = comment || '';
 				select = selectRegions.getModelByType('operation')[0];
+				
+				startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
+				startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
+				endColIndex=headItemCols.getIndexByAlias(select.get('wholePosi').endX);
+				endRowIndex=headItemRows.getIndexByAlias(select.get('wholePosi').endY);
+
 				cellsList = cells.getFillCellsByRegion(
-					select.get('wholePosi').startY,
-					select.get('wholePosi').startX,
-					select.get('wholePosi').endY,
-					select.get('wholePosi').endX
+					startRowIndex,
+					startColIndex,
+					endRowIndex,
+					endColIndex
 				);
 				for (i in cellsList) {
 					cellsList[i].set('customProp.comment', comment);

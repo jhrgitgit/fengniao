@@ -1,4 +1,3 @@
-
 'use strict';
 define(function(require) {
 	var send = require('basic/tools/send'),
@@ -6,6 +5,7 @@ define(function(require) {
 		config = require('spreadsheet/config'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
+		selectRegions = require('collections/selectRegion'),
 		textTypeHandler;
 
 	textTypeHandler = {
@@ -23,7 +23,6 @@ define(function(require) {
 				model.set('customProp.format', 'date');
 			}
 
-			//含有千分位数字，将识别为货币（暂不支持此功能）
 			if (format === 'normal' && this.isNum(text) && text.indexOf(',') === -1) {
 				decimal = this.getNoZeroDecimal(text);
 				text = this.getFormatNumber(text, false, decimal);
@@ -32,8 +31,21 @@ define(function(require) {
 			return text;
 		},
 		setNormal: function(sheetId, label) {
-			var text;
-			cells.operateCellByDisplayName('1', label, function(cell) {
+			var region = {},
+				select,
+				text;
+			if (label !== undefined) {
+				region = analysisLabel(label);
+				region = cells.getFullOperationRegion(region);
+			} else {
+				select = selectRegions.getModelByType('operation')[0];
+				region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
+				region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
+				region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
+				region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
+			}
+
+			cells.operateCellsByRegion(region, function(cell) {
 				text = cell.get('content').texts;
 				cell.set('customProp.format', 'normal');
 				cell.set('customProp.isValid', true);
@@ -42,11 +54,24 @@ define(function(require) {
 				cell.set('customProp.dateFormat', null);
 				cell.set('customProp.currencySign', null);
 			});
-			this.sendData('normal', null, null, null, null, label);
+			this.sendData('normal', null, null, null, null, region);
 		},
 		setText: function(sheetId, label) {
-			var text;
-			cells.operateCellByDisplayName('1', label, function(cell) {
+			var region = {},
+				select,
+				text;
+			if (label !== undefined) {
+				region = analysisLabel(label);
+				region = cells.getFullOperationRegion(region);
+			} else {
+				select = selectRegions.getModelByType('operation')[0];
+				region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
+				region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
+				region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
+				region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
+			}
+
+			cells.operateCellsByRegion(region, function(cell) {
 				text = cell.get('content').texts;
 				cell.set('customProp.format', 'text');
 				cell.set('customProp.isValid', true);
@@ -55,13 +80,25 @@ define(function(require) {
 				cell.set('customProp.dateFormat', null);
 				cell.set('customProp.currencySign', null);
 			});
-			this.sendData('text', null, null, null, null, label);
+			this.sendData('text', null, null, null, null, region);
 		},
 		setNum: function(sheetId, thousands, decimal, label) {
-			var self = this,
+			var region = {},
+				select,
 				text,
-				isValid;
-			cells.operateCellByDisplayName('1', label, function(cell) {
+				isValid,
+				self = this;
+			if (label !== undefined) {
+				region = analysisLabel(label);
+				region = cells.getFullOperationRegion(region);
+			} else {
+				select = selectRegions.getModelByType('operation')[0];
+				region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
+				region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
+				region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
+				region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
+			}
+			cells.operateCellsByRegion(region, function(cell) {
 				text = cell.get('content').texts;
 				isValid = self.isNum(text);
 				cell.set('customProp.format', 'number');
@@ -70,15 +107,27 @@ define(function(require) {
 				cell.set('customProp.thousands', thousands);
 				cell.set('customProp.dateFormat', null);
 				cell.set('customProp.currencySign', null);
-
 			});
-			this.sendData('number', decimal, thousands, null, null, label);
+			this.sendData('number', decimal, thousands, null, null, region);
 		},
 		setDate: function(sheetId, dateFormat, label) {
-			var self = this,
+			var region = {},
+				select,
+				text,
 				isValid,
-				text;
-			cells.operateCellByDisplayName('1', label, function(cell) {
+				self = this;
+			if (label !== undefined) {
+				region = analysisLabel(label);
+				region = cells.getFullOperationRegion(region);
+			} else {
+				select = selectRegions.getModelByType('operation')[0];
+				region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
+				region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
+				region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
+				region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
+			}
+
+			cells.operateCellsByRegion(region, function(cell) {
 				text = cell.get('content').texts;
 				isValid = self.isDate(text);
 				cell.set('customProp.format', 'date');
@@ -88,13 +137,27 @@ define(function(require) {
 				cell.set('customProp.dateFormat', dateFormat);
 				cell.set('customProp.currencySign', null);
 			});
-			this.sendData('date', null, null, dateFormat, null, label);
+
+			this.sendData('date', null, null, dateFormat, null, region);
 		},
 		setPercent: function(sheetId, decimal, label) {
-			var self = this,
+			var region = {},
+				select,
+				text,
 				isValid,
-				text;
-			cells.operateCellByDisplayName('1', label, function(cell) {
+				self = this;
+			if (label !== undefined) {
+				region = analysisLabel(label);
+				region = cells.getFullOperationRegion(region);
+			} else {
+				select = selectRegions.getModelByType('operation')[0];
+				region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
+				region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
+				region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
+				region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
+			}
+
+			cells.operateCellsByRegion(region, function(cell) {
 				text = cell.get('content').texts;
 				isValid = self.isPercent(text);
 				cell.set('customProp.format', 'percent');
@@ -104,14 +167,26 @@ define(function(require) {
 				cell.set('customProp.dateFormat', null);
 				cell.set('customProp.currencySign', null);
 			});
-			this.sendData('percent', decimal, false, null, null, label);
+			this.sendData('percent', decimal, false, null, null, region);
 		},
 
 		setCoin: function(sheetId, decimal, sign, label) {
-			var self = this,
+			var region = {},
+				select,
 				text,
-				isValid;
-			cells.operateCellByDisplayName('1', label, function(cell) {
+				isValid,
+				self = this;
+			if (label !== undefined) {
+				region = analysisLabel(label);
+				region = cells.getFullOperationRegion(region);
+			} else {
+				select = selectRegions.getModelByType('operation')[0];
+				region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
+				region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
+				region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
+				region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
+			}
+			cells.operateCellsByRegion(region, function(cell) {
 				text = cell.get('content').texts;
 				isValid = self.isCoin(text);
 				cell.set('customProp.format', 'currency');
@@ -121,10 +196,10 @@ define(function(require) {
 				cell.set('customProp.dateFormat', null);
 				cell.set('customProp.currencySign', sign);
 			});
-			this.sendData('currency', decimal, true, null, sign, label);
+			this.sendData('currency', decimal, true, null, sign, region);
 		},
-		sendData: function(format, decimal, thousands, dateFormat, currencySign, label) {
-			var region = cells.analysisLabel(label),
+		sendData: function(format, decimal, thousands, dateFormat, currencySign, region) {
+			var region,
 				startRowIndex = region.startRowIndex,
 				endRowIndex = region.endRowIndex,
 				startColIndex = region.startColIndex,
@@ -164,7 +239,6 @@ define(function(require) {
 				data: JSON.stringify(data)
 			});
 		},
-		//ps:空格问题
 		isNum: function(value) {
 			var values,
 				tail,

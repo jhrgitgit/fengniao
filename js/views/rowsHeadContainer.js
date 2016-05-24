@@ -27,6 +27,7 @@ define(function(require) {
 	 * @extends Backbone.View
 	 * @constructor
 	 */
+	//ps:index修改为alias,列宽调整功能
 	var RowsHeadContainer = Backbone.View.extend({
 		/**
 		 * 设置class属性
@@ -126,6 +127,7 @@ define(function(require) {
 			var overEl = this.itemEl || e.currentTarget;
 			return e.pageY - $(overEl).offset().top > overEl.clientHeight - config.System.effectDistanceRow ? true : false;
 		},
+		//ps:index修改为alias,整列选中
 		/**
 		 * 处理鼠标点击事件
 		 * @method transAction

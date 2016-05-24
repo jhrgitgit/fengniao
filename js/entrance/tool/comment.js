@@ -10,8 +10,19 @@ define(function(require) {
 
 	commentHandler = {
 		modifyComment: function(sheetId, comment, label) {
-			var region;
-			region = cells.operateCellByDisplayName('1', label, function(cell) {
+			var select,
+				region = {};
+			if (label !== undefined) {
+				region = analysisLabel(label);
+				region = cells.getFullOperationRegion(region);
+			} else {
+				select = selectRegions.getModelByType('operation')[0];
+				region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
+				region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
+				region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
+				region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
+			}
+			cells.operateCellsByRegion(region, function(cell) {
 				cell.set('customProp.comment', comment);
 			});
 			this.sendData(region, comment, 'text.htm?m=comment_set');
@@ -26,8 +37,19 @@ define(function(require) {
 		},
 
 		deleteComment: function(sheetId, label) {
-			var region;
-			region = cells.operateCellByDisplayName('1', label, function(cell) {
+			var select,
+				region = {};
+			if (label !== undefined) {
+				region = analysisLabel(label);
+				region = cells.getFullOperationRegion(region);
+			} else {
+				select = selectRegions.getModelByType('operation')[0];
+				region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
+				region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
+				region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
+				region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
+			}
+			cells.operateCellsByRegion(region, function(cell) {
 				cell.set('customProp.comment', null);
 			});
 			this.sendData(region, undefined, 'text.htm?m=comment_del');

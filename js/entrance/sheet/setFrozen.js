@@ -1,30 +1,32 @@
 define(function(require) {
 	'use strict';
 
-	var $ = require('lib/jquery'),
-		Backbone = require('lib/backbone'),
-		send = require('basic/tools/send'),
+	var send = require('basic/tools/send'),
 		cache = require('basic/tools/cache'),
 		selectRegions = require('collections/selectRegion'),
 		cells = require('collections/cells'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
-		regionOperation = require('entrance/regionoperation'),
 		sendRegion;
 
 
-	var setFrozen = function(sheetId, frozenPositon, region) {
-		var operationRegion = {};
-		if (region !== undefined && region !== null) {
-			operationRegion = regionOperation.getRegionIndexByRegionLabel(region);
-			operationRegion = regionOperation.getFullSelectRegion(operationRegion.startColIndex, operationRegion.startRowIndex, operationRegion.endColIndex, operationRegion.endRowIndex);
+	var setFrozen = function(sheetId, frozenPositon, label) {
+		var select,
+			region={};
+		if (label !== undefined) {
+			region = analysisLabel(label);
+			region = cells.getFullregion(region);
 		} else {
-			operationRegion.startColIndex = selectRegions.models[0].get('wholePosi').startX;
-			operationRegion.startRowIndex = selectRegions.models[0].get('wholePosi').startY;
+			select = selectRegions.getModelByType('operation')[0];
+			region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
+			region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
+			region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
+			region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
 		}
+
 		switch (frozenPositon) {
 			case 'custom':
-				setCustom(operationRegion);
+				setCustom(region);
 				break;
 			case 'row':
 				setRow();
@@ -36,7 +38,7 @@ define(function(require) {
 				setUnfrozen();
 				break;
 			default:
-				setCustom(operationRegion);
+				setCustom(region);
 				break;
 		}
 		Backbone.trigger('event:bodyContainer:executiveFrozen');
@@ -46,7 +48,7 @@ define(function(require) {
 	 * 过滤超出用户可视区域操作
 	 * @method filterOutUserView
 	 */
-	var filterOutUserView = function(operationRegion) {
+	var filterOutUserView = function(region) {
 		var headItemRowList = headItemRows.models,
 			headItemColList = headItemCols.models,
 			userViewColIndex = headItemCols.getIndexByAlias(cache.UserView.colAlias),
@@ -56,7 +58,7 @@ define(function(require) {
 		//初始化，未进行滚动
 		if (userViewRowIndex === userViewEndRowIndex) {
 			return false;
-		} else if (operationRegion.startColIndex < userViewColIndex || operationRegion.startRowIndex < userViewRowIndex || operationRegion.startColIndex > userViewEndColIndex || operationRegion.startRowIndex > userViewEndRowIndex) {
+		} else if (region.startColIndex < userViewColIndex || region.startRowIndex < userViewRowIndex || region.startColIndex > userViewEndColIndex || region.startRowIndex > userViewEndRowIndex) {
 			return true;
 		} else {
 			return false;
@@ -66,14 +68,14 @@ define(function(require) {
 	 * 执行自定义冻结
 	 * @method setCustom
 	 */
-	var setCustom = function(operationRegion) {
-		if (filterOutUserView(operationRegion)) {
+	var setCustom = function(region) {
+		if (filterOutUserView(region)) {
 			return;
 		}
 		var headItemRowList = headItemRows.models,
 			headItemColList = headItemCols.models,
-			splitColAlias = headItemColList[operationRegion.startColIndex].get('alias'),
-			splitRowAlias = headItemRowList[operationRegion.startRowIndex].get('alias');
+			splitColAlias = headItemColList[region.startColIndex].get('alias'),
+			splitRowAlias = headItemRowList[region.startRowIndex].get('alias');
 
 		cache.TempProp = {
 			isFrozen: true,
@@ -136,10 +138,7 @@ define(function(require) {
 		var excelId = SPREADSHEET_AUTHENTIC_KEY,
 			sheetId = '1';
 		send.PackAjax({
-			url: 'sheet.htm?m=frozen&excelId=' + excelId + '&sheetId=' + sheetId + '&frozenX=' + frozenColAlias + '&frozenY=' + frozenRowAlias + '&startX=' + startColAlias + '&startY=' + startRowAlias,
-			success: function(data) {
-				console.log('success');
-			}
+			url: 'sheet.htm?m=frozen&excelId=' + excelId + '&sheetId=' + sheetId + '&frozenX=' + frozenColAlias + '&frozenY=' + frozenRowAlias + '&startX=' + startColAlias + '&startY=' + startRowAlias
 		});
 	};
 	/**
@@ -147,13 +146,9 @@ define(function(require) {
 	 * @method requestUnfrozen
 	 */
 	var requestUnfrozen = function() {
-		var excelId = window.SPREADSHEET_AUTHENTIC_KEY,
-			sheetId = $("#sheetId").val();
+		var excelId = window.SPREADSHEET_AUTHENTIC_KEY;
 		send.PackAjax({
-			url: 'sheet.htm?m=unFrozen&excelId=' + excelId + '&sheetId=' + sheetId,
-			success: function(data) {
-
-			}
+			url: 'sheet.htm?m=unFrozen&excelId=' + excelId + '&sheetId=1'
 		});
 	};
 	return setFrozen;

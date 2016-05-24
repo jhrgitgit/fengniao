@@ -1,147 +1,103 @@
+'use strict';
 define(function(require) {
-	'use strict';
-
-	var $ = require('lib/jquery'),
-		Backbone = require('lib/backbone'),
-		send = require('basic/tools/send'),
+	var send = require('basic/tools/send'),
 		cache = require('basic/tools/cache'),
-		binary = require('basic/util/binary'),
 		selectRegions = require('collections/selectRegion'),
 		cells = require('collections/cells'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
-		common = require('entrance/regionoperation'),
-		sendRegion;
+		analysisLabel = require('basic/tools/analysislabel'),
+		splitCell;
 
-	var splitCell = function(sheetId, region) {
-		var operationRegion = {};
-		//选中区域内开始坐标，结束坐标
-		if (region !== undefined && region !== null) {
-			operationRegion = common.getRegionIndexByRegionLabel(region);
-			operationRegion = common.getFullSelectRegion(operationRegion.startColIndex, operationRegion.startRowIndex, operationRegion.endColIndex, operationRegion.endRowIndex);
-		} else {
-			operationRegion.startColIndex = selectRegions.models[0].get('wholePosi').startX;
-			operationRegion.startRowIndex = selectRegions.models[0].get('wholePosi').startY;
-			operationRegion.endColIndex = selectRegions.models[0].get('wholePosi').endX;
-			operationRegion.endRowIndex = selectRegions.models[0].get('wholePosi').endY;
-		}
-
-		var startIndexCol = operationRegion.startColIndex,
-			startIndexRow = operationRegion.startRowIndex,
-			endIndexCol = operationRegion.endColIndex,
-			endIndexRow = operationRegion.endRowIndex,
+	splitCell = function(sheetId, label) {
+		var region = {},
+			select,
+			startColIndex,
+			startRowIndex,
+			endColIndex,
+			endRowIndex,
 			selectRegionCells,
 			cacheCell,
 			headLineColList,
 			headLineRowList,
 			i, j, len,
-			aliasCol, aliasRow;
-
-
-		var data = {
-			excelId: window.SPREADSHEET_AUTHENTIC_KEY,
-			sheetId: '1',
-			coordinate: {
-				startX: startIndexCol,
-				startY: startIndexRow,
-				endX: endIndexCol,
-				endY: endIndexRow
-			}
-		};
-		send.PackAjax({
-			url: 'cells.htm?m=merge_delete',
-			data: JSON.stringify(data),
-			success: function(data) {}
-		});
-
+			aliasCol,
+			aliasRow;
+		//选中区域内开始坐标，结束坐标
+		if (label !== undefined) {
+			region = analysisLabel(label);
+			region = cells.getFullOperationRegion(region);
+		} else {
+			select = selectRegions.getModelByType('operation')[0];
+			region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
+			region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
+			region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
+			region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
+		}
+		startColIndex = region.startColIndex;
+		startRowIndex = region.startRowIndex;
+		endColIndex = region.endColIndex;
+		endRowIndex = region.endRowIndex;
 
 		//选中区域内所有单元格对象
-		selectRegionCells = cells.getCellByX(startIndexCol, startIndexRow, endIndexCol, endIndexRow);
+		selectRegionCells = cells.getCellByX(startColIndex, startRowIndex, endColIndex, endRowIndex);
 		headLineColList = headItemCols.models;
 		headLineRowList = headItemRows.models;
 		//删除position索引
-		for (i = 0; i < endIndexCol - startIndexCol + 1; i++) {
-			for (j = 0; j < endIndexRow - startIndexRow + 1; j++) {
-				aliasCol = headLineColList[startIndexCol + i].get('alias');
-				aliasRow = headLineRowList[startIndexRow + j].get('alias');
-				deletePosi(aliasCol, aliasRow);
+		for (i = 0; i < endColIndex - startColIndex + 1; i++) {
+			for (j = 0; j < endRowIndex - startRowIndex + 1; j++) {
+				aliasCol = headLineColList[startColIndex + i].get('alias');
+				aliasRow = headLineRowList[startRowIndex + j].get('alias');
+				cache.deletePosi(aliasRow, aliasCol);
 			}
 		}
+		//ps:逻辑错误待修改
 		len = selectRegionCells.length;
 		for (i = 0; i < len; i++) {
 			cacheCell = selectRegionCells[i].clone();
 			selectRegionCells[i].set('isDestroy', true);
-			splitCreateCell(cacheCell);
+			modifyCell(cacheCell);
 		}
+
+		send.PackAjax({
+			url: 'cells.htm?m=merge_delete',
+			data: JSON.stringify({
+				excelId: window.SPREADSHEET_AUTHENTIC_KEY,
+				sheetId: '1',
+				coordinate: {
+					startX: startColIndex,
+					startY: startRowIndex,
+					endX: endColIndex,
+					endY: endRowIndex
+				}
+			}),
+		});
 	};
 
-	function deletePosi(indexCol, indexRow) {
-		var currentCellPosition = cache.CellsPosition,
-			currentStrandX = currentCellPosition.strandX,
-			currentStrandY = currentCellPosition.strandY;
-		if (currentStrandX[indexCol] !== undefined && currentStrandX[indexCol][indexRow] !== undefined) {
-			delete currentStrandX[indexCol][indexRow];
-			if (!Object.getOwnPropertyNames(currentStrandX[indexCol]).length) {
-				delete currentStrandX[indexCol];
-			}
-		}
-		if (currentStrandY[indexRow] !== undefined && currentStrandY[indexRow][indexCol] !== undefined) {
-			delete currentStrandY[indexRow][indexCol];
-			if (!Object.getOwnPropertyNames(currentStrandY[indexRow]).length) {
-				delete currentStrandY[indexRow];
-			}
-		}
-	}
+	function modifyCell(cacheCell) {
+		var occupy = cacheCell.get('occupy'),
+			aliasCol,
+			aliasRow,
+			colIndex,
+			rowIndex,
+			width,
+			height;
 
-	function splitCreateCell(cacheCell) {
-		var gridLineColList,
-			gridLineRowList,
-			startIndexCol,
-			startIndexRow,
-			endIndexRow,
-			endIndexCol;
-		gridLineColList = headItemCols.models;
-		gridLineRowList = headItemRows.models;
+		aliasCol = occupy.x[0];
+		aliasRow = occupy.y[0];
+		colIndex = headItemCols.getIndexByAlias(aliasCol);
+		rowIndex = headItemRows.getIndexByAlias(aliasRow);
 
-		startIndexRow = binary.modelBinary(cacheCell.get('physicsBox').top, gridLineRowList, 'top', 'height', 0, gridLineRowList.length - 1);
-		startIndexCol = binary.modelBinary(cacheCell.get('physicsBox').left, gridLineColList, 'left', 'width', 0, gridLineColList.length - 1);
-		endIndexRow = binary.modelBinary(cacheCell.get('physicsBox').top + cacheCell.get('physicsBox').height, gridLineRowList, 'top', 'height', 0, gridLineRowList.length - 1);
-		endIndexCol = binary.modelBinary(cacheCell.get('physicsBox').left + cacheCell.get('physicsBox').width, gridLineColList, 'left', 'width', 0, gridLineColList.length - 1);
-
-		var i = 0,
-			top, left, width, height, tempCell, aliasCol, aliasRow;
-		for (; i < endIndexCol - startIndexCol + 1; i++) {
-			for (var j = 0; j < endIndexRow - startIndexRow + 1; j++) {
-				aliasCol = gridLineColList[startIndexCol + i].get('alias');
-				aliasRow = gridLineRowList[startIndexRow + j].get('alias');
-				left = gridLineColList[startIndexCol + i].get('left');
-				top = gridLineRowList[startIndexRow + j].get('top');
-				width = gridLineColList[startIndexCol + i].get('width');
-				height = gridLineRowList[startIndexRow + j].get('height');
-				tempCell = cacheCell.clone();
-				tempCell.set('occupy', {
-					x: aliasCol,
-					y: aliasRow
-				});
-				tempCell.set('physicsBox', {
-					top: top,
-					left: left,
-					width: width,
-					height: height
-				});
-				if (i !== 0) {
-					tempCell.set('border.left', false);
-				}
-				if (j !== 0) {
-					tempCell.set('border.top', false);
-				}
-				if (i !== 0 || j !== 0) {
-					tempCell.set('content.texts', '');
-				}
-				cache.cachePosition(aliasRow, aliasCol, cells.length);
-				cells.add(tempCell);
-			}
-		}
+		height = headItemRows.models[rowIndex].get('height');
+		width = headItemCols.models[colIndex].get('width');
+		cacheCell.set('occupy', {
+			x: aliasCol,
+			y: aliasRow
+		});
+		cacheCell.set('physicsBox.width', width);
+		cacheCell.set('physicsBox.height', height);
+		cache.cachePosition(aliasRow, aliasCol, cells.length);
+		cells.add(cacheCell);
 	}
 	return splitCell;
 });

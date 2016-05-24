@@ -76,7 +76,9 @@ define(function(require) {
 				Backbone.on('event:mainContainer:nextCellPosition', this.nextCellPosition, this);
 			}
 			this.boxModel = {};
+			//ps:修改
 			this.boxAttributes = this.currentRule.boxAttributes;
+
 			// for reduction position , prevent event scroll auto trigger.
 			this.isPreventScroll = true;
 
@@ -247,10 +249,11 @@ define(function(require) {
 					this.currentRule.displayPosition.endColIndex)) {
 				return;
 			}
+
 			//判断是否存在单元格未全部初始化
 			cellModel = cells.getCellsByWholeSelectRegion()[0];
 			if (cellModel === null) {
-				rowAliasArray.push(headItemRows.models[selectRegions.models[0].get('wholePosi').startY].get('alias'));
+				rowAliasArray.push(selectRegions.models[0].get('wholePosi').startY);
 			} else {
 				rowAliasArray = cellModel.get('occupy').y;
 			}
@@ -264,7 +267,6 @@ define(function(require) {
 			}
 			if (loadStartAlias !== undefined) {
 				loadEndAlias = rowAliasArray[len - 1];
-				//ajax
 			}
 			bottomHeadRowItem = headItemRows.getModelByAlias(rowAliasArray[len - 1]);
 			//判断Excel冻结状态，非冻结状态(冻结高度为0，用户可视起点高度为0)

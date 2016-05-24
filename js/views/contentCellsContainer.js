@@ -117,19 +117,29 @@ define(function(require) {
 		addCell: function(cell) {
 			if (cache.TempProp.isFrozen) {
 				var displayPosition = this.currentRule.displayPosition,
+					startRowIndex,
+					startColIndex,
+					endRowIndex,
+					endColIndex,
 					currentOccupy,
 					len, i,
 					headItemColList = headItemCols,
 					headItemRowList = headItemRows,
 					cellRowStartIndex,
 					cellColStartIndex,
-					cellRowEndIndex, cellColEndIndex;
+					cellRowEndIndex,
+					cellColEndIndex;
 				//ps:增加循环判断
 				currentOccupy = cell.get('occupy');
 				len = currentOccupy.x.length;
+
+				startRowIndex = headItemRowList.getIndexByAlias(displayPosition.startRowAlias);
+				startColIndex =headItemColList.getIndexByAlias(displayPosition.startColAlias);
+				endRowIndex =headItemRowList.getIndexByAlias(displayPosition.endRowAlias);
+				endColIndex = headItemColList.getIndexByAlias(displayPosition.endColAlias);
+
 				cellColStartIndex = headItemColList.getIndexByAlias(currentOccupy.x[0]);
 				cellColEndIndex = headItemColList.getIndexByAlias(currentOccupy.x[len - 1]);
-
 				for (i = 0; i < currentOccupy.y.length; i++) {
 					if (headItemRowList.getIndexByAlias(currentOccupy.y[i]) !== -1) {
 						cellRowStartIndex = headItemRowList.getIndexByAlias(currentOccupy.y[i]);
@@ -142,19 +152,19 @@ define(function(require) {
 						break;
 					}
 				}
+
 				if (isNumber(displayPosition.startRowIndex) &&
-					cellRowEndIndex < displayPosition.startRowIndex ||
+					cellRowEndIndex < startRowIndex ||
 					isNumber(displayPosition.endRowIndex) &&
-					cellRowStartIndex > displayPosition.endRowIndex - 1 ||
+					cellRowStartIndex > endRowIndex - 1 ||
 					isNumber(displayPosition.startColIndex) &&
-					cellColEndIndex < displayPosition.startColIndex ||
+					cellColEndIndex < startColIndex ||
 					isNumber(displayPosition.endColIndex) &&
-					cellColStartIndex > displayPosition.endColIndex - 1) {
+					cellColStartIndex > endColIndex - 1) {
 					return;
 				}
 
 			}
-
 			this.cellView = new CellContainer({
 				model: cell,
 				currentRule: this.currentRule

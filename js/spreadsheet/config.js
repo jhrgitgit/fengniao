@@ -105,7 +105,7 @@ define(function() {
 		},
 		mouseOperateState: {
 			select: 'select',
-			dataSource: 'dataSource',
+			dataSource: 'datasource',
 			drag: 'drag',
 			highlight: 'highlight'
 		},

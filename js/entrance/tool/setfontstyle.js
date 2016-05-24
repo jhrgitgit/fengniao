@@ -1,40 +1,45 @@
 define(function(require) {
 	'use strict';
 
-	var $ = require('lib/jquery'),
-		Backbone = require('lib/backbone'),
-		send = require('basic/tools/send'),
-		common = require('entrance/regionoperation'),
+	var send = require('basic/tools/send'),
 		selectRegions = require('collections/selectRegion'),
-		cells = require('collections/cells');
+		headItemCols = require('collections/headItemCol'),
+		headItemRows = require('collections/headItemRow'),
+		cells = require('collections/cells'),
+		analysisLabel = require('basic/tools/analysislabel');;
 
 
-	var setFontStyle = function(sheetId, italic, region) {
-		var startColIndex,
-			startRowIndex,
-			endColIndex,
-			endRowIndex,
-			tempCellList,
-			sendRegion;
+	var setFontStyle = function(sheetId, italic, label) {
+		var select,
+			region = {},
+			tempCellList;
+		if (label !== undefined) {
+			region = analysisLabel(label);
+			region = cells.getFullOperationRegion(region);
+		} else {
+			select = selectRegions.getModelByType('operation')[0];
+			region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
+			region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
+			region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
+			region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
+		}
 
 		if (italic === 'italic') {
 			italic = true;
 		} else if (italic === 'normal') {
 			italic = false;
 		} else {
-			startColIndex = selectRegions.models[0].get('wholePosi').startX;
-			startRowIndex = selectRegions.models[0].get('wholePosi').startY;
-			endColIndex = selectRegions.models[0].get('wholePosi').endX;
-			endRowIndex = selectRegions.models[0].get('wholePosi').endY;
-
-			tempCellList = cells.getCellByX(startColIndex, startRowIndex, endColIndex, endRowIndex);
+			tempCellList = cells.getCellByX(region.startColIndex,
+				region.startRowIndex,
+				region.endColIndex,
+				region.endRowIndex);
 			if (tempCellList === null || tempCellList === undefined || tempCellList.length === 0) {
 				italic = true;
 			} else {
 				italic = !tempCellList[0].get('content').italic;
 			}
 		}
-		sendRegion = common.regionOperation(sheetId, region, function(cell) {
+		cells.operateCellsByRegion(region, function(cell) {
 			cell.set('content.italic', italic);
 		});
 
@@ -44,10 +49,10 @@ define(function(require) {
 				excelId: window.SPREADSHEET_AUTHENTIC_KEY,
 				sheetId: '1',
 				coordinate: {
-					startX: sendRegion.startColIndex,
-					startY: sendRegion.startRowIndex,
-					endX: sendRegion.endColIndex,
-					endY: sendRegion.endRowIndex
+					startX: region.startColIndex,
+					startY: region.startRowIndex,
+					endX: region.endColIndex,
+					endY: region.endRowIndex
 				},
 				italic: italic
 			})

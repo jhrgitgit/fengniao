@@ -48,7 +48,8 @@ define(function(require) {
 			this.listenTo(this.model, 'change', this.render);
 			this.listenTo(this.model, 'change:isDestroy', this.destroy);
 			this.listenTo(this.model, 'destroy', this.modelDestroy);
-			this.listenTo(this.model, 'change:commentShowState', this.commentViewHandler)
+			this.listenTo(this.model, 'change:commentShowState', this.commentViewHandler);
+			
 			this.currentRule = options.currentRule;
 			if (cache.TempProp.isFrozen !== true ||
 				this.currentRule.displayPosition.endRowIndex === undefined) {
@@ -62,15 +63,21 @@ define(function(require) {
 			_.bindAll(this, 'showComment', 'hideComment');
 		},
 		overCellView: function() {
-			if (this.model.get('customProp').comment !== null) {
-				this.model.set('commentShowState', true);
-			}
+			var self = this;
+			this.overEvent = setTimeout(function() {
+				if ($('.comment').length === 0) {
+					if (self.model.get('customProp').comment !== null) {
+						self.model.set('commentShowState', true);
+					}
+				}
+			}, 1000);
 		},
 		outCellView: function() {
 			this.model.set('commentShowState', false);
+			clearTimeout(this.overEvent);	
 		},
 		commentViewHandler: function() {
-			if (this.model.get('commentShowState')) {
+			if (this.model.get('commentShowState') === true) {
 				this.showComment();
 			} else {
 				this.hideComment();
@@ -80,13 +87,7 @@ define(function(require) {
 		 * 显示备注视图
 		 */
 		showComment: function() {
-			var self = this;
-			this.overTime = true;
-			setTimeout(function() {
-				if (self.overTime && $('.comment').length === 0) {
-					self.newCommentView();
-				}
-			}, 1000);
+			this.newCommentView();
 		},
 
 		newCommentView: function() {
@@ -97,7 +98,6 @@ define(function(require) {
 				occupy = this.model.get('occupy'),
 				comment = this.model.get('customProp').comment,
 				options;
-
 			if (cache.commentState) {
 				return;
 			}
@@ -114,11 +114,11 @@ define(function(require) {
 				startLeft: this.offsetLeft + this.userViewLeft,
 				startTop: this.offsetTop + this.userViewTop
 			};
+
 			this.commentView = new commentContainer(options);
 			$(this.el.parentNode.parentNode).append(this.commentView.render().el);
 		},
 		hideComment: function() {
-			this.overTime = false;
 			if (cache.commentState) {
 				return;
 			}
@@ -383,15 +383,15 @@ define(function(require) {
 		 */
 		setVerticalAlign: function(modelJSON) {
 			if (modelJSON.content.alignCol === 'middle') {
-				this.$contentBody.children('div').css({
+				this.$contentBody.css({
 					"vertical-align": "middle",
 				});
 			} else if (modelJSON.content.alignCol === 'bottom') {
-				this.$contentBody.children('div').css({
+				this.$contentBody.css({
 					"vertical-align": "bottom"
 				});
 			} else {
-				this.$contentBody.children('div').css({
+				this.$contentBody.css({
 					"vertical-align": "top"
 				});
 			}
@@ -403,11 +403,11 @@ define(function(require) {
 		 */
 		changeTopBorder: function(modelJSON) {
 			if (modelJSON.border.top) {
-				this.$contentBody.css({
+				this.$el.css({
 					'borderTopColor': '#000'
 				});
 			} else {
-				this.$contentBody.css({
+				this.$el.css({
 					'borderTopColor': 'transparent'
 				});
 			}
@@ -419,11 +419,11 @@ define(function(require) {
 		 */
 		changeLeftBorder: function(modelJSON) {
 			if (modelJSON.border.left) {
-				this.$contentBody.css({
+				this.$el.css({
 					'borderLeftColor': '#000'
 				});
 			} else {
-				this.$contentBody.css({
+				this.$el.css({
 					'borderLeftColor': 'transparent'
 				});
 			}
@@ -435,11 +435,11 @@ define(function(require) {
 		 */
 		changeBottomBorder: function(modelJSON) {
 			if (modelJSON.border.bottom) {
-				this.$contentBody.css({
+				this.$el.css({
 					'borderBottomColor': '#000'
 				});
 			} else {
-				this.$contentBody.css({
+				this.$el.css({
 					'borderBottomColor': 'transparent'
 				});
 			}
@@ -451,11 +451,11 @@ define(function(require) {
 		 */
 		changeRightBorder: function(modelJSON) {
 			if (modelJSON.border.right) {
-				this.$contentBody.css({
+				this.$el.css({
 					'borderRightColor': '#000'
 				});
 			} else {
-				this.$contentBody.css({
+				this.$el.css({
 					'borderRightColor': 'transparent'
 				});
 			}

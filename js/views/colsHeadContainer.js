@@ -30,6 +30,7 @@ define(function(require) {
 	 * @extends Backbone.View
 	 * @constructor
 	 */
+	//ps:index修改为alias,列宽调整功能
 	ColsHeadContainer = Backbone.View.extend({
 		/**
 		 * @property {element} className
@@ -140,6 +141,7 @@ define(function(require) {
 			var overEl = this.itemEl || e.currentTarget;
 			return e.pageX - $(overEl).offset().left > overEl.clientWidth - config.System.effectDistanceCol ? true : false;
 		},
+		//ps:index修改为alias,整行选中
 		/**
 		 * 传递动作
 		 * @method transAction

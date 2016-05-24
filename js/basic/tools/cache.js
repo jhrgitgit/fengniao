@@ -34,12 +34,13 @@ define(function() {
 			strandY: {}
 		},
 		clipState: 'null', //copy：复制状态，cut:剪切状态，null:未进行剪切板操作
-		commentState : false, //true 备注编辑状态,不能进行选中区域的移动
+		commentState: false, //true 备注编辑状态,不能进行选中区域的移动
 		/**
 		 * 用户可视的区域(在Excel未冻结的情况下使用)
+		 * 需要修改默认值
 		 * @property {object} UserView
 		 */
-		UserView: {
+		UserView: { 
 			/**
 			 * 可视区域左上单元格列别名
 			 * @property {string} colAlias
@@ -111,6 +112,21 @@ define(function() {
 			 */
 			colFrozen: false
 		},
+		//动态加载，已加载区域
+		rowRegionPosi: [],
+		//动态加载，已加载列区域
+		colRegionPosi: [],
+		//动态加载，已加单元格载区域
+		cellRegionPosi: {
+			transverse: [],
+			vertical: []
+		},
+		visibleRegion: {
+			top: 0,
+			bottom: 0,
+			left: 0,
+			right: 0
+		},
 		/**
 		 * 保存位置信息
 		 * @method cachePosition
@@ -139,21 +155,28 @@ define(function() {
 			positionX[aliasCol][aliasRow] = index;
 			positionY[aliasRow][aliasCol] = index;
 		},
-		//动态加载，已加载区域
-		rowRegionPosi: [],
-		//动态加载，已加载列区域
-		colRegionPosi: [],
-		//动态加载，已加单元格载区域
-		cellRegionPosi: {
-			transverse: [],
-			vertical: []
-		},
-		visibleRegion: {
-			top: 0,
-			bottom: 0,
-			left: 0,
-			right: 0
+		/**
+		 * 删除缓存位置信息
+		 * @method deletePosi
+		 * @param  {string}      aliasRow 行的别名
+		 * @param  {string}      aliasCol 列的别名
+		 */
+		deletePosi: function(aliasRow, aliasCol) {
+			var currentCellPosition = this.CellsPosition,
+				currentStrandX = currentCellPosition.strandX,
+				currentStrandY = currentCellPosition.strandY;
+			if (currentStrandX[aliasCol] !== undefined && currentStrandX[aliasCol][aliasRow] !== undefined) {
+				delete currentStrandX[aliasCol][aliasRow];
+				if (!Object.getOwnPropertyNames(currentStrandX[aliasCol]).length) {
+					delete currentStrandX[aliasCol];
+				}
+			}
+			if (currentStrandY[aliasRow] !== undefined && currentStrandY[aliasRow][aliasCol] !== undefined) {
+				delete currentStrandY[aliasRow][aliasCol];
+				if (!Object.getOwnPropertyNames(currentStrandY[aliasRow]).length) {
+					delete currentStrandY[aliasRow];
+				}
+			}
 		}
 	};
-
 });

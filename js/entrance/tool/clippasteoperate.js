@@ -39,19 +39,20 @@ define(function(require) {
 			text = "",
 			i,
 			j;
-
+		
 		clipRegion = selectRegions.getModelByType("clip")[0];
 		selectRegion = selectRegions.getModelByType("operation")[0];
 
-		startColIndex = clipRegion.get("wholePosi").startX;
-		startRowIndex = clipRegion.get("wholePosi").startY;
-		endColIndex = clipRegion.get("wholePosi").endX;
-		endRowIndex = clipRegion.get("wholePosi").endY;
+		//ps:由alias转为index
+		startColIndex = headItemCols.getIndexByAlias(clipRegion.get("wholePosi").startX);
+		startRowIndex = headItemRows.getIndexByAlias(clipRegion.get("wholePosi").startY);
+		endColIndex = headItemCols.getIndexByAlias(clipRegion.get("wholePosi").endX);
+		endRowIndex = headItemRows.getIndexByAlias(clipRegion.get("wholePosi").endY);
 
-		relativeColIndex = startColIndex - selectRegion.get("wholePosi").startX;
-		relativeRowIndex = startRowIndex - selectRegion.get("wholePosi").startY;
+		relativeColIndex = startColIndex - headItemCols.getIndexByAlias(selectRegion.get("wholePosi").startX);
+		relativeRowIndex = startRowIndex - headItemRows.getIndexByAlias(selectRegion.get("wholePosi").startY);
 
-		if (isAblePaste(endRowIndex - startRowIndex + 1, endColIndex - startColIndex + 1) === false) return;
+	if (isAblePaste(endRowIndex - startRowIndex + 1, endColIndex - startColIndex + 1) === false) return;
 		//超出已加载区域处理
 		for (i = startRowIndex; i < endRowIndex + 1; i++) {
 			for (j = startColIndex; j < endColIndex + 1; j++) {
@@ -82,13 +83,13 @@ define(function(require) {
 			}
 		}
 		cache.clipState = "null";
-
 		Backbone.trigger('event:cellsContainer:adjustSelectRegion', {
-			startColIndex: startColIndex - relativeColIndex,
-			startRowIndex: startRowIndex - relativeRowIndex,
-			endColIndex: endColIndex - relativeColIndex < headItemCols.models.length - 1 ? endColIndex - relativeColIndex : headItemCols.models.length - 1,
-			endRowIndex: endRowIndex - relativeRowIndex < headItemRows.models.length - 1 ? endRowIndex - relativeRowIndex : headItemRows.models.length - 1
+			initColIndex: startColIndex - relativeColIndex,
+			initRowIndex: startRowIndex - relativeRowIndex,
+			mouseColIndex: endColIndex - relativeColIndex < headItemCols.models.length - 1 ? endColIndex - relativeColIndex : headItemCols.models.length - 1,
+			mouseRowIndex: endRowIndex - relativeRowIndex < headItemRows.models.length - 1 ? endRowIndex - relativeRowIndex : headItemRows.models.length - 1
 		});
+
 		clipRegion.destroy();
 		send.PackAjax({
 			url: 'plate.htm?m=' + type,
@@ -340,7 +341,6 @@ define(function(require) {
 		height = gridLineRowList[indexRow].get('height');
 
 		cacheCell = new Cell();
-		//判断是否已经存在单元格
 		aliasCol = gridLineColList[indexCol].get('alias');
 		aliasRow = gridLineRowList[indexRow].get('alias');
 		cacheCell.set('occupy', {

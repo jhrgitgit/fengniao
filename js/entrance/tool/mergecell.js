@@ -1,143 +1,124 @@
 define(function(require) {
 	'use strict';
 
-	var $ = require('lib/jquery'),
-		Backbone = require('lib/backbone'),
-		send = require('basic/tools/send'),
+	var send = require('basic/tools/send'),
 		cache = require('basic/tools/cache'),
 		selectRegions = require('collections/selectRegion'),
 		cells = require('collections/cells'),
+		Cell = require('models/cell'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
-		common = require('entrance/regionoperation'),
-		sendRegion;
+		mergeCell;
 
-	var mergeCell = function(sheetId, region) {
-		var operationRegion = {};
-		if (region !== undefined && region !== null) {
-			operationRegion = common.getRegionIndexByRegionLabel(region);
-			operationRegion = common.getFullSelectRegion(operationRegion.startColIndex, operationRegion.startRowIndex, operationRegion.endColIndex, operationRegion.endRowIndex);
-		} else {
-			operationRegion.startColIndex = selectRegions.models[0].get('wholePosi').startX;
-			operationRegion.startRowIndex = selectRegions.models[0].get('wholePosi').startY;
-			operationRegion.endColIndex = selectRegions.models[0].get('wholePosi').endX;
-			operationRegion.endRowIndex = selectRegions.models[0].get('wholePosi').endY;
-		}
-
-		var startIndexCol = operationRegion.startColIndex,
-			startIndexRow = operationRegion.startRowIndex,
-			endIndexCol = operationRegion.endColIndex,
-			endIndexRow = operationRegion.endRowIndex,
-			selectRegionCells = cells.getCellByRow(startIndexRow, startIndexCol, endIndexRow, endIndexCol),
-			i, j,
-			len,
-			textNum = 0,
-			cacheCell,
-			gridLineColList = headItemCols.models,
+	mergeCell = function(sheetId, label) {
+		var gridLineColList = headItemCols.models,
 			gridLineRowList = headItemRows.models,
+			startRowIndex,
+			startColIndex,
+			endRowIndex,
+			endColIndex,
+			textCellNum,
+			region = {},
+			select,
+			cacheCell,
+			cellList,
 			occupyX = [],
 			occupyY = [],
-			tempCell,
+			aliasCol,
+			aliasRow,
 			width = 0,
 			height = 0,
-			aliasCol,
-			aliasRow;
+			top,
+			left,
+			len, i = 0,
+			j = 0;
 
-		//ajax action
-		var data = {
-			excelId: window.SPREADSHEET_AUTHENTIC_KEY,
-			sheetId: '1',
-			coordinate: {
-				startX: startIndexCol,
-				startY: startIndexRow,
-				endX: endIndexCol,
-				endY: endIndexRow
-			}
+		if (label !== undefined) {
+			region = analysisLabel(label);
+			region = cells.getFullOperationRegion(region);
+			startColIndex = region.startColIndex;
+			startRowIndex = region.startRowIndex;
+			endColIndex = region.endColIndex;
+			endRowIndex = region.endRowIndex;
+		} else {
+			select = selectRegions.getModelByType('operation')[0];
+			startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
+			startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
+			endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
+			endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
+		}
 
-		};
-		send.PackAjax({
-			url: 'cells.htm?m=merge',
-			data: JSON.stringify(data),
-			success: function(data) {}
-		});
-		len = selectRegionCells.length;
-		//bug
+		cellList = cells.getCellByRow(startRowIndex, startColIndex, endRowIndex, endColIndex);
+
+		len = cellList.length;
 		for (i = 0; i < len; i++) {
-			if (selectRegionCells[i].get('content').texts !== '') {
-				textNum++;
-				cacheCell = selectRegionCells[i].clone();
+			if (cellList[i].get('content').texts !== '') {
+				textCellNum++;
+				cacheCell = cellList[i].clone();
 			}
 		}
-		if (textNum > 1) return;
-		if (textNum === 0 && selectRegionCells.length >0) {
-			cacheCell = selectRegionCells[0].clone();
+		if (textCellNum > 1) return;
+		if (textCellNum === 0 && cellList.length > 0) {
+			cacheCell = cellList[0].clone();
+		}
+		if (cacheCell === undefined) {
+			cacheCell = new Cell();
 		}
 		if (len) {
-			//销毁选中的单元格
 			for (i = 0; i < len; i++) {
-				selectRegionCells[i].set('isDestroy', true);
+				cellList[i].set('isDestroy', true);
 			}
 		}
 		//删除position索引
-		for (i = 0; i < endIndexCol - startIndexCol + 1; i++) {
-			for (j = 0; j < endIndexRow - startIndexRow + 1; j++) {
-				aliasCol = gridLineColList[startIndexCol + i].get('alias');
-				aliasRow = gridLineRowList[startIndexRow + j].get('alias');
-				deletePosi(aliasCol, aliasRow);
+		for (i = 0; i < endColIndex - startColIndex + 1; i++) {
+			for (j = 0; j < endRowIndex - startRowIndex + 1; j++) {
+				aliasCol = gridLineColList[startColIndex + i].get('alias');
+				aliasRow = gridLineRowList[startRowIndex + j].get('alias');
+				cache.deletePosi(aliasCol, aliasRow);
 			}
 		}
 		//获取occupy信息
-		for (i = 0; i < endIndexCol - startIndexCol + 1; i++) {
-			occupyX.push(gridLineColList[startIndexCol + i].get('alias'));
-			width += gridLineColList[startIndexCol + i].get('width') + 1;
+		for (i = 0; i < endColIndex - startColIndex + 1; i++) {
+			occupyX.push(gridLineColList[startColIndex + i].get('alias'));
+			width += gridLineColList[startColIndex + i].get('width') + 1;
 		}
-		for (i = 0; i < endIndexRow - startIndexRow + 1; i++) {
-			occupyY.push(gridLineRowList[startIndexRow + i].get('alias'));
-			height += gridLineRowList[startIndexRow + i].get('height') + 1;
+		for (i = 0; i < endRowIndex - startRowIndex + 1; i++) {
+			occupyY.push(gridLineRowList[startRowIndex + i].get('alias'));
+			height += gridLineRowList[startRowIndex + i].get('height') + 1;
 		}
-		tempCell = {
-			occupy: {
-				x: occupyX,
-				y: occupyY
-			},
-			physicsBox: {
-				top: gridLineRowList[startIndexRow].get('top'),
-				left: gridLineColList[startIndexCol].get('left'),
-				width: width - 1,
-				height: height - 1
-			}
-		};
-		if (cacheCell) {
-			cacheCell.set('occupy', tempCell.occupy);
-			cacheCell.set('physicsBox', tempCell.physicsBox);
-			tempCell = cacheCell;
-		}
-		cells.add(tempCell);
-		//维护posi
-		for (i = 0; i < endIndexCol - startIndexCol + 1; i++) {
-			for (j = 0; j < endIndexRow - startIndexRow + 1; j++) {
-				cache.cachePosition(gridLineRowList[startIndexRow + j].get('alias'), gridLineColList[startIndexCol + i].get('alias'), cells.length - 1);
+		cacheCell.set('physicsBox', {
+			top: gridLineRowList[startRowIndex].get('top'),
+			left: gridLineColList[startColIndex].get('left'),
+			width: width - 1,
+			height: height - 1
+		});
+		cacheCell.set('occupy', {
+			x: occupyX,
+			y: occupyY
+		});
+		cells.add(cacheCell);
+		for (i = 0; i < endColIndex - startColIndex + 1; i++) {
+			for (j = 0; j < endRowIndex - startRowIndex + 1; j++) {
+				aliasCol = gridLineColList[startColIndex + i].get('alias');
+				aliasRow = gridLineRowList[startRowIndex + j].get('alias');
+				cache.cachePosition(aliasRow, aliasCol, cells.length - 1);
 			}
 		}
-		//更新选中视图
+		send.PackAjax({
+			url: 'cells.htm?m=merge',
+			data: JSON.stringify({
+				excelId: window.SPREADSHEET_AUTHENTIC_KEY,
+				sheetId: '1',
+				coordinate: {
+					startX: startColIndex,
+					startY: startRowIndex,
+					endX: endColIndex,
+					endY: endRowIndex
+				}
+			}),
+		});
 	};
 
-	function deletePosi(indexCol, indexRow) {
-		var currentCellPosition = cache.CellsPosition,
-			currentStrandX = currentCellPosition.strandX,
-			currentStrandY = currentCellPosition.strandY;
-		if (currentStrandX[indexCol] !== undefined && currentStrandX[indexCol][indexRow] !== undefined) {
-			delete currentStrandX[indexCol][indexRow];
-			if (!Object.getOwnPropertyNames(currentStrandX[indexCol]).length) {
-				delete currentStrandX[indexCol];
-			}
-		}
-		if (currentStrandY[indexRow] !== undefined && currentStrandY[indexRow][indexCol] !== undefined) {
-			delete currentStrandY[indexRow][indexCol];
-			if (!Object.getOwnPropertyNames(currentStrandY[indexRow]).length) {
-				delete currentStrandY[indexRow];
-			}
-		}
-	}
+
 	return mergeCell;
 });

@@ -6,7 +6,8 @@ define(function(require) {
 		CellModel = require('models/cell'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
-		selectRegions = require('collections/selectRegion');
+		selectRegions = require('collections/selectRegion'),
+		analysisLabel = require('basic/tools/analysislabel');
 	/**
 	 *cell集合类，管理cell对象
 	 *@class Cells 
@@ -202,18 +203,30 @@ define(function(require) {
 			var cellList = [],
 				i,
 				j,
-				modelSelectRegion = selectRegions.models[0],
-				betweenRow = modelSelectRegion.get('wholePosi').endY - modelSelectRegion.get('wholePosi').startY + 1,
-				betweenCol = modelSelectRegion.get('wholePosi').endX - modelSelectRegion.get('wholePosi').startX + 1,
-				headModelListRow = headItemRows.models,
-				headModelListCol = headItemCols.models,
+				rowLen,
+				colLen,
+				select = selectRegions.models[0].get('wholePosi'),
+				headRowList = headItemRows.models,
+				headColList = headItemCols.models,
+				startColIndex,
+				startRowIndex,
+				endColIndex,
+				endRowIndex,
 				cellsPositionX = cache.CellsPosition.strandX,
 				aliasRow,
 				aliasCol;
-			for (i = 0; i < betweenRow; i++) {
-				for (j = 0; j < betweenCol; j++) {
-					aliasRow = headModelListRow[modelSelectRegion.get('wholePosi').startY + i].get('alias');
-					aliasCol = headModelListCol[modelSelectRegion.get('wholePosi').startX + j].get('alias');
+
+			startColIndex = headItemCols.getIndexByAlias(select.startX);
+			startRowIndex = headItemRows.getIndexByAlias(select.startY);
+			endColIndex = headItemCols.getIndexByAlias(select.endX);
+			endRowIndex = headItemRows.getIndexByAlias(select.endY);
+
+			rowLen = endColIndex - startColIndex + 1;
+			colLen = endRowIndex - startRowIndex + 1;
+			for (i = 0; i < rowLen; i++) {
+				for (j = 0; j < colLen; j++) {
+					aliasRow = headRowList[startRowIndex + i].get('alias');
+					aliasCol = headColList[startColIndex + j].get('alias');
 					if (cellsPositionX[aliasCol] !== undefined && cellsPositionX[aliasCol][aliasRow] !== undefined) {
 						cellList.push(this.models[cellsPositionX[aliasCol][aliasRow]]);
 					} else {
@@ -752,7 +765,7 @@ define(function(require) {
 					if (cellsPositionX[aliasCol] !== undefined && cellsPositionX[aliasCol][aliasRow] !== undefined) {
 						cellList.push(this.models[cellsPositionX[aliasCol][aliasRow]]);
 					} else {
-						cellList.push(this.createCellModel(startIndexCol + j,startIndexRow + i));
+						cellList.push(this.createCellModel(startIndexCol + j, startIndexRow + i));
 					}
 				}
 
@@ -1074,106 +1087,70 @@ define(function(require) {
 			return cacheCellModelList;
 		},
 		/**
-		 * 根据传入显示行号，列号，判断操作区域，通过回调函数对单元格进行操作操作
+		 * 批量操作区域内单元格，操作区域内含有未创建单元格区域，则创建单元格，然后进行操作
+		 * @param  {number}   startColIndex 列开始索引
+		 * @param  {number}   startRowIndex 行开始索引
+		 * @param  {number}   endColIndex   列结束索引
+		 * @param  {number}   endRowIndex   行结束索引
+		 * @param  {Function} fn 单元格操作函数
 		 */
-		operateCellByDisplayName: function(sheetId, regionLabel, callback) {
-			var region = {},
-				resultRegion,
-				regionCellsList,
-				headLineColModelList,
-				headLineRowModelList,
-				colLen,
+		operateCellsByRegion: function(region, fn) {
+			var tempCell,
+				headItemRowList = headItemRows.models,
+				headItemColList = headItemCols.models,
+				cellsPositionX = cache.CellsPosition.strandX,
+				startColIndex = region.startColIndex,
+				startRowIndex = region.startRowIndex,
+				endColIndex = region.endColIndex,
+				endRowIndex = region.endRowIndex,
 				rowLen,
-				startRowIndex,
-				startColIndex,
-				endRowIndex,
-				endColIndex,
-				cellList,
-				currentCell,
-				i, j, h = 0;
-
-			region = this.analysisLabel(regionLabel);
-
-			startRowIndex = region.startRowIndex;
-			startColIndex = region.startColIndex;
-			endColIndex = region.endColIndex;
-			endRowIndex = region.endRowIndex;
-			cellList = this.getRegionCells(startColIndex, startRowIndex, endColIndex, endRowIndex);
-			for (i = startRowIndex; i < endRowIndex + 1; i++) {
-				for (j = startColIndex; j < endColIndex + 1; j++) {
-					currentCell = cellList[h];
-					if (currentCell === null) {
-						currentCell = this.createCellModel(j, i);
+				colLen,
+				aliasRow,
+				aliasCol,
+				i = 0,
+				j;
+			if (endColIndex === undefined || endColIndex === null) {
+				endColIndex = startColIndex;
+			}
+			if (endRowIndex === undefined || endRowIndex === null) {
+				endRowIndex = startRowIndex;
+			}
+			colLen = endColIndex - startColIndex;
+			rowLen = endRowIndex - startRowIndex;
+			for (; i < rowLen + 1; i++) {
+				for (j = 0; j < colLen + 1; j++) {
+					aliasRow = headItemRowList[startRowIndex + i].get('alias');
+					aliasCol = headItemColList[startColIndex + j].get('alias');
+					if (cellsPositionX[aliasCol] !== undefined && cellsPositionX[aliasCol][aliasRow] !== undefined) {
+						tempCell = this.models[cellsPositionX[aliasCol][aliasRow]];
+					} else {
+						tempCell = this.createCellModel(startColIndex + j, startRowIndex + i);
 					}
-					callback(currentCell);
-					h++;
+					fn(tempCell);
 				}
-			}
-			return region;
-		},
-		/**
-		 * 将行列displayName 转化为行列索引
-		 * @param  {string} Label 行号列号
-		 */
-		analysisLabel: function(regionLabel) {
-			var region = {},
-				startColIndex,
-				startRowIndex,
-				endColIndex,
-				endRowIndex;
-			if (regionLabel === undefined) {
-				region.startColIndex = selectRegions.models[0].get('wholePosi').startX;
-				region.startRowIndex = selectRegions.models[0].get('wholePosi').startY;
-				region.endColIndex = selectRegions.models[0].get('wholePosi').endX;
-				region.endRowIndex = selectRegions.models[0].get('wholePosi').endY;
-			} else if (regionLabel instanceof Array) {
-				region.startColIndex = headItemCol.getIndexByDisplayname(getDisplayName(regionLabel[0], 'col'));
-				region.startRowIndex = headItemRow.getIndexByDisplayname(getDisplayName(regionLabel[0], 'row'));
-				region.endColIndex = headItemCol.getIndexByDisplayname(getDisplayName(regionLabel[1], 'col'));
-				region.endRowIndex = headItemRow.getIndexByDisplayname(getDisplayName(regionLabel[1], 'row'));
-			} else {
-				region.startColIndex = region.endColIndex = headItemCol.getIndexByDisplayname(getDisplayName(regionLabel, 'col'));
-				region.startRowIndex = region.endRowIndex = headItemRow.getIndexByDisplayname(getDisplayName(regionLabel, 'row'));
-			}
-			region = this.getFullOperationRegion(region.startColIndex, region.startRowIndex, region.endColIndex, region.endRowIndex);
-			return region;
-			/**
-			 * 解析字符串,将混合字符拆分，例如：A1 拆分为 A  1
-			 * @param  {string} Label    行列标识
-			 * @param  {string} lineType 处理类型
-			 * @return {string} 处理后结果         
-			 */
-			function getDisplayName(Label, lineType) {
-				var result = '',
-					len = 0;
-				if (/[A-Z]/i.test(Label)) {
-					len = Label.match(/[A-Z]/ig).length;
-				}
-				if (lineType === 'col') {
-					result = Label.substring(0, len);
-				} else if (lineType === 'row') {
-					result = Label.substring(len);
-				}
-				return result;
 			}
 		},
 		/**
 		 * 获取完整的操作区域：操作区域内，若存在合并单元格超出操作区域，操作区域应按照单元格扩大，
 		 * 直到没有单元格超出区域
-		 * @param  {[type]} startColIndex [description]
-		 * @param  {[type]} startRowIndex [description]
-		 * @param  {[type]} endColIndex   [description]
-		 * @param  {[type]} endRowIndex   [description]
-		 * @return {[type]}               [description]
+		 * @param  {[type]} startColIndex 列起始索引
+		 * @param  {[type]} startRowIndex 行起始索引
+		 * @param  {[type]} endColIndex   列结束索引
+		 * @param  {[type]} endRowIndex   行结束索引
+		 * @return {object}               索引信息
 		 */
-		getFullOperationRegion: function(startColIndex, startRowIndex, endColIndex, endRowIndex) {
+		getFullOperationRegion: function(region) {
 			var headItemRowList = headItemRows.models,
 				headItemColList = headItemCols.models,
+				startColIndex = region.startColIndex,
+				startRowIndex = region.startRowIndex,
+				endColIndex = region.endColIndex,
+				endRowIndex = region.endRowIndex,
 				tempCellList,
-				cellstartColIndex,
-				cellstartRowIndex,
-				cellendColIndex,
-				cellendRowIndex,
+				cellStartColIndex,
+				cellStartRowIndex,
+				cellEndColIndex,
+				cellEndRowIndex,
 				cache, region,
 				flag = true,
 				i = 0;
@@ -1192,27 +1169,27 @@ define(function(require) {
 				flag = false;
 				tempCellList = this.getCellByX(startColIndex, startRowIndex, endColIndex, endRowIndex);
 				for (; i < tempCellList.length; i++) {
-					cellstartRowIndex = binary.modelBinary(tempCellList[i].get('physicsBox').top, headItemRowList, 'top', 'height', 0, headItemRowList.length - 1);
-					cellstartColIndex = binary.modelBinary(tempCellList[i].get('physicsBox').left, headItemColList, 'left', 'width', 0, headItemColList.length - 1);
-					cellendRowIndex = binary.modelBinary(tempCellList[i].get('physicsBox').top + tempCellList[i].get('physicsBox').height, headItemRowList, 'top', 'height', 0, headItemRowList.length - 1);
-					cellendColIndex = binary.modelBinary(tempCellList[i].get('physicsBox').left + tempCellList[i].get('physicsBox').width, headItemColList, 'left', 'width', 0, headItemColList.length - 1);
-					if (cellstartColIndex < startColIndex) {
-						startColIndex = cellstartColIndex;
+					cellStartRowIndex = binary.modelBinary(tempCellList[i].get('physicsBox').top, headItemRowList, 'top', 'height', 0, headItemRowList.length - 1);
+					cellStartColIndex = binary.modelBinary(tempCellList[i].get('physicsBox').left, headItemColList, 'left', 'width', 0, headItemColList.length - 1);
+					cellEndRowIndex = binary.modelBinary(tempCellList[i].get('physicsBox').top + tempCellList[i].get('physicsBox').height, headItemRowList, 'top', 'height', 0, headItemRowList.length - 1);
+					cellEndColIndex = binary.modelBinary(tempCellList[i].get('physicsBox').left + tempCellList[i].get('physicsBox').width, headItemColList, 'left', 'width', 0, headItemColList.length - 1);
+					if (cellStartColIndex < startColIndex) {
+						startColIndex = cellStartColIndex;
 						flag = true;
 						break;
 					}
-					if (cellstartRowIndex < startRowIndex) {
-						startRowIndex = cellstartRowIndex;
+					if (cellStartRowIndex < startRowIndex) {
+						startRowIndex = cellStartRowIndex;
 						flag = true;
 						break;
 					}
-					if (cellendRowIndex > endRowIndex) {
-						endRowIndex = cellendRowIndex;
+					if (cellEndRowIndex > endRowIndex) {
+						endRowIndex = cellEndRowIndex;
 						flag = true;
 						break;
 					}
-					if (cellendColIndex > endColIndex) {
-						endColIndex = cellendColIndex;
+					if (cellEndColIndex > endColIndex) {
+						endColIndex = cellEndColIndex;
 						flag = true;
 						break;
 					}

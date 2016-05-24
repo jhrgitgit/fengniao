@@ -5,7 +5,7 @@
 			cache = require('basic/tools/cache'),
 			Backbone = require('lib/backbone'),
 			clipSelectOperate = require('entrance/tool/clipselectoperate'),
-			clipPasteOperate=require('entrance/tool/clippasteoperate'),
+			clipPasteOperate = require('entrance/tool/clippasteoperate'),
 			ShearPlateContainer;
 
 		/**

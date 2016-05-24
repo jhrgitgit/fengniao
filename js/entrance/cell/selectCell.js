@@ -11,7 +11,6 @@ define(function(require) {
 		cells = require('collections/cells'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
-		regionOperation = require('entrance/regionoperation'),
 		sendRegion;
 
 

@@ -1,50 +1,55 @@
 define(function(require) {
 	'use strict';
 
-	var $ = require('lib/jquery'),
-		Backbone = require('lib/backbone'),
-		send = require('basic/tools/send'),
-		common = require('entrance/regionoperation'),
+	var send = require('basic/tools/send'),
 		selectRegions = require('collections/selectRegion'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
-		cells = require('collections/cells');
+		cells = require('collections/cells'),
+		analysisLabel = require('basic/tools/analysislabel');
 
-	var setWordWrap = function(sheetId, wordWrap, region) {
+	var setWordWrap = function(sheetId, wordWrap, label) {
 
-		var sendRegion,
-			startColIndex,
-			startRowIndex,
-			endColIndex,
-			endRowIndex,
+		var region = {},
+			select,
 			startColAlias,
 			startRowAlias,
 			endColAlias,
 			endRowAlias,
 			tempCellList;
 
-		if (wordWrap === undefined) {
-			startColIndex = selectRegions.models[0].get('wholePosi').startX;
-			startRowIndex = selectRegions.models[0].get('wholePosi').startY;
-			endColIndex = selectRegions.models[0].get('wholePosi').endX;
-			endRowIndex = selectRegions.models[0].get('wholePosi').endY;
+		if (label !== undefined) {
+			region = analysisLabel(label);
+			region = cells.getFullOperationRegion(region);
+		} else {
+			select = selectRegions.getModelByType('operation')[0];
+			region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
+			region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
+			region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
+			region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
+		}
 
-			tempCellList = cells.getCellByX(startColIndex, startRowIndex, endColIndex, endRowIndex);
+		if (wordWrap === undefined) {
+			tempCellList = cells.getCellByX(region.startColIndex,
+				region.startRowIndex,
+				region.endColIndex,
+				region.endRowIndex);
 			if (tempCellList === null || tempCellList === undefined || tempCellList.length === 0) {
 				wordWrap = true;
 			} else {
 				wordWrap = !tempCellList[0].get('wordWrap');
 			}
 		}
-		sendRegion = common.regionOperation(sheetId, region, function(cell) {
+		cells.operateCellsByRegion(region, function(cell) {
 			cell.set('wordWrap', wordWrap);
 		});
-		startColAlias=headItemCols.models[startColIndex].get("alias");
-		startRowAlias=headItemRows.models[startRowIndex].get("alias");
-		endColAlias=headItemCols.models[endColIndex].get("alias");
-		endRowAlias=headItemRows.models[endRowIndex].get("alias");
 
-	    send.PackAjax({
+		startColAlias = headItemCols.models[region.startColIndex].get("alias");
+		startRowAlias = headItemRows.models[region.startRowIndex].get("alias");
+		endColAlias = headItemCols.models[region.endColIndex].get("alias");
+		endRowAlias = headItemRows.models[region.endRowIndex].get("alias");
+
+		send.PackAjax({
 			url: 'text.htm?m=wordWrap',
 			data: JSON.stringify({
 				excelId: window.SPREADSHEET_AUTHENTIC_KEY,

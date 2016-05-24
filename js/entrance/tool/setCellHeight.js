@@ -6,17 +6,15 @@ define(function(require) {
 		send = require('basic/tools/send'),
 		headItemRows = require('collections/headItemRow'),
 		selectRegions = require('collections/selectRegion'),
-		common = require('entrance/regionoperation'),
-		sendRegion;
+		setCellHeight;
 
-
-	var setCellHeight = function(sheetId, rowLabel, height) {
+		
+	setCellHeight = function(sheetId, rowLabel, height) {
 		var index,
 			adjustHeight;
 		index = headItemRows.getIndexByDisplayname(rowLabel);
 		if (index > -1) {
-			adjustHeight = height - headItemRows.models[index].get('height');
-			Backbone.trigger('call:rowHeightAdjust', index, adjustHeight);
+			headItemRows.models[index].set('height',height);
 		}
 	};
 	return setCellHeight;

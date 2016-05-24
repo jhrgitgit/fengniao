@@ -36,7 +36,7 @@ define(function(require) {
 			this.rowNumber = 0;
 			this.currentRule = cache.CurrentRule;
 			if (cache.TempProp.isFrozen !== true || this.currentRule.displayPosition.endRowIndex === undefined) {
-				this.listenTo(headItemRows, 'add', this.addGridLineRow);
+				// this.listenTo(headItemRows, 'add', this.addGridLineRow);
 			}
 			Backbone.on('call:rowsGridContainer', this.rowsGridContainer, this);
 		},

@@ -81,8 +81,9 @@ define(function(require) {
 			if (cache.commentState) {
 				return;
 			}
-			if (this.MouseModel !== model && model !== undefined) {
-				if (model.get('customProp').comment !== null) {
+
+			if (this.MouseModel !== model) {
+				if (model !== undefined && model.get('customProp').comment !== null) {
 					model.set('commentShowState', true);
 				}
 				if (this.MouseModel !== null && this.MouseModel !== undefined) {
@@ -106,6 +107,7 @@ define(function(require) {
 				options,
 				commentView;
 
+
 			if (model !== undefined) {
 				occupy = model.get('occupy');
 				comment = model.get('customProp').comment;
@@ -114,10 +116,10 @@ define(function(require) {
 				rowIndex = headItemRows.getIndexByAlias(rowAlias);
 				colIndex = headItemCols.getIndexByAlias(colAlias);
 			} else { //选中区域编辑单元格
-				rowIndex = this.model.get('wholePosi').startY;
-				colIndex = this.model.get('wholePosi').endX;
-				if (rowIndex === this.model.get('wholePosi').endY &&
-					colIndex === this.model.get('wholePosi').startX &&
+				rowIndex = headItemRows.getIndexByAlias(this.model.get('wholePosi').startY);
+				colIndex = headItemRows.getIndexByAlias(this.model.get('wholePosi').endX);
+				if (this.model.get('wholePosi').startY === this.model.get('wholePosi').endY &&
+					this.model.get('wholePosi').startX === this.model.get('wholePosi').endX &&
 					state === 'edit') {
 					model = cells.getCellByX(colIndex, rowIndex);
 					if (model.length > 0) {
@@ -166,10 +168,6 @@ define(function(require) {
 				this.MouseModel.get('commentShowState')) {
 				this.MouseModel.set('commentShowState', false)
 			}
-			// if (this.commentView !== undefined && this.commentView !== null) {
-			// 	this.commentView.remove();
-			// 	this.commentView = null;
-			// }
 			this.MouseModel = null;
 		},
 		addInputContainer: function(text) {

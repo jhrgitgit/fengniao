@@ -293,7 +293,6 @@ define(function(require) {
 			this.bodyContainer.destroy();
 			this.remove();
 		}
-
 	});
 	return Screen;
 });

@@ -6,31 +6,35 @@ define(function(require) {
 		send = require('basic/tools/send'),
 		cells = require('collections/cells'),
 		selectRegions = require('collections/selectRegion'),
-		common = require('entrance/regionoperation');
+		headItemCols = require('collections/headItemCol'),
+		headItemRows = require('collections/headItemRow'),
+		analysisLabel = require('basic/tools/analysislabel');
 
-	var setCellBorder = function(sheetId, border, region) {
-		var operationRegion = {};
-		if (region !== undefined && region !== null) {
-			operationRegion = common.getRegionIndexByRegionLabel(region);
-			operationRegion = common.getFullSelectRegion(operationRegion.startColIndex, operationRegion.startRowIndex, operationRegion.endColIndex, operationRegion.endRowIndex);
+	var setCellBorder = function(sheetId, border, label) {
+		var region = {},
+			select;
+		if (label !== undefined) {
+			region = analysisLabel(label);
+			region = cells.getFullOperationRegion(region);
 		} else {
-			operationRegion.startColIndex = selectRegions.models[0].get('wholePosi').startX;
-			operationRegion.startRowIndex = selectRegions.models[0].get('wholePosi').startY;
-			operationRegion.endColIndex = selectRegions.models[0].get('wholePosi').endX;
-			operationRegion.endRowIndex = selectRegions.models[0].get('wholePosi').endY;
+			select = selectRegions.getModelByType('operation')[0];
+			region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
+			region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
+			region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
+			region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
 		}
 		switch (border) {
 			case 'bottom':
-				setBottom(true);
+				setBottom(true, region);
 				break;
 			case 'top':
-				setTop(true);
+				setTop(true, region);
 				break;
 			case 'left':
-				setLeft(true);
+				setLeft(true, region);
 				break;
 			case 'right':
-				setRight(true);
+				setRight(true, region);
 				break;
 			case 'none':
 				setNone(region);
@@ -48,10 +52,10 @@ define(function(require) {
 				excelId: window.SPREADSHEET_AUTHENTIC_KEY,
 				sheetId: '1',
 				coordinate: {
-					startX: operationRegion.startColIndex,
-					startY: operationRegion.startRowIndex,
-					endX: operationRegion.endColIndex,
-					endY: operationRegion.endRowIndex
+					startX: region.startColIndex,
+					startY: region.startRowIndex,
+					endX: region.endColIndex,
+					endY: region.endRowIndex
 				},
 				frameStyle: border
 			})
@@ -60,8 +64,8 @@ define(function(require) {
 		 * 清除全边框
 		 * @method setNone
 		 */
-		function setNone(region) {
-			common.regionOperation('1', region, function(cell) {
+		function setNone() {
+			cells.operateCellsByRegion(region, function(cell) {
 				cell.set('border.left', false);
 				cell.set('border.right', false);
 				cell.set('border.top', false);
@@ -72,8 +76,8 @@ define(function(require) {
 		 * 设置全边框
 		 * @method setAll
 		 */
-		function setAll(region) {
-			common.regionOperation('1', region, function(cell) {
+		function setAll() {
+			cells.operateCellsByRegion(region, function(cell) {
 				cell.set('border.left', true);
 				cell.set('border.right', true);
 				cell.set('border.top', true);
@@ -85,11 +89,15 @@ define(function(require) {
 		 * @method setTop
 		 * @param  {boolean} reverse
 		 */
-		function setTop(reverse) {
-			var cellList = cells.getTopHeadModelByIndex(operationRegion.startColIndex, operationRegion.startRowIndex, operationRegion.endColIndex, operationRegion.endRowIndex);
-			common.cellListOperation('1', cellList, function(cell) {
-				cell.set('border.top', reverse);
-			});
+		function setTop() {
+			var cellList, i;
+			cellList = cells.getTopHeadModelByIndex(region.startColIndex,
+				region.startRowIndex,
+				region.endColIndex,
+				region.endRowIndex);
+			for (i in cellList) {
+				cellList[i].set('border.top', true);
+			}
 		}
 		/**
 		 * 设置左边框
@@ -97,11 +105,15 @@ define(function(require) {
 		 * @param  {boolean} reverse
 		 * @param  {object} [appointList]
 		 */
-		function setLeft(reverse) {
-			var cellList = cells.getLeftHeadModelByIndex(operationRegion.startColIndex, operationRegion.startRowIndex, operationRegion.endColIndex, operationRegion.endRowIndex);
-			common.cellListOperation('1', cellList, function(cell) {
-				cell.set('border.left', reverse);
-			});
+		function setLeft() {
+			var cellList, i;
+			cellList = cells.getLeftHeadModelByIndex(region.startColIndex,
+				region.startRowIndex,
+				region.endColIndex,
+				region.endRowIndex);
+			for (i in cellList) {
+				cellList[i].set('border.left', true);
+			}
 		}
 		/**
 		 * 设置下边框
@@ -109,11 +121,15 @@ define(function(require) {
 		 * @param  {boolean} reverse
 		 * @param  {object} [appointList]
 		 */
-		function setBottom(reverse) {
-			var cellList = cells.getBottomHeadModelByIndex(operationRegion.startColIndex, operationRegion.startRowIndex, operationRegion.endColIndex, operationRegion.endRowIndex);
-			common.cellListOperation('1', cellList, function(cell) {
-				cell.set('border.bottom', reverse);
-			});
+		function setBottom() {
+			var cellList, i;
+			cellList = cells.getBottomHeadModelByIndex(region.startColIndex,
+				region.startRowIndex,
+				region.endColIndex,
+				region.endRowIndex);
+			for (i in cellList) {
+				cellList[i].set('border.bottom', true);
+			}
 		}
 		/**
 		 * 设置右边框
@@ -121,21 +137,25 @@ define(function(require) {
 		 * @param  {boolean} reverse
 		 * @param  {object} [appointList]
 		 */
-		function setRight(reverse) {
-			var cellList = cells.getRightHeadModelByIndex(operationRegion.startColIndex, operationRegion.startRowIndex, operationRegion.endColIndex, operationRegion.endRowIndex);
-			common.cellListOperation('1', cellList, function(cell) {
-				cell.set('border.right', reverse);
-			});
+		function setRight() {
+			var cellList, i;
+			cellList = cells.getRightHeadModelByIndex(region.startColIndex,
+				region.startRowIndex,
+				region.endColIndex,
+				region.endRowIndex);
+			for (i in cellList) {
+				cellList[i].set('border.right', true);
+			}
 		}
 		/**
 		 * 设置外边框
 		 * @method setOuter
 		 */
 		function setOuter() {
-			setTop(true);
-			setRight(true);
-			setBottom(true);
-			setLeft(true);
+			setTop(region);
+			setRight(region);
+			setBottom(region);
+			setLeft(region);
 		}
 
 	};
