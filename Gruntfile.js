@@ -3,7 +3,7 @@ module.exports = function(grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         jshint: {
-            files: ['Gruntfile.js', 'js/app.js'],
+            files: ['Gruntfile.js', 'js/models/*.js'],
             options: {
                 jshintrc: true,
                 globals: {
@@ -37,6 +37,7 @@ module.exports = function(grunt) {
     grunt.loadTasks('build/tasks'); // 加载build目录下的所有task
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-watch');
-
-    grunt.registerTask('default', ['jshint', 'build']);
+    grunt.registerTask('check', ['jshint']);
+    grunt.registerTask('build',['build']);
+    grunt.registerTask('default', ['jshint']);
 };

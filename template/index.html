@@ -16,9 +16,8 @@
 			</div>
 			<div class="fui-control">
 				<ul class="fui-control-list">
-					<li><span id="homeTool" class="active">开始</span></li>
-					<li><span id="reviewTool">审阅</span></li>
-					<li><span id="download">下载</span></li>
+					<li><span class="active">开始</span></li>
+					<li><span>下载</span></li>
 				</ul>
 			</div>
 			<div class="excel-name">
@@ -37,10 +36,10 @@
 							</span>
 							<span class="fui-layout">
 								<div class="fui-section fui-transverse"  data-toolbar="cut">
-									<div class="fui-transverse-model"><span class="fui-cf-ico ico-shear"></span><span class="fui-cf-text">剪切</span></div>
+									<div class="fui-transverse-model"><span class="fui-cf-ico ico-section-ico ico-shear"></span><span class="fui-cf-text">剪切</span></div>
 								</div>
 								<div class="fui-section fui-transverse" data-toolbar="copy">
-									<div class="fui-transverse-model"><span class="fui-cf-ico ico-copy"></span><span class="fui-cf-text">复制</span></div>
+									<div class="fui-transverse-model"><span class="fui-cf-ico ico-section-ico ico-copy"></span><span class="fui-cf-text">复制</span></div>
 								</div>
 							</span>
 						</div>
@@ -67,7 +66,7 @@
 									</span>
 								</div>
 								<div class="fui-transverse">
-									<span class="ico-section" data-toolbar="bold"><span class="fui-cf-ico ico-weight"></span></span>
+									<span class="ico-section" data-toolbar="bold" title="加粗"><span class="fui-cf-ico ico-weight"></span></span>
 									<span class="ico-section" data-toolbar="italic"><span class="fui-cf-ico ico-italic"></span></span>
 									<span class="ico-section" data-toolbar="border"><span class="fui-cf-ico ico-borderbottom ico-section-ico"></span><span class="ico-section-rightarrow"><span class="caret"></span></span></span>
 									<span class="ico-section" data-toolbar="background"><span class="fui-cf-ico ico-fillbg ico-section-ico"></span><span class="ico-section-rightarrow"><span class="caret"></span></span></span>
@@ -93,9 +92,6 @@
 									<span class="ico-section" data-align="bottom">
 										<span class="fui-cf-ico ico-alignbottom"></span>
 									</span>
-									<span class="ico-section" data-align="wordWrap">
-										<span class="fui-cf-ico ico-wordwrap"></span>
-									</span>
 								</div>
 								<div class="fui-transverse">
 									<span class="ico-section" data-align="left">
@@ -119,7 +115,7 @@
 						<div class="fui-body" id="textFormatContainer">
 							<span class="fui-layout">
 								<div class="fui-section fui-alone" data-toolbar="format">
-									<div class="fui-cf-ico ico-textformat fui-cf-alone"></div>
+									<div class="fui-cf-ico ico-routine fui-cf-alone"></div>
 									<div class="fui-cf-desc">
 										<div class="fui-cf-text">文本格式</div>
 										<div class="fui-cf-extend caret"></div>
@@ -137,13 +133,13 @@
 							<span class="fui-layout">
 								<div class="fui-section fui-transverse" data-toolbar="merge" id="merge">
 									<div class="fui-transverse-model">
-										<span class="fui-cf-ico ico-combincells"></span>
+										<span class="fui-cf-ico ico-section-ico ico-combincells"></span>
 										<span class="fui-cf-text">合并单元格</span>
 									</div>
 								</div>
 								<div class="fui-section fui-transverse" data-toolbar="split" id="split">
 									<div class="fui-transverse-model">
-										<span class="fui-cf-ico ico-combincells"></span>
+										<span class="fui-cf-ico ico-section-ico ico-combincells"></span>
 										<span class="fui-cf-text">拆分单元格</span>
 									</div>
 								</div>
@@ -170,8 +166,22 @@
 					</span>
 					<span class="fui-separator"></span>
 				</li>
-			</ul>
-			<ul class="tabContainer reviewToolContainer" style="display:none">
+				<li class="fui-group">
+					<span class="fui-container">
+						<div class="fui-body" id="mergeCellContainer">
+							<span class="fui-layout">
+								<div class="fui-section fui-transverse" data-toolbar="wordwrap">
+									<div class="fui-transverse-model">
+										<span class="fui-cf-ico ico-section-ico ico-wordwrap"></span>
+										<span class="fui-cf-text">自动换行</span>
+									</div>
+								</div>
+							</span>
+						</div>
+						<div class="fui-title">文本对齐</div>
+					</span>
+					<span class="fui-separator"></span>
+				</li>
 				<li class="fui-group" id="reviewContainer">
 					<span class="fui-container">
 						<div class="fui-body">
@@ -201,6 +211,7 @@
 							</span>
 							<span class="fui-separator"></span>
 						</div>
+						<div class="fui-title">批注</div>
 					</span>
 				<li/>
 			</ul>
@@ -259,67 +270,67 @@
 				<div class="widget-panel">
 					<ul class="widget-menu">
 						<li data-format="normal">
-							<span class="fui-cf-extend-ico ico-frozencustomized widget-ico"></span>
+							<span class="fui-cf-ico ico-routine  widget-ico"></span>
 							<span class="widget-content">
 								<div class="widget-pad">常规</div>
 							</span>
 						</li>
 						<li data-format="text">
-							<span class="fui-cf-extend-ico ico-frozencustomized widget-ico"></span>
+							<span class="fui-cf-ico ico-routine  widget-ico"></span>
 							<span class="widget-content">
 								<div class="widget-pad">文本</div>
 							</span>
 						</li>
 						<li data-format="number-1">
-							<span class="fui-cf-extend-ico ico-frozencustomized widget-ico"></span>
+							<span class="fui-cf-ico ico-numeric widget-ico"></span>
 							<span class="widget-content">
 								<div class="widget-pad">数字 0</div>
 							</span>
 						</li>
 						<li data-format="number-2">
-							<span class="fui-cf-extend-ico ico-frozencustomized widget-ico"></span>
+							<span class="fui-cf-ico ico-numeric widget-ico"></span>
 							<span class="widget-content">
 								<div class="widget-pad">数字 0.00</div>
 							</span>
 						</li>
 						<li data-format="number-3">
-							<span class="fui-cf-extend-ico ico-frozencustomized widget-ico"></span>
+							<span class="fui-cf-ico ico-numeric widget-ico"></span>
 							<span class="widget-content">
 								<div class="widget-pad">数字 0.0000</div>
 							</span>
 						</li>
 						<li data-format="date-1">
-							<span class="fui-cf-extend-ico ico-frozencustomized widget-ico"></span>
+							<span class="fui-cf-ico ico-date widget-ico"></span>
 							<span class="widget-content">
 								<div class="widget-pad">日期 1999/01/01</div>
 							</span>
 						</li>
 						<li data-format="date-2">
-							<span class="fui-cf-extend-ico ico-frozencustomized widget-ico"></span>
+							<span class="fui-cf-ico ico-date widget-ico"></span>
 							<span class="widget-content">
 								<div class="widget-pad">日期 1999年01月01日</div>
 							</span>
 						</li>
 						<li data-format="date-3">
-							<span class="fui-cf-extend-ico ico-frozencustomized widget-ico"></span>
+							<span class="fui-cf-ico ico-date widget-ico"></span>
 							<span class="widget-content">
 								<div class="widget-pad">日期 1999年01月</div>
 							</span>
 						</li>
 						<li data-format="percent">
-							<span class="fui-cf-extend-ico ico-frozencustomized widget-ico"></span>
+							<span class="fui-cf-ico ico-percent widget-ico"></span>
 							<span class="widget-content">
 								<div class="widget-pad">百分比</div>
 							</span>
 						</li>
 						<li data-format="coin-1">
-							<span class="fui-cf-extend-ico ico-frozencustomized widget-ico"></span>
+							<span class="fui-cf-ico ico-currency widget-ico"></span>
 							<span class="widget-content">
 								<div class="widget-pad">货币 $</div>
 							</span>
 						</li>
 						<li data-format="coin-2">
-							<span class="fui-cf-extend-ico ico-frozencustomized widget-ico"></span>
+							<span class="fui-cf-ico ico-currency widget-ico"></span>
 							<span class="widget-content">
 								<div class="widget-pad">货币 ¥</div>
 							</span>
