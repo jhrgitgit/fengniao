@@ -1,5 +1,5 @@
+'use strict';
 define(function(require) {
-	'use strict';
 	var Backbone = require('lib/backbone'),
 		config = require('spreadsheet/config'),
 		SelectRegionModel = require('models/selectRegion'),
@@ -30,7 +30,6 @@ define(function(require) {
 		 */
 		getAdjacent: function(direction) {
 			var initPosiIndex = this.models[0].get('initPosi'),
-				physicsBox = this.models[0].get('physicsBox'),
 				physicsPosi = this.models[0].get('physicsPosi'),
 				wholePosiIndex = this.models[0].get('wholePosi'),
 				initPosiRowIndex = initPosiIndex.startX,

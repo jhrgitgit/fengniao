@@ -249,28 +249,45 @@ define(function(require) {
 		restoreSelectRegion: function() {
 			var headItemRowModel,
 				headItemColModel,
-				aliasGridRow,
-				aliasGridCol,
+				rowAlias,
+				colAlias,
+				endRowAlias,
+				endColAlias,
 				cellsPositionX,
-				modelCell,
+				cell,
 				selectRegionModel;
 
-			headItemRowModel = headItemRows.getModelByAlias(cache.UserView.rowAlias);
-			headItemColModel = headItemCols.getModelByAlias(cache.UserView.colAlias);
+			rowAlias = cache.UserView.rowAlias;
+			colAlias = cache.UserView.colAlias;
+
+			headItemRowModel = headItemRows.getModelByAlias(rowAlias);
+			headItemColModel = headItemCols.getModelByAlias(colAlias);
+
 			cellsPositionX = cache.CellsPosition.strandX;
-			if (cellsPositionX[aliasGridCol] !== undefined &&
-				cellsPositionX[aliasGridCol][aliasGridRow] !== undefined) {
-				modelCell = cells.models[cellsPositionX[aliasGridCol][aliasGridRow]];
+
+			if (cellsPositionX[colAlias] !== undefined &&
+				cellsPositionX[colAlias][aliasGridRow] !== undefined) {
+				cell = cells.models[cellsPositionX[colAlias][aliasGridRow]];
 			}
-			if (modelCell !== undefined) {
+			if (cell !== undefined) {
+				endRowAlias = cell.get('occupy').y;
+				endRowAlias = endRowAlias[endRowAlias.length - 1];
+				endColAlias = cell.get('occupy').x;
+				endColAlias = endColAlias[endColAlias.length - 1];
 				selectRegionModel = {
 					physicsPosi: {
-						top: modelCell.get("physicsBox").top,
-						left: modelCell.get("physicsBox").left
+						top: cell.get("physicsBox").top,
+						left: cell.get("physicsBox").left
 					},
 					physicsBox: {
-						width: modelCell.get('physicsBox').width,
-						height: modelCell.get('physicsBox').height
+						width: cell.get('physicsBox').width,
+						height: cell.get('physicsBox').height
+					},
+					wholePosi: {
+						startX: colAlias,
+						startY: rowAlias,
+						endX: endColAlias,
+						endY: endRowAlias
 					}
 				};
 				selectRegions.add(selectRegionModel);
@@ -291,6 +308,12 @@ define(function(require) {
 					physicsBox: {
 						width: headItemColModel.get('width'),
 						height: headItemRowModel.get('height')
+					},
+					wholePosi: {
+						startX: colAlias,
+						startY: rowAlias,
+						endX: colAlias,
+						endY: rowAlias
 					}
 				};
 				selectRegions.add(selectRegionModel);

@@ -242,8 +242,9 @@ define(function(require) {
 		 * @method requstAdjust
 		 */
 		requstAdjust: function(rowIndex, offset) {
+			var rowAlias = headItemRows.models[rowIndex].get('alias');
 			send.PackAjax({
-				url: 'cells.htm?m=rows_height&excelId=' + window.SPREADSHEET_AUTHENTIC_KEY + '&sheetId=1&rowIndex=' + rowIndex + '&offset=' + offset,
+				url: 'cells.htm?m=rows_height&excelId=' + window.SPREADSHEET_AUTHENTIC_KEY + '&sheetId=1&rowAlias=' + rowAlias + '&offset=' + offset,
 				success: function(data) {
 					if (data.returnCode === 200) {
 						console.log('success');

@@ -1,5 +1,5 @@
+'use strict';
 define(function(require) {
-	'use strict';
 	var _ = require('lib/underscore'),
 		Backbone = require('lib/backbone'),
 		binary = require('basic/util/binary'),

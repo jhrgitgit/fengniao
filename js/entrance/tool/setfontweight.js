@@ -12,7 +12,11 @@ define(function(require) {
 
 	var setFontWeight = function(sheetId, bold, label) {
 		var select,
-			region={},
+			startColAlias,
+			startRowAlias,
+			endColAlias,
+			endRowAlias,
+			region = {},
 			tempCellList;
 		if (label !== undefined) {
 			region = analysisLabel(label);
@@ -41,6 +45,11 @@ define(function(require) {
 				bold = !tempCellList[0].get('content').bd;
 			}
 		}
+		startColAlias = headItemCols.models[region.startColIndex].get('alias');
+		startRowAlias= headItemRows.models[region.startRowIndex].get('alias');
+		endColAlias= headItemCols.models[region.endColIndex].get('alias');
+		endRowAlias= headItemRows.models[region.endRowIndex].get('alias');
+		
 		cells.operateCellsByRegion(region, function(cell) {
 			cell.set('content.bd', bold);
 		});
@@ -50,10 +59,10 @@ define(function(require) {
 				excelId: window.SPREADSHEET_AUTHENTIC_KEY,
 				sheetId: '1',
 				coordinate: {
-					startX: region.startColIndex,
-					startY: region.startRowIndex,
-					endX: region.endColIndex,
-					endY: region.endRowIndex
+					startX: startColAlias,
+					startY: startRowAlias,
+					endX: endColAlias,
+					endY: endRowAlias
 				},
 				isBold: bold
 			})

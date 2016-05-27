@@ -25,6 +25,7 @@ define(function(require) {
 		GridLineRowContainer = require('views/gridLineRowContainer'),
 		CellContainer = require('views/cellContainer'),
 		CellsContainer = require('views/cellsContainer');
+		
 	/**
 	 *单元格显示区域视图类
 	 *@class MainContainer 
@@ -76,7 +77,7 @@ define(function(require) {
 				Backbone.on('event:mainContainer:nextCellPosition', this.nextCellPosition, this);
 			}
 			this.boxModel = {};
-			//ps:修改
+
 			this.boxAttributes = this.currentRule.boxAttributes;
 
 			// for reduction position , prevent event scroll auto trigger.
@@ -134,7 +135,9 @@ define(function(require) {
 			});
 			this.cellsContainer.contentCellsContainer.$el.prepend(tempView.render().el);
 		},
+		adaptViewHeight: function(){
 
+		},
 		/**
 		 * 页面渲染方法
 		 * @method render
@@ -153,6 +156,7 @@ define(function(require) {
 			this.triggerCallback();
 			return this;
 		},
+
 		//for new diff object, subscribe it self object.
 		subscribeScroll: function(value, directionObj) {
 			this.appointPosition(value, directionObj.direction);
@@ -309,6 +313,7 @@ define(function(require) {
 				modelColList = headItemCols;
 				userViewRowModel = modelRowList.getModelByPosition(this.recordScrollTop);
 				userViewEndRowModel = modelRowList.getModelByPosition(this.recordScrollTop + this.el.offsetHeight);
+				
 				cache.UserView.rowAlias = userViewRowModel.get('alias');
 				cache.UserView.rowEndAlias = userViewEndRowModel.get('alias');
 				userViewColModel = modelColList.getModelByPosition(this.recordScrollLeft);

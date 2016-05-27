@@ -10,6 +10,7 @@ define(function() {
 	 * @module basic
 	 */
 	return {
+		aliasRowCounter: '100',
 		//ps:CurrentRule ，FrozenRules ，TempProp 都存有冻结信息，具体功能，需要说明
 		CurrentRule: {},
 		FrozenRules: {
@@ -40,7 +41,7 @@ define(function() {
 		 * 需要修改默认值
 		 * @property {object} UserView
 		 */
-		UserView: { 
+		UserView: {
 			/**
 			 * 可视区域左上单元格列别名
 			 * @property {string} colAlias
@@ -177,6 +178,15 @@ define(function() {
 					delete currentStrandY[aliasRow];
 				}
 			}
+		},
+		aliasGenerator: function() {
+			var alias,
+				num;
+			alias = this.aliasRowCounter;
+			num = parseInt(alias);
+			alias = (num + 1).toString();
+			this.aliasRowCounter = alias;
+			return alias;
 		}
 	};
 });

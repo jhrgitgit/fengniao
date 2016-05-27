@@ -12,7 +12,11 @@ define(function(require) {
 
 	var setFillColor = function(sheetId, color, label) {
 		var select,
-			region={};
+			region = {},
+			startColAlias,
+			startRowAlias,
+			endColAlias,
+			endRowAlias;
 		if (label !== undefined) {
 			region = analysisLabel(label);
 			region = cells.getFullOperationRegion(region);
@@ -27,16 +31,21 @@ define(function(require) {
 			cell.set('customProp.background', color);
 		});
 
+		startColAlias = headItemCols.models[region.startColIndex].get('alias');
+		startRowAlias= headItemRows.models[region.startRowIndex].get('alias');
+		endColAlias= headItemCols.models[region.endColIndex].get('alias');
+		endRowAlias= headItemRows.models[region.endRowIndex].get('alias');
+
 		send.PackAjax({
 			url: 'text.htm?m=fill_bgcolor',
 			data: JSON.stringify({
 				excelId: window.SPREADSHEET_AUTHENTIC_KEY,
 				sheetId: '1',
 				coordinate: {
-					startX: region.startColIndex,
-					startY: region.startRowIndex,
-					endX: region.endColIndex,
-					endY: region.endRowIndex
+					startX: startColAlias,
+					startY: startRowAlias,
+					endX: endColAlias,
+					endY: endRowAlias
 				},
 				bgcolor: color
 			})

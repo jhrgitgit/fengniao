@@ -36,6 +36,7 @@ define(function(require) {
 				modellastHeadLineRow,
 				len;
 
+		//ps:监听selectRegion
 			Backbone.on('call:rowsPanelContainer', this.rowsPanelContainer, this);
 			Backbone.on('event:rowsPanelContainer:destroy', this.destroy, this);
 			this.boxModel = {};

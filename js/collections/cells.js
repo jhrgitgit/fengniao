@@ -1,5 +1,5 @@
+'use strict';
 define(function(require) {
-	'use strict';
 	var Backbone = require('lib/backbone'),
 		cache = require('basic/tools/cache'),
 		binary = require('basic/util/binary'),
@@ -25,7 +25,9 @@ define(function(require) {
 		 */
 		model: CellModel,
 		url: '/cell.htm',
-		createCellModel: function(startColIndex, startRowIndex, endColIndex, endRowIndex) {
+		createCellModel: function(startColIndex, startRowIndex,
+			endColIndex, endRowIndex) {
+
 			var headItemColList,
 				headItemRowList,
 				rowLen,
@@ -64,7 +66,9 @@ define(function(require) {
 			}
 			for (i = 0; i < rowLen; i++) {
 				for (j = 0; j < colLen; j++) {
-					cache.cachePosition(headItemRowList[startRowIndex + i].get('alias'), headItemColList[startColIndex + j].get('alias'), this.length);
+					cache.cachePosition(headItemRowList[startRowIndex + i].get('alias'),
+						headItemColList[startColIndex + j].get('alias'),
+						this.length);
 				}
 			}
 			this.add({
@@ -105,7 +109,8 @@ define(function(require) {
 					indexX = headItemCols.models[startIndexX + i].get('alias');
 					indexY = headItemRows.models[startIndexY + j].get('alias');
 
-					if (cache.CellsPosition.strandX[indexX] !== undefined && cache.CellsPosition.strandX[indexX][indexY] !== undefined) {
+					if (cache.CellsPosition.strandX[indexX] !== undefined &&
+						cache.CellsPosition.strandX[indexX][indexY] !== undefined) {
 						//cells去掉重复
 						if (cells.indexOf(this.at(cache.CellsPosition.strandX[indexX][indexY])) == -1) {
 							cells.push(this.at(cache.CellsPosition.strandX[indexX][indexY]));
@@ -618,7 +623,8 @@ define(function(require) {
 		 * @method getTopHeadModelByIndex
 		 * @return {array} cell模型结合
 		 */
-		getTopHeadModelByIndex: function(startColIndex, startRowIndex, endColIndex, endRowIndex) {
+		getTopHeadModelByIndex: function(startColIndex, startRowIndex,
+			endColIndex, endRowIndex) {
 			var result = [],
 				partModel,
 				headLineColModelList,
@@ -658,7 +664,8 @@ define(function(require) {
 		 * @method getLeftHeadModelByIndex
 		 * @return {array} cell模型结合
 		 */
-		getBottomHeadModelByIndex: function(startColIndex, startRowIndex, endColIndex, endRowIndex) {
+		getBottomHeadModelByIndex: function(startColIndex, startRowIndex,
+			endColIndex, endRowIndex) {
 			var result = [],
 				partModel,
 				headLineColModelList,
