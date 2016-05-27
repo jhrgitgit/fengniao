@@ -2,12 +2,13 @@
 define(function(require) {
 
 	var Backbone = require('lib/backbone'),
-		cache = require('basic/tools/cache'),
 		config = require('spreadsheet/config'),
+		cache = require('basic/tools/cache'),
 		headItemRows = require('collections/headItemRow'),
 		cells = require('collections/cells'),
 		selectRegions = require('collections/selectRegion'),
-		siderLineRows = require('collections/siderLineRow');
+		siderLineRows = require('collections/siderLineRow'),
+		send = require('basic/tools/send');
 	return {
 		/**
 		 * 插入行操作
@@ -16,6 +17,7 @@ define(function(require) {
 		 */
 		addRow: function(sheetId, label) {
 			var index = -1,
+				alias,
 				select,
 				box;
 			if (label !== undefined) {
@@ -30,10 +32,23 @@ define(function(require) {
 			if (index === -1) {
 				return;
 			}
+			alias = headItemRows.models[index].get('alias');
+			
 			this._adaptHeadRowItem(index);
 			this._adaptSelectRegion(index);
 			this._adaptCells(index);
 			this._frozenHandle(index);
+			
+			send.PackAjax({
+				url: 'cells.htm?m=rows_insert',
+				data: JSON.stringify({
+					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
+					sheetId: '1',
+					rowAlais: {
+						rowAlais: alias,
+					}
+				}),
+			});
 		},
 		/**
 		 * 调整行对象
@@ -104,6 +119,7 @@ define(function(require) {
 				headItemRows.models[index].set('activeState', true);
 				endRowIndex++;
 			}
+
 		},
 		/**
 		 * 调整单元格
