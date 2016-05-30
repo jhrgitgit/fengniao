@@ -244,8 +244,9 @@ define(function(require) {
 		 * @method requstAdjust
 		 */
 		requstAdjust: function(colIndex, offset) {
+			var colAlias = headItemCols.models[colIndex].get('alias');
 			send.PackAjax({
-				url: 'cells.htm?m=cols_width&excelId=' + window.SPREADSHEET_AUTHENTIC_KEY + '&sheetId=1&colIndex=' + colIndex + '&offset=' + offset,
+				url: 'cells.htm?m=cols_width&excelId=' + window.SPREADSHEET_AUTHENTIC_KEY + '&sheetId=1&colAlias=' + colAlias + '&offset=' + offset,
 				success: function(data) {
 					if (data.returnCode === 200) {
 						console.log('success');

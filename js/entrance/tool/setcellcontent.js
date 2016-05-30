@@ -10,7 +10,9 @@ define(function(require) {
 
 	var setCellContent = function(sheetId, text, label) {
 		var select,
-			region = {};
+			region = {},
+			startColAlias,
+			startRowAlias;
 		if (label !== undefined) {
 			region = analysisLabel(label);
 			region = cells.getFullOperationRegion(region);
@@ -19,6 +21,9 @@ define(function(require) {
 			region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
 			region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
 		}
+		startColAlias = headItemCols.models[region.startColIndex].get('alias');
+		startRowAlias = headItemRows.models[region.startRowIndex].get('alias');
+
 		cells.operateCellsByRegion(region, function(cell) {
 			cell.set('content.texts', text);
 		});		
@@ -28,8 +33,8 @@ define(function(require) {
 				excelId: window.SPREADSHEET_AUTHENTIC_KEY,
 				sheetId: '1',
 				coordinate: {
-					startX: region.startColIndex,
-					startY: region.startRowIndex,
+					startX: startColAlias,
+					startY: startRowAlias,
 				},
 				content: text
 			})

@@ -1228,20 +1228,6 @@ define(function(require) {
 			dataSourceRegions.models[0].destroy();
 		},
 		/**
-		 * 调整容器宽度
-		 * @method changeWidth 
-		 */
-		changeWidth: function() {
-
-		},
-		/**
-		 * 调整容器高度
-		 * @method changeHeight 
-		 */
-		changeHeight: function() {
-
-		},
-		/**
 		 * 视图销毁
 		 * @method destroy
 		 */

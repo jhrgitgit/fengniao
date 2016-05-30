@@ -58,6 +58,7 @@ define(function(require) {
 				MergeCellContainer = require('widgets/celloperation/mergeCellContainer'),
 				ContentFontContainer = require('widgets/font/contentFontContainer'),
 				FrozenContainer = require('widgets/frozen/frozenContainer'),
+				InsertOperation = require('widgets/insert/insertoperation'),
 				CommentContainer =require('widgets/celloperation/commentcontainer');
 			new ShearPlateContainer();
 			new FontFamilyContainer();
@@ -71,6 +72,7 @@ define(function(require) {
 			new ContentFontContainer();
 			new FrozenContainer();
 			new CommentContainer();
+			new InsertOperation();
 		},
 		buildExcelPublicAPI: function(SpreadSheet) {
 			SpreadSheet.prototype.setFontColor = setFontColor;

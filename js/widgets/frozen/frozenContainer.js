@@ -193,10 +193,7 @@ define(function(require) {
 			var excelId = window.SPREADSHEET_AUTHENTIC_KEY,
 				sheetId = $("#sheetId").val();
 			send.PackAjax({
-				url: 'sheet.htm?m=unFrozen&excelId=' + excelId + '&sheetId=' + sheetId,
-				success: function(data) {
-
-				}
+				url: 'sheet.htm?m=unFrozen&excelId=' + excelId + '&sheetId=' + sheetId
 			});
 		}
 	});

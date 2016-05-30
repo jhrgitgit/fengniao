@@ -342,20 +342,6 @@ define(function(require) {
 				aliasRow = modelRow.get('alias');
 				aliasCol = modelCol.get('alias');
 
-				//send data to back
-				send.PackAjax({
-					url: 'cells.htm?m=create',
-					data: JSON.stringify({
-						excelId: window.SPREADSHEET_AUTHENTIC_KEY,
-						sheetId: '1',
-						coordinate: {
-							startX: modelIndexCol,
-							startY: modelIndexRow
-						}
-					})
-				});
-
-				//end
 				cellModel = this.createCell(modelIndexRow, modelIndexCol);
 				cells.add(cellModel);
 				cache.cachePosition(aliasRow, aliasCol, cells.length - 1);

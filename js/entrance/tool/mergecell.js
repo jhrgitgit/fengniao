@@ -17,6 +17,10 @@ define(function(require) {
 			startColIndex,
 			endRowIndex,
 			endColIndex,
+			startRowAlias,
+			startColAlias,
+			endRowAlias,
+			endColAlias,
 			textCellNum,
 			region = {},
 			select,
@@ -104,16 +108,21 @@ define(function(require) {
 				cache.cachePosition(aliasRow, aliasCol, cells.length - 1);
 			}
 		}
+		startRowAlias = gridLineRowList[startRowIndex].get('alias');
+		startColAlias = gridLineColList[startColIndex].get('alias');
+		endRowAlias = gridLineRowList[endRowIndex].get('alias');
+		endColAlias = gridLineColList[endColIndex].get('alias');
+		
 		send.PackAjax({
 			url: 'cells.htm?m=merge',
 			data: JSON.stringify({
 				excelId: window.SPREADSHEET_AUTHENTIC_KEY,
 				sheetId: '1',
 				coordinate: {
-					startX: startColIndex,
-					startY: startRowIndex,
-					endX: endColIndex,
-					endY: endRowIndex
+					startX: startColAlias,
+					startY: startRowAlias,
+					endX: endColAlias,
+					endY: endRowAlias
 				}
 			}),
 		});

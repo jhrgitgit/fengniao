@@ -384,7 +384,7 @@ define(function(require) {
 			userViewRowIndex = modelRowList.getIndexByAlias(cache.UserView.rowAlias);
 			userViewColModel = modelColList.getModelByAlias(cache.UserView.colAlias);
 			userViewColIndex = modelColList.getIndexByAlias(cache.UserView.colAlias);
-
+			
 
 			if (cache.TempProp.isFrozen) {
 				if (cache.TempProp.rowFrozen && cache.TempProp.colFrozen) {

@@ -16,6 +16,10 @@ define(function(require) {
 			startRowIndex,
 			endColIndex,
 			endRowIndex,
+			startColAlias,
+			startRowAlias,
+			endColAlias,
+			endRowAlias,
 			selectRegionCells,
 			cacheCell,
 			headLineColList,
@@ -59,16 +63,21 @@ define(function(require) {
 			modifyCell(cacheCell);
 		}
 
+		startColAlias = headItemCols.models[region.startColIndex].get('alias');
+		startRowAlias = headItemRows.models[region.startRowIndex].get('alias');
+		endColAlias = headItemCols.models[region.endColIndex].get('alias');
+		endRowAlias = headItemRows.models[region.endRowIndex].get('alias');
+
 		send.PackAjax({
 			url: 'cells.htm?m=merge_delete',
 			data: JSON.stringify({
 				excelId: window.SPREADSHEET_AUTHENTIC_KEY,
 				sheetId: '1',
 				coordinate: {
-					startX: startColIndex,
-					startY: startRowIndex,
-					endX: endColIndex,
-					endY: endRowIndex
+					startX: startColAlias,
+					startY: startRowAlias,
+					endX: endColAlias,
+					endY: endRowAlias
 				}
 			}),
 		});

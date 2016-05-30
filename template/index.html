@@ -214,6 +214,32 @@
 						<div class="fui-title">批注</div>
 					</span>
 				<li/>
+				<li class="fui-group">
+					<span class="fui-container">
+						<div class="fui-body">
+							<span class="fui-layout">
+								<div class="fui-section fui-alone" data-toolbar="insert">
+									<div class="fui-cf-extend-ico ico-frozencustomized fui-cf-alone"></div>
+									<div class="fui-cf-desc">
+										<div class="fui-cf-text">　插入　</div>
+										<div class="fui-cf-extend caret"></div>
+									</div>
+								</div>
+							</span>
+							<span class="fui-layout">
+								<div class="fui-section fui-alone" data-toolbar="delete">
+									<div class="fui-cf-extend-ico ico-frozencustomized fui-cf-alone"></div>
+									<div class="fui-cf-desc">
+										<div class="fui-cf-text">　删除　</div>
+										<div class="fui-cf-extend caret"></div>
+									</div>
+								</div>
+							</span>
+						</div>
+						<div class="fui-title">行列</div>
+					</span>
+					<span class="fui-separator"></span>
+				</li>
 			</ul>
 		</div>
 		<div id="spreadSheet" style="width:100%;height:calc(100% - 130px);position:relative;"></div>
@@ -398,6 +424,42 @@
 							<span class="widget-content">
 								<div class="widget-weight">冻结首列</div>
 								<div class="widget-desc">滚动工作表其余部分时，保持行列可见</div>
+							</span>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="widget" data-widget="insert" id="insert">
+				<div class="widget-panel">
+					<ul class="widget-menu frozenBox" style="min-width:220px">
+						<li data-operate="row">
+							<span class="fui-cf-extend-ico ico-frozencustomized widget-ico"></span>
+							<span class="widget-content">
+								<div class="widget-weight">插入工作表行</div>
+							</span>
+						</li>
+						<li data-operate="column">
+							<span class="fui-cf-extend-ico ico-frozencustomized widget-ico"></span>
+							<span class="widget-content">
+								<div class="widget-weight">插入工作表列</div>
+							</span>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="widget" data-widget="delete" id="delete">
+				<div class="widget-panel">
+					<ul class="widget-menu frozenBox" style="min-width:220px">
+						<li data-frozen="row">
+							<span class="fui-cf-extend-ico ico-frozencustomized widget-ico"></span>
+							<span class="widget-content">
+								<div class="widget-weight">删除工作表行</div>
+							</span>
+						</li>
+						<li data-frozen="column">
+							<span class="fui-cf-extend-ico ico-frozencustomized widget-ico"></span>
+							<span class="widget-content">
+								<div class="widget-weight">删除工作表列</div>
 							</span>
 						</li>
 					</ul>

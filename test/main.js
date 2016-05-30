@@ -4,12 +4,14 @@ requirejs.config({
 		"excel": "./spreadsheet/spreadsheet",
 	}
 });
-requirejs(['./lib/backbone',
+requirejs([
+	//'./lib/backbone',
 	// '../test/unit/clipBoardTest',
 	// '../test/unit/reloadCellTest',
 	// '../test/unit/wordWrapTest',
-	'../test/unit/texttype.spec',
-	'../test/unit/commentspec'
+	// '../test/unit/texttype.spec',
+	// '../test/unit/commentspec',
+	'../test/unit/rowspec'
 ], function() {
 	window.onload();
 });
