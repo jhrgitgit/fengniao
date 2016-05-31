@@ -1,4 +1,4 @@
-nguage: node_js
+language: node_js
 repo_token: CVOERALLS.IO_TOKEN
 node_js:
 - 0.1
