@@ -4,6 +4,7 @@ define(function(require) {
 		Backbone = require('lib/backbone'),
 		rowOperation = require('entrance/tool/addrow'),
 		InsertOperation;
+		
 	InsertOperation = Backbone.View.extend({
 		el: '#insert',
 		events: {

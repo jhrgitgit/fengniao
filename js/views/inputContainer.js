@@ -155,7 +155,13 @@ define(function(require) {
 		 * @param e {event}  输入焦点移除
 		 */
 		close: function(e) {
-			var text, currentTexts, headLineRowModelList, headLineColModelList, modelIndexCol, modelIndexRow;
+			var text, currentTexts,
+				headLineRowModelList,
+				headLineColModelList,
+				modelIndexCol,
+				modelIndexRow,
+				startAliasCol,
+				startAliasRow;
 			text = this.$el.val();
 			headLineRowModelList = headItemRows.models;
 			headLineColModelList = headItemCols.models;
@@ -163,18 +169,20 @@ define(function(require) {
 				headLineColModelList, 'left', 'width', 0, headLineColModelList.length - 1);
 			modelIndexRow = binary.modelBinary(this.model.get('physicsBox').top,
 				headLineRowModelList, 'top', 'height', 0, headLineRowModelList.length - 1);
+
+			startAliasCol = headLineColModelList[modelIndexCol].get('alias');
+			startAliasRow = headLineRowModelList[modelIndexRow].get('alias');
 			this.model.set('content.texts', text);
 			text = textTypeHandler.textTypeRecognize(this.model);
+
 			send.PackAjax({
 				url: 'text.htm?m=data',
 				data: JSON.stringify({
 					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
 					sheetId: '1',
 					coordinate: {
-						startX: modelIndexCol,
-						startY: modelIndexRow,
-						startAliasCol: modelIndexCol,
-						startAliasRow: modelIndexRow,
+						startX: startAliasCol,
+						startY: startAliasRow
 					},
 					content: encodeURIComponent(text)
 				})

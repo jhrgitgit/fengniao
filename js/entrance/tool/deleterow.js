@@ -9,13 +9,14 @@ define(function(require) {
 		selectRegions = require('collections/selectRegion'),
 		siderLineRows = require('collections/siderLineRow'),
 		send = require('basic/tools/send');
+
 	return {
 		/**
-		 * 插入行操作
+		 * 删除行操作
 		 * @param {string} sheetId sheetId
 		 * @param {string} label   行标识号,如果为undefined,则按照当前选中区域进行操作
 		 */
-		addRow: function(sheetId, label) {
+		deleteRow: function(sheetId, label) {
 			var index = -1,
 				alias,
 				select,
@@ -34,19 +35,17 @@ define(function(require) {
 			}
 			alias = headItemRows.models[index].get('alias');
 			
-			this._adaptHeadRowItem(index);
-			this._adaptSelectRegion(index);
 			this._adaptCells(index);
+			this._adaptSelectRegion(index);
+			this._adaptHeadRowItem(index);
 			this._frozenHandle(index);
 			
 			send.PackAjax({
-				url: 'cells.htm?m=rows_insert',
+				url: 'cells.htm?m=rows_delete',
 				data: JSON.stringify({
 					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
 					sheetId: '1',
-					rowAlais: {
-						rowAlais: alias,
-					}
+					rowAlias: alias,
 				}),
 			});
 		},
@@ -142,8 +141,7 @@ define(function(require) {
 				tempCell,
 				top;
 
-			cellsList = cells.getCellsByRowIndex(index + 1,
-				headItemRows.length - 1);
+			cellsList = cells.getCellsByRowIndex(index,headItemRows.length - 1);
 			len = cellsList.length;
 			for (; i < len; i++) {
 				tempCell = cellsList[i];
@@ -174,21 +172,18 @@ define(function(require) {
 					//更新 cell.occupy
 					aliasArray.splice(index - startIndex, 0, insertAlias);
 					tempCell.set('occupy.y', aliasArray);
-					cache.cachePosition();
 				}
 			}
 		},
 		/**
 		 * 处理冻结状态下,插入行功能
-		 * @param  {[type]} index [description]
-		 * @return {[type]}       [description]
+		 * @param  {number} index 插入索引
 		 */
 		_frozenHandle: function(index) {
 			var userViewAlias,
 				userViewIndex,
 				frozenAlias,
-				frozenIndex,
-				insertAlias;
+				frozenIndex;
 			if (cache.TempProp.isFrozen === true) {
 				userViewAlias = cache.UserView.rowAlias;
 				frozenAlias = cache.TempProp.rowAlias;

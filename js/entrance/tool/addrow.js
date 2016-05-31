@@ -9,6 +9,7 @@ define(function(require) {
 		selectRegions = require('collections/selectRegion'),
 		siderLineRows = require('collections/siderLineRow'),
 		send = require('basic/tools/send');
+
 	return {
 		/**
 		 * 插入行操作
@@ -44,9 +45,7 @@ define(function(require) {
 				data: JSON.stringify({
 					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
 					sheetId: '1',
-					rowAlais: {
-						rowAlais: alias,
-					}
+					rowAlias: alias,
 				}),
 			});
 		},
@@ -174,21 +173,18 @@ define(function(require) {
 					//更新 cell.occupy
 					aliasArray.splice(index - startIndex, 0, insertAlias);
 					tempCell.set('occupy.y', aliasArray);
-					cache.cachePosition();
 				}
 			}
 		},
 		/**
 		 * 处理冻结状态下,插入行功能
-		 * @param  {[type]} index [description]
-		 * @return {[type]}       [description]
+		 * @param  {number} index 插入索引
 		 */
 		_frozenHandle: function(index) {
 			var userViewAlias,
 				userViewIndex,
 				frozenAlias,
-				frozenIndex,
-				insertAlias;
+				frozenIndex;
 			if (cache.TempProp.isFrozen === true) {
 				userViewAlias = cache.UserView.rowAlias;
 				frozenAlias = cache.TempProp.rowAlias;
@@ -201,7 +197,7 @@ define(function(require) {
 				}
 				if (index + 1 === frozenIndex) {
 					frozenAlias = headItemRows.models[index].get('alias');
-					cache.TempProp.rowAlias = frozenAlias
+					cache.TempProp.rowAlias = frozenAlias;
 				}
 				Backbone.trigger('event:bodyContainer:executiveFrozen');
 			}

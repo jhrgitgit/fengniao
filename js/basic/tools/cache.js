@@ -1,5 +1,5 @@
 //attention bug , those cache objects has mix , for use 
-define(function() {
+define(function(require) {
 	'use strict';
 	var config = require('spreadsheet/config');
 	/**
@@ -128,6 +128,7 @@ define(function() {
 			left: 0,
 			right: 0
 		},
+		//
 		/**
 		 * 保存位置信息
 		 * @method cachePosition
