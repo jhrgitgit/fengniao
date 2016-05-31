@@ -16,7 +16,7 @@ module.exports = function(config) {
             }, {
                 pattern: 'test/**/*.spec.js',
                 included: false
-            }, {
+            },{
                 pattern: 'test/util/build.js',
                 included: false
             },
@@ -25,7 +25,8 @@ module.exports = function(config) {
 
 
         // list of files to exclude
-        exclude: ['js/app.js', 'test/main.js'],
+        exclude: ['js/app.js', 'test/main.js','test/util/build.js'],
+        
         coverageReporter: {
             type: 'html',
             dir: 'coverage/'

@@ -34,6 +34,7 @@ define(function(require) {
 			this.endIndex = option.endIndex;
 			this.listenTo(this.model, 'change:top', this.changeTop);
 			this.listenTo(this.model, 'change:height', this.changeHeight);
+			this.listenTo(this.model, 'destroy', this.remove);
 			this.currentRule = util.clone(cache.CurrentRule);
 			modelList = headItemRows;
 

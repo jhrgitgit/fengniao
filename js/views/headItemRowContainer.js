@@ -31,7 +31,7 @@ define(function(require) {
 			this.listenTo(this.model, 'change:top', this.changeTop);
 			this.listenTo(this.model, 'change:height', this.changeHeight);
 			this.listenTo(this.model, 'change:displayName', this.changeDisplayName);
-
+			this.listenTo(this.model, 'destroy', this.remove);
 			this.offsetTop = cache.TempProp.isFrozen ? (option.frozenTop || 0) : 0;
 			this.reduceUserView = option.reduceUserView;
 			this.endIndex = option.endIndex;

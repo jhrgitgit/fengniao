@@ -75,6 +75,7 @@ define(function(require) {
 					'scroll': 'syncScroll'
 				});
 				Backbone.on('event:mainContainer:nextCellPosition', this.nextCellPosition, this);
+				Backbone.on('event:mainContainer:addBottom', this.addBottom, this);
 			}
 			this.boxModel = {};
 

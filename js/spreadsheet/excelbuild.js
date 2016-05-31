@@ -59,6 +59,7 @@ define(function(require) {
 				ContentFontContainer = require('widgets/font/contentFontContainer'),
 				FrozenContainer = require('widgets/frozen/frozenContainer'),
 				InsertOperation = require('widgets/insert/insertoperation'),
+				DeleteOperation = require('widgets/delete/deleteoperation'),
 				CommentContainer =require('widgets/celloperation/commentcontainer');
 			new ShearPlateContainer();
 			new FontFamilyContainer();
@@ -73,6 +74,7 @@ define(function(require) {
 			new FrozenContainer();
 			new CommentContainer();
 			new InsertOperation();
+			new DeleteOperation();
 		},
 		buildExcelPublicAPI: function(SpreadSheet) {
 			SpreadSheet.prototype.setFontColor = setFontColor;
