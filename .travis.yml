@@ -17,5 +17,5 @@ script:
 - git remote add deploy root@spreadsheet:/usr/local/apache2/htdocs/git/dev.git
 - git push deploy master
 cache:
-    directories:
-        - node_modules
+  directories:
+  - node_modules
