@@ -6,8 +6,7 @@ define(function(require) {
 		CellModel = require('models/cell'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
-		selectRegions = require('collections/selectRegion'),
-		analysisLabel = require('basic/tools/analysislabel');
+		selectRegions = require('collections/selectRegion');
 	/**
 	 *cell集合类，管理cell对象
 	 *@class Cells 
@@ -112,7 +111,7 @@ define(function(require) {
 					if (cache.CellsPosition.strandX[indexX] !== undefined &&
 						cache.CellsPosition.strandX[indexX][indexY] !== undefined) {
 						//cells去掉重复
-						if (cells.indexOf(this.at(cache.CellsPosition.strandX[indexX][indexY])) == -1) {
+						if (cells.indexOf(this.at(cache.CellsPosition.strandX[indexX][indexY])) === -1) {
 							cells.push(this.at(cache.CellsPosition.strandX[indexX][indexY]));
 						}
 					}
@@ -148,7 +147,7 @@ define(function(require) {
 
 					if (cache.CellsPosition.strandY[rowAlias] !== undefined && cache.CellsPosition.strandY[rowAlias][colAlias] !== undefined) {
 						//cells去掉重复
-						if (cells.indexOf(this.at(cache.CellsPosition.strandY[rowAlias][colAlias])) == -1) {
+						if (cells.indexOf(this.at(cache.CellsPosition.strandY[rowAlias][colAlias])) === -1) {
 							cells.push(this.at(cache.CellsPosition.strandY[rowAlias][colAlias]));
 						}
 					}
@@ -544,20 +543,22 @@ define(function(require) {
 		 */
 		getLeftHeadModelByIndex: function(startColIndex, startRowIndex, endColIndex, endRowIndex) {
 			var result = [],
-				partModel,
 				headLineColModelList,
 				headLineRowModelList,
-				cellsPositionCol,
 				cellsPositionX,
 				tempCell,
 				colLen,
 				rowLen,
 				aliasCol,
 				aliasRow,
-				i, j;
+				i;
 
-			if (endColIndex === undefined) endColIndex = startColIndex;
-			if (endRowIndex === undefined) endRowIndex = startRowIndex;
+			if (endColIndex === undefined) {
+				endColIndex = startColIndex;
+			}
+			if (endRowIndex === undefined) {
+				endRowIndex = startRowIndex;
+			}
 			headLineRowModelList = headItemRows.models;
 			headLineColModelList = headItemCols.models;
 
@@ -585,19 +586,21 @@ define(function(require) {
 		 */
 		getRightHeadModelByIndex: function(startColIndex, startRowIndex, endColIndex, endRowIndex) {
 			var result = [],
-				partModel,
 				headLineColModelList,
 				headLineRowModelList,
-				cellsPositionCol,
 				cellsPositionX,
 				tempCell,
 				colLen,
 				rowLen,
 				aliasCol,
 				aliasRow,
-				i, j;
-			if (endColIndex === undefined) endColIndex = startColIndex;
-			if (endRowIndex === undefined) endRowIndex = startRowIndex;
+				i;
+			if (endColIndex === undefined) {
+				endColIndex = startColIndex;
+			}
+			if (endRowIndex === undefined) {
+				endRowIndex = startRowIndex;
+			}
 			headLineRowModelList = headItemRows.models;
 			headLineColModelList = headItemCols.models;
 
@@ -626,19 +629,21 @@ define(function(require) {
 		getTopHeadModelByIndex: function(startColIndex, startRowIndex,
 			endColIndex, endRowIndex) {
 			var result = [],
-				partModel,
 				headLineColModelList,
 				headLineRowModelList,
-				cellsPositionCol,
 				cellsPositionX,
 				tempCell,
 				colLen,
 				rowLen,
 				aliasCol,
 				aliasRow,
-				i, j;
-			if (endColIndex === undefined) endColIndex = startColIndex;
-			if (endRowIndex === undefined) endRowIndex = startRowIndex;
+				i;
+			if (endColIndex === undefined) {
+				endColIndex = startColIndex;
+			}
+			if (endRowIndex === undefined) {
+				endRowIndex = startRowIndex;
+			}
 			headLineRowModelList = headItemRows.models;
 			headLineColModelList = headItemCols.models;
 
@@ -667,19 +672,21 @@ define(function(require) {
 		getBottomHeadModelByIndex: function(startColIndex, startRowIndex,
 			endColIndex, endRowIndex) {
 			var result = [],
-				partModel,
 				headLineColModelList,
 				headLineRowModelList,
-				cellsPositionCol,
 				cellsPositionX,
 				tempCell,
 				colLen,
 				rowLen,
 				aliasCol,
 				aliasRow,
-				i, j;
-			if (endColIndex === undefined) endColIndex = startColIndex;
-			if (endRowIndex === undefined) endRowIndex = startRowIndex;
+				i;
+			if (endColIndex === undefined) {
+				endColIndex = startColIndex;
+			}
+			if (endRowIndex === undefined) {
+				endRowIndex = startRowIndex;
+			}
 			headLineRowModelList = headItemRows.models;
 			headLineColModelList = headItemCols.models;
 
@@ -721,20 +728,20 @@ define(function(require) {
 
 			//currentModel, direction models or null object
 
-			modelIndexRow = app.basic.modelBinary(modelJSON.physicsBox.top, gridLineRowModelList, 'top', 'height', 0, gridLineRowModelList.length - 1);
-			modelIndexCol = app.basic.modelBinary(modelJSON.physicsBox.left, gridLineColModelList, 'left', 'width', 0, gridLineColModelList.length - 1);
+			modelIndexRow = binary.modelBinary(modelJSON.physicsBox.top, gridLineRowModelList, 'top', 'height', 0, gridLineRowModelList.length - 1);
+			modelIndexCol = binary.modelBinary(modelJSON.physicsBox.left, gridLineColModelList, 'left', 'width', 0, gridLineColModelList.length - 1);
 			switch (direction) {
 				case 'LEFT':
-					modelCelllList = cells.getSelectRegionCells(modelIndexCol - 1, modelIndexRow);
+					modelCelllList = this.getSelectRegionCells(modelIndexCol - 1, modelIndexRow);
 					break;
 				case 'RIGHT':
-					modelCelllList = cells.getSelectRegionCells(modelIndexCol + 1, modelIndexRow);
+					modelCelllList = this.getSelectRegionCells(modelIndexCol + 1, modelIndexRow);
 					break;
 				case 'UP':
-					modelCelllList = cells.getSelectRegionCells(modelIndexCol, modelIndexRow - 1);
+					modelCelllList = this.getSelectRegionCells(modelIndexCol, modelIndexRow - 1);
 					break;
 				case 'DOWN':
-					modelCelllList = cells.getSelectRegionCells(modelIndexCol, modelIndexRow + 1);
+					modelCelllList = this.getSelectRegionCells(modelIndexCol, modelIndexRow + 1);
 					break;
 			}
 			return modelCelllList[0];
@@ -792,14 +799,13 @@ define(function(require) {
 				aliasRow,
 				aliasCol,
 				initCellIndex,
-				cellsPositionX,
-				collections = app.collections;
+				cellsPositionX;
 
-			modelSelectRegion = collections.selectRegion.models[0];
+			modelSelectRegion = selectRegions.models[0];
 			modelJSON = modelSelectRegion.toJSON();
 
-			headLineColModelList = collections.headLineCol.models;
-			headLineRowModelList = collections.headLineRow.models;
+			headLineColModelList = headItemCols.models;
+			headLineRowModelList = headItemRows.models;
 
 			aliasRow = headLineRowModelList[modelJSON.initPosi.startY].get('alias');
 			aliasCol = headLineColModelList[modelJSON.initPosi.startX].get('alias');
@@ -811,7 +817,7 @@ define(function(require) {
 				initCellIndex = cellsPositionX[aliasCol][aliasRow];
 			}
 			if (initCellIndex !== -1) {
-				return collections.cell.models[initCellIndex];
+				return this.models[initCellIndex];
 			}
 			return null;
 		},
@@ -829,7 +835,7 @@ define(function(require) {
 				cachePosition,
 				cellModelList,
 				alias,
-				i, j;
+				i;
 
 			cacheCellArray = [];
 			cellModelList = this.models;
@@ -862,7 +868,7 @@ define(function(require) {
 				cachePosition,
 				cellModelList,
 				alias,
-				i, j;
+				i;
 
 			cacheCellArray = [];
 			cellModelList = this.models;
@@ -897,8 +903,7 @@ define(function(require) {
 				cachePosition,
 				cellModelList,
 				aliasCol,
-				i = 0,
-				j;
+				i = 0;
 
 			cacheCellArray = [];
 			cellModelList = this.models;
@@ -951,8 +956,7 @@ define(function(require) {
 				aliasRow,
 				tempCell,
 				cellStartRowIndex,
-				i = 0,
-				j;
+				i = 0;
 
 			cacheCellArray = [];
 			cellModelList = this.models;
@@ -969,7 +973,7 @@ define(function(require) {
 							//判断cell是否超出区域
 							tempCell = cellModelList[tempRowObj[tempAttr]];
 							cellStartRowIndex = headItemRows.getIndexByAlias(tempCell.get('occupy').y[0]);
-							if (cellStartRowIndex >= startRowIndex && cacheCellArray.indexOf(tempCell) == -1) {
+							if (cellStartRowIndex >= startRowIndex && cacheCellArray.indexOf(tempCell) === -1) {
 								cacheCellArray.push(tempCell);
 							}
 
@@ -995,8 +999,7 @@ define(function(require) {
 				aliasCol,
 				tempCell,
 				cellStartColIndex,
-				i = 0,
-				j;
+				i = 0;
 
 			cacheCellArray = [];
 			cellModelList = this.models;
@@ -1014,7 +1017,7 @@ define(function(require) {
 							//判断cell是否超出区域
 							tempCell = cellModelList[tempColObj[tempAttr]];
 							cellStartColIndex = headItemCols.getIndexByAlias(tempCell.get('occupy').x[0]);
-							if (cellStartColIndex >= startColIndex && cacheCellArray.indexOf(tempCell) == -1) {
+							if (cellStartColIndex >= startColIndex && cacheCellArray.indexOf(tempCell) === -1) {
 								cacheCellArray.push(tempCell);
 							}
 
@@ -1044,21 +1047,28 @@ define(function(require) {
 				cellRowEndIndex,
 				cellColStartIndex,
 				cellColEndIndex,
-				flag,
 				i, j, k;
 
-			gridLineRowList = app.collections.gridLineRow;
-			gridLineColList = app.collections.gridLineRow;
-			cellModelList = cellss;
+			gridLineRowList = headItemRows;
+			gridLineColList = headItemCols;
+			cellModelList = this;
 
 			if (startRowIndex === undefined && startColIndex === undefined && endRowIndex === undefined && endColIndex === undefined) {
 				return cellModelList;
 			}
 
-			if (startRowIndex === undefined) startRowIndex = 0;
-			if (startColIndex === undefined) startColIndex = 0;
-			if (endRowIndex === undefined) endRowIndex = gridLineRowList.length - 1;
-			if (endColIndex === undefined) endColIndex = gridLineColList.length - 1;
+			if (startRowIndex === undefined) {
+				startRowIndex = 0;
+			}
+			if (startColIndex === undefined) {
+				startColIndex = 0;
+			}
+			if (endRowIndex === undefined) {
+				endRowIndex = gridLineRowList.length - 1;
+			}
+			if (endColIndex === undefined) {
+				endColIndex = gridLineColList.length - 1;
+			}
 
 			for (i = 0; i < cellModelList.length; i++) {
 				rowAliasArray = cellModelList[i].get('occupy').y;
@@ -1158,7 +1168,7 @@ define(function(require) {
 				cellStartRowIndex,
 				cellEndColIndex,
 				cellEndRowIndex,
-				cache, region,
+				cache,
 				flag = true,
 				i = 0;
 
