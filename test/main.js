@@ -1,7 +1,7 @@
 requirejs.config({
-	baseUrl: '../../js',
+	baseUrl: '../js',
 	paths: {
-		"excel": "./spreadsheet/spreadsheet",
+		"excel": "./spreadsheet/spreadsheet"
 	}
 });
 requirejs([
@@ -11,7 +11,7 @@ requirejs([
 	// '../test/unit/wordWrapTest',
 	// '../test/unit/texttype.spec',
 	// '../test/unit/commentspec',
-	'../test/unit/rowspec'
+	'../test/unit/row.spec'
 ], function() {
 	window.onload();
 });

@@ -83,7 +83,10 @@ define(function(require) {
 			}
 
 			if (this.MouseModel !== model) {
-				if (model !== undefined && model.get('customProp').comment !== null) {
+				if (model !== undefined &&
+					model.get('customProp').comment !== null &&
+					model.get('customProp').comment !== undefined
+				) {
 					model.set('commentShowState', true);
 				}
 				if (this.MouseModel !== null && this.MouseModel !== undefined) {

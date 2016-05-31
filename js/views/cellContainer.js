@@ -119,6 +119,7 @@ define(function(require) {
 			$(this.el.parentNode.parentNode).append(this.commentView.render().el);
 		},
 		hideComment: function() {
+			clearTimeout(this.overEvent);
 			if (cache.commentState) {
 				return;
 			}
