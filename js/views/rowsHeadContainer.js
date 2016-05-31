@@ -15,7 +15,7 @@ define(function(require) {
 		siderLineCols = require('collections/siderLineCol'),
 		RowsSpaceLineContainer = require('views/rowsSpaceLineContainer'),
 		HeadItemRowContainer = require('views/headItemRowContainer'),
-		selectCellCols = require('entrance/cell/selectCellCols');
+		selectCellCols = require('entrance/cell/selectcellcols');
 
 
 	/**
@@ -27,6 +27,7 @@ define(function(require) {
 	 * @extends Backbone.View
 	 * @constructor
 	 */
+	//ps:index修改为alias,列宽调整功能
 	var RowsHeadContainer = Backbone.View.extend({
 		/**
 		 * 设置class属性
@@ -126,6 +127,7 @@ define(function(require) {
 			var overEl = this.itemEl || e.currentTarget;
 			return e.pageY - $(overEl).offset().top > overEl.clientHeight - config.System.effectDistanceRow ? true : false;
 		},
+		//ps:index修改为alias,整列选中
 		/**
 		 * 处理鼠标点击事件
 		 * @method transAction
@@ -233,14 +235,16 @@ define(function(require) {
 			this.viewRowsAllHeadContainer.$el.css({
 				height: headItemRows.getMaxDistanceHeight()
 			});
+			// this.requstAdjust();
 		},
 		/**
 		 * 向后台发送请求，调整列宽
 		 * @method requstAdjust
 		 */
 		requstAdjust: function(rowIndex, offset) {
+			var rowAlias = headItemRows.models[rowIndex].get('alias');
 			send.PackAjax({
-				url: 'cells.htm?m=rows_height&excelId=' + window.SPREADSHEET_AUTHENTIC_KEY + '&sheetId=1&rowIndex=' + rowIndex + '&offset=' + offset,
+				url: 'cells.htm?m=rows_height&excelId=' + window.SPREADSHEET_AUTHENTIC_KEY + '&sheetId=1&rowAlias=' + rowAlias + '&offset=' + offset,
 				success: function(data) {
 					if (data.returnCode === 200) {
 						console.log('success');

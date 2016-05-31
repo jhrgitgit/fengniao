@@ -1,14 +1,12 @@
-//attention bug, this `models` need to `Models` , this is error , secound phease correction
+//attention bug, this `models` need to `Models` , this is error 
+//, secound phease correction
 //attention bug, remarket lack isn't exist `remarket` property .
 //attention bug, showState is or not exist value ?
 
-
+'use strict';
 define(function(require) {
-	'use strict';
-	var Backbone = require('lib/backbone');
-	var BackboneNest = require('lib/backbone.nested');
-
-
+	var BackboneNest = require('lib/backbone.nested'),
+		CellModel;
 	/**
 	 * 单元格模型对象
 	 * @author ray wu
@@ -18,7 +16,7 @@ define(function(require) {
 	 * @extends Backbone.Collection
 	 * @constructor
 	 */
-	var CellModel = BackboneNest.NestedModel.extend({
+	CellModel = BackboneNest.NestedModel.extend({
 		defaults: {
 			/**
 			 * 单元格物理盒模型
@@ -71,12 +69,12 @@ define(function(require) {
 				 * 字号
 				 * @property {string} size
 				 */
-				size: "11pt",
+				size: '11pt',
 				/**
 				 * 字体风格
 				 * @property {string} family
 				 */
-				family: "SimSun",
+				family: 'SimSun',
 				/**
 				 * 字体加粗
 				 * @property {boolean} bd
@@ -91,7 +89,7 @@ define(function(require) {
 				 * 字体颜色RGB
 				 * @property {string} color
 				 */
-				color: "#000",
+				color: '#000',
 				/**
 				 * 左右对齐
 				 * @property {string} alignRow
@@ -101,15 +99,19 @@ define(function(require) {
 				 * 上下对齐
 				 * @property {string} alignLine
 				 */
-				alignCol: "middle",
+				alignCol: 'middle',
 				/**
-				 * 文本内容
+				 * 文本保存内容，编辑状态内容
 				 * @property {string} texts
 				 */
 				texts: '',
-				
-				wordWrap : null
+				/**
+				 * 单元格显示内容
+				 * @property {string} displayTexts
+				 */
+				displayTexts: ''
 			},
+			wordWrap: false,
 			/**
 			 * 边线属性
 			 * @property {object} border
@@ -145,17 +147,44 @@ define(function(require) {
 				 * 单元格背景颜色RGB
 				 * @property {string} background
 				 */
-				background: "#fff",
+				background: '#fff',
 				/**
-				 * 单元格格式
-				 * @property {string} format
+				 * 单元格数据类型: 
+				 * 货币 currency
+				 * 数字 number
+				 * 日期 date
+				 * 文本 text
+				 * 百分比 percent
+				 * 常规 normal
+				 * @property {string} format 
 				 */
-				format: "text",
+				format: 'normal',
+				/**
+				 * 文本内容，与设置类型是否匹配
+				 */
+				isValid: true,
+				/**
+				 * 小数点位数：仅在数字，货币，百分比类型中有用
+				 */
+				decimal: null,
+				/**
+				 * 是否显示千分位：仅在数字，货币，百分比类型中有用
+				 */
+				thousands: null,
+				/**
+				 * 日期显示格式：仅在日期类型数据中有用
+				 */
+				dateFormat: null,
+				/**
+				 * 货币符号
+				 * @type {String}
+				 */
+				currencySign: null,
 				/**
 				 * 单元格备注内容
-				 * @property {string} remarket
+				 * @property {string} comment
 				 */
-				remarket: ""
+				comment: null
 			},
 			/**
 			 * 单元格是否显示
@@ -166,7 +195,17 @@ define(function(require) {
 			 * 是否已经被销毁
 			 * @property {Boolean} isDestroy
 			 */
-			isDestroy: false
+			isDestroy: false,
+			/**
+			 * 是否允许单元格进行高亮效果（ps:此属性为外部扩展属性，后期应对此属性进行分离）
+			 * @type {Boolean}
+			 */
+			highlight: false,
+			/**
+			 * 单元格备注显示状态
+			 * @type {Boolean}
+			 */
+			commentShowState: false
 		},
 		/**
 		 * 隐藏当前单元格

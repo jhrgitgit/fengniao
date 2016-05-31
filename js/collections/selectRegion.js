@@ -1,5 +1,5 @@
+'use strict';
 define(function(require) {
-	'use strict';
 	var Backbone = require('lib/backbone'),
 		config = require('spreadsheet/config'),
 		SelectRegionModel = require('models/selectRegion'),
@@ -30,7 +30,6 @@ define(function(require) {
 		 */
 		getAdjacent: function(direction) {
 			var initPosiIndex = this.models[0].get('initPosi'),
-				physicsBox = this.models[0].get('physicsBox'),
 				physicsPosi = this.models[0].get('physicsPosi'),
 				wholePosiIndex = this.models[0].get('wholePosi'),
 				initPosiRowIndex = initPosiIndex.startX,
@@ -67,30 +66,16 @@ define(function(require) {
 					break;
 			}
 		},
+		/**
+		 * 通过选中区域状态进行筛选
+		 * @param  {string} type 选中区域类型
+		 * @return {array} 筛选结果
+		 */
 		getModelByType: function(type) {
-				return this.where({
-					selectType: type
-				});
-			}
-			//method destory
-			//
-			// getInitAlias: function(isAliasCol, isAliasRow) {
-			// 	var modelSelectRegion,
-			// 		headLineRowModelList,
-			// 		headLineColModelList,
-			// 		aliasList = {};
-
-		// 	modelSelectRegion = this.models[0];
-		// 	headLineColModelList = collections.headLineCol.models;
-		// 	headLineRowModelList = collections.headLineRow.models;
-		// 	if (isAliasCol) {
-		// 		aliasList.aliasCol = headLineColModelList[modelSelectRegion.initPosi.startX].get('alias');
-		// 	}
-		// 	if (isAliasRow) {
-		// 		aliasList.aliasRow = headLineRowModelList[modelSelectRegion.initPosi.startY].get('alias');
-		// 	}
-		// 	return aliasList;
-		// }
+			return this.where({
+				selectType: type
+			});
+		}
 	});
 	return new SelectRegions();
 });

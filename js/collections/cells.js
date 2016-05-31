@@ -1,7 +1,8 @@
+'use strict';
 define(function(require) {
-	'use strict';
 	var Backbone = require('lib/backbone'),
 		cache = require('basic/tools/cache'),
+		binary = require('basic/util/binary'),
 		CellModel = require('models/cell'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
@@ -23,7 +24,9 @@ define(function(require) {
 		 */
 		model: CellModel,
 		url: '/cell.htm',
-		createCellModel: function(startColIndex, startRowIndex, endColIndex, endRowIndex) {
+		createCellModel: function(startColIndex, startRowIndex,
+			endColIndex, endRowIndex) {
+
 			var headItemColList,
 				headItemRowList,
 				rowLen,
@@ -62,7 +65,9 @@ define(function(require) {
 			}
 			for (i = 0; i < rowLen; i++) {
 				for (j = 0; j < colLen; j++) {
-					cache.cachePosition(headItemRowList[startRowIndex + i].get('alias'), headItemColList[startColIndex + j].get('alias'), this.length);
+					cache.cachePosition(headItemRowList[startRowIndex + i].get('alias'),
+						headItemColList[startColIndex + j].get('alias'),
+						this.length);
 				}
 			}
 			this.add({
@@ -73,8 +78,8 @@ define(function(require) {
 				physicsBox: {
 					top: top,
 					left: left,
-					width: width-1,
-					height: height-1
+					width: width - 1,
+					height: height - 1
 				}
 			});
 			return this.models[this.length - 1];
@@ -103,9 +108,10 @@ define(function(require) {
 					indexX = headItemCols.models[startIndexX + i].get('alias');
 					indexY = headItemRows.models[startIndexY + j].get('alias');
 
-					if (cache.CellsPosition.strandX[indexX] !== undefined && cache.CellsPosition.strandX[indexX][indexY] !== undefined) {
+					if (cache.CellsPosition.strandX[indexX] !== undefined &&
+						cache.CellsPosition.strandX[indexX][indexY] !== undefined) {
 						//cells去掉重复
-						if (cells.indexOf(this.at(cache.CellsPosition.strandX[indexX][indexY])) == -1) {
+						if (cells.indexOf(this.at(cache.CellsPosition.strandX[indexX][indexY])) === -1) {
 							cells.push(this.at(cache.CellsPosition.strandX[indexX][indexY]));
 						}
 					}
@@ -141,7 +147,7 @@ define(function(require) {
 
 					if (cache.CellsPosition.strandY[rowAlias] !== undefined && cache.CellsPosition.strandY[rowAlias][colAlias] !== undefined) {
 						//cells去掉重复
-						if (cells.indexOf(this.at(cache.CellsPosition.strandY[rowAlias][colAlias])) == -1) {
+						if (cells.indexOf(this.at(cache.CellsPosition.strandY[rowAlias][colAlias])) === -1) {
 							cells.push(this.at(cache.CellsPosition.strandY[rowAlias][colAlias]));
 						}
 					}
@@ -201,18 +207,30 @@ define(function(require) {
 			var cellList = [],
 				i,
 				j,
-				modelSelectRegion = selectRegions.models[0],
-				betweenRow = modelSelectRegion.get('wholePosi').endY - modelSelectRegion.get('wholePosi').startY + 1,
-				betweenCol = modelSelectRegion.get('wholePosi').endX - modelSelectRegion.get('wholePosi').startX + 1,
-				headModelListRow = headItemRows.models,
-				headModelListCol = headItemCols.models,
+				rowLen,
+				colLen,
+				select = selectRegions.models[0].get('wholePosi'),
+				headRowList = headItemRows.models,
+				headColList = headItemCols.models,
+				startColIndex,
+				startRowIndex,
+				endColIndex,
+				endRowIndex,
 				cellsPositionX = cache.CellsPosition.strandX,
 				aliasRow,
 				aliasCol;
-			for (i = 0; i < betweenRow; i++) {
-				for (j = 0; j < betweenCol; j++) {
-					aliasRow = headModelListRow[modelSelectRegion.get('wholePosi').startY + i].get('alias');
-					aliasCol = headModelListCol[modelSelectRegion.get('wholePosi').startX + j].get('alias');
+
+			startColIndex = headItemCols.getIndexByAlias(select.startX);
+			startRowIndex = headItemRows.getIndexByAlias(select.startY);
+			endColIndex = headItemCols.getIndexByAlias(select.endX);
+			endRowIndex = headItemRows.getIndexByAlias(select.endY);
+
+			rowLen = endColIndex - startColIndex + 1;
+			colLen = endRowIndex - startRowIndex + 1;
+			for (i = 0; i < rowLen; i++) {
+				for (j = 0; j < colLen; j++) {
+					aliasRow = headRowList[startRowIndex + i].get('alias');
+					aliasCol = headColList[startColIndex + j].get('alias');
 					if (cellsPositionX[aliasCol] !== undefined && cellsPositionX[aliasCol][aliasRow] !== undefined) {
 						cellList.push(this.models[cellsPositionX[aliasCol][aliasRow]]);
 					} else {
@@ -525,20 +543,22 @@ define(function(require) {
 		 */
 		getLeftHeadModelByIndex: function(startColIndex, startRowIndex, endColIndex, endRowIndex) {
 			var result = [],
-				partModel,
 				headLineColModelList,
 				headLineRowModelList,
-				cellsPositionCol,
 				cellsPositionX,
 				tempCell,
 				colLen,
 				rowLen,
 				aliasCol,
 				aliasRow,
-				i, j;
+				i;
 
-			if (endColIndex === undefined) endColIndex = startColIndex;
-			if (endRowIndex === undefined) endRowIndex = startRowIndex;
+			if (endColIndex === undefined) {
+				endColIndex = startColIndex;
+			}
+			if (endRowIndex === undefined) {
+				endRowIndex = startRowIndex;
+			}
 			headLineRowModelList = headItemRows.models;
 			headLineColModelList = headItemCols.models;
 
@@ -566,19 +586,21 @@ define(function(require) {
 		 */
 		getRightHeadModelByIndex: function(startColIndex, startRowIndex, endColIndex, endRowIndex) {
 			var result = [],
-				partModel,
 				headLineColModelList,
 				headLineRowModelList,
-				cellsPositionCol,
 				cellsPositionX,
 				tempCell,
 				colLen,
 				rowLen,
 				aliasCol,
 				aliasRow,
-				i, j;
-			if (endColIndex === undefined) endColIndex = startColIndex;
-			if (endRowIndex === undefined) endRowIndex = startRowIndex;
+				i;
+			if (endColIndex === undefined) {
+				endColIndex = startColIndex;
+			}
+			if (endRowIndex === undefined) {
+				endRowIndex = startRowIndex;
+			}
 			headLineRowModelList = headItemRows.models;
 			headLineColModelList = headItemCols.models;
 
@@ -604,21 +626,24 @@ define(function(require) {
 		 * @method getTopHeadModelByIndex
 		 * @return {array} cell模型结合
 		 */
-		getTopHeadModelByIndex: function(startColIndex, startRowIndex, endColIndex, endRowIndex) {
+		getTopHeadModelByIndex: function(startColIndex, startRowIndex,
+			endColIndex, endRowIndex) {
 			var result = [],
-				partModel,
 				headLineColModelList,
 				headLineRowModelList,
-				cellsPositionCol,
 				cellsPositionX,
 				tempCell,
 				colLen,
 				rowLen,
 				aliasCol,
 				aliasRow,
-				i, j;
-			if (endColIndex === undefined) endColIndex = startColIndex;
-			if (endRowIndex === undefined) endRowIndex = startRowIndex;
+				i;
+			if (endColIndex === undefined) {
+				endColIndex = startColIndex;
+			}
+			if (endRowIndex === undefined) {
+				endRowIndex = startRowIndex;
+			}
 			headLineRowModelList = headItemRows.models;
 			headLineColModelList = headItemCols.models;
 
@@ -644,21 +669,24 @@ define(function(require) {
 		 * @method getLeftHeadModelByIndex
 		 * @return {array} cell模型结合
 		 */
-		getBottomHeadModelByIndex: function(startColIndex, startRowIndex, endColIndex, endRowIndex) {
+		getBottomHeadModelByIndex: function(startColIndex, startRowIndex,
+			endColIndex, endRowIndex) {
 			var result = [],
-				partModel,
 				headLineColModelList,
 				headLineRowModelList,
-				cellsPositionCol,
 				cellsPositionX,
 				tempCell,
 				colLen,
 				rowLen,
 				aliasCol,
 				aliasRow,
-				i, j;
-			if (endColIndex === undefined) endColIndex = startColIndex;
-			if (endRowIndex === undefined) endRowIndex = startRowIndex;
+				i;
+			if (endColIndex === undefined) {
+				endColIndex = startColIndex;
+			}
+			if (endRowIndex === undefined) {
+				endRowIndex = startRowIndex;
+			}
 			headLineRowModelList = headItemRows.models;
 			headLineColModelList = headItemCols.models;
 
@@ -679,27 +707,6 @@ define(function(require) {
 			}
 			return result;
 		},
-		// getAliasByWholeSelectRegion: function() {
-		// 	var aliasList = [],
-		// 		i,
-		// 		j,
-		// 		modelSelectRegion = selectRegions.models[0],
-		// 		betweenRow = modelSelectRegion.get('wholePosi').endY - modelSelectRegion.get('wholePosi').startY + 1,
-		// 		betweenCol = modelSelectRegion.get('wholePosi').endX - modelSelectRegion.get('wholePosi').startX + 1,
-		// 		headModelListRow = headItemRows.models,
-		// 		headModelListCol = headItemCols.models,
-		// 		aliasRow,
-		// 		aliasCol,
-		// 		modelAlias;
-		// 	for (i = 0; i < betweenRow; i++) {
-		// 		for (j = 0; j < betweenCol; j++) {
-		// 			modelAlias.aliasRow = headModelListRow[modelSelectRegion.get('wholePosi').startY + i].get('alias');
-		// 			modelAlias.aliasCol = headModelListCol[modelSelectRegion.get('wholePosi').startX + j].get('alias');
-		// 			aliasList.push(modelAlias);
-		// 		}
-		// 	}
-		// 	return aliasList;
-		// },
 
 		/**
 		 * 获取单元格相邻单元格
@@ -721,26 +728,66 @@ define(function(require) {
 
 			//currentModel, direction models or null object
 
-			modelIndexRow = app.basic.modelBinary(modelJSON.physicsBox.top, gridLineRowModelList, 'top', 'height', 0, gridLineRowModelList.length - 1);
-			modelIndexCol = app.basic.modelBinary(modelJSON.physicsBox.left, gridLineColModelList, 'left', 'width', 0, gridLineColModelList.length - 1);
+			modelIndexRow = binary.modelBinary(modelJSON.physicsBox.top, gridLineRowModelList, 'top', 'height', 0, gridLineRowModelList.length - 1);
+			modelIndexCol = binary.modelBinary(modelJSON.physicsBox.left, gridLineColModelList, 'left', 'width', 0, gridLineColModelList.length - 1);
 			switch (direction) {
 				case 'LEFT':
-					modelCelllList = cells.getSelectRegionCells(modelIndexCol - 1, modelIndexRow);
+					modelCelllList = this.getSelectRegionCells(modelIndexCol - 1, modelIndexRow);
 					break;
 				case 'RIGHT':
-					modelCelllList = cells.getSelectRegionCells(modelIndexCol + 1, modelIndexRow);
+					modelCelllList = this.getSelectRegionCells(modelIndexCol + 1, modelIndexRow);
 					break;
 				case 'UP':
-					modelCelllList = cells.getSelectRegionCells(modelIndexCol, modelIndexRow - 1);
+					modelCelllList = this.getSelectRegionCells(modelIndexCol, modelIndexRow - 1);
 					break;
 				case 'DOWN':
-					modelCelllList = cells.getSelectRegionCells(modelIndexCol, modelIndexRow + 1);
+					modelCelllList = this.getSelectRegionCells(modelIndexCol, modelIndexRow + 1);
 					break;
 			}
 			return modelCelllList[0];
 		},
 		/**
-		 * 获取选中区域初始化单元格对象
+		 * 获取区域内所有单元格对象，如果区域内存在不含有单元格位置，则新建单元格填充为
+		 * @param  {[type]} startRowIndex [description]
+		 * @param  {[type]} startColIndex [description]
+		 * @param  {[type]} endRowIndex   [description]
+		 * @param  {[type]} endColIndex   [description]
+		 * @return {[type]}               [description]
+		 */
+		getFillCellsByRegion: function(startIndexRow, startIndexCol, endIndexRow, endIndexCol) {
+			if (endIndexCol === undefined) {
+				endIndexCol = startIndexCol;
+			}
+			if (endIndexRow === undefined) {
+				endIndexRow = startIndexRow;
+			}
+			var cellList = [],
+				i = 0,
+				j = 0,
+				aliasCol,
+				aliasRow,
+				betweenRow = endIndexRow - startIndexRow + 1,
+				betweenCol = endIndexCol - startIndexCol + 1,
+				gridModelListRow = headItemRows.models,
+				gridModelListCol = headItemCols.models,
+				cellsPositionX = cache.CellsPosition.strandX;
+
+			for (; i < betweenRow; i++) {
+				for (j = 0; j < betweenCol; j++) {
+					aliasRow = gridModelListRow[startIndexRow + i].get('alias');
+					aliasCol = gridModelListCol[startIndexCol + j].get('alias');
+					if (cellsPositionX[aliasCol] !== undefined && cellsPositionX[aliasCol][aliasRow] !== undefined) {
+						cellList.push(this.models[cellsPositionX[aliasCol][aliasRow]]);
+					} else {
+						cellList.push(this.createCellModel(startIndexCol + j, startIndexRow + i));
+					}
+				}
+
+			}
+			return cellList;
+		},
+		/**
+		 * 获取选中区域初始化单元格对象 
 		 * @method getInitCellBySelectRegion 
 		 * @return  {Cell} 单元格对象
 		 */
@@ -752,14 +799,13 @@ define(function(require) {
 				aliasRow,
 				aliasCol,
 				initCellIndex,
-				cellsPositionX,
-				collections = app.collections;
+				cellsPositionX;
 
-			modelSelectRegion = collections.selectRegion.models[0];
+			modelSelectRegion = selectRegions.models[0];
 			modelJSON = modelSelectRegion.toJSON();
 
-			headLineColModelList = collections.headLineCol.models;
-			headLineRowModelList = collections.headLineRow.models;
+			headLineColModelList = headItemCols.models;
+			headLineRowModelList = headItemRows.models;
 
 			aliasRow = headLineRowModelList[modelJSON.initPosi.startY].get('alias');
 			aliasCol = headLineColModelList[modelJSON.initPosi.startX].get('alias');
@@ -771,7 +817,7 @@ define(function(require) {
 				initCellIndex = cellsPositionX[aliasCol][aliasRow];
 			}
 			if (initCellIndex !== -1) {
-				return collections.cell.models[initCellIndex];
+				return this.models[initCellIndex];
 			}
 			return null;
 		},
@@ -789,7 +835,7 @@ define(function(require) {
 				cachePosition,
 				cellModelList,
 				alias,
-				i, j;
+				i;
 
 			cacheCellArray = [];
 			cellModelList = this.models;
@@ -822,7 +868,7 @@ define(function(require) {
 				cachePosition,
 				cellModelList,
 				alias,
-				i, j;
+				i;
 
 			cacheCellArray = [];
 			cellModelList = this.models;
@@ -857,8 +903,7 @@ define(function(require) {
 				cachePosition,
 				cellModelList,
 				aliasCol,
-				i = 0,
-				j;
+				i = 0;
 
 			cacheCellArray = [];
 			cellModelList = this.models;
@@ -911,8 +956,7 @@ define(function(require) {
 				aliasRow,
 				tempCell,
 				cellStartRowIndex,
-				i = 0,
-				j;
+				i = 0;
 
 			cacheCellArray = [];
 			cellModelList = this.models;
@@ -929,7 +973,7 @@ define(function(require) {
 							//判断cell是否超出区域
 							tempCell = cellModelList[tempRowObj[tempAttr]];
 							cellStartRowIndex = headItemRows.getIndexByAlias(tempCell.get('occupy').y[0]);
-							if (cellStartRowIndex >= startRowIndex && cacheCellArray.indexOf(tempCell) == -1) {
+							if (cellStartRowIndex >= startRowIndex && cacheCellArray.indexOf(tempCell) === -1) {
 								cacheCellArray.push(tempCell);
 							}
 
@@ -955,8 +999,7 @@ define(function(require) {
 				aliasCol,
 				tempCell,
 				cellStartColIndex,
-				i = 0,
-				j;
+				i = 0;
 
 			cacheCellArray = [];
 			cellModelList = this.models;
@@ -974,7 +1017,7 @@ define(function(require) {
 							//判断cell是否超出区域
 							tempCell = cellModelList[tempColObj[tempAttr]];
 							cellStartColIndex = headItemCols.getIndexByAlias(tempCell.get('occupy').x[0]);
-							if (cellStartColIndex >= startColIndex && cacheCellArray.indexOf(tempCell) == -1) {
+							if (cellStartColIndex >= startColIndex && cacheCellArray.indexOf(tempCell) === -1) {
 								cacheCellArray.push(tempCell);
 							}
 
@@ -1004,21 +1047,28 @@ define(function(require) {
 				cellRowEndIndex,
 				cellColStartIndex,
 				cellColEndIndex,
-				flag,
 				i, j, k;
 
-			gridLineRowList = app.collections.gridLineRow;
-			gridLineColList = app.collections.gridLineRow;
-			cellModelList = cellss;
+			gridLineRowList = headItemRows;
+			gridLineColList = headItemCols;
+			cellModelList = this;
 
 			if (startRowIndex === undefined && startColIndex === undefined && endRowIndex === undefined && endColIndex === undefined) {
 				return cellModelList;
 			}
 
-			if (startRowIndex === undefined) startRowIndex = 0;
-			if (startColIndex === undefined) startColIndex = 0;
-			if (endRowIndex === undefined) endRowIndex = gridLineRowList.length - 1;
-			if (endColIndex === undefined) endColIndex = gridLineColList.length - 1;
+			if (startRowIndex === undefined) {
+				startRowIndex = 0;
+			}
+			if (startColIndex === undefined) {
+				startColIndex = 0;
+			}
+			if (endRowIndex === undefined) {
+				endRowIndex = gridLineRowList.length - 1;
+			}
+			if (endColIndex === undefined) {
+				endColIndex = gridLineColList.length - 1;
+			}
 
 			for (i = 0; i < cellModelList.length; i++) {
 				rowAliasArray = cellModelList[i].get('occupy').y;
@@ -1052,7 +1102,124 @@ define(function(require) {
 				}
 			}
 			return cacheCellModelList;
-		}
+		},
+		/**
+		 * 批量操作区域内单元格，操作区域内含有未创建单元格区域，则创建单元格，然后进行操作
+		 * @param  {number}   startColIndex 列开始索引
+		 * @param  {number}   startRowIndex 行开始索引
+		 * @param  {number}   endColIndex   列结束索引
+		 * @param  {number}   endRowIndex   行结束索引
+		 * @param  {Function} fn 单元格操作函数
+		 */
+		operateCellsByRegion: function(region, fn) {
+			var tempCell,
+				headItemRowList = headItemRows.models,
+				headItemColList = headItemCols.models,
+				cellsPositionX = cache.CellsPosition.strandX,
+				startColIndex = region.startColIndex,
+				startRowIndex = region.startRowIndex,
+				endColIndex = region.endColIndex,
+				endRowIndex = region.endRowIndex,
+				rowLen,
+				colLen,
+				aliasRow,
+				aliasCol,
+				i = 0,
+				j;
+			if (endColIndex === undefined || endColIndex === null) {
+				endColIndex = startColIndex;
+			}
+			if (endRowIndex === undefined || endRowIndex === null) {
+				endRowIndex = startRowIndex;
+			}
+			colLen = endColIndex - startColIndex;
+			rowLen = endRowIndex - startRowIndex;
+			for (; i < rowLen + 1; i++) {
+				for (j = 0; j < colLen + 1; j++) {
+					aliasRow = headItemRowList[startRowIndex + i].get('alias');
+					aliasCol = headItemColList[startColIndex + j].get('alias');
+					if (cellsPositionX[aliasCol] !== undefined && cellsPositionX[aliasCol][aliasRow] !== undefined) {
+						tempCell = this.models[cellsPositionX[aliasCol][aliasRow]];
+					} else {
+						tempCell = this.createCellModel(startColIndex + j, startRowIndex + i);
+					}
+					fn(tempCell);
+				}
+			}
+		},
+		/**
+		 * 获取完整的操作区域：操作区域内，若存在合并单元格超出操作区域，操作区域应按照单元格扩大，
+		 * 直到没有单元格超出区域
+		 * @param  {[type]} startColIndex 列起始索引
+		 * @param  {[type]} startRowIndex 行起始索引
+		 * @param  {[type]} endColIndex   列结束索引
+		 * @param  {[type]} endRowIndex   行结束索引
+		 * @return {object}               索引信息
+		 */
+		getFullOperationRegion: function(region) {
+			var headItemRowList = headItemRows.models,
+				headItemColList = headItemCols.models,
+				startColIndex = region.startColIndex,
+				startRowIndex = region.startRowIndex,
+				endColIndex = region.endColIndex,
+				endRowIndex = region.endRowIndex,
+				tempCellList,
+				cellStartColIndex,
+				cellStartRowIndex,
+				cellEndColIndex,
+				cellEndRowIndex,
+				cache,
+				flag = true,
+				i = 0;
+
+			if (startColIndex > endColIndex) {
+				cache = startColIndex;
+				startColIndex = endColIndex;
+				endColIndex = cache;
+			}
+			if (startRowIndex > endRowIndex) {
+				cache = startRowIndex;
+				startRowIndex = endRowIndex;
+				endRowIndex = cache;
+			}
+			while (flag) {
+				flag = false;
+				tempCellList = this.getCellByX(startColIndex, startRowIndex, endColIndex, endRowIndex);
+				for (; i < tempCellList.length; i++) {
+					cellStartRowIndex = binary.modelBinary(tempCellList[i].get('physicsBox').top, headItemRowList, 'top', 'height', 0, headItemRowList.length - 1);
+					cellStartColIndex = binary.modelBinary(tempCellList[i].get('physicsBox').left, headItemColList, 'left', 'width', 0, headItemColList.length - 1);
+					cellEndRowIndex = binary.modelBinary(tempCellList[i].get('physicsBox').top + tempCellList[i].get('physicsBox').height, headItemRowList, 'top', 'height', 0, headItemRowList.length - 1);
+					cellEndColIndex = binary.modelBinary(tempCellList[i].get('physicsBox').left + tempCellList[i].get('physicsBox').width, headItemColList, 'left', 'width', 0, headItemColList.length - 1);
+					if (cellStartColIndex < startColIndex) {
+						startColIndex = cellStartColIndex;
+						flag = true;
+						break;
+					}
+					if (cellStartRowIndex < startRowIndex) {
+						startRowIndex = cellStartRowIndex;
+						flag = true;
+						break;
+					}
+					if (cellEndRowIndex > endRowIndex) {
+						endRowIndex = cellEndRowIndex;
+						flag = true;
+						break;
+					}
+					if (cellEndColIndex > endColIndex) {
+						endColIndex = cellEndColIndex;
+						flag = true;
+						break;
+					}
+				}
+			}
+			region = {
+				startRowIndex: startRowIndex,
+				startColIndex: startColIndex,
+				endRowIndex: endRowIndex,
+				endColIndex: endColIndex
+			};
+			return region;
+		},
 	});
 	return new Cells();
 });

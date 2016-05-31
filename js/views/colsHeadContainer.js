@@ -19,7 +19,7 @@ define(function(require) {
 		siderLineCols = require('collections/siderLineCol'),
 		HeadItemColContainer = require('views/headItemColContainer'),
 		ColsSpaceLineContainer = require('views/colsSpaceLineContainer'),
-		selectCellRows = require('entrance/cell/selectCellRows'),
+		selectCellRows = require('entrance/cell/selectcellrows'),
 		ColsHeadContainer;
 	/**
 	 * ColsHeadContainer
@@ -30,6 +30,7 @@ define(function(require) {
 	 * @extends Backbone.View
 	 * @constructor
 	 */
+	//ps:index修改为alias,列宽调整功能
 	ColsHeadContainer = Backbone.View.extend({
 		/**
 		 * @property {element} className
@@ -140,6 +141,7 @@ define(function(require) {
 			var overEl = this.itemEl || e.currentTarget;
 			return e.pageX - $(overEl).offset().left > overEl.clientWidth - config.System.effectDistanceCol ? true : false;
 		},
+		//ps:index修改为alias,整行选中
 		/**
 		 * 传递动作
 		 * @method transAction
@@ -242,8 +244,9 @@ define(function(require) {
 		 * @method requstAdjust
 		 */
 		requstAdjust: function(colIndex, offset) {
+			var colAlias = headItemCols.models[colIndex].get('alias');
 			send.PackAjax({
-				url: 'cells.htm?m=cols_width&excelId=' + window.SPREADSHEET_AUTHENTIC_KEY + '&sheetId=1&colIndex=' + colIndex + '&offset=' + offset,
+				url: 'cells.htm?m=cols_width&excelId=' + window.SPREADSHEET_AUTHENTIC_KEY + '&sheetId=1&colAlias=' + colAlias + '&offset=' + offset,
 				success: function(data) {
 					if (data.returnCode === 200) {
 						console.log('success');

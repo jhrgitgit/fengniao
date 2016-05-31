@@ -5,8 +5,8 @@ define(function(require) {
 		Backbone = require('lib/backbone'),
 		send = require('basic/tools/send'),
 		selectRegions = require('collections/selectRegion'),
-		setFontFamilySize = require('entrance/tool/setFontFamilySize'),
-		setCellHeight = require('entrance/cell/setCellHeight');
+		setFontFamilySize = require('entrance/tool/setfontfamilysize'),
+		setCellHeight = require('entrance/cell/setcellheight');
 
 
 	/**

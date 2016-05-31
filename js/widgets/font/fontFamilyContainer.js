@@ -6,7 +6,7 @@ define(function(require) {
 		send = require('basic/tools/send'),
 		cells = require('collections/cells'),
 		selectRegions = require('collections/selectRegion'),
-		setFontFamily = require('entrance/tool/setFontFamily');
+		setFontFamily = require('entrance/tool/setfontfamily');
 
 	/**
 	 * 设置字体功能监听类

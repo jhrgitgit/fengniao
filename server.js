@@ -22,10 +22,11 @@ app.configure(function() {
 	}));
 });
 
-// app.get('/notes/containers', function(request, response) {
+
+// app.get('/excel.htm/openExcel', function(request, response) {
 // 	return ContainerModel.find(function(err, container) {
 // 		if (!err) {
-// 			return response.send(container);
+// 			return response.send({name:1});
 // 		} else {
 // 			return console.log(err);
 // 		}
@@ -40,18 +41,20 @@ app.configure(function() {
 // 		}
 // 	})
 // });
-// app.post('/excel.htm', function(request, response) {
-// 	var contents=JSON.stringify(request.body);
-// 	var container = new ContainerModel({
-// 		modelCell: contents
-// 	});
-// 	container.save(function(err) {
-// 		if (!err) {
-// 			return response.send(container);
-// 		} else {
-// 			return console.log(err);
+// app.post('/excel.htm/openExcel', function(request, response) {
+// 	response.send({
+// 		returndata: {
+// 			spreadSheet: [{
+// 				sheet: {
+// 					cells: [{
+// 						occupy: {
+// 							x: ['2'],
+// 							y: ['1']
+// 						}
+// 					}]
+// 				}
+// 			}]
 // 		}
-
 // 	});
 // });
 // app.post('/template/merge/cells.html', function(request, response) {
@@ -83,7 +86,6 @@ app.configure(function() {
 // 	});
 // });
 
-
 // app.post('/template/cells.htm?m=create', function(request, response) {
 // 	var container = new ContainerModel({
 // 		contents: request.body.contents,
@@ -98,6 +100,8 @@ app.configure(function() {
 // 		return response.send(container);
 // 	});
 // });
+
+
 // app.put('/notes/containers/:id', function(request, response) {
 // 	console.log('Updating container ' + request.body.id);
 // 	return ContainerModel.findById(request.params.id, function(err, container) {

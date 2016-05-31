@@ -1,6 +1,7 @@
 //attention bug , those cache objects has mix , for use 
-define(function() {
+define(function(require) {
 	'use strict';
+	var config = require('spreadsheet/config');
 	/**
 	 * 系统缓存对象
 	 * @author ray wu
@@ -9,6 +10,8 @@ define(function() {
 	 * @module basic
 	 */
 	return {
+		aliasRowCounter: '100',
+		//ps:CurrentRule ，FrozenRules ，TempProp 都存有冻结信息，具体功能，需要说明
 		CurrentRule: {},
 		FrozenRules: {
 			main: [],
@@ -31,8 +34,11 @@ define(function() {
 			 */
 			strandY: {}
 		},
+		clipState: 'null', //copy：复制状态，cut:剪切状态，null:未进行剪切板操作
+		commentState: false, //true 备注编辑状态,不能进行选中区域的移动
 		/**
 		 * 用户可视的区域(在Excel未冻结的情况下使用)
+		 * 需要修改默认值
 		 * @property {object} UserView
 		 */
 		UserView: {
@@ -57,13 +63,16 @@ define(function() {
 			 */
 			rowEndAlias: '1'
 		},
-		setDataSource: false,
+		highlightDirection: 'null',
+		//鼠标操作状态
+		mouseOperateState: config.mouseOperateState.select,
+
 		listenerList: {}, //事件监听列表
 		/**
 		 * cellsContainer 行视图最大高度
 		 * @type {Number}
 		 */
-		displayRowHeight:0,
+		displayRowHeight: 0,
 		/**
 		 * 后台存储excel的总高度
 		 * @property {int} localRowPosi
@@ -104,6 +113,22 @@ define(function() {
 			 */
 			colFrozen: false
 		},
+		//动态加载，已加载区域
+		rowRegionPosi: [],
+		//动态加载，已加载列区域
+		colRegionPosi: [],
+		//动态加载，已加单元格载区域
+		cellRegionPosi: {
+			transverse: [],
+			vertical: []
+		},
+		visibleRegion: {
+			top: 0,
+			bottom: 0,
+			left: 0,
+			right: 0
+		},
+		//
 		/**
 		 * 保存位置信息
 		 * @method cachePosition
@@ -132,8 +157,37 @@ define(function() {
 			positionX[aliasCol][aliasRow] = index;
 			positionY[aliasRow][aliasCol] = index;
 		},
-		rowRegionPosi:[],
-		colRegionPosi:[]
+		/**
+		 * 删除缓存位置信息
+		 * @method deletePosi
+		 * @param  {string}      aliasRow 行的别名
+		 * @param  {string}      aliasCol 列的别名
+		 */
+		deletePosi: function(aliasRow, aliasCol) {
+			var currentCellPosition = this.CellsPosition,
+				currentStrandX = currentCellPosition.strandX,
+				currentStrandY = currentCellPosition.strandY;
+			if (currentStrandX[aliasCol] !== undefined && currentStrandX[aliasCol][aliasRow] !== undefined) {
+				delete currentStrandX[aliasCol][aliasRow];
+				if (!Object.getOwnPropertyNames(currentStrandX[aliasCol]).length) {
+					delete currentStrandX[aliasCol];
+				}
+			}
+			if (currentStrandY[aliasRow] !== undefined && currentStrandY[aliasRow][aliasCol] !== undefined) {
+				delete currentStrandY[aliasRow][aliasCol];
+				if (!Object.getOwnPropertyNames(currentStrandY[aliasRow]).length) {
+					delete currentStrandY[aliasRow];
+				}
+			}
+		},
+		aliasGenerator: function() {
+			var alias,
+				num;
+			alias = this.aliasRowCounter;
+			num = parseInt(alias);
+			alias = (num + 1).toString();
+			this.aliasRowCounter = alias;
+			return alias;
+		}
 	};
-
 });

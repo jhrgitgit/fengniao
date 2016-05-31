@@ -3,7 +3,7 @@ define(function(require) {
 	var $ = require('lib/jquery'),
 		_ = require('lib/underscore'),
 		Backbone = require('lib/backbone'),
-		setFillColor = require('entrance/tool/setFillColor'),
+		setFillColor = require('entrance/tool/setfillcolor'),
 		FillColorContainer;
 
 	/**

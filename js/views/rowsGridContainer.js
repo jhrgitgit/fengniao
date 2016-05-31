@@ -74,6 +74,7 @@ define(function(require) {
 		 * @param  {object} modelGridLineRow 行model对象
 		 */
 		addGridLineRow: function(modelGridLineRow) {
+			//处理冻结状态
 			var gridLineRow = new GridLineRowContainer({
 				model: modelGridLineRow,
 				frozenTop: this.currentRule.displayPosition.offsetTop,
@@ -81,6 +82,7 @@ define(function(require) {
 			});
 			this.$el.append(gridLineRow.render().el);
 		},
+
 		/**
 		 * 设置新对象属性
 		 * @method newAttrRow

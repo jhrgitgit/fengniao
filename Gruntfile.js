@@ -1,9 +1,11 @@
 module.exports = function(grunt) {
+    'use strict';
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         jshint: {
-            files: ['Gruntfile.js', 'js/**/*.js'],
+            files: ['Gruntfile.js', 'js/collections/*.js','js/models/*.js'],
             options: {
+                jshintrc: true,
                 globals: {
                     jQuery: true
                 },
@@ -32,9 +34,10 @@ module.exports = function(grunt) {
         }
     });
     require('load-grunt-tasks')(grunt);
-    grunt.loadTasks('build/tasks'); // 加载build目录下的所有task
+    grunt.loadTasks('tools/build/tasks'); // 加载build目录下的所有task
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-watch');
-
-    grunt.registerTask('default', ['jshint', 'build']);
+    grunt.registerTask('check', ['jshint']);
+    grunt.registerTask('build',['build']);
+    grunt.registerTask('default', ['jshint']);
 };

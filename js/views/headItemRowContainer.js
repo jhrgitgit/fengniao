@@ -30,6 +30,7 @@ define(function(require) {
 			this.listenTo(this.model, 'change:activeState', this.toggleActive);
 			this.listenTo(this.model, 'change:top', this.changeTop);
 			this.listenTo(this.model, 'change:height', this.changeHeight);
+			this.listenTo(this.model, 'change:displayName', this.changeDisplayName);
 
 			this.offsetTop = cache.TempProp.isFrozen ? (option.frozenTop || 0) : 0;
 			this.reduceUserView = option.reduceUserView;
@@ -83,6 +84,9 @@ define(function(require) {
 			this.$el.css({
 				height: this.model.toJSON().height
 			});
+		},
+		changeDisplayName: function() {
+			this.$el.children('.item').html(this.model.get('displayName'));
 		},
 		/**
 		 * 视图销毁

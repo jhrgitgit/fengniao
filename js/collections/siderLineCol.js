@@ -1,5 +1,5 @@
+'use strict';
 define(function(require) {
-	'use strict';
 	var Backbone = require('lib/backbone'),
 		SiderLineColModel = require('models/siderLineCol'),
 		SiderLineCols;

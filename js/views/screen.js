@@ -6,7 +6,10 @@ define(function(require) {
 		BodyContainer = require('views/bodyContainer'),
 		send = require('basic/tools/send'),
 		cache = require('basic/tools/cache'),
+		config = require('spreadsheet/config'),
 		listener = require('basic/util/listener'),
+		clipSelectOperate = require('entrance/tool/clipselectoperate'),
+		clipPasteOperate = require('entrance/tool/clippasteoperate'),
 		Screen;
 
 
@@ -33,7 +36,6 @@ define(function(require) {
 			'resize': 'attributesRender',
 			'mouseup': 'realseDrag',
 			'beforeunload': 'closeWindow',
-			'paste': 'pasteData',
 			'mousedown': 'transAction',
 			'keydown': 'onKeyDown'
 		},
@@ -45,7 +47,17 @@ define(function(require) {
 		 */
 		initialize: function(id) {
 			Backbone.on('call:screenContainer', this.screenContainer, this);
+			Backbone.on('event:screenContainer:destroy', this.destroy, this);
 			Backbone.on('call:screenContainer:adaptScreen', this.attributesRender, this);
+			if (config.shortcuts.cut) {
+				this.$el.on('cut', this.cutData);
+			}
+			if (config.shortcuts.copy) {
+				this.$el.on('copy', this.copyData);
+			}
+			if (config.shortcuts.paste) {
+				this.$el.on('paste', this.pasteData);
+			}
 			_.bindAll(this, 'callView');
 			this.render();
 		},
@@ -83,7 +95,7 @@ define(function(require) {
 				default:
 					break;
 			}
-			if(flag){
+			if (flag) {
 				Backbone.trigger('event:selectRegion:createInputContainer');
 			}
 			// if (e.keyCode === 32 || (36 < e.keyCode && e.keyCode < 46) ||
@@ -117,6 +129,7 @@ define(function(require) {
 				len,
 				i = 0,
 				$target,
+				toolContainer,
 				targetLen;
 
 			if ($(e.target).length) {
@@ -128,7 +141,7 @@ define(function(require) {
 			targetLen = $target.length;
 			widgetList = $('.widget-list > div');
 			widgetList.removeClass('active');
-			$('#toolBar .fui-section,#toolBar .section,#toolBar .ico-section').removeClass('active');
+			$('#toolBar .fui-section,#toolBar .section,#toolBar .ico-section ').removeClass('active');
 			if (targetLen === 0) {
 				return;
 			}
@@ -191,7 +204,15 @@ define(function(require) {
 			} else {
 				pasteText = event.originalEvent.clipboardData.getData('Text'); //e.clipboardData.getData('text/plain');
 			}
-			Backbone.trigger('event:pasteData', pasteText);
+			clipPasteOperate(pasteText);
+		},
+		copyData: function(event) {
+			if ($(':focus').length > 0) return;
+			clipSelectOperate("copy", event);
+		},
+		cutData: function(event) {
+			if ($(':focus').length > 0) return;
+			clipSelectOperate("cut", event);
 		},
 		/**
 		 * 用于其他视图，绑定该视图
@@ -247,6 +268,12 @@ define(function(require) {
 		 */
 		mouseMoveHeadContainer: function(e, args, moveEvent) {
 			this.$el.on('mousemove', args, moveEvent);
+		},
+		destroy: function() {
+			Backbone.off('call:screenContainer');
+			Backbone.off('call:screenContainer:adaptScreen');
+			this.bodyContainer.destroy();
+			this.remove();
 		}
 	});
 	return Screen;

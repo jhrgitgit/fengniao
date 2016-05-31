@@ -4,6 +4,7 @@ define(function(require) {
 		_ = require('lib/underscore'),
 		Backbone = require('lib/backbone'),
 		cache = require('basic/tools/cache'),
+		getTextBox = require('basic/tools/gettextbox'),
 		util = require('basic/util/clone'),
 		config = require('spreadsheet/config'),
 		binary = require('basic/util/binary'),
@@ -13,6 +14,7 @@ define(function(require) {
 		headItemRows = require('collections/headItemRow'),
 		headItemCols = require('collections/headItemCol'),
 		selectRegions = require('collections/selectRegion'),
+		textTypeHandler = require('entrance/tool/settexttype'),
 		InputContainer;
 
 
@@ -45,8 +47,8 @@ define(function(require) {
 		 */
 		events: {
 			'blur': 'close',
-			'input': 'adjustWidth',
-			'propertychange': 'adjustWidth',
+			'input': 'adapt',
+			'propertychange': 'adapt',
 			'keydown': 'keyHandle'
 		},
 		/**
@@ -87,22 +89,65 @@ define(function(require) {
 			return this;
 		},
 		/**
+		 * 自适应输入框的大小
+		 */
+		adapt: function() {
+			this.adjustWidth();
+			this.adjustHight();
+		},
+		/**
+		 * 调整输入框高度
+		 */
+		adjustHight: function() {
+			var height,
+				cellHeight,
+				fontSize,
+				width,
+				text;
+			text = this.$el.val();
+			fontSize = this.model.get("content").size;
+			width = this.model.get("physicsBox").width;
+			height = getTextBox.getTextHeight(text, this.model.get("wordWrap"), fontSize, width);
+			cellHeight = this.model.get("physicsBox").height;
+			height = height > cellHeight ? height : cellHeight;
+			this.$el.css("height", height);
+			return height;
+		},
+		/**
 		 * 调整输入框宽度
 		 * @method adjustWidth
 		 * @param e {event} propertychange函数
 		 */
 		adjustWidth: function(e) {
-			var tempSpan,
+			var text,
+				texts,
+				inputText,
+				tempDiv,
 				currentWidth,
-				tempSpanWidth;
-			tempSpan = $('<span/>').text(this.el.value);
-			$('body').append(tempSpan);
-			currentWidth = parseInt(this.el.offsetWidth, 0);
-			tempSpanWidth = tempSpan[0].offsetWidth;
-			if (currentWidth - 10 < tempSpanWidth && this.model.get('physicsBox').width < tempSpanWidth) {
-				this.$el.width(tempSpanWidth + 50);
+				fontSize,
+				tempDivWidth,
+				len, i;
+			if (this.model.get("wordWrap") === true) return;
+			inputText = this.$el.val();
+			texts = inputText.split('\n');
+			len = texts.length;
+			for (i = 0; i < len; i++) {
+				text += texts[i] + '<br>';
 			}
-			tempSpan.remove();
+
+			tempDiv = $('<div/>').html(text);
+			fontSize = this.model.get("content").size;
+			tempDiv.css({
+				"display": "none",
+				"font-size": fontSize
+			});
+			$('body').append(tempDiv);
+			currentWidth = parseInt(this.el.offsetWidth, 0);
+			tempDivWidth = tempDiv.width();
+			if (currentWidth - 10 < tempDivWidth && this.model.get('physicsBox').width < tempDivWidth) {
+				this.$el.width(tempDivWidth + 30);
+			}
+			tempDiv.remove();
 		},
 		/**
 		 * 输入框移除输入焦点，视图销毁
@@ -110,8 +155,14 @@ define(function(require) {
 		 * @param e {event}  输入焦点移除
 		 */
 		close: function(e) {
-			var currentTexts, headLineRowModelList, headLineColModelList, modelIndexCol, modelIndexRow;
-			currentTexts = this.$el.val();
+			var text, currentTexts,
+				headLineRowModelList,
+				headLineColModelList,
+				modelIndexCol,
+				modelIndexRow,
+				startAliasCol,
+				startAliasRow;
+			text = this.$el.val();
 			headLineRowModelList = headItemRows.models;
 			headLineColModelList = headItemCols.models;
 			modelIndexCol = binary.modelBinary(this.model.get('physicsBox').left,
@@ -119,21 +170,44 @@ define(function(require) {
 			modelIndexRow = binary.modelBinary(this.model.get('physicsBox').top,
 				headLineRowModelList, 'top', 'height', 0, headLineRowModelList.length - 1);
 
+			startAliasCol = headLineColModelList[modelIndexCol].get('alias');
+			startAliasRow = headLineRowModelList[modelIndexRow].get('alias');
+			this.model.set('content.texts', text);
+			text = textTypeHandler.textTypeRecognize(this.model);
+
 			send.PackAjax({
 				url: 'text.htm?m=data',
 				data: JSON.stringify({
 					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
 					sheetId: '1',
 					coordinate: {
-						startX: modelIndexCol,
-						startY: modelIndexRow,
-						startAliasCol: modelIndexCol,
-						startAliasRow: modelIndexRow,
+						startX: startAliasCol,
+						startY: startAliasRow
 					},
-					content: encodeURIComponent(currentTexts)
+					content: encodeURIComponent(text)
 				})
 			});
-			this.model.set('content.texts', currentTexts);
+
+			//ps：增加设置显示内容
+			if (text.indexOf("\n") > 0 && (this.model.get('wordWrap') === false)) {
+				this.model.set({
+					'wordWrap': true
+				});
+				send.PackAjax({
+					url: 'text.htm?m=wordWrap',
+					data: JSON.stringify({
+						excelId: window.SPREADSHEET_AUTHENTIC_KEY,
+						sheetId: '1',
+						coordinate: {
+							startX: headItemCols.models[modelIndexCol].get("alias"),
+							startY: headItemRows.models[modelIndexRow].get("alias"),
+							endX: headItemCols.models[modelIndexCol].get("alias"),
+							endY: headItemRows.models[modelIndexRow].get("alias")
+						},
+						wordWrap: true
+					})
+				});
+			}
 			this.destroy();
 		},
 		isShortKey: function(needle) {
@@ -157,21 +231,46 @@ define(function(require) {
 				width,
 				height,
 				currentTexts,
+				self = this,
 				len, i, isShortKey, keyboard;
 			keyboard = config.keyboard;
 			isShortKey = this.isShortKey(e.keyCode);
 			if (isShortKey) {
-				switch (e.keyCode) {
-					case keyboard.enter:
+				if (e.keyCode === keyboard.enter) {
+					if (config.shortcuts.enter && e.altKey === false) {
+						Backbone.trigger('event:mainContainer:nextCellPosition', 'DOWN');
+						Backbone.trigger('event:cellsContainer:selectRegionChange', 'DOWN');
 						this.close();
-						var moveToDistance = selectRegions.models[0].get('physicsBox').height + selectRegions.models[0].get('physicsPosi').top;
-						Backbone.trigger('event:cellsContainer:changePosi', {
-							clientX: selectRegions.models[0].get('physicsPosi').left +config.System.outerLeft + $('#spreadSheet').offset().left,
-							clientY: moveToDistance + config.System.outerTop + $('#spreadSheet').offset().top + 2
-						});
-						break;
+					} else if (config.shortcuts.altEnter && e.altKey) {
+						insertAtCursor('\n');
+						this.adjustHight();
+						return;
+					}
 				}
 			}
+
+			function insertAtCursor(myValue) {
+				var $t = self.$el[0];
+				if (document.selection) {
+					self.$el.focus();
+					sel = document.selection.createRange();
+					sel.text = myValue;
+					self.$el.focus();
+				} else if ($t.selectionStart || $t.selectionStart == '0') {
+					var startPos = $t.selectionStart;
+					var endPos = $t.selectionEnd;
+					var scrollTop = $t.scrollTop;
+					$t.value = $t.value.substring(0, startPos) + myValue + $t.value.substring(endPos, $t.value.length);
+					self.$el.focus();
+					$t.selectionStart = startPos + myValue.length;
+					$t.selectionEnd = startPos + myValue.length;
+					$t.scrollTop = scrollTop;
+				} else {
+					self.value += myValue;
+					self.$el.focus();
+				}
+			}
+
 		},
 		/**
 		 * 视图销毁

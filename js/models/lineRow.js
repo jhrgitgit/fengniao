@@ -1,7 +1,8 @@
+'use strict';
 define(function(require) {
-	'use strict';
-	var Backbone = require('lib/backbone');
-	var BackboneNest = require('lib/backbone.nested');
+
+	var BackboneNest = require('lib/backbone.nested'),
+		LineRowModel;
 
 	/**
 	 * 行模型对象
@@ -12,7 +13,7 @@ define(function(require) {
 	 * @extends Backbone.Collection
 	 * @constructor
 	 */
-	var LineRowModel = Backbone.Model.extend({
+	LineRowModel = BackboneNest.NestedModel.extend({
 		defaults: {
 			/**
 			 * 排序码

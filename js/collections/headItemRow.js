@@ -1,5 +1,5 @@
+'use strict';
 define(function(require) {
-	'use strict';
 	var _ = require('lib/underscore'),
 		Backbone = require('lib/backbone'),
 		binary = require('basic/util/binary'),
@@ -66,10 +66,9 @@ define(function(require) {
 			return modelList;
 		},
 		getIndexByDisplayname: function(displayName) {
-			var model = this.findWhere({
+			return _.findIndex(this.toJSON(), {
 				'displayName': displayName
 			});
-			return _.indexOf(this.models, model);
 		},
 		/**
 		 * 获取整个列标容器宽度
@@ -108,10 +107,9 @@ define(function(require) {
 		 * @return {int} 索引
 		 */
 		getIndexByAlias: function(alias) {
-			var model = this.findWhere({
+			return _.findIndex(this.toJSON(), {
 				'alias': alias
 			});
-			return _.indexOf(this.models, model);
 		},
 		getNextAliasByAlias: function(alias) {
 			var index,

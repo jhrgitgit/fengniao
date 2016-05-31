@@ -43,7 +43,8 @@ define(function(require) {
 		 */
 		initialize: function() {
 			Backbone.on('call:bodyContainer', this.callBodyContainer, this);
-			Backbone.on('event:bodyContainer:executiveFrozen', this.executiveFrozen, this);
+			Backbone.on('event:bodyContainer:executiveFrozen',
+				this.executiveFrozen, this);
 		},
 		/**
 		 * 渲染页面
@@ -58,6 +59,7 @@ define(function(require) {
 
 		generateSheet: function() {
 			var sheetsView = new SheetsContainer();
+			this.sheetsView = sheetsView;
 			this.$el.find('.sheet-cf-list').append(sheetsView.render().el);
 		},
 		/**
@@ -71,9 +73,6 @@ define(function(require) {
 			return function(callback) {
 				object[name] = callback;
 			};
-		},
-		outerDraghandle: function(e) {
-			console.log(e);
 		},
 		/**
 		 * 关闭Excel时候，保存用户可视区域
@@ -96,9 +95,7 @@ define(function(require) {
 		 * @method adaptScreen
 		 */
 		adaptScreen: function() {
-			// var rowsPanelContainer,
-			// 	colsPanelContainer,
-			// 	mainContainer;
+			//ps:修改（应该把不冻结情况下代码独立）
 			this.executiveFrozen();
 		},
 		/**
@@ -211,10 +208,7 @@ define(function(require) {
 				}
 
 			}
-			//consider , when time reset scroll to diff position
-			// if (cache.UserView.colAlias !== '1') {
 			this.initMainView();
-			// }
 		},
 		/**
 		 * 生成列冻结操作规则
@@ -242,6 +236,8 @@ define(function(require) {
 					displayPosition: {
 						offsetLeft: 0, // must
 						startIndex: userViewIndex,
+						startAlias: cache.UserView.colAlias,
+						endAlias: cache.TempProp.colAlias,
 						endIndex: currentIndex
 					},
 					boxAttributes: {
@@ -256,6 +252,7 @@ define(function(require) {
 			tempRule = {
 				displayPosition: {
 					offsetLeft: currentModelLeft,
+					startAlias: cache.TempProp.colAlias,
 					startIndex: currentIndex
 				},
 				boxAttributes: {
@@ -283,6 +280,7 @@ define(function(require) {
 		ruleRow: function() {
 			var modelList, currentIndex, currentModel, tempRule, currentModelTop, userViewModel, userViewIndex;
 			modelList = headItemRows;
+
 			currentIndex = modelList.getIndexByAlias(cache.TempProp.rowAlias);
 			if (currentIndex === -1) {
 				currentModelTop = 0;
@@ -293,11 +291,14 @@ define(function(require) {
 
 			userViewModel = modelList.getModelByAlias(cache.UserView.rowAlias);
 			userViewIndex = modelList.getIndexByAlias(cache.UserView.rowAlias);
+
 			// 如果索引不是0，说明锁定需要分为两块
 			if (cache.TempProp.isFrozen && cache.TempProp.rowFrozen) {
 				tempRule = {
 					displayPosition: {
 						offsetTop: 0, // must
+						startAlias: cache.UserView.rowAlias,
+						endAlias: cache.TempProp.rowAlias,
 						startIndex: userViewIndex,
 						endIndex: currentIndex
 					},
@@ -313,7 +314,8 @@ define(function(require) {
 			tempRule = {
 				displayPosition: {
 					offsetTop: currentModelTop,
-					startIndex: currentIndex
+					startIndex: currentIndex,
+					startAlias: cache.TempProp.rowAlias
 				},
 				boxAttributes: {
 					height: this.scrollHeight - this.scrollbarWidth - currentModelTop
@@ -358,26 +360,31 @@ define(function(require) {
 				userViewColModel,
 				userViewRowIndex,
 				userViewColIndex;
+
+
 			currentRowIndex = modelRowList.getIndexByAlias(cache.TempProp.rowAlias);
 			currentColIndex = modelColList.getIndexByAlias(cache.TempProp.colAlias);
+
 			if (currentRowIndex === -1) {
 				currentRowModelTop = 0;
 			} else {
 				currentRowModel = modelRowList.models[currentRowIndex];
 				currentRowModelTop = currentRowModel.get('top');
 			}
+
 			if (currentColIndex === -1) {
 				currentColModelLeft = 0;
 			} else {
 				currentColModel = modelColList.models[currentColIndex];
 				currentColModelLeft = currentColModel.get('left');
 			}
+
 			//可视点
 			userViewRowModel = modelRowList.getModelByAlias(cache.UserView.rowAlias);
 			userViewRowIndex = modelRowList.getIndexByAlias(cache.UserView.rowAlias);
 			userViewColModel = modelColList.getModelByAlias(cache.UserView.colAlias);
 			userViewColIndex = modelColList.getIndexByAlias(cache.UserView.colAlias);
-
+			
 
 			if (cache.TempProp.isFrozen) {
 				if (cache.TempProp.rowFrozen && cache.TempProp.colFrozen) {
@@ -392,6 +399,10 @@ define(function(require) {
 							endColIndex: currentColIndex,
 							startRowIndex: userViewRowIndex,
 							endRowIndex: currentRowIndex,
+							startColAlias: cache.UserView.colAlias,
+							startRowAlias: cache.UserView.rowAlias,
+							endColAlias: cache.TempProp.colAlias,
+							endRowAlias: cache.TempProp.rowAlias,
 							offsetTop: 0,
 							offsetLeft: 0
 						}
@@ -409,6 +420,10 @@ define(function(require) {
 							startRowIndex: userViewRowIndex,
 							endRowIndex: currentRowIndex,
 							startColIndex: currentColIndex,
+
+							startColAlias: cache.TempProp.colAlias,
+							startRowAlias: cache.UserView.rowAlias,
+							endRowAlias: cache.TempProp.rowAlias,
 							offsetLeft: currentColModelLeft,
 							offsetTop: 0
 						},
@@ -440,6 +455,9 @@ define(function(require) {
 							startColIndex: userViewColIndex,
 							endColIndex: currentColIndex,
 							startRowIndex: currentRowIndex,
+							startColAlias: cache.UserView.colAlias,
+							startRowAlias: cache.TempProp.rowAlias,
+							endColAlias: cache.TempProp.colAlias,
 							offsetLeft: 0,
 							offsetTop: currentRowModelTop
 						},
@@ -485,6 +503,8 @@ define(function(require) {
 				displayPosition: {
 					startColIndex: currentColIndex,
 					startRowIndex: currentRowIndex,
+					startColAlias: cache.TempProp.colAlias,
+					startRowAlias: cache.TempProp.rowAlias,
 					offsetLeft: currentColModelLeft,
 					offsetTop: currentRowModelTop,
 				},
@@ -604,6 +624,15 @@ define(function(require) {
 				return parseInt($('div', virtualEl).innerWidth(), 0);
 			}
 			return (scrollNone - scrollExist);
+		},
+		destroy: function() {
+			Backbone.off('call:bodyContainer');
+			Backbone.off('event:bodyContainer:executiveFrozen');
+			Backbone.trigger('event:colsPanelContainer:destroy');
+			Backbone.trigger('event:rowsPanelContainer:destroy');
+			Backbone.trigger('event:mainContainer:destroy');
+			this.sheetsView.destroy();
+			this.remove();
 		}
 	});
 	return BodyContainer;

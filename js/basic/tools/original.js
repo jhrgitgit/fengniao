@@ -61,6 +61,7 @@ define(function(require) {
 			}
 			this.restoreSelectRegion();
 			loadRecorder.insertPosi(0, headItemRows.models[lenRow - 1].height + headItemRows.models[lenRow - 1].top, cache.rowRegionPosi);
+			loadRecorder.insertPosi(0, headItemRows.models[lenRow - 1].height + headItemRows.models[lenRow - 1].top, cache.cellRegionPosi.vertical);
 		},
 		/**
 		 * 解析后台返回行索引数据，如果行数未满足加载区域，则生成新行，进行补充
@@ -75,7 +76,7 @@ define(function(require) {
 				j,
 				len,
 				rowLen;
-			
+
 			for (i = 0; i < rows.length; i++) {
 				index = binary.indexModelBinary(rows[i].top, headItemRows.models, 'top', 'height');
 				if (headItemRows.getIndexByAlias(rows[i].aliasY) != -1) {
@@ -248,28 +249,45 @@ define(function(require) {
 		restoreSelectRegion: function() {
 			var headItemRowModel,
 				headItemColModel,
-				aliasGridRow,
-				aliasGridCol,
+				rowAlias,
+				colAlias,
+				endRowAlias,
+				endColAlias,
 				cellsPositionX,
-				modelCell,
+				cell,
 				selectRegionModel;
 
-			headItemRowModel = headItemRows.getModelByAlias(cache.UserView.rowAlias);
-			headItemColModel = headItemCols.getModelByAlias(cache.UserView.colAlias);
+			rowAlias = cache.UserView.rowAlias;
+			colAlias = cache.UserView.colAlias;
+
+			headItemRowModel = headItemRows.getModelByAlias(rowAlias);
+			headItemColModel = headItemCols.getModelByAlias(colAlias);
+
 			cellsPositionX = cache.CellsPosition.strandX;
-			if (cellsPositionX[aliasGridCol] !== undefined &&
-				cellsPositionX[aliasGridCol][aliasGridRow] !== undefined) {
-				modelCell = cells.models[cellsPositionX[aliasGridCol][aliasGridRow]];
+
+			if (cellsPositionX[colAlias] !== undefined &&
+				cellsPositionX[colAlias][aliasGridRow] !== undefined) {
+				cell = cells.models[cellsPositionX[colAlias][aliasGridRow]];
 			}
-			if (modelCell !== undefined) {
+			if (cell !== undefined) {
+				endRowAlias = cell.get('occupy').y;
+				endRowAlias = endRowAlias[endRowAlias.length - 1];
+				endColAlias = cell.get('occupy').x;
+				endColAlias = endColAlias[endColAlias.length - 1];
 				selectRegionModel = {
 					physicsPosi: {
-						top: modelCell.get("physicsBox").top,
-						left: modelCell.get("physicsBox").left
+						top: cell.get("physicsBox").top,
+						left: cell.get("physicsBox").left
 					},
 					physicsBox: {
-						width: modelCell.get('physicsBox').width,
-						height: modelCell.get('physicsBox').height
+						width: cell.get('physicsBox').width,
+						height: cell.get('physicsBox').height
+					},
+					wholePosi: {
+						startX: colAlias,
+						startY: rowAlias,
+						endX: endColAlias,
+						endY: endRowAlias
 					}
 				};
 				selectRegions.add(selectRegionModel);
@@ -290,6 +308,12 @@ define(function(require) {
 					physicsBox: {
 						width: headItemColModel.get('width'),
 						height: headItemRowModel.get('height')
+					},
+					wholePosi: {
+						startX: colAlias,
+						startY: rowAlias,
+						endX: colAlias,
+						endY: rowAlias
 					}
 				};
 				selectRegions.add(selectRegionModel);
@@ -317,7 +341,6 @@ define(function(require) {
 				startRowSort,
 				startColSort,
 				sheetNames = [],
-				mainContainerHeight = $("#tableContainer").height - 19,
 				self = this,
 				i;
 
@@ -326,18 +349,23 @@ define(function(require) {
 				cache.localRowPosi = 0;
 				return;
 			}
-			
 
-			$.ajax({
-				url: config.rootPath + 'excel.htm?m=position&excelId=' + excelId + '&sheetId=1&containerHeight=' + $('#spreadSheet').height(),
+			send.PackAjax({
+				url: 'excel.htm?m=position',
+				async: false,
+				data: JSON.stringify({
+					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
+					sheetId: '1',
+					containerHeight: $('#spreadSheet').height()
+				}),
 				async: false,
 				dataType: 'json',
 				success: function(data) {
 					if (data === '') {
 						return;
 					}
-					cache.UserView.colAlias = data.displayRowStartAlias;
-					cache.UserView.rowAlias = data.displayColStartAlias;
+					cache.UserView.rowAlias = data.displayRowStartAlias;
+					cache.UserView.colAlias = data.displayColStartAlias;
 
 					if (data.returndata.spreadSheet[0].sheet.frozen.state === "1") {
 						cache.TempProp = {
@@ -363,11 +391,10 @@ define(function(require) {
 					self.analysisColData(cols, startColSort);
 					self.analysisCellData(cellModels);
 					self.restoreSelectRegion();
-
 				}
-
 			});
 			loadRecorder.insertPosi(headItemRows.models[0].get('top'), headItemRows.models[headItemRows.length - 1].get('top') + headItemRows.models[headItemRows.length - 1].get('height'), cache.rowRegionPosi);
+			loadRecorder.insertPosi(headItemRows.models[0].get('top'), headItemRows.models[headItemRows.length - 1].get('top') + headItemRows.models[headItemRows.length - 1].get('height'), cache.cellRegionPosi.vertical);
 		}
 	};
 });

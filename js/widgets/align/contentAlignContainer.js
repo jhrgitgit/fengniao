@@ -7,8 +7,8 @@ define(function(require) {
 		Backbone = require('lib/backbone'),
 		send = require('basic/tools/send'),
 		selectRegions = require('collections/selectRegion'),
-		setAlign = require('entrance/tool/setAlign'),
-		setWordWrap = require('entrance/tool/setWordWrap');
+		setAlign = require('entrance/tool/setalign'),
+		setWordWrap = require('entrance/tool/setwordwrap');
 
 	/**
 	 * ContentAlignContainer

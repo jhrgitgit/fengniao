@@ -4,32 +4,35 @@ define(function(require) {
 	var original = require('basic/tools/original'),
 		domloader = require('basic/tools/template'),
 		listener = require('basic/util/listener'),
-		setFontColor = require('entrance/tool/setFontColor'),
-		setFillColor = require('entrance/tool/setFillColor'),
-		setFontFamily = require('entrance/tool/setFontFamily'),
-		setCellHeight = require('entrance/cell/setCellHeight'),
-		setCellWidth = require('entrance/cell/setCellWidth'),
-		selectCell = require('entrance/cell/selectCell'),
-		mergeCell = require('entrance/tool/mergeCell'),
-		splitCell = require('entrance/tool/splitCell'),
-		setCellContent = require('entrance/tool/setCellContent'),
-		selectCellCols = require('entrance/cell/selectCellCols'),
-		selectCellRows = require('entrance/cell/selectCellRows'),
-		setCellBorder = require('entrance/tool/setCellBorder'),
-		setFontFamilySize = require('entrance/tool/setFontFamilySize'),
-		setFontWeight = require('entrance/tool/setFontWeight'),
-		setFontStyle = require('entrance/tool/setFontStyle'),
-		setFrozen = require('entrance/sheet/setFrozen'),
-		setAlign = require('entrance/tool/setAlign'),
-		setTextType = require('entrance/tool/setTextType'),
-		operationDataSourceRegion = require('entrance/selectregion/dataSourceRegionOperation'),
-		getPointByPosi = require('entrance/sheet/getPointByPosi'),
-		setWordWrap=require('entrance/tool/setWordWrap'),
-		getTextByCoordinate = require('entrance/cell/getTextByCoordinate'),
-		adaptScreen = require('entrance/sheet/adaptScreen'),
-		getFrozenState = require('entrance/sheet/getFrozenState'),
-		getSelectRegion=require('entrance/sheet/getSelectRegion');
-
+		extend = require('basic/util/extend'),
+		setFontColor = require('entrance/tool/setfontcolor'),
+		setFillColor = require('entrance/tool/setfillcolor'),
+		setFontFamily = require('entrance/tool/setfontfamily'),
+		setCellHeight = require('entrance/cell/setcellheight'),
+		setCellWidth = require('entrance/cell/setcellwidth'),
+		selectCell = require('entrance/cell/selectcell'),
+		mergeCell = require('entrance/tool/mergecell'),
+		splitCell = require('entrance/tool/splitcell'),
+		setCellContent = require('entrance/tool/setcellcontent'),
+		selectCellCols = require('entrance/cell/selectcellcols'),
+		selectCellRows = require('entrance/cell/selectcellrows'),
+		setCellBorder = require('entrance/tool/setcellborder'),
+		setFontFamilySize = require('entrance/tool/setfontfamilysize'),
+		setFontWeight = require('entrance/tool/setfontweight'),
+		setFontStyle = require('entrance/tool/setfontstyle'),
+		setFrozen = require('entrance/sheet/setfrozen'),
+		setAlign = require('entrance/tool/setalign'),
+		operationDataSourceRegion = require('entrance/selectregion/datasourceregionoperation'),
+		getPointByPosi = require('entrance/sheet/getpointbyposi'),
+		setWordWrap = require('entrance/tool/setwordwrap'),
+		getTextByCoordinate = require('entrance/cell/gettextbycoordinate'),
+		adaptScreen = require('entrance/sheet/adaptscreen'),
+		getFrozenState = require('entrance/sheet/getfrozenstate'),
+		getSelectRegion = require('entrance/sheet/getselectregion'),
+		highlight = require('entrance/extention/highlight'),
+		reloadCells = require('entrance/cell/reloadcells'),
+		setTextType = require('entrance/tool/settexttype'),
+		comment = require('entrance/tool/comment');
 
 
 	var excelBuild = {
@@ -54,7 +57,9 @@ define(function(require) {
 				TextFormatContainer = require('widgets/cellformat/textFormatContainer'),
 				MergeCellContainer = require('widgets/celloperation/mergeCellContainer'),
 				ContentFontContainer = require('widgets/font/contentFontContainer'),
-				FrozenContainer = require('widgets/frozen/frozenContainer');
+				FrozenContainer = require('widgets/frozen/frozenContainer'),
+				InsertOperation = require('widgets/insert/insertoperation'),
+				CommentContainer =require('widgets/celloperation/commentcontainer');
 			new ShearPlateContainer();
 			new FontFamilyContainer();
 			new FontSizeContainer();
@@ -66,6 +71,8 @@ define(function(require) {
 			new MergeCellContainer();
 			new ContentFontContainer();
 			new FrozenContainer();
+			new CommentContainer();
+			new InsertOperation();
 		},
 		buildExcelPublicAPI: function(SpreadSheet) {
 			SpreadSheet.prototype.setFontColor = setFontColor;
@@ -85,13 +92,26 @@ define(function(require) {
 			SpreadSheet.prototype.setFontStyle = setFontStyle;
 			SpreadSheet.prototype.setFontWeight = setFontWeight;
 			SpreadSheet.prototype.setFrozen = setFrozen;
-			SpreadSheet.prototype.setTextType = setTextType;
+
+			SpreadSheet.prototype.setTextType = setTextType.setText;
+			SpreadSheet.prototype.setNumType = setTextType.setNum;
+			SpreadSheet.prototype.setDateType = setTextType.setDate;
+			SpreadSheet.prototype.setPercentType = setTextType.setPercent;
+			SpreadSheet.prototype.setCoinType = setTextType.setCoin;
+
 			SpreadSheet.prototype.getPointByPosi = getPointByPosi;
 			SpreadSheet.prototype.adaptScreen = adaptScreen;
 			SpreadSheet.prototype.getTextByCoordinate = getTextByCoordinate;
 			SpreadSheet.prototype.getFrozenState = getFrozenState;
-			SpreadSheet.prototype.setWordWrap=setWordWrap;
-			SpreadSheet.prototype.getSelectRegion=getSelectRegion;
+			SpreadSheet.prototype.setWordWrap = setWordWrap;
+			SpreadSheet.prototype.getSelectRegion = getSelectRegion;
+			SpreadSheet.prototype.reloadCells = reloadCells;
+
+			SpreadSheet.prototype.modifyComment =comment.modifyComment;
+			SpreadSheet.prototype.createAddCommentView =comment.createAddCommentView;
+			SpreadSheet.prototype.createEditComment =comment.createEditComment;
+			SpreadSheet.prototype.deleteComment=comment.deleteComment;
+			
 		},
 		buildDataSourceOperation: function(SpreadSheet) {
 			SpreadSheet.prototype.setDataSourceRegion = operationDataSourceRegion.setDataSourceRegion;
@@ -101,6 +121,11 @@ define(function(require) {
 		buildExcelEventListener: function(SpreadSheet) {
 			SpreadSheet.prototype.addEventListener = listener.addEventListener;
 			SpreadSheet.prototype.removeEventListener = listener.removeEventListener;
+		},
+		buildExcelExtend: function(SpreadSheet) {
+			SpreadSheet.prototype.startHighlight = highlight.startHighlight;
+			SpreadSheet.prototype.stopHighlight = highlight.stopHighlight;
+			SpreadSheet.prototype.getHighlightDirection = highlight.getHighlightDirection;
 		}
 	};
 	return excelBuild;

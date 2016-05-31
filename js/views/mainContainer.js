@@ -21,9 +21,11 @@ define(function(require) {
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
 		cells = require('collections/cells'),
+		selectRegions = require('collections/selectRegion'),
 		GridLineRowContainer = require('views/gridLineRowContainer'),
 		CellContainer = require('views/cellContainer'),
 		CellsContainer = require('views/cellsContainer');
+		
 	/**
 	 *单元格显示区域视图类
 	 *@class MainContainer 
@@ -59,12 +61,10 @@ define(function(require) {
 			Backbone.on('event:mainContainer:destroy', this.destroy, this);
 			Backbone.on('event:mainContainer:attributesRender', this.attributesRender, this);
 			Backbone.on('event:mainContainer:appointPosition', this.appointPosition, this);
-			Backbone.on('event:mainContainer:nextCellPosition', this.nextCellPosition, this);
+
 			//ps:定位事件，只由主区域订阅
 			this.currentRule = clone.clone(cache.CurrentRule);
 
-			// headItemRowList=headItemRows;
-			// headItemColList=headItemCols;
 			if (this.currentRule.eventScroll) {
 				/**
 				 * 绑定滚动事件
@@ -74,17 +74,12 @@ define(function(require) {
 				this.delegateEvents({
 					'scroll': 'syncScroll'
 				});
-
-				// userViewRowModel = headItemRowList.getModelByAlias(cache.UserView.rowAlias);
-				// userViewEndRowModel = headItemRowList.getModelByPosition(userViewRowModel.get('top') + this.el.offsetHeight);
-				// cache.UserView.rowEndAlias = userViewEndRowModel.get('alias');
-
-				// userViewColModel = headItemColList.getModelByAlias(cache.UserView.colAlias);
-				// userViewEndColModel = headItemColList.getModelByPosition(userViewColModel.get('left') + this.el.offsetWidth);
-				// cache.UserView.colEndAlias = userViewEndColModel.get('alias');
+				Backbone.on('event:mainContainer:nextCellPosition', this.nextCellPosition, this);
 			}
 			this.boxModel = {};
+
 			this.boxAttributes = this.currentRule.boxAttributes;
+
 			// for reduction position , prevent event scroll auto trigger.
 			this.isPreventScroll = true;
 
@@ -109,25 +104,14 @@ define(function(require) {
 			modelLastHeadLineRow = modelsHeadLineRowRegionList[len - 1];
 			len = modelsHeadLineColRegionList.length;
 			modelLastHeadLineCol = modelsHeadLineColRegionList[len - 1];
-
+			//ps:计算问题
 			this.boxModel.height = modelLastHeadLineRow.get('top') + modelLastHeadLineRow.get('height') - modelsHeadLineRowRegionList[0].get('top');
 			this.boxModel.width = modelLastHeadLineCol.get('left') + modelLastHeadLineCol.get('width') - modelsHeadLineColRegionList[0].get('left');
 
-			// if (this.currentRule.displayPosition.startRowIndex > 0) {
-			// 	modelStartHeadLineRow = modelsHeadLineRowList[this.currentRule.displayPosition.startRowIndex - 1];
-			// 	this.boxModel.height = modelLastHeadLineRow.get('top') + modelLastHeadLineRow.get('height') -modelStartHeadLineRow.get('top')-modelStartHeadLineRow.get('height')-1;
-			// } else {
-			// 	this.boxModel.height = modelLastHeadLineRow.get('top') + modelLastHeadLineRow.get('height');
-			// }
-
-			// if (this.currentRule.displayPosition.startColIndex > 0) {
-			// 	modelStartHeadLineCol = modelsHeadLineColList[this.currentRule.displayPosition.startColIndex - 1];
-			// 	this.boxModel.width = modelLastHeadLineCol.get('left') + modelLastHeadLineCol.get('width')-modelStartHeadLineCol.get('left')-modelStartHeadLineCol.get('width')-1;
-			// } else {
-			// 	this.boxModel.width = modelLastHeadLineCol.get('left') + modelLastHeadLineCol.get('width');
-			// }
 			this.rowsViewBottomPosi = this.boxModel.height;
 			config.displayRowHeight = this.rowsViewBottomPosi;
+			cache.visibleRegion.top = 0;
+			cache.visibleRegion.bottom = this.rowsViewBottomPosi;
 		},
 		addCellViewPublish: function(cellModel) {
 			this.publish(cellModel, 'addCellViewPublish');
@@ -151,7 +135,9 @@ define(function(require) {
 			});
 			this.cellsContainer.contentCellsContainer.$el.prepend(tempView.render().el);
 		},
+		adaptViewHeight: function(){
 
+		},
 		/**
 		 * 页面渲染方法
 		 * @method render
@@ -170,6 +156,7 @@ define(function(require) {
 			this.triggerCallback();
 			return this;
 		},
+
 		//for new diff object, subscribe it self object.
 		subscribeScroll: function(value, directionObj) {
 			this.appointPosition(value, directionObj.direction);
@@ -191,12 +178,7 @@ define(function(require) {
 		triggerCallback: function() {
 			_.bindAll(this, 'callView');
 			Backbone.trigger('call:bodyContainer', this.callView('viewBodyContainer'));
-			// Backbone.trigger('call:rowsHeadContainer', this.callView('viewRowsHeadContainer'));
-			// Backbone.trigger('call:rowsGridContainer', this.callView('viewRowsGridLineContainer'));
-			// Backbone.trigger('call:rowsAllHeadContainer', this.callView('viewRowsAllHeadContainer'));
 			Backbone.trigger('call:colsAllHeadContainer', this.callView('viewColsAllHeadContainer'));
-			// Backbone.trigger('call:contentCellsContainer', this.callView('viewContentCellsContainer'));
-
 		},
 		callView: function(name) {
 			var object = this;
@@ -226,7 +208,7 @@ define(function(require) {
 				this.$el.addClass(newAttributes.style);
 			}
 		},
-		nextCellPosition: function(cell, direction) {
+		nextCellPosition: function(direction) {
 			switch (direction) {
 				case 'LEFT':
 					break;
@@ -235,27 +217,46 @@ define(function(require) {
 				case 'UP':
 					break;
 				case 'DOWN':
-					this.downCellPosition(cell);
+					this.downCellPosition();
 					break;
 				default:
 					break;
 			}
 		},
-		downCellPosition: function(cell) {
-			var colAliasArray,
-				rowAliasArray,
+		/**
+		 * 输入回车，选中区域超出容器显示范围，进行向下滚动
+		 */
+		downCellPosition: function() {
+			var rowAliasArray = [],
 				nextRowAlias,
-				loadStartAlias,
+				loadStartAlias = [],
 				loadEndAlias,
-				headItemRow,
 				offsetTop,
 				userViewTop,
 				recordScrollTop,
+				cellModels,
+				cellModel,
+				bottomHeadRowItem,
+				visibleTop,
 				top,
 				i, len, load;
-			//ps:未冻结情况
-			colAliasArray = cell.get('occupy').x;
-			rowAliasArray = cell.get('occupy').y;
+
+
+			//处理冻结情况,只有主区域能够进行滚动
+			if (cache.TempProp.isFrozen &&
+				(this.currentRule.displayPosition.endRowIndex ||
+					this.currentRule.displayPosition.endColIndex)) {
+				return;
+			}
+
+			//判断是否存在单元格未全部初始化
+			cellModel = cells.getCellsByWholeSelectRegion()[0];
+			if (cellModel === null) {
+				rowAliasArray.push(selectRegions.models[0].get('wholePosi').startY);
+			} else {
+				rowAliasArray = cellModel.get('occupy').y;
+			}
+
 			len = rowAliasArray.length;
 			for (i = 0; i < len; i++) {
 				if (headItemRows.getIndexByAlias(rowAliasArray[i]) === -1) {
@@ -265,14 +266,8 @@ define(function(require) {
 			}
 			if (loadStartAlias !== undefined) {
 				loadEndAlias = rowAliasArray[len - 1];
-				//ajax get rows data by alias
 			}
-
-
-			headItemRow = headItemRows.getModelByAlias(rowAliasArray[len - 1]);
-			//重新定位，可视区域bottom值
-			top = headItemRow.get('top') + headItemRow.get('height') + config.User.cellHeight - this.el.offsetHeight + 1- offsetTop - userViewTop;
-
+			bottomHeadRowItem = headItemRows.getModelByAlias(rowAliasArray[len - 1]);
 			//判断Excel冻结状态，非冻结状态(冻结高度为0，用户可视起点高度为0)
 			if (cache.TempProp.isFrozen === true) {
 				offsetTop = this.currentRule.displayPosition.offsetTop;
@@ -281,12 +276,12 @@ define(function(require) {
 				offsetTop = 0;
 				userViewTop = 0;
 			}
-			//ajax get rows data by posi
-			//add rows data
-			//view show 
-			if(top<this.el.scrollTop) return;
+			//重新定位，可视区域底部高度值
+			top = bottomHeadRowItem.get('top') + bottomHeadRowItem.get('height') + config.User.cellHeight + 10 - offsetTop - userViewTop;
+
+			if (top < this.el.scrollTop + this.el.offsetHeight) return;
 			recordScrollTop = this.el.scrollTop;
-			this.el.scrollTop = bottom ;
+			this.el.scrollTop = (top - this.el.offsetHeight);
 			this.deleteTop(recordScrollTop);
 			this.addBottom(recordScrollTop);
 		},
@@ -318,6 +313,7 @@ define(function(require) {
 				modelColList = headItemCols;
 				userViewRowModel = modelRowList.getModelByPosition(this.recordScrollTop);
 				userViewEndRowModel = modelRowList.getModelByPosition(this.recordScrollTop + this.el.offsetHeight);
+				
 				cache.UserView.rowAlias = userViewRowModel.get('alias');
 				cache.UserView.rowEndAlias = userViewEndRowModel.get('alias');
 				userViewColModel = modelColList.getModelByPosition(this.recordScrollLeft);
@@ -330,7 +326,6 @@ define(function(require) {
 			if (verticalDirection > 0) {
 				this.addTop(currentDisplayViewTop);
 				this.deleteBottom(currentDisplayViewTop);
-
 			}
 			//as scrollbar scroll down
 			if (verticalDirection < 0) {
@@ -391,7 +386,7 @@ define(function(require) {
 			if (recordIndex >= limitIndex) {
 				return;
 			}
-			for (i = currentIndex; i < limitIndex; i++) {
+			for (i = recordIndex; i < limitIndex; i++) {
 				headItemRowList[i].destroyView();
 			}
 
@@ -415,6 +410,7 @@ define(function(require) {
 					break;
 				}
 			}
+			cache.visibleRegion.top = headItemRowList[limitIndex].get("top");
 			// config.DynamicLoad.row.start = limitIndex;
 		},
 		/**
@@ -455,6 +451,7 @@ define(function(require) {
 			}
 
 			this.loadRegionRows(offsetTop, userViewTop);
+
 
 			limitTopPosi = this.el.scrollTop - config.System.prestrainHeight + offsetTop + userViewTop;
 			limitTopPosi = limitTopPosi < 0 ? 0 : limitTopPosi;
@@ -503,8 +500,7 @@ define(function(require) {
 					}
 				}
 			}
-			//	config.DynamicLoad.row.start = limitTopIndex;
-
+			cache.visibleRegion.top = headItemRowList[limitTopIndex].get("top");
 		},
 		/**
 		 * 区域数据加载函数
@@ -515,8 +511,10 @@ define(function(require) {
 		loadRegionRows: function(offsetTop, userViewTop) {
 			var limitTopPosi,
 				limitBottomPosi,
-				unloadRegions, i = 0;
-			
+				unloadRegions,
+				unloadCellRegions,
+				i = 0;
+
 			limitTopPosi = this.el.scrollTop - config.System.prestrainHeight + offsetTop + userViewTop;
 
 			if (limitTopPosi < 0) limitTopPosi = 0;
@@ -530,9 +528,12 @@ define(function(require) {
 				limitBottomPosi = cache.localRowPosi;
 			}
 			unloadRegions = loadRecorder.getUnloadPosi(limitTopPosi, limitBottomPosi, cache.rowRegionPosi);
-
+			unloadCellRegions = loadRecorder.getUnloadPosi(limitTopPosi, limitBottomPosi, cache.cellRegionPosi.vertical);
 			for (; i < unloadRegions.length; i++) {
 				this.requestRegionData(unloadRegions[i].start, unloadRegions[i].end);
+			}
+			for (i = 0; i < unloadCellRegions.length; i++) {
+				this.requestCellRegionData(unloadCellRegions[i].start, unloadCellRegions[i].end);
 			}
 		},
 		requestRegionData: function(getTopPosi, getBottomPosi) {
@@ -541,26 +542,24 @@ define(function(require) {
 				getTopPosi = getBottomPosi;
 				getBottomPosi = temp;
 			}
-			//请求后台数据
-			$.ajax({
-				url: config.rootPath + '/excel.htm?m=openExcel&excelId=' + window.SPREADSHEET_AUTHENTIC_KEY + '&rowBegin=' + getTopPosi + '&rowEnd=' + getBottomPosi,
-				type: 'get',
+			send.PackAjax({
+				url: 'excel.htm?m=openExcel',
 				async: false,
+				data: JSON.stringify({
+					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
+					sheetId: '1',
+					rowBegin: top,
+					rowEnd: bottom
+				}),
 				success: function(data) {
 					if (data === '') {
 						return;
 					}
-					var startRowSort, startColSort;
+					var startRowSort;
 					startRowSort = data.dataRowStartIndex;
-					startColSort = data.dataColStartIndex;
-
 					data = data.returndata;
-					var cells = data.spreadSheet[0].sheet.cells;
 					var rows = data.spreadSheet[0].sheet.glY;
-					var cols = data.spreadSheet[0].sheet.glX;
 					original.analysisRowData(rows, startRowSort);
-					original.analysisCellData(cells);
-
 				}
 			});
 			loadRecorder.insertPosi(getTopPosi, getBottomPosi, cache.rowRegionPosi);
@@ -570,7 +569,32 @@ define(function(require) {
 			this.adjustContainerHeight(height);
 			this.publish(height, 'adjustHeadItemContainerPublish');
 			this.publish(height, 'adjustContainerHeightPublish');
-
+		},
+		requestCellRegionData: function(getTopPosi, getBottomPosi) {
+			if (getBottomPosi < getTopPosi) {
+				var temp = getTopPosi;
+				getTopPosi = getBottomPosi;
+				getBottomPosi = temp;
+			}
+			send.PackAjax({
+				url: 'excel.htm?m=openExcel',
+				async: false,
+				data: JSON.stringify({
+					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
+					sheetId: '1',
+					rowBegin: top,
+					rowEnd: bottom
+				}),
+				success: function(data) {
+					if (data === '') {
+						return;
+					}
+					data = data.returndata;
+					var cells = data.spreadSheet[0].sheet.cells;
+					original.analysisCellData(cells);
+				}
+			});
+			loadRecorder.insertPosi(getTopPosi, getBottomPosi, cache.cellRegionPosi.vertical);
 		},
 		/**
 		 * 显示行下方超出预加载区域，删除超出视图
@@ -628,13 +652,14 @@ define(function(require) {
 			}
 			this.rowsViewBottomPosi = headItemRowList[limitIndex].get('top') + headItemRowList[limitIndex].get('height') - offsetTop - userViewTop;
 			config.displayRowHeight = this.rowsViewBottomPosi;
+			cache.visibleRegion.bottom = this.rowsViewBottomPosi;
 		},
 
 		/**
 		 * 显示行下方到达加载区域，添加视图视图
 		 * @method addBottom
 		 */
-		addBottom: function(recordViewTop,currentViewTop) {
+		addBottom: function(recordViewTop, currentViewTop) {
 			var limitTopPosi,
 				limitBottomPosi,
 				limitTopIndex,
@@ -716,6 +741,7 @@ define(function(require) {
 
 			this.rowsViewBottomPosi = headItemRowList[limitBottomIndex].get('top') + headItemRowList[limitBottomIndex].get('height') - offsetTop - userViewTop;
 			config.displayRowHeight = this.rowsViewBottomPosi;
+			cache.visibleRegion.bottom = this.rowsViewBottomPosi;
 		},
 		/**
 		 * 动态加载cell对象，对于一次未加载完全cell对象，重新计算cell对象physicsBox属性
@@ -851,7 +877,6 @@ define(function(require) {
 				width,
 				height,
 				len, i = 0;
-
 			//冻结情况，计算视图的偏移量
 			if (cache.TempProp.isFrozen === true) {
 				offsetTop = this.currentRule.displayPosition.offsetTop;

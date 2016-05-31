@@ -8,17 +8,16 @@ define(function(require) {
 		config = require('spreadsheet/config'),
 		util = require('basic/util/clone'),
 		listener = require('basic/util/listener'),
+		SelectRegionModel = require('models/selectRegion'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
 		selectRegions = require('collections/selectRegion'),
 		siderLineRows = require('collections/siderLineRow'),
 		siderLineCols = require('collections/siderLineCol'),
 		cells = require('collections/cells'),
-		dataSourceRegions = require('collections/dataSourceRegion'),
 		GridLineContainer = require('views/gridLineContainer'),
 		ContentCellsContainer = require('views/contentCellsContainer'),
-		SelectRegionView = require('views/selectRegion'),
-		DataSourceRegionView = require('views/dataSourceRegion');
+		SelectRegionView = require('views/selectRegion');
 
 
 	/**
@@ -30,13 +29,14 @@ define(function(require) {
 	 * @extends Backbone.View
 	 * @constructor
 	 */
+
+	//ps:index修改为alias,选中区域移动操作，需要修改
 	var CellsContainer = Backbone.View.extend({
 		/**
 		 * 绑定视图
 		 * @property el
 		 * @type {String}
 		 */
-		//el: '.cellsContainer',
 		className: 'cells-container',
 		/**
 		 * 绑定鼠标事件
@@ -45,9 +45,9 @@ define(function(require) {
 		 */
 		events: {
 			'mousedown': 'located',
-			'dragover': 'onDragOver',
-			'dragleave': 'onDragLeave',
-			'drop': 'onDrop'
+			// 'dragover': 'onDragOver',
+			// 'dragleave': 'onDragLeave',
+			// 'drop': 'onDrop',
 		},
 		/**
 		 * 类初始化调用方法，绑定集合监听
@@ -55,20 +55,29 @@ define(function(require) {
 		 * @param  allAttributes 容器属性
 		 */
 		initialize: function(options) {
+
 			Backbone.on('call:cellsContainer', this.callCellsContainer, this);
 			Backbone.on('event:cellsContainer:createDataSourceRegion', this.createDataSourceRegion, this);
+			Backbone.on('event:cellsContainer:adjustSelectRegion', this.adjustSelectRegion, this);
+			Backbone.on('event:cellsContainer:adaptSelectRegion', this.adaptSelectRegion, this);
 			Backbone.on('event:cellsContainer:getPosi', this.getPosi, this);
 			Backbone.on('event:cellsContainer:destroy', this.destroy, this);
 			Backbone.on('event:cellsContainer:unBindDrag', this.unBindDrag, this);
 			Backbone.on('event:cellsContainer:bindDrag', this.bindDrag, this);
-			Backbone.on('event:cellsContainer:changePosi', this.changePosi, this);
-			Backbone.on('call:cellsContainer:getCoordinate', this.getCoordinate, this);
-			_.bindAll(this, 'callView', 'drag');
+			Backbone.on('event:cellsContainer:addClipRegionView', this.addClipRegionView, this);
+			Backbone.on('event:cellsContainer:getCoordinate', this.getCoordinate, this);
+			Backbone.on('event:cellsContainer:startHighlight', this.startHighlight, this);
+			Backbone.on('event:cellsContainer:stopHighlight', this.stopHighlight, this);
+			_.bindAll(this, 'callView', 'drag', 'highlightRegionMove');
 			this.currentRule = util.clone(cache.CurrentRule);
-			// this.listenTo(selectRegions, 'add', this.addSelectRegion);
 			this.boxAttributes = options.boxAttributes;
 			this.parentView = options.parentView;
-			// this.posiX = this.posiY = 0;
+			//处理冻结情况,只有主区域能够进行滚动
+			if (!cache.TempProp.isFrozen ||
+				(this.currentRule.displayPosition.endRowIndex &&
+					this.currentRule.displayPosition.endColIndex)) {
+				Backbone.on('event:cellsContainer:selectRegionChange', this.selectRegionChange, this);
+			}
 		},
 		/**
 		 * 渲染方法
@@ -85,9 +94,10 @@ define(function(require) {
 
 			this.contentCellsContainer = new ContentCellsContainer();
 			this.$el.append(this.contentCellsContainer.render().el);
+
 			len = modelList.length;
 			for (i = 0; i < len; i++) {
-				this.addSelectRegion(modelList[i]);
+				this.addSelectRegionView(modelList[i]);
 			}
 			this.triggerCallback();
 			return this;
@@ -125,7 +135,6 @@ define(function(require) {
 			e.point = point;
 
 
-
 			if (event.isDefaultPrevented() === false) {
 				data = event.originalEvent.dataTransfer.getData("text");
 				e.text = data;
@@ -137,7 +146,6 @@ define(function(require) {
 				}
 				modelCell.set("content.texts", data);
 			}
-
 			listener.excute('dataDrag', e);
 		},
 		onDragLeave: function(event) {
@@ -199,15 +207,170 @@ define(function(require) {
 			coordinate.col = headLineColModelList[modelIndexCol].get('displayName');
 			coordinate.row = headLineRowModelList[modelIndexRow].get('displayName');
 			callback(coordinate);
-
 		},
-		getCoordinateByMouseEvent: function(event) {
-			var currentRowModel = headItemRows.getModelByAlias(cache.TempProp.rowAlias),
-				currentColModel = headItemCols.getModelByAlias(cache.TempProp.colAlias),
-				headLineRowModelList = headItemRows.models,
+		/**
+		 * 开启单元格边框高亮功能
+		 * @return {[type]} [description]
+		 */
+		startHighlight: function() {
+			//鼠标移动阻止原有事件（mousedown,mousemove）
+			this.undelegateEvents();
+			this.$el.off('mousemove', this.drag);
+			//监听鼠标移动事件
+			this.$el.on('mousemove', this.highlightRegionMove);
+		},
+		highlightRegionMove: function(event) {
+			var self = this,
+				cellModel,
+				selectBox,
+				startColPosi,
+				endColPosi,
+				startRowPosi,
+				endRowPosi,
+				direction,
+				hightlightModel,
+				left, top, width, right, height, bottom;
+
+			selectBox = this.getCoordinateByMouseEvent(event);
+			cellModel = selectBox.model;
+			if (cellModel !== undefined && cellModel.get("highlight") === true) {
+				left = cellModel.get('physicsBox').left;
+				top = cellModel.get('physicsBox').top;
+				height = cellModel.get('physicsBox').height;
+				width = cellModel.get('physicsBox').width;
+				right = left + width;
+				bottom = top + height;
+			} else {
+				cache.highlightDirection = 'null';
+				if (this.hightlightView !== null && this.hightlightView !== undefined) {
+					this.hightlightModel.destroy();
+					this.hightlightView = null;
+				}
+				return;
+			}
+			direction = getLightDirection();
+			if (this.hightlightView === null || this.hightlightView === undefined) {
+				hightlightModel = new SelectRegionModel();
+				this.hightlightModel = hightlightModel;
+				hightlightModel.set("selectType", "extend");
+				this.hightlightView = new SelectRegionView({
+					model: hightlightModel,
+					className: 'highlight-container',
+					parentView: this
+				});
+				this.$el.append(this.hightlightView.render().el);
+			}
+
+			this.hightlightModel.set("physicsPosi", {
+				left: left,
+				top: top,
+				bottom: bottom,
+				right: right
+			});
+			this.hightlightModel.set("physicsBox", {
+				height: height,
+				width: width
+			});
+			clearHighlight();
+			this.hightlightView.$el.addClass('highlight-' + direction);
+			cache.highlightDirection = direction;
+
+			function getLightDirection() {
+				var mouseColPosi = self.getMouseColRelativePosi(event),
+					mouseRowPosi = self.getMouseRowRelativePosi(event),
+					rightDistance = right - mouseColPosi,
+					leftDistance = mouseColPosi - left,
+					topDistance = mouseRowPosi - top,
+					bottomDistance = bottom - mouseRowPosi,
+					temp = rightDistance,
+					direction = "right";
+
+				if (temp > leftDistance) {
+					temp = leftDistance;
+					direction = "left";
+				}
+				if (temp > topDistance) {
+					temp = topDistance;
+					direction = "top";
+				}
+				if (temp > bottomDistance) {
+					temp = bottomDistance;
+					direction = "bottom";
+				}
+				return direction;
+			}
+
+			function clearHighlight() {
+				self.hightlightView.$el.removeClass("highlight-right");
+				self.hightlightView.$el.removeClass("highlight-left");
+				self.hightlightView.$el.removeClass("highlight-top");
+				self.hightlightView.$el.removeClass("highlight-bottom");
+			}
+		},
+		/**
+		 * 停止单元格边框高亮功能
+		 * @return {[type]} [description]
+		 */
+		stopHighlight: function() {
+			//移除鼠标事件监听
+			this.$el.off('mousemove', this.highlightRegionMove);
+			//绑定视图原有事件
+			this.delegateEvents();
+			if (this.hightlightView !== null && this.hightlightView !== undefined) {
+				this.hightlightModel.destroy();
+				this.hightlightView = null;
+			}
+		},
+		getMouseColRelativePosi: function(event) {
+			var currentColModel = headItemCols.getModelByAlias(cache.TempProp.colAlias),
 				headLineColModelList = headItemCols.models,
 				reduceLeftValue,
+				mainMousePosiX;
+
+			this.userViewLeft = cache.TempProp.isFrozen ? headItemCols.getModelByAlias(cache.UserView.colAlias).get('left') : 0;
+			//if this offset value equal 0 ,that position isn't consider frozen point
+			if (this.currentRule.displayPosition.offsetLeft === 0) {
+				reduceLeftValue = this.userViewLeft;
+			} else {
+				reduceLeftValue = currentColModel.get('left');
+			}
+			if (event.clientX === undefined) {
+				event.clientX = event.originalEvent.clientX;
+			}
+			//position of mouse in mainContainer
+			mainMousePosiX = event.clientX - config.System.outerLeft - $('#spreadSheet').offset().left + this.parentView.el.scrollLeft - this.currentRule.displayPosition.offsetLeft + reduceLeftValue;
+			return mainMousePosiX;
+		},
+		getMouseRowRelativePosi: function(event) {
+			var currentRowModel = headItemRows.getModelByAlias(cache.TempProp.rowAlias),
+				headLineRowModelList = headItemRows.models,
 				reduceTopValue,
+				mainMousePosiY,
+				modelIndexRow,
+				aliasGridRow;
+
+			this.userViewTop = cache.TempProp.isFrozen ? headItemRows.getModelByAlias(cache.UserView.rowAlias).get('top') : 0;
+			//if this offset value equal 0 ,that position isn't consider frozen point
+			if (this.currentRule.displayPosition.offsetTop === 0) {
+				reduceTopValue = this.userViewTop;
+			} else {
+				reduceTopValue = currentRowModel.get('top');
+			}
+			if (event.clientY === undefined) {
+				event.clientY = event.originalEvent.clientY;
+			}
+
+			//position of mouse in mainContainer
+			mainMousePosiY = event.clientY - config.System.outerTop - $('#spreadSheet').offset().top + this.parentView.el.scrollTop - this.currentRule.displayPosition.offsetTop + reduceTopValue;
+			return mainMousePosiY;
+		},
+		/**
+		 * 通过点击事件，获取位置信息
+		 * @param  {object} 鼠标点击事件对象
+		 */
+		getCoordinateByMouseEvent: function(event) {
+			var headLineRowModelList = headItemRows.models,
+				headLineColModelList = headItemCols.models,
 				mainMousePosiX,
 				mainMousePosiY,
 				modelIndexCol,
@@ -219,28 +382,8 @@ define(function(require) {
 				startPosiX, startPosiY, endPosiX, endPosiY,
 				left, width, top, height;
 
-			this.userViewTop = cache.TempProp.isFrozen ? headItemRows.getModelByAlias(cache.UserView.rowAlias).get('top') : 0;
-			this.userViewLeft = cache.TempProp.isFrozen ? headItemCols.getModelByAlias(cache.UserView.colAlias).get('left') : 0;
-			//if this offset value equal 0 ,that position isn't consider frozen point
-			if (this.currentRule.displayPosition.offsetLeft === 0) {
-				reduceLeftValue = this.userViewLeft;
-			} else {
-				reduceLeftValue = currentColModel.get('left');
-			}
-			if (this.currentRule.displayPosition.offsetTop === 0) {
-				reduceTopValue = this.userViewTop;
-			} else {
-				reduceTopValue = currentRowModel.get('top');
-			}
-			if (event.clientX === undefined || event.clientY === undefined) {
-				event.clientX = event.originalEvent.clientX;
-				event.clientY = event.originalEvent.clientY;
-			}
-
-			//position of mouse in mainContainer
-			mainMousePosiX = event.clientX - config.System.outerLeft - $('#spreadSheet').offset().left + this.parentView.el.scrollLeft - this.currentRule.displayPosition.offsetLeft + reduceLeftValue;
-			mainMousePosiY = event.clientY - config.System.outerTop - $('#spreadSheet').offset().top + this.parentView.el.scrollTop - this.currentRule.displayPosition.offsetTop + reduceTopValue;
-
+			mainMousePosiX = this.getMouseColRelativePosi(event);
+			mainMousePosiY = this.getMouseRowRelativePosi(event);
 
 			//this model index of gridline
 			modelIndexCol = binary.modelBinary(mainMousePosiX, headLineColModelList, 'left', 'width', 0, headLineColModelList.length - 1);
@@ -268,7 +411,6 @@ define(function(require) {
 				startPosiY = binary.modelBinary(top, headLineRowModelList, 'top', 'height', 0, headLineRowModelList.length - 1);
 				endPosiX = binary.modelBinary(left + width, headLineColModelList, 'left', 'width', 0, headLineColModelList.length - 1);
 				endPosiY = binary.modelBinary(top + height, headLineRowModelList, 'top', 'height', 0, headLineRowModelList.length - 1);
-				// text = modelCell.get('content').texts;
 			} else {
 				startPosiX = endPosiX = modelIndexCol;
 				startPosiY = endPosiY = modelIndexRow;
@@ -277,10 +419,76 @@ define(function(require) {
 				startColIndex: startPosiX,
 				startRowIndex: startPosiY,
 				endColIndex: endPosiX,
-				endRowIndex: endPosiY
+				endRowIndex: endPosiY,
+				model: modelCell
 			};
 		},
+		selectRegionChange: function(direction) {
+			switch (direction) {
+				case 'LEFT':
+					break;
+				case 'RIGHT':
+					break;
+				case 'UP':
+					break;
+				case 'DOWN':
+					this.downSelectRegion();
+					break;
+				default:
+					break;
+			}
+		},
+		downSelectRegion: function() {
+			var endRowIndex,
+				startColIndex,
+				modelCell,
+				startPosiX,
+				startPosiY,
+				endPosiX,
+				endPosiY,
+				cellsPositionX,
+				aliasGridRow,
+				aliasGridCol,
+				options,
+				left, top, height, width;
 
+			this.userViewTop = cache.TempProp.isFrozen ? headItemRows.getModelByAlias(cache.UserView.rowAlias).get('top') : 0;
+			this.userViewLeft = cache.TempProp.isFrozen ? headItemCols.getModelByAlias(cache.UserView.colAlias).get('left') : 0;
+
+			endRowIndex = headItemRows.getIndexByAlias(selectRegions.models[0].get('wholePosi').endY);
+			startColIndex = headItemCols.getIndexByAlias(selectRegions.models[0].get('wholePosi').startX);
+
+			aliasGridRow = headItemRows.models[endRowIndex + 1].get('alias');
+			aliasGridCol = selectRegions.models[0].get('wholePosi').startX;
+
+			cellsPositionX = cache.CellsPosition.strandX;
+
+			if (cellsPositionX[aliasGridCol] !== undefined &&
+				cellsPositionX[aliasGridCol][aliasGridRow] !== undefined) {
+				modelCell = cells.models[cellsPositionX[aliasGridCol][aliasGridRow]];
+			}
+
+			if (modelCell) {
+				left = modelCell.get('physicsBox').left;
+				top = modelCell.get('physicsBox').top;
+				width = modelCell.get('physicsBox').width;
+				height = modelCell.get('physicsBox').height;
+				startPosiX = binary.modelBinary(left, headItemCols.models, 'left', 'width', 0, headItemCols.models.length - 1);
+				startPosiY = binary.modelBinary(top, headItemRows.models, 'top', 'height', 0, headItemRows.models.length - 1);
+				endPosiX = binary.modelBinary(left + width, headItemCols.models, 'left', 'width', 0, headItemCols.models.length - 1);
+				endPosiY = binary.modelBinary(top + height, headItemRows.models, 'top', 'height', 0, headItemRows.models.length - 1);
+			} else {
+				startPosiX = endPosiX = startColIndex;
+				startPosiY = endPosiY = endRowIndex + 1;
+			}
+			options = {
+				initColIndex: startPosiX,
+				initRowIndex: startPosiY,
+				mouseColIndex: endPosiX,
+				mouseRowIndex: endPosiY,
+			};
+			this.adjustOperationRegion(options);
+		},
 		/**
 		 * 移除鼠标移动监听事件
 		 * @method destoryDelegate
@@ -313,13 +521,39 @@ define(function(require) {
 			});
 		},
 		/**
-		 * 添加选中区域
-		 * @method addSelectRegion
+		 * 增加复制(剪切)选中框
 		 */
-		addSelectRegion: function(modelSelectRegion) {
-			//init selectRegion 
+		addClipRegionView: function() {
+			var clipModel,
+				clipView,
+				selectModel;
+
+			clipModel = selectRegions.getModelByType('clip')[0];
+			clipView = new SelectRegionView({
+				model: clipModel,
+				className: 'clip-container',
+				currentRule: this.currentRule,
+				parentView: this
+			});
+			this.clipView = clipView;
+			this.$el.append(clipView.render().el);
+		},
+		/**
+		 * 添加选中区域
+		 * @method addSelectRegionView
+		 */
+		addSelectRegionView: function(modelSelectRegion) {
+			var className;
+			if (modelSelectRegion.get("selectType") === "operation") {
+				className = "selected-container";
+			} else {
+				className = "datasource-container";
+			}
 			this.selectRegion = new SelectRegionView({
-				model: modelSelectRegion
+				model: modelSelectRegion,
+				className: className,
+				currentRule: this.currentRule,
+				parentView: this
 			});
 			this.$el.append(this.selectRegion.render().el);
 		},
@@ -442,20 +676,15 @@ define(function(require) {
 				object[name] = callback;
 			};
 		},
-		located: function(e) {
-			var targetPosi = {
-				clientX: e.clientX,
-				clientY: e.clientY
-			};
+		located: function(event) {
 			// this is question , need deprecated
 			// 
 			// when input data time avoid trigger this effect.
-			if ($(e.target).attr('class') === 'edit-frame') {
+			if (cache.commentState) return;
+			if ($(event.target).attr('class') === 'edit-frame') {
 				return;
 			}
-			//end
-			//
-			this.changePosi(targetPosi);
+			this.changePosi(event);
 			Backbone.trigger('event:cellsContainer:bindDrag');
 		},
 		/**
@@ -463,122 +692,65 @@ define(function(require) {
 		 * @method changePosi
 		 * @param  e {event} 单击事件
 		 */
-		changePosi: function(cfg) {
-			var mainMousePosiX,
-				mainMousePosiY,
-				headLineRowModelList,
-				headLineColModelList,
-				modelIndexCol,
-				modelIndexRow,
-				gridModelCol,
-				gridModelRow,
+		//ps:合并此方法
+		changePosi: function(event) {
+			var selectBox,
 				modelCell,
-				cellsPositionX,
-				aliasGridRow,
-				aliasGridCol,
+				headLineColModelList = headItemCols.models,
+				headLineRowModelList = headItemRows.models,
+				startColIndex,
+				startRowIndex,
+				endColIndex,
+				endRowIndex,
 				colDisplayNames = [],
 				rowDisplayNames = [],
 				point,
 				text = '',
 				options,
-				modelRowList = headItemRows,
-				modelColList = headItemCols,
-				currentRowModel = modelRowList.getModelByAlias(cache.TempProp.rowAlias),
-				currentColModel = modelColList.getModelByAlias(cache.TempProp.colAlias),
-				reduceLeftValue, reduceTopValue,
-				left, top, width, height, i, len, startPosiX, startPosiY, endPosiX, endPosiY,
-				arg = {};
-			arg = {
-				clientX: cfg.clientX || 0,
-				clientY: cfg.clientY || 0
-			};
+				left, top, width, height, i, len;
 
-			this.userViewTop = cache.TempProp.isFrozen ? modelRowList.getModelByAlias(cache.UserView.rowAlias).get('top') : 0;
-			this.userViewLeft = cache.TempProp.isFrozen ? modelColList.getModelByAlias(cache.UserView.colAlias).get('left') : 0;
-			//if this offset value equal 0 ,that position isn't consider frozen point
-			if (this.currentRule.displayPosition.offsetLeft === 0) {
-				reduceLeftValue = this.userViewLeft;
-			} else {
-				reduceLeftValue = currentColModel.get('left');
-			}
-			if (this.currentRule.displayPosition.offsetTop === 0) {
-				reduceTopValue = this.userViewTop;
-			} else {
-				reduceTopValue = currentRowModel.get('top');
-			}
-			//position of mouse in mainContainer
-			mainMousePosiX = arg.clientX - config.System.outerLeft - $('#spreadSheet').offset().left + this.parentView.el.scrollLeft - this.currentRule.displayPosition.offsetLeft + reduceLeftValue;
-			mainMousePosiY = arg.clientY - config.System.outerTop - $('#spreadSheet').offset().top + this.parentView.el.scrollTop - this.currentRule.displayPosition.offsetTop + reduceTopValue;
-			//headColModels,headRowModels list
-			headLineRowModelList = headItemRows.models;
-			headLineColModelList = headItemCols.models;
-
-			//this model index of gridline
-			modelIndexCol = binary.modelBinary(mainMousePosiX, headLineColModelList, 'left', 'width', 0, headLineColModelList.length - 1);
-			modelIndexRow = binary.modelBinary(mainMousePosiY, headLineRowModelList, 'top', 'height', 0, headLineRowModelList.length - 1);
-			//grid model information
-			gridModelCol = headLineColModelList[modelIndexCol];
-			gridModelRow = headLineRowModelList[modelIndexRow];
-
-
-			// isExist cell in cells position array
-			// if exist , callback this object 
-			// if not exist , callback null
-			aliasGridRow = gridModelRow.get('alias');
-			aliasGridCol = gridModelCol.get('alias');
-
-
-			cellsPositionX = cache.CellsPosition.strandX;
-
-			if (cellsPositionX[aliasGridCol] !== undefined &&
-				cellsPositionX[aliasGridCol][aliasGridRow] !== undefined) {
-				modelCell = cells.models[cellsPositionX[aliasGridCol][aliasGridRow]];
-			}
+			//获取点击位置信息
+			selectBox = this.getCoordinateByMouseEvent(event);
 
 			//if model is exist , cell information reset
 			//if model is not exist , cell information default
-			if (modelCell) {
+			modelCell = selectBox.model;
+			startColIndex = selectBox.startColIndex;
+			startRowIndex = selectBox.startRowIndex;
+			endColIndex = selectBox.endColIndex;
+			endRowIndex = selectBox.endRowIndex;
+
+			if (modelCell !== undefined) {
 				left = modelCell.get('physicsBox').left;
 				top = modelCell.get('physicsBox').top;
 				width = modelCell.get('physicsBox').width;
 				height = modelCell.get('physicsBox').height;
-				startPosiX = binary.modelBinary(left, headLineColModelList, 'left', 'width', 0, headLineColModelList.length - 1);
-				startPosiY = binary.modelBinary(top, headLineRowModelList, 'top', 'height', 0, headLineRowModelList.length - 1);
-				endPosiX = binary.modelBinary(left + width, headLineColModelList, 'left', 'width', 0, headLineColModelList.length - 1);
-				endPosiY = binary.modelBinary(top + height, headLineRowModelList, 'top', 'height', 0, headLineRowModelList.length - 1);
 				text = modelCell.get('content').texts;
-			} else {
-				startPosiX = endPosiX = modelIndexCol;
-				startPosiY = endPosiY = modelIndexRow;
 			}
-			//此处待修正，回调函数是否执行，按什么规则执行
-			if (true) {
-				options = {
-					startColIndex: startPosiX,
-					startRowIndex: startPosiY,
-					initColIndex: startPosiX,
-					initRowIndex: startPosiY,
-					mouseColIndex: startPosiX,
-					mouseRowIndex: startPosiY,
-					endColIndex: endPosiX,
-					endRowIndex: endPosiY
-				};
-				this.adjustOperationRegion(options, e);
-			}
-			var e = {};
-			for (i = startPosiX; i < endPosiX + 1; i++) {
+			options = {
+				initColIndex: startColIndex,
+				initRowIndex: startRowIndex,
+				mouseColIndex: startColIndex,
+				mouseRowIndex: startRowIndex,
+			};
+			this.adjustOperationRegion(options);
+
+
+			//ps:待修改，对外监听事件，返回值格式存在问题
+			var result = {};
+			for (i = startColIndex; i < endColIndex + 1; i++) {
 				colDisplayNames.push(headLineColModelList[i].get('displayName'));
 			}
-			for (i = startPosiY; i < endPosiY + 1; i++) {
+			for (i = startRowIndex; i < endRowIndex + 1; i++) {
 				rowDisplayNames.push(headLineRowModelList[i].get('displayName'));
 			}
-			e.point = {
+			result.point = {
 				col: colDisplayNames,
 				row: rowDisplayNames
 			};
 
-			e.text = text;
-			e.property = {
+			result.text = text;
+			result.property = {
 				size: modelCell ? modelCell.get('content').size : '11pt',
 				family: modelCell ? modelCell.get('content').family : "SimSun",
 				bd: modelCell ? modelCell.get('content').bd : false,
@@ -588,16 +760,15 @@ define(function(require) {
 				alignCol: modelCell ? modelCell.get('content').alignCol : 'middle',
 				background: modelCell ? modelCell.get('customProp').background : "#fff",
 				format: modelCell ? modelCell.get('customProp').format : 'text',
-				wordWrap: modelCell ? modelCell.get('content').wordWrap : false
+				wordWrap: modelCell ? modelCell.get('wordWrap') : false
 			};
-			e.border = {
+			result.border = {
 				top: modelCell ? modelCell.get('border').top : false,
 				right: modelCell ? modelCell.get('border').right : false,
 				bottom: modelCell ? modelCell.get('border').bottom : false,
 				left: modelCell ? modelCell.get('border').left : false
 			};
-
-			listener.excute('mousedown', e);
+			listener.excute('mousedown', result);
 		},
 		/**
 		 * 绑定鼠标拖拽事件
@@ -618,68 +789,37 @@ define(function(require) {
 		 * @method drag 
 		 * @param  e {event} 鼠标移动事件
 		 */
-		drag: function(e) {
-			var mainMousePosiX,
+		drag: function(event) {
+			var headItemRowList = headItemRows.models,
+				headItemColList = headItemCols.models,
+				mainMousePosiX,
 				mainMousePosiY,
 				modelIndexCol,
 				modelIndexRow,
-				headLineRowModelList,
-				headLineColModelList,
 				initIndexCol,
 				initIndexRow,
-				colDisplayNames = [],
-				rowDisplayNames = [],
-				startX,
-				startY,
-				endX,
-				endY,
 				lastMouseCol,
 				lastMouseRow,
-				len,
-				options, regionModel, point;
+				regionModel,
+				options;
 
-			var modelRowList = headItemRows,
-				modelColList = headItemCols,
-				currentRowModel = modelRowList.getModelByAlias(cache.TempProp.rowAlias),
-				currentColModel = modelColList.getModelByAlias(cache.TempProp.colAlias),
-				reduceLeftValue,
-				reduceTopValue;
+			mainMousePosiX = this.getMouseColRelativePosi(event);
+			mainMousePosiY = this.getMouseRowRelativePosi(event);
 
-			this.userViewTop = cache.TempProp.isFrozen ? modelRowList.getModelByAlias(cache.UserView.rowAlias).get('top') : 0;
-			this.userViewLeft = cache.TempProp.isFrozen ? modelColList.getModelByAlias(cache.UserView.colAlias).get('left') : 0;
-			//if this offset value equal 0 ,that position isn't consider frozen point
-			if (this.currentRule.displayPosition.offsetLeft === 0) {
-				reduceLeftValue = this.userViewLeft;
+			//this model index of gridline
+			modelIndexCol = binary.modelBinary(mainMousePosiX, headItemColList, 'left', 'width', 0, headItemColList.length - 1);
+			modelIndexRow = binary.modelBinary(mainMousePosiY, headItemRowList, 'top', 'height', 0, headItemRowList.length - 1);
+
+
+			if (cache.mouseOperateState === config.mouseOperateState.dataSource) {
+				regionModel = selectRegions.getModelByType("dataSource")[0];
 			} else {
-				reduceLeftValue = currentColModel.get('left');
-			}
-			if (this.currentRule.displayPosition.offsetTop === 0) {
-				reduceTopValue = this.userViewTop;
-			} else {
-				reduceTopValue = currentRowModel.get('top');
-			}
-			//position of mouse in mainContainer
-			mainMousePosiX = e.clientX - config.System.outerLeft - $('#spreadSheet').offset().left + this.parentView.el.scrollLeft - this.currentRule.displayPosition.offsetLeft + reduceLeftValue;
-			mainMousePosiY = e.clientY - config.System.outerTop - $('#spreadSheet').offset().top + this.parentView.el.scrollTop - this.currentRule.displayPosition.offsetTop + reduceTopValue;
-
-			//headColModels,headRowModels list
-			headLineRowModelList = headItemRows.models;
-			headLineColModelList = headItemCols.models;
-
-			modelIndexCol = binary.modelBinary(mainMousePosiX, headLineColModelList, 'left', 'width', 0, headLineColModelList.length - 1);
-			modelIndexRow = binary.modelBinary(mainMousePosiY, headLineRowModelList, 'top', 'height', 0, headLineRowModelList.length - 1);
-
-
-			if (cache.setDataSource === true) {
-				regionModel = dataSourceRegions.models[0];
-			} else {
-				regionModel = selectRegions.models[0];
+				regionModel = selectRegions.getModelByType("operation")[0];
 			}
 
 			//鼠标开始移动索引
 			initIndexCol = regionModel.get('initPosi').startX;
 			initIndexRow = regionModel.get('initPosi').startY;
-
 			//上次移动鼠标坐标
 			lastMouseCol = regionModel.get('mousePosi').mouseX;
 			lastMouseRow = regionModel.get('mousePosi').mouseY;
@@ -688,33 +828,36 @@ define(function(require) {
 			if (lastMouseCol === modelIndexCol && lastMouseRow === modelIndexRow) {
 				return;
 			}
-
-			//如果拖拽超出控制区域
-			if (modelIndexCol === -1 && lastMouseCol > 5) {
-				modelIndexCol = headLineColModelList.length - 1;
-			} else if (modelIndexCol === -1) {
-				modelIndexCol = 0;
-			}
-
-			if (modelIndexRow === -1 && lastMouseRow > 5) {
-				modelIndexRow = headLineRowModelList.length - 1;
-			} else if (modelIndexRow === -1) {
-				modelIndexRow = 0;
-			}
-
-			regionModel.set('mousePosi', {
-				mouseX: modelIndexCol,
-				mouseY: modelIndexRow
-			});
-
-			//计算选中区域开始索引，结束索引
-			startX = initIndexCol < modelIndexCol ? initIndexCol : modelIndexCol;
-			startY = initIndexRow < modelIndexRow ? initIndexRow : modelIndexRow;
-			endX = initIndexCol > modelIndexCol ? initIndexCol : modelIndexCol;
-			endY = initIndexRow > modelIndexRow ? initIndexRow : modelIndexRow;
-
-			var flag = true, //循环变量
+			options = {
+				initColIndex: initIndexCol,
+				initRowIndex: initIndexRow,
+				mouseColIndex: modelIndexCol,
+				mouseRowIndex: modelIndexRow,
+			};
+			this.adjustOperationRegion(options);
+		},
+		/**
+		 * 自适应选中框大小
+		 */
+		adaptSelectRegion: function() {
+			var headLineRowModelList = headItemRows.models,
+				headLineColModelList = headItemCols.models,
+				selectRegionModel,
+				startX,
+				startY,
+				endX,
+				endY,
+				len,
+				options,
+				flag = true,
 				i;
+
+			selectRegionModel = selectRegions.getModelByType("operation")[0];
+			startX = selectRegionModel.get("wholePosi").startX;
+			startY = selectRegionModel.get("wholePosi").startY;
+			endX = selectRegionModel.get("wholePosi").endX;
+			endY = selectRegionModel.get("wholePosi").endY;
+
 			while (flag) {
 				flag = false;
 				//获取选中区域内所有cell对象
@@ -748,34 +891,19 @@ define(function(require) {
 					}
 				}
 			}
-
-
-			if (e.isDefaultPrevented() === false) {
-				options = {
-					startColIndex: startX,
-					startRowIndex: startY,
-					endColIndex: endX,
-					endRowIndex: endY,
-				};
-				this.adjustOperationRegion(options, e);
-			}
-			e = {};
-			for (i = startX; i < endX + 1; i++) {
-				colDisplayNames.push(headLineColModelList[i].get('displayName'));
-			}
-			for (i = startY; i < endY + 1; i++) {
-				rowDisplayNames.push(headLineRowModelList[i].get('displayName'));
-			}
-			e.point = {
-				col: colDisplayNames,
-				row: rowDisplayNames
+			options = {
+				startColIndex: startX,
+				startRowIndex: startY,
+				endColIndex: endX,
+				endRowIndex: endY,
 			};
+			this.adjustOperationRegion(options);
 		},
-		adjustOperationRegion: function(options, e) {
-			if (cache.setDataSource === true) {
-				this.adjustDataSourceRegion(options, e);
+		adjustOperationRegion: function(options) {
+			if (cache.mouseOperateState === config.mouseOperateState.dataSource) {
+				this.adjustDataSourceRegion(options);
 			} else {
-				this.adjustSelectRegion(options, e);
+				this.adjustSelectRegion(options);
 			}
 		},
 		adjustDragRegion: function(options) {
@@ -801,7 +929,9 @@ define(function(require) {
 			if (this.dragView === undefined || this.dragView === null) {
 				this.dragView = new SelectRegionView({
 					model: dragRegion,
-					className: 'datasource-container'
+					className: 'datasource-container',
+					currentRule: this.currentRule,
+					parentView: this
 				});
 				this.$el.append(this.dragView.render().el);
 			}
@@ -829,19 +959,33 @@ define(function(require) {
 		 * @return {[type]}         [description]
 		 */
 		adjustSelectRegion: function(options) {
-			var startColIndex = options.startColIndex,
-				startRowIndex = options.startRowIndex,
-				endColIndex = options.endColIndex,
-				endRowIndex = options.endRowIndex,
+			var region,
 				headItemColList = headItemCols.models,
 				headItemRowList = headItemRows.models,
 				colDisplayNames = [],
 				rowDisplayNames = [],
+				startColIndex,
+				startRowIndex,
+				endColIndex,
+				endRowIndex,
 				width = 0,
 				height = 0,
 				len, i;
+			//获取完整的选中区域(处理合并单元格情况)
+			region = cells.getFullOperationRegion({
+				startColIndex: options.initColIndex,
+				startRowIndex: options.initRowIndex,
+				endColIndex: options.mouseColIndex,
+				endRowIndex: options.mouseRowIndex
+			});
+
+			startColIndex = region.startColIndex;
+			startRowIndex = region.startRowIndex;
+			endColIndex = region.endColIndex;
+			endRowIndex = region.endRowIndex;
 
 			var e = {};
+
 			for (i = startColIndex; i < endColIndex + 1; i++) {
 				colDisplayNames.push(headItemColList[i].get('displayName'));
 			}
@@ -858,15 +1002,15 @@ define(function(require) {
 			width = headItemColList[endColIndex].get('width') + headItemColList[endColIndex].get('left') - headItemColList[startColIndex].get('left');
 			height = headItemRowList[endRowIndex].get('height') + headItemRowList[endRowIndex].get('top') - headItemRowList[startRowIndex].get('top');
 
-			if (options.initColIndex !== undefined) {
-				selectRegions.models[0].set({
-					initPosi: {
-						startX: options.initColIndex,
-						startY: options.initRowIndex
-					}
-				});
-			}
 			selectRegions.models[0].set({
+				initPosi: {
+					startX: options.initColIndex,
+					startY: options.initRowIndex
+				},
+				mousePosi: {
+					mouseX: options.mouseColIndex,
+					mouseY: options.mouseRowIndex
+				},
 				physicsPosi: {
 					top: headItemRowList[startRowIndex].get('top'),
 					left: headItemColList[startColIndex].get('left')
@@ -876,10 +1020,10 @@ define(function(require) {
 					height: height - 1
 				},
 				wholePosi: {
-					startX: startColIndex,
-					startY: startRowIndex,
-					endX: endColIndex,
-					endY: endRowIndex
+					startX: headItemColList[startColIndex].get('alias'),
+					startY: headItemRowList[startRowIndex].get('alias'),
+					endX: headItemColList[endColIndex].get('alias'),
+					endY: headItemRowList[endRowIndex].get('alias')
 				}
 			});
 
@@ -925,16 +1069,29 @@ define(function(require) {
 		 * @return {[type]}         [description]
 		 */
 		adjustDataSourceRegion: function(options) {
-
-			var startColIndex = options.startColIndex,
-				startRowIndex = options.startRowIndex,
-				endColIndex = options.endColIndex,
-				endRowIndex = options.endRowIndex,
+			var region,
+				startColIndex,
+				startRowIndex,
+				endColIndex,
+				endRowIndex,
 				headItemColList = headItemCols.models,
 				headItemRowList = headItemRows.models,
 				rowDisplayNames = [],
 				colDisplayNames = [],
+				dataSourceRegion,
 				width, height, i;
+			//获取完整的选中区域(处理合并单元格情况)
+			region = cells.getFullOperationRegion({
+				startColIndex: options.initColIndex,
+				startRowIndex: options.initRowIndex,
+				endColIndex: options.mouseColIndex,
+				endRowIndex: options.mouseRowIndex
+			});
+
+			startColIndex = region.startColIndex;
+			startRowIndex = region.startRowIndex;
+			endColIndex = region.endColIndex;
+			endRowIndex = region.endRowIndex;
 
 			var e = {};
 			for (i = startColIndex; i < endColIndex + 1; i++) {
@@ -950,27 +1107,36 @@ define(function(require) {
 			listener.excute('regionChange', e);
 			listener.excute('dataSourceRegionChange', e);
 
-			if (dataSourceRegions.length === 0) {
-				this.createDataSourceRegion(options);
+			dataSourceRegion = selectRegions.getModelByType("dataSource")[0];
+
+			if (dataSourceRegion === undefined) {
+				dataSourceRegion = this.createDataSourceRegion({
+					startColIndex: startColIndex,
+					startRowIndex: startRowIndex,
+					endColIndex: endColIndex,
+					endRowIndex: endRowIndex
+				});
 			}
 			if (this.dataSoureRegionView === undefined || this.dataSoureRegionView === null) {
-				this.dataSoureRegionView = new DataSourceRegionView({
-					model: dataSourceRegions.models[0]
+				this.dataSoureRegionView = new SelectRegionView({
+					model: dataSourceRegion,
+					className: 'datasource-container',
+					currentRule: this.currentRule,
+					parentView: this
 				});
 				this.$el.append(this.dataSoureRegionView.render().el);
 			}
-
 			width = headItemColList[endColIndex].get('width') + headItemColList[endColIndex].get('left') - headItemColList[startColIndex].get('left');
 			height = headItemRowList[endRowIndex].get('height') + headItemRowList[endRowIndex].get('top') - headItemRowList[startRowIndex].get('top');
-			if (options.initColIndex !== undefined) {
-				dataSourceRegions.models[0].set({
-					initPosi: {
-						startX: options.initColIndex,
-						startY: options.initRowIndex
-					}
-				});
-			}
-			dataSourceRegions.models[0].set({
+			dataSourceRegion.set({
+				initPosi: {
+					startX: options.initColIndex,
+					startY: options.initRowIndex
+				},
+				mousePosi: {
+					mouseX: options.mouseColIndex,
+					mouseY: options.mouseRowIndex
+				},
 				physicsPosi: {
 					top: headItemRowList[startRowIndex].get('top'),
 					left: headItemColList[startColIndex].get('left')
@@ -980,10 +1146,10 @@ define(function(require) {
 					height: height - 1
 				},
 				wholePosi: {
-					startX: startColIndex,
-					startY: startRowIndex,
-					endX: endColIndex,
-					endY: endRowIndex
+					startX: headItemColList[startColIndex].get('alias'),
+					startY: headItemRowList[startRowIndex].get('alias'),
+					endX: headItemColList[endColIndex].get('alias'),
+					endY: headItemRowList[endRowIndex].get('alias')
 				}
 			});
 		},
@@ -1022,7 +1188,7 @@ define(function(require) {
 
 			width = headItemColList[endColIndex].get('width') + headItemColList[endColIndex].get('left') - headItemColList[startColIndex].get('left');
 			height = headItemRowList[endRowIndex].get('height') + headItemRowList[endRowIndex].get('top') - headItemRowList[startRowIndex].get('top');
-			dataSourceRegions.add({
+			selectRegions.add({
 				mousePosi: {
 					mouseX: startColIndex,
 					mouseY: startRowIndex
@@ -1048,28 +1214,18 @@ define(function(require) {
 				selectType: 'dataSource'
 			});
 			if (this.dataSoureRegionView === undefined || this.dataSoureRegionView === null) {
-				this.dataSoureRegionView = new DataSourceRegionView({
-					model: dataSourceRegions.models[0]
+				this.dataSoureRegionView = new SelectRegionView({
+					model: selectRegions.getModelByType("dataSource")[0],
+					className: 'datasource-container',
+					currentRule: this.currentRule,
+					parentView: this
 				});
 				this.$el.append(this.dataSoureRegionView.render().el);
 			}
+			return selectRegions.getModelByType("dataSource")[0];
 		},
 		destroyDataSourceRegion: function() {
 			dataSourceRegions.models[0].destroy();
-		},
-		/**
-		 * 调整容器宽度
-		 * @method changeWidth 
-		 */
-		changeWidth: function() {
-
-		},
-		/**
-		 * 调整容器高度
-		 * @method changeHeight 
-		 */
-		changeHeight: function() {
-
 		},
 		/**
 		 * 视图销毁
@@ -1078,8 +1234,12 @@ define(function(require) {
 		destroy: function() {
 			Backbone.off('call:cellsContainer');
 			Backbone.off('event:cellsContainer:destroy');
+			Backbone.off('event:cellsContainer:selectRegionChange');
 			this.contentCellsContainer.destroy();
 			this.selectRegion.destroy();
+			if (this.clipView !== undefined && this.clipView !== null) this.clipView.destroy();
+			if (this.dragView !== undefined && this.dragView !== null) this.dragView.destroy();
+			if (this.dataSoureRegionView !== undefined && this.dataSoureRegionView !== null) this.dataSoureRegionView.destroy();
 			this.remove();
 		}
 	});

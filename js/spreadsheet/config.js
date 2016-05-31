@@ -1,7 +1,7 @@
 //attention bug, those name didn't significance
 //attention bug, between user config and system config mix
+'use strict';
 define(function() {
-	'use strict';
 	/**
 	 * 系统配置变量
 	 * @author ray wu
@@ -68,12 +68,12 @@ define(function() {
 			 */
 			outerBottom: 30,
 			/**
-			 * 单元格宽度
+			 * 单元格默认宽度
 			 * @property {int} cellWidth
 			 */
 			cellWidth: 72,
 			/**
-			 * 单元格高度
+			 * 单元格默认高度
 			 * @property {int} cellHeight
 			 */
 			cellHeight: 20,
@@ -103,6 +103,20 @@ define(function() {
 			 */
 			maxRowNum: 9999
 		},
+		mouseOperateState: {
+			select: 'select',
+			dataSource: 'datasource',
+			drag: 'drag',
+			highlight: 'highlight'
+		},
+		dateFormatType: {
+			frist: 'yyyy/MM/dd',
+			second: 'yyyy/MM',
+			third: 'yyyy',
+			fourth: 'yyyy年MM月dd日',
+			fifth: 'yyyy年MM月',
+			sixth: 'yyyy年'
+		},
 		keyboard: {
 			backspace: 8,
 			deleteKey: 46,
@@ -114,6 +128,13 @@ define(function() {
 			upArrow: 38,
 			rightArrow: 39,
 			downArrow: 40
+		},
+		shortcuts: {
+			cut: true,
+			copy: true,
+			paste: true,
+			altEnter: true,
+			enter: true
 		},
 		rootPath: 'http://192.168.1.250:8080/acmrexcel-0.1.5/'
 	};

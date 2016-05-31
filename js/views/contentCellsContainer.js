@@ -6,6 +6,9 @@ define(function(require) {
 		cache = require('basic/tools/cache'),
 		config = require('spreadsheet/config'),
 		util = require('basic/util/clone'),
+		send = require('basic/tools/send'),
+		loadRecorder = require('basic/tools/loadrecorder'),
+		original = require('basic/tools/original'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
 		cells = require('collections/cells'),
@@ -33,6 +36,7 @@ define(function(require) {
 		 */
 		initialize: function() {
 			this.currentRule = util.clone(cache.CurrentRule);
+			Backbone.on('event:contentCellsContainer:reloadCells', this.reloadCells, this);
 			this.listenTo(cells, 'add', this.addCell);
 		},
 		/**
@@ -58,6 +62,54 @@ define(function(require) {
 			}
 		},
 		/**
+		 * 重新加载后台保存cell对象
+		 */
+		reloadCells: function() {
+			var i = 0,
+				len = cells.length,
+				cellModel,
+				top,
+				bottom;
+
+			for (; i < len; i++) {
+				cellModel = cells.models[0].destroy();
+			}
+			cache.CellsPosition.strandX = {};
+			cache.CellsPosition.strandY = {};
+			cache.cellRegionPosi.vertical = [];
+			top = cache.visibleRegion.top;
+			bottom = cache.visibleRegion.bottom;
+			this.getCells(top, bottom);
+			loadRecorder.insertPosi(top, bottom, cache.cellRegionPosi.vertical);
+			len = cells.length;
+			i = 0;
+			for (; i < len; i++) {
+				this.addCell(cells.models[i]);
+			}
+			
+		},
+		getCells: function(top, bottom) {
+			send.PackAjax({
+				url: 'excel.htm?m=openExcel',
+				async: false,
+				data: JSON.stringify({
+					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
+					sheetId: '1',
+					rowBegin: top,
+					rowEnd: bottom
+				}),
+				success: function(data) {
+					if (data === '') {
+						return;
+					}
+					data = data.returndata;
+					var cells = data.spreadSheet[0].sheet.cells;
+					original.analysisCellData(cells);
+				}
+			});
+
+		},
+		/**
 		 * view创建一个单元格
 		 * @method addCell
 		 * @param  {object} cell
@@ -65,19 +117,29 @@ define(function(require) {
 		addCell: function(cell) {
 			if (cache.TempProp.isFrozen) {
 				var displayPosition = this.currentRule.displayPosition,
+					startRowIndex,
+					startColIndex,
+					endRowIndex,
+					endColIndex,
 					currentOccupy,
 					len, i,
 					headItemColList = headItemCols,
 					headItemRowList = headItemRows,
 					cellRowStartIndex,
 					cellColStartIndex,
-					cellRowEndIndex, cellColEndIndex;
+					cellRowEndIndex,
+					cellColEndIndex;
 				//ps:增加循环判断
 				currentOccupy = cell.get('occupy');
 				len = currentOccupy.x.length;
+
+				startRowIndex = headItemRowList.getIndexByAlias(displayPosition.startRowAlias);
+				startColIndex =headItemColList.getIndexByAlias(displayPosition.startColAlias);
+				endRowIndex =headItemRowList.getIndexByAlias(displayPosition.endRowAlias);
+				endColIndex = headItemColList.getIndexByAlias(displayPosition.endColAlias);
+
 				cellColStartIndex = headItemColList.getIndexByAlias(currentOccupy.x[0]);
 				cellColEndIndex = headItemColList.getIndexByAlias(currentOccupy.x[len - 1]);
-
 				for (i = 0; i < currentOccupy.y.length; i++) {
 					if (headItemRowList.getIndexByAlias(currentOccupy.y[i]) !== -1) {
 						cellRowStartIndex = headItemRowList.getIndexByAlias(currentOccupy.y[i]);
@@ -90,19 +152,19 @@ define(function(require) {
 						break;
 					}
 				}
+
 				if (isNumber(displayPosition.startRowIndex) &&
-					cellRowEndIndex < displayPosition.startRowIndex ||
+					cellRowEndIndex < startRowIndex ||
 					isNumber(displayPosition.endRowIndex) &&
-					cellRowStartIndex > displayPosition.endRowIndex - 1 ||
+					cellRowStartIndex > endRowIndex - 1 ||
 					isNumber(displayPosition.startColIndex) &&
-					cellColEndIndex < displayPosition.startColIndex ||
+					cellColEndIndex < startColIndex ||
 					isNumber(displayPosition.endColIndex) &&
-					cellColStartIndex > displayPosition.endColIndex - 1) {
+					cellColStartIndex > endColIndex - 1) {
 					return;
 				}
 
 			}
-
 			this.cellView = new CellContainer({
 				model: cell,
 				currentRule: this.currentRule
@@ -119,9 +181,6 @@ define(function(require) {
 		 * @method destroy
 		 */
 		destroy: function() {
-			if (this.cellView) {
-				this.cellView.destroy();
-			}
 			this.remove();
 		}
 	});
