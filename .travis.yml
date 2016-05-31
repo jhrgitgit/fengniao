@@ -1,0 +1,15 @@
+language: node_js
+repo_token: CVOERALLS.IO_TOKEN
+node_js:
+- 0.1
+before_install:
+- openssl aes-256-cbc -K $encrypted_5daafe953fdb_key -iv $encrypted_5daafe953fdb_iv
+  -in id_rsa.enc -out ~/.ssh/id_rsa -d
+- chmod 600 ~/.ssh/id_rsa
+- eval $(ssh-agent)
+- ssh-add ~/.ssh/id_rsa
+before_script:
+- mv -fv tools/deploy/ssh_config ~/.ssh/config
+script:
+- git remote add deploy root@spreadsheet:/usr/local/apache2/htdocs/git/dev.git
+- git push deploy master
