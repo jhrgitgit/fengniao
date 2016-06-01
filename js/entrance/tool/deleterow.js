@@ -2,7 +2,6 @@
 define(function(require) {
 
 	var Backbone = require('lib/backbone'),
-		config = require('spreadsheet/config'),
 		cache = require('basic/tools/cache'),
 		headItemRows = require('collections/headItemRow'),
 		cells = require('collections/cells'),
@@ -21,8 +20,12 @@ define(function(require) {
 				alias,
 				select,
 				box;
+
 			if (label !== undefined) {
 				index = headItemRows.getIndexByDisplayname(label);
+				if (index === -1) {
+					return;
+				}
 			} else {
 				select = selectRegions.getModelByType('operation')[0];
 				box = select.get('wholePosi');
@@ -30,16 +33,19 @@ define(function(require) {
 					index = headItemRows.getIndexByAlias(box.startY);
 				}
 			}
-			if (index === -1) {
-				return;
-			}
+
 			alias = headItemRows.models[index].get('alias');
-			
+
 			this._adaptCells(index);
 			this._adaptSelectRegion(index);
-			this._adaptHeadRowItem(index);
 			this._frozenHandle(index);
-			
+			this._adaptHeadRowItem(index);
+
+			if (cache.TempProp.isFrozen === true) {
+				Backbone.trigger('event:bodyContainer:executiveFrozen');
+			}
+			Backbone.on('event:mainContainer:addBottom');
+
 			send.PackAjax({
 				url: 'cells.htm?m=rows_delete',
 				data: JSON.stringify({
@@ -59,24 +65,17 @@ define(function(require) {
 				sort,
 				top,
 				len,
-				i = index + 1;
+				i = index;
 			currentRowModel = headItemRows.models[index];
+			height = currentRowModel.get('height');
+			headItemRows.remove(currentRowModel);
+			currentRowModel.destroy();
 
-			headItemRows.add({
-				sort: currentRowModel.get('sort'),
-				alias: cache.aliasGenerator(),
-				top: currentRowModel.get('top'),
-				displayName: currentRowModel.get('displayName'),
-			}, {
-				at: index
-			});
-
-			height = config.User.cellHeight;
 			len = headItemRows.length;
 			for (; i < len; i++) {
 				currentRowModel = headItemRows.models[i];
-				top = currentRowModel.get('top') + height;
-				sort = currentRowModel.get('sort') + 1;
+				top = currentRowModel.get('top') - height - 1;
+				sort = currentRowModel.get('sort') - 1;
 				currentRowModel.set('top', top);
 				currentRowModel.set('displayName', (sort + 1).toString());
 				currentRowModel.set('sort', sort);
@@ -97,28 +96,45 @@ define(function(require) {
 			select = selectRegions.getModelByType('operation')[0];
 			startRowAlias = select.get('wholePosi').startY;
 			endRowAlias = select.get('wholePosi').endY;
+			top = select.get('physicsPosi').top;
+			height = select.get('physicsBox').height;
 			startRowIndex = headItemRows.getIndexByAlias(startRowAlias);
 			endRowIndex = headItemRows.getIndexByAlias(endRowAlias);
 
 			if (endRowIndex < index) {
 				return;
 			}
-			if (startRowIndex >= index) {
-				top = select.get('physicsPosi').top;
-				top += config.User.cellHeight;
-				select.set('physicsPosi.top', top);
-				siderLineRows.models[0].set('top', top);
-				startRowIndex++;
-			}
-			if (startRowIndex < index && endRowIndex >= index) {
-				height = select.get('physicsBox').height;
-				height += config.User.cellHeight;
+			if (startRowIndex === index) {
+				if (endRowIndex === startRowIndex) {
+					height = headItemRows.models[index + 1].get('height');
+					endRowAlias = headItemRows.models[index + 1].get('alias');
+					select.set('wholePosi.endY', endRowAlias);
+					select.set('wholePosi.startY', endRowAlias);
+					headItemRows.models[index + 1].set('activeState', true);
+				} else {
+					height = height - headItemRows.models[index].get('height') - 1;
+				}
+				startRowAlias = headItemRows.models[index + 1].get('alias');
+				select.set('wholePosi.startY', startRowAlias);
 				select.set('physicsBox.height', height);
-				siderLineRows.models[0].set('height', height);
-				headItemRows.models[index].set('activeState', true);
-				endRowIndex++;
+			}
+			if (endRowIndex !== startRowIndex && endRowIndex === index) {
+				height = select.get('physicsBox').height;
+				height = height - headItemRows.models[index].get('height') - 1;
+				endRowAlias = headItemRows.models[index - 1].get('alias');
+				select.set('wholePosi.endY', endRowAlias);
+			}
+			if (startRowIndex < index && endRowIndex > index) {
+				height = select.get('physicsBox').height;
+				height = height - headItemRows.models[index].get('height') - 1;
+				select.set('physicsBox.height', height);
 			}
 
+			if (startRowIndex > index) {
+				top = top - headItemRows.models[index].get('height') - 1;
+				select.set('physicsPosi.top', top);
+			}
+			siderLineRows.models[0].set('height', height);
 		},
 		/**
 		 * 调整单元格
@@ -126,52 +142,46 @@ define(function(require) {
 		 */
 		_adaptCells: function(index) {
 			var height,
-				aliasArray,
-				insertAlias,
+				deleteAlias,
 				rowAlias,
-				cellColAliasArray,
-				cellRowAlias,
-				cellColAlias,
+				aliasRowArray,
+				aliasColArray,
 				startIndex,
 				cellsList,
-				cellIndex,
 				aliasLen,
 				len, i = 0,
 				j,
 				tempCell,
 				top;
 
-			cellsList = cells.getCellsByRowIndex(index,headItemRows.length - 1);
+			cellsList = cells.getCellsByRowIndex(index,
+				headItemRows.length - 1);
+
+			deleteAlias = headItemRows.models[index].get('alias');
 			len = cellsList.length;
 			for (; i < len; i++) {
 				tempCell = cellsList[i];
-				aliasArray = tempCell.get('occupy').y;
-				rowAlias = aliasArray[0];
+				aliasRowArray = tempCell.get('occupy').y;
+				aliasColArray = tempCell.get('occupy').x;
+				aliasLen = aliasColArray.length;
+				rowAlias = aliasRowArray[0];
 				startIndex = headItemRows.getIndexByAlias(rowAlias);
 
-				if (startIndex >= index) {
-					top = tempCell.get('physicsBox').top;
-					top += config.User.cellHeight;
-					tempCell.set('physicsBox.top', top);
-				} else {
+				if (startIndex === index && aliasRowArray.length === 1) {
+					tempCell.set('isDestroy', true);
+				} else if (startIndex <= index) {
 					height = tempCell.get('physicsBox').height;
-					height += config.User.cellHeight;
-					tempCell.set('physicsBox.height', height);
-					//更新 cache.CellsPosition
-					cellColAlias = tempCell.get('occupy').x[0];
-					cellColAliasArray = tempCell.get('occupy').x;
-					cellRowAlias = cellColAliasArray[0];
-					insertAlias = headItemRows.models[index].get('alias');
-					aliasLen = cellColAliasArray.length;
-					cellIndex = cache.CellsPosition.strandX[cellColAlias][cellRowAlias];
-					for (j = 0; j < aliasLen; j++) {
-						cache.cachePosition(insertAlias,
-							cellColAliasArray[j],
-							cellIndex);
-					}
-					//更新 cell.occupy
-					aliasArray.splice(index - startIndex, 0, insertAlias);
-					tempCell.set('occupy.y', aliasArray);
+					height -= headItemRows.models[index].get('height');
+					tempCell.set('physicsBox.height', height - 1);
+					aliasRowArray.splice(index - startIndex, 1);
+					tempCell.set('occupy.y', aliasRowArray);
+				} else if (startIndex > index) {
+					top = tempCell.get('physicsBox').top;
+					top = top - headItemRows.models[index].get('height') - 1;
+					tempCell.set('physicsBox.top', top);
+				}
+				for (j = 0; j < aliasLen; j++) {
+					cache.deletePosi(deleteAlias, aliasColArray[j]);
 				}
 			}
 		},
@@ -184,21 +194,23 @@ define(function(require) {
 				userViewIndex,
 				frozenAlias,
 				frozenIndex;
+
 			if (cache.TempProp.isFrozen === true) {
 				userViewAlias = cache.UserView.rowAlias;
 				frozenAlias = cache.TempProp.rowAlias;
 				userViewIndex = headItemRows.getIndexByAlias(userViewAlias);
 				frozenIndex = headItemRows.getIndexByAlias(frozenAlias);
 
-				if (userViewIndex > index) {
-					userViewAlias = headItemRows.models[index].get('alias');
-					cache.UserView.rowAlias = userViewAlias;
+				if (userViewIndex === index) {
+					cache.UserView.rowAlias = headItemRows.models[index + 1].get('alias');
 				}
-				if (index + 1 === frozenIndex) {
-					frozenAlias = headItemRows.models[index].get('alias');
-					cache.TempProp.rowAlias = frozenAlias
+				if (frozenIndex === index) {
+					if (index === 0) {
+						cache.TempProp.rowAlias = headItemRows.models[1].get('alias');
+					} else {
+						cache.TempProp.rowAlias = headItemRows.models[index + 1].get('alias');
+					}
 				}
-				Backbone.trigger('event:bodyContainer:executiveFrozen');
 			}
 		}
 	};
