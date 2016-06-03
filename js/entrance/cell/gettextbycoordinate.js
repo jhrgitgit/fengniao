@@ -1,17 +1,16 @@
+'use strict';
 define(function(require) {
-	'use strict';
-
-	var $ = require('lib/jquery'),
-		Backbone = require('lib/backbone'),
-		cache = require('basic/tools/cache'),
+	var cache = require('basic/tools/cache'),
 		selectRegions = require('collections/selectRegion'),
 		cells = require('collections/cells'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
+		analysisLabel = require('basic/tools/analysislabel'),
 		getTextByCoordinate;
 
-	getTextByCoordinate = function(sheetId, region) {
-		var operationRegion = {},
+	getTextByCoordinate = function(sheetId, label) {
+		var select,
+			region = {},
 			headLineColModelList = headItemCols.models,
 			headLineRowModelList = headItemRows.models,
 			aliasGridRow,
@@ -19,14 +18,16 @@ define(function(require) {
 			cellsPositionX,
 			modelCell;
 
-		if (region !== undefined && region !== null) {
-			operationRegion = regionOperation.getRegionIndexByRegionLabel(region);
+		if (label !== undefined) {
+			region = analysisLabel(label);
+			region = cells.getFullOperationRegion(region);
 		} else {
-			operationRegion.startColIndex = selectRegions.models[0].get('wholePosi').startX;
-			operationRegion.startRowIndex = selectRegions.models[0].get('wholePosi').startY;
+			select = selectRegions.getModelByType('operation')[0];
+			region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
+			region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
 		}
-		aliasGridCol = headLineColModelList[operationRegion.startColIndex].get('alias');
-		aliasGridRow = headLineRowModelList[operationRegion.startRowIndex].get('alias');
+		aliasGridCol = headLineColModelList[region.startColIndex].get('alias');
+		aliasGridRow = headLineRowModelList[region.startRowIndex].get('alias');
 
 		cellsPositionX = cache.CellsPosition.strandX;
 

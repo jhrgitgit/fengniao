@@ -1,7 +1,6 @@
+'use strict';
 define(function(require) {
-	'use strict';
-	var cells = require('collections/cells'),
-		cache = require('basic/tools/cache');
+	var Backbone = require('lib/backbone');
 
 	function reloadCells() {
 		Backbone.trigger('event:contentCellsContainer:reloadCells');

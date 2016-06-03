@@ -1,18 +1,19 @@
+'use strict';
 define(function(require) {
-	'use strict';
 
-	var send = require('basic/tools/send'),
+	var Backbone = require('lib/backbone'),
+		send = require('basic/tools/send'),
 		cache = require('basic/tools/cache'),
 		selectRegions = require('collections/selectRegion'),
 		cells = require('collections/cells'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
-		sendRegion;
+		analysisLabel = require('basic/tools/analysislabel');
 
 
 	var setFrozen = function(sheetId, frozenPositon, label) {
 		var select,
-			region={};
+			region = {};
 		if (label !== undefined) {
 			region = analysisLabel(label);
 			region = cells.getFullregion(region);
@@ -43,15 +44,13 @@ define(function(require) {
 		}
 		Backbone.trigger('event:bodyContainer:executiveFrozen');
 	};
-	
+
 	/**
 	 * 过滤超出用户可视区域操作
 	 * @method filterOutUserView
 	 */
 	var filterOutUserView = function(region) {
-		var headItemRowList = headItemRows.models,
-			headItemColList = headItemCols.models,
-			userViewColIndex = headItemCols.getIndexByAlias(cache.UserView.colAlias),
+		var userViewColIndex = headItemCols.getIndexByAlias(cache.UserView.colAlias),
 			userViewRowIndex = headItemRows.getIndexByAlias(cache.UserView.rowAlias),
 			userViewEndColIndex = headItemCols.getIndexByAlias(cache.UserView.colEndAlias),
 			userViewEndRowIndex = headItemRows.getIndexByAlias(cache.UserView.rowEndAlias);
@@ -135,7 +134,7 @@ define(function(require) {
 	 * @method requestFrozen
 	 */
 	var requestFrozen = function(frozenColAlias, frozenRowAlias, startColAlias, startRowAlias) {
-		var excelId = SPREADSHEET_AUTHENTIC_KEY,
+		var excelId = window.SPREADSHEET_AUTHENTIC_KEY,
 			sheetId = '1';
 		send.PackAjax({
 			url: 'sheet.htm?m=frozen&excelId=' + excelId + '&sheetId=' + sheetId + '&frozenX=' + frozenColAlias + '&frozenY=' + frozenRowAlias + '&startX=' + startColAlias + '&startY=' + startRowAlias

@@ -6,6 +6,7 @@ define(function(require) {
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
 		selectRegions = require('collections/selectRegion'),
+		analysisLabel = require('basic/tools/analysislabel'),
 		textTypeHandler;
 
 	textTypeHandler = {
@@ -199,8 +200,7 @@ define(function(require) {
 			this.sendData('currency', decimal, true, null, sign, region);
 		},
 		sendData: function(format, decimal, thousands, dateFormat, currencySign, region) {
-			var region,
-				startRowIndex = region.startRowIndex,
+			var startRowIndex = region.startRowIndex,
 				endRowIndex = region.endRowIndex,
 				startColIndex = region.startColIndex,
 				endColIndex = region.endColIndex,
@@ -246,7 +246,7 @@ define(function(require) {
 				reHead,
 				reTail;
 
-			if (value === "") {
+			if (value === '') {
 				return false;
 			}
 			values = value.split('.');
@@ -275,7 +275,6 @@ define(function(require) {
 		},
 		getNoZeroDecimal: function(value) {
 			var i, j,
-				len,
 				tail,
 				values;
 			if (!this.isNum(value)) {
@@ -374,7 +373,7 @@ define(function(require) {
 				month,
 				day,
 				date;
-			if (value === "") {
+			if (value === '') {
 				return false;
 			}
 			if (!regularLine.test(value) && !regularWord.test(value)) {
@@ -473,10 +472,10 @@ define(function(require) {
 			if (regular1.test(value)) {
 				return config.dateFormatType.frist;
 			}
-			if (regular1.test(value)) {
+			if (regular2.test(value)) {
 				return config.dateFormatType.fifth;
 			}
-			if (regular1.test(value)) {
+			if (regular3.test(value)) {
 				return config.dateFormatType.fourth;
 			}
 			return null;

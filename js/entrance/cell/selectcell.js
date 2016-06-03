@@ -1,41 +1,46 @@
+'use strict';
 define(function(require) {
-	'use strict';
-
-	var $ = require('lib/jquery'),
-		Backbone = require('lib/backbone'),
-		send = require('basic/tools/send'),
-		binary = require('basic/util/binary'),
-		selectRegions = require('collections/selectRegion'),
+	var selectRegions = require('collections/selectRegion'),
 		siderLineRows = require('collections/siderLineRow'),
 		siderLineCols = require('collections/siderLineCol'),
-		cells = require('collections/cells'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
-		sendRegion;
+		analysisLabel = require('basic/tools/analysislabel'),
+		cells = require('collections/cells');
 
 
-	var selectCell = function(sheetId, region) {
-		var startColIndex,
+	var selectCell = function(sheetId, label) {
+		var select,
+			region = {},
+			startColIndex,
 			startRowIndex,
 			endColIndex,
 			endRowIndex,
-			operationRegion,
 			headItemColList = headItemCols.models,
 			headItemRowList = headItemRows.models,
-			top = 0,
-			left = 0,
 			width = 0,
 			height = 0,
 			len, i;
 
-		operationRegion = regionOperation.getRegionIndexByRegionLabel(region);
-		if (operationRegion.startColIndex < 0 || operationRegion.startRowIndex < 0 || operationRegion.endColIndex < 0 || operationRegion.endRowIndex < 0) return;
+		if (label !== undefined) {
+			region = analysisLabel(label);
+			region = cells.getFullOperationRegion(region);
+		} else {
+			select = selectRegions.getModelByType('operation')[0];
+			region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
+			region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
+		}
+		if (region.startColIndex < 0 || 
+			region.startRowIndex < 0 || 
+			region.endColIndex < 0 || 
+			region.endRowIndex < 0) {
+			return;
+		}
 
-		operationRegion = regionOperation.getFullSelectRegion(operationRegion.startColIndex, operationRegion.startRowIndex, operationRegion.endColIndex, operationRegion.endRowIndex);
-		startColIndex = operationRegion.startColIndex;
-		startRowIndex = operationRegion.startRowIndex;
-		endColIndex = operationRegion.endColIndex;
-		endRowIndex = operationRegion.endRowIndex;
+		startColIndex = region.startColIndex;
+		startRowIndex = region.startRowIndex;
+		endColIndex = region.endColIndex;
+		endRowIndex = region.endRowIndex;
 
 
 		width = headItemColList[endColIndex].get('width') + headItemColList[endColIndex].get('left') - headItemColList[startColIndex].get('left');

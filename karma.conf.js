@@ -16,14 +16,17 @@ module.exports = function(config) {
             }, {
                 pattern: 'test/**/*.spec.js',
                 included: false
+            }, {
+                pattern: 'test/util/build.js',
+                included: false
             },
-            'test/karma-main.js',
+            'test/karma-main.js'
         ],
 
 
         // list of files to exclude
         exclude: ['js/app.js', 'test/main.js'],
-        
+
         coverageReporter: {
             type: 'html',
             dir: 'coverage/'
@@ -32,9 +35,11 @@ module.exports = function(config) {
         // test results reporter to use
         // possible values: 'dots', 'progress', 'junit', 'growl', 'coverage'
         reporters: ['coverage'],
-        // preprocessors: {
-        //     'js/entrance/tool/row.spec.js': 'coverage',
-        // },
+
+        preprocessors: {
+            'js/entrance/tool/addrow.js': 'coverage',
+            'js/entrance/tool/deleterow.js': 'coverage',
+        },
 
         // web server port
         port: 9876,

@@ -1,23 +1,16 @@
+'use strict';
 define(function(require) {
-	'use strict';
-
-	var $ = require('lib/jquery'),
-		Backbone = require('lib/backbone'),
-		send = require('basic/tools/send'),
+	var Backbone = require('lib/backbone'),
 		cache = require('basic/tools/cache'),
 		listener = require('basic/util/listener'),
 		selectRegions = require('collections/selectRegion'),
-		cells = require('collections/cells'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
 		siderLineCols = require('collections/siderLineCol'),
-		siderLineRows = require('collections/siderLineRow'),
-		sendRegion;
+		siderLineRows = require('collections/siderLineRow');
 
 	var selectCellRows = function(sheetId, displayName, index, e) {
 		var modelIndexCol,
-			modelCell,
-			headModelRow,
 			headModelCol,
 			headLineColModelList,
 			headLineRowModelList,
@@ -59,11 +52,10 @@ define(function(require) {
 
 		if (e === undefined || e.isDefaultPrevented() === false) {
 			if (cache.setDataSource === true) {
-
-				if (selectRegions.getModelByType("dataSource")[0] === undefined) {
+				if (selectRegions.getModelByType('dataSource')[0] === undefined) {
 					Backbone.trigger('event:cellsContainer:createDataSourceRegion', {});
 				}
-				selectRegions.getModelByType("dataSource")[0].set({
+				selectRegions.getModelByType('dataSource')[0].set({
 					physicsPosi: {
 						left: left,
 						top: top

@@ -10,10 +10,10 @@ define(function(require) {
 		selectRegions = require('collections/selectRegion');
 
 	function clipPasteOperate(pasteText) {
-		if (cache.clipState === "copy") {
-			excelDataPaste("copy");
-		} else if (cache.clipState === "cut") {
-			excelDataPaste("cut");
+		if (cache.clipState === 'copy') {
+			excelDataPaste('copy');
+		} else if (cache.clipState === 'cut') {
+			excelDataPaste('cut');
 		} else {
 			clipBoardDataPaste(pasteText);
 		}

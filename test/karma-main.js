@@ -4,7 +4,7 @@ var tests = [],
      if (/.*\.spec\.js$/.test(file)) {
          tests.push(file);
      }
-
+     console.log(file);
  }
  requirejs.config({
      // Karma serves files from '/base'

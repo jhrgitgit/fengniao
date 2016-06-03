@@ -1,13 +1,11 @@
+'use strict';
 define(function(require) {
-	'use strict';
-
-	var $ = require('lib/jquery'),
-		Backbone = require('lib/backbone'),
-		send = require('basic/tools/send'),
+	var send = require('basic/tools/send'),
 		selectRegions = require('collections/selectRegion'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
-		cells = require('collections/cells');
+		cells = require('collections/cells'),
+		analysisLabel = require('basic/tools/analysislabel');
 
 
 	var setFillColor = function(sheetId, color, label) {
@@ -17,7 +15,9 @@ define(function(require) {
 			startRowAlias,
 			endColAlias,
 			endRowAlias;
+		//增加行列操作判断
 		if (label !== undefined) {
+
 			region = analysisLabel(label);
 			region = cells.getFullOperationRegion(region);
 		} else {
@@ -26,15 +26,17 @@ define(function(require) {
 			region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
 			region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
 			region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
+
 		}
+
 		cells.operateCellsByRegion(region, function(cell) {
 			cell.set('customProp.background', color);
 		});
 
 		startColAlias = headItemCols.models[region.startColIndex].get('alias');
-		startRowAlias= headItemRows.models[region.startRowIndex].get('alias');
-		endColAlias= headItemCols.models[region.endColIndex].get('alias');
-		endRowAlias= headItemRows.models[region.endRowIndex].get('alias');
+		startRowAlias = headItemRows.models[region.startRowIndex].get('alias');
+		endColAlias = headItemCols.models[region.endColIndex].get('alias');
+		endRowAlias = headItemRows.models[region.endRowIndex].get('alias');
 
 		send.PackAjax({
 			url: 'text.htm?m=fill_bgcolor',

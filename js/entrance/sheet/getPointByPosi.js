@@ -1,14 +1,6 @@
+'use strict';
 define(function(require) {
-	'use strict';
-
-	var $ = require('lib/jquery'),
-		Backbone = require('lib/backbone'),
-		send = require('basic/tools/send'),
-		cache = require('basic/tools/cache'),
-		selectRegions = require('collections/selectRegion'),
-		cells = require('collections/cells'),
-		headItemCols = require('collections/headItemCol'),
-		headItemRows = require('collections/headItemRow'),
+	var Backbone = require('lib/backbone'),
 		getPointByPosi;
 
 	getPointByPosi = function(sheetId, mouseColPosi, mouseRowPosi) {

@@ -113,11 +113,11 @@ define(function(require) {
 			 */
 			colFrozen: false
 		},
-		//动态加载，已加载区域
+		//动态加载，模型对象已加载区域，以坐标为记录单位
 		rowRegionPosi: [],
-		//动态加载，已加载列区域
+		//动态加载，模型对象已加载区域，以坐标为记录单位
 		colRegionPosi: [],
-		//动态加载，已加单元格载区域
+		//动态加载，模型对象已加载区域，以坐标为记录单位
 		cellRegionPosi: {
 			transverse: [],
 			vertical: []

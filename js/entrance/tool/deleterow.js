@@ -1,6 +1,5 @@
 'use strict';
 define(function(require) {
-
 	var Backbone = require('lib/backbone'),
 		cache = require('basic/tools/cache'),
 		headItemRows = require('collections/headItemRow'),

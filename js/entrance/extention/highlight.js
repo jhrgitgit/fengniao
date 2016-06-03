@@ -1,5 +1,5 @@
+'use strict';
 define(function(require) {
-	'use strict';
 	var Backbone = require('lib/backbone'),
 		cache = require('basic/tools/cache');
 	return {

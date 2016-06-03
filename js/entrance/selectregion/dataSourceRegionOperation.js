@@ -1,5 +1,5 @@
+'use strict';
 define(function(require) {
-	'use strict';
 	var cache = require('basic/tools/cache'),
 		config = require('spreadsheet/config'),
 		selectRegions = require('collections/selectRegion'),
@@ -13,8 +13,8 @@ define(function(require) {
 			cache.mouseOperateState = config.mouseOperateState.select;
 		},
 		destroyDataSoureRegion: function() {
-			if (selectRegions.getModelByType("dataSource")[0] !== undefined) {
-				selectRegions.getModelByType("dataSource")[0].destroy();
+			if (selectRegions.getModelByType('dataSource')[0] !== undefined) {
+				selectRegions.getModelByType('dataSource')[0].destroy();
 			}
 		}
 	};

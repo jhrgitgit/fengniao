@@ -2,6 +2,8 @@
 define(function(require) {
 
 	var SpreadSheet = require('spreadsheet/spreadsheet');
-	new SpreadSheet();
-
+	var ss=new SpreadSheet();
+	var $ = require('lib/jquery');
+	$('#test').click(function(){
+	});
 });

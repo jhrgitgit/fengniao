@@ -1,6 +1,5 @@
+'use strict';
 define(function(require) {
-	'use strict';
-
 	var send = require('basic/tools/send'),
 		selectRegions = require('collections/selectRegion'),
 		headItemCols = require('collections/headItemCol'),
@@ -44,10 +43,10 @@ define(function(require) {
 			cell.set('wordWrap', wordWrap);
 		});
 
-		startColAlias = headItemCols.models[region.startColIndex].get("alias");
-		startRowAlias = headItemRows.models[region.startRowIndex].get("alias");
-		endColAlias = headItemCols.models[region.endColIndex].get("alias");
-		endRowAlias = headItemRows.models[region.endRowIndex].get("alias");
+		startColAlias = headItemCols.models[region.startColIndex].get('alias');
+		startRowAlias = headItemRows.models[region.startRowIndex].get('alias');
+		endColAlias = headItemCols.models[region.endColIndex].get('alias');
+		endRowAlias = headItemRows.models[region.endRowIndex].get('alias');
 
 		send.PackAjax({
 			url: 'text.htm?m=wordWrap',

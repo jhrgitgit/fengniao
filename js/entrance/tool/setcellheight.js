@@ -1,20 +1,15 @@
+'use strict';
 define(function(require) {
-	'use strict';
 
-	var $ = require('lib/jquery'),
-		Backbone = require('lib/backbone'),
-		send = require('basic/tools/send'),
-		headItemRows = require('collections/headItemRow'),
-		selectRegions = require('collections/selectRegion'),
+	var headItemRows = require('collections/headItemRow'),
 		setCellHeight;
 
-		
+
 	setCellHeight = function(sheetId, rowLabel, height) {
-		var index,
-			adjustHeight;
+		var index;
 		index = headItemRows.getIndexByDisplayname(rowLabel);
 		if (index > -1) {
-			headItemRows.models[index].set('height',height);
+			headItemRows.models[index].set('height', height);
 		}
 	};
 	return setCellHeight;

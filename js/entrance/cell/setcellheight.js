@@ -1,12 +1,7 @@
+'use strict';
 define(function(require) {
-	'use strict';
-
-	var $ = require('lib/jquery'),
-		Backbone = require('lib/backbone'),
-		send = require('basic/tools/send'),
-		headItemRows = require('collections/headItemRow'),
-		selectRegions = require('collections/selectRegion'),
-		sendRegion;
+	var Backbone = require('lib/backbone'),
+		headItemRows = require('collections/headItemRow');
 
 
 	var setCellHeight = function(sheetId, rowLabel, height) {

@@ -266,8 +266,8 @@ define(function(require) {
 			cellsPositionX = cache.CellsPosition.strandX;
 
 			if (cellsPositionX[colAlias] !== undefined &&
-				cellsPositionX[colAlias][aliasGridRow] !== undefined) {
-				cell = cells.models[cellsPositionX[colAlias][aliasGridRow]];
+				cellsPositionX[colAlias][rowAlias] !== undefined) {
+				cell = cells.models[cellsPositionX[colAlias][rowAlias]];
 			}
 			if (cell !== undefined) {
 				endRowAlias = cell.get('occupy').y;

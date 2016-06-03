@@ -39,6 +39,7 @@ define(function(require) {
 				 */
 				width: 71,
 				/**
+				 * 
 				 * 单元格的高度
 				 * @property {number} height
 				 */
@@ -205,7 +206,7 @@ define(function(require) {
 			 * 单元格备注显示状态
 			 * @type {Boolean}
 			 */
-			commentShowState: false
+			commentShowState: false,
 		},
 		/**
 		 * 隐藏当前单元格

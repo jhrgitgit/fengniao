@@ -49,7 +49,11 @@ define(function(require) {
 			 * 是否显示
 			 * @property {boolean} isView
 			 */
-			isView: true
+			isView: true,
+			/**
+			 * 整行操作设置属性
+			 */
+			operProp:{}
 		},
 		/**
 		 * 销毁`model`对象的视图

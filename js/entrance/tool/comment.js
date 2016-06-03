@@ -6,6 +6,7 @@ define(function(require) {
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
 		selectRegions = require('collections/selectRegion'),
+		analysisLabel = require('basic/tools/analysislabel'),
 		commentHandler;
 
 	commentHandler = {

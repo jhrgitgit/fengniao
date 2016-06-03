@@ -1,6 +1,5 @@
+'use strict';
 define(function(require) {
-	'use strict';
-
 	var send = require('basic/tools/send'),
 		cache = require('basic/tools/cache'),
 		selectRegions = require('collections/selectRegion'),
@@ -8,6 +7,7 @@ define(function(require) {
 		Cell = require('models/cell'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
+		analysisLabel = require('basic/tools/analysislabel'),
 		mergeCell;
 
 	mergeCell = function(sheetId, label) {
@@ -32,8 +32,6 @@ define(function(require) {
 			aliasRow,
 			width = 0,
 			height = 0,
-			top,
-			left,
 			len, i = 0,
 			j = 0;
 
@@ -61,7 +59,9 @@ define(function(require) {
 				cacheCell = cellList[i].clone();
 			}
 		}
-		if (textCellNum > 1) return;
+		if (textCellNum > 1) {
+			return;
+		}
 		if (textCellNum === 0 && cellList.length > 0) {
 			cacheCell = cellList[0].clone();
 		}
@@ -112,7 +112,7 @@ define(function(require) {
 		startColAlias = gridLineColList[startColIndex].get('alias');
 		endRowAlias = gridLineRowList[endRowIndex].get('alias');
 		endColAlias = gridLineColList[endColIndex].get('alias');
-		
+
 		send.PackAjax({
 			url: 'cells.htm?m=merge',
 			data: JSON.stringify({
