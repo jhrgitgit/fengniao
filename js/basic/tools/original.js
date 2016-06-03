@@ -280,10 +280,10 @@ define(function(require) {
 				endColAlias = cell.get('occupy').x;
 				endColAlias = endColAlias[endColAlias.length - 1];
 
-				endColIndex = headItemCols.getIndexByModel(endColAlias);
-				endRowIndex = headItemRows.getIndexByModel(endRowAlias);
-				startColIndex =headItemCols.getIndexByModel(colAlias);
-				startRowIndex =headItemRows.getIndexByModel(rowAlias);
+				endColIndex = headItemCols.getIndexByAlias(endColAlias);
+				endRowIndex = headItemRows.getIndexByAlias(endRowAlias);
+				startColIndex =headItemCols.getIndexByAlias(colAlias);
+				startRowIndex =headItemRows.getIndexByAlias(rowAlias);
 				
 				selectRegionModel = {
 					physicsPosi: {
@@ -303,21 +303,21 @@ define(function(require) {
 				};
 				selectRegions.add(selectRegionModel);
 				siderLineCols.add({
-					left: modelCell.get("physicsBox").left,
-					width: modelCell.get('physicsBox').width
+					left: cell.get("physicsBox").left,
+					width: cell.get('physicsBox').width
 				});
 				siderLineRows.add({
-					top: modelCell.get("physicsBox").top,
-					height: modelCell.get("physicsBox").height
+					top: cell.get("physicsBox").top,
+					height: cell.get("physicsBox").height
 				});
 				
 				
 				siderLineRows.models[0].set({
-					top: headItemRowList[startRowIndex].get('top'),
+					top: headItemRows.models[startRowIndex].get('top'),
 					height: height - 1
 				});
 				siderLineCols.models[0].set({
-					left: headItemColList[startColIndex].get('left'),
+					left: headItemCols.models[startColIndex].get('left'),
 					width: width - 1
 
 				});

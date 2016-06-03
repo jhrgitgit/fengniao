@@ -6,7 +6,7 @@ define(function(require) {
 		headItemCols = require('collections/headItemCol'),
 		selectRegions = require('collections/selectRegion'),
 		setCellHeight = require('entrance/cell/setcellheight'),
-		analysisLabel = require('basic/tools/analysisLabel');
+		analysisLabel = require('basic/tools/analysislabel');
 
 
 	var setFontFamilySize = function(sheetId, fontSize, label) {
