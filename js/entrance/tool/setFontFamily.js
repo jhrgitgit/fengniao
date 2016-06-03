@@ -5,7 +5,7 @@ define(function(require) {
 		selectRegions = require('collections/selectRegion'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
-		analysisLabel = require('basic/tools/analysisLabel');
+		analysisLabel = require('basic/tools/analysislabel');
 
 	var setFontFamily = function(sheetId, fontFamily, label) {
 		var region = {},

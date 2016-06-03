@@ -302,6 +302,7 @@ define(function(require) {
 					}
 				};
 				selectRegions.add(selectRegionModel);
+			
 				siderLineCols.add({
 					left: cell.get("physicsBox").left,
 					width: cell.get('physicsBox').width
@@ -311,16 +312,6 @@ define(function(require) {
 					height: cell.get("physicsBox").height
 				});
 				
-				
-				siderLineRows.models[0].set({
-					top: headItemRows.models[startRowIndex].get('top'),
-					height: height - 1
-				});
-				siderLineCols.models[0].set({
-					left: headItemCols.models[startColIndex].get('left'),
-					width: width - 1
-
-				});
 
 				len = headItemRows.length;
 
