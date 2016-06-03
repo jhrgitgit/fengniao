@@ -309,7 +309,7 @@ define(function(require) {
 		setFontSize: function(modelJSON) {
 			if (modelJSON.content.size !== '') {
 				this.$contentBody.css({
-					"font-size": modelJSON.content.size
+					"font-size": modelJSON.content.size + 'pt'
 				});
 			}
 		},

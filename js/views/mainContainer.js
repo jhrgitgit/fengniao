@@ -583,8 +583,8 @@ define(function(require) {
 				data: JSON.stringify({
 					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
 					sheetId: '1',
-					rowBegin: top,
-					rowEnd: bottom
+					rowBegin: getTopPosi,
+					rowEnd: getBottomPosi
 				}),
 				success: function(data) {
 					if (data === '') {
