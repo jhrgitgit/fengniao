@@ -1,25 +1,28 @@
+<%@ page language="java" contentType="text/html; charset=utf-8"
+	pageEncoding="utf-8"%>
 <!doctype html>
 <html>
 	<head>
 		<meta charset="utf-8">
 		<title>Spreadsheet Online Office</title>
-		<link rel="stylesheet" type="text/css" href="../css/main.css"/>
-		<link rel="stylesheet" type="text/css" href="../css/toolbar.css"/>
-		<link rel="stylesheet" type="text/css" href="../css/widget.css"/>
-		
+		<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/main.css"/>
+		<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/toolbar.css"/>
+		<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/widget.css"/>
+		<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/scrollbar.css"/>
 	</head>
 	<body>
-		<input type="hidden" id="excelId" value="${excelId}"/>
-		<input type="hidden" id="build" value="true"/>
-		<input type='button' id='drag' value='test' draggable="true" />
+				<input type="hidden" id="build" value=${build}>
+		<input type="hidden" id ="excelId" value=${excelId}> 
 		<div class="topBar">
 			<div class="file-control">
 				<span>文件</span>
 			</div>
 			<div class="fui-control">
 				<ul class="fui-control-list">
-					<li><span class="active">开始</span></li>
-					<li><span>下载</span></li>
+					<li><span id="homeTool" class="active">开始</span></li>
+					<li><span id="reviewTool">审阅</span></li>
+					<li><span><a id="download" href="<%=request.getContextPath() %>/excel.htm?m=download&excelId=${excelId}">下载</a></span></li>
+					<li><span><a href="<%=request.getContextPath() %>/excel.htm?m=save&excelId=${excelId}">保存</a></span></li> 
 				</ul>
 			</div>
 			<div class="excel-name">
@@ -27,7 +30,7 @@
 			</div>
 		</div>
 		<div class="toolBar" id="toolBar">
-			<ul class="tabContainer">
+			<ul class="tabContainer homeToolContainer">
 				<li class="fui-group" id="shearPlateContainer">
 					<span class="fui-container">
 						<div class="fui-body">
@@ -93,6 +96,9 @@
 									</span>
 									<span class="ico-section" data-align="bottom">
 										<span class="fui-cf-ico ico-alignbottom"></span>
+									</span>
+									<span class="ico-section" data-align="wordWrap">
+										<span class="fui-cf-ico ico-wordwrap"></span>
 									</span>
 								</div>
 								<div class="fui-transverse">
@@ -169,6 +175,39 @@
 					<span class="fui-separator"></span>
 				</li>
 			</ul>
+			<ul class="tabContainer reviewToolContainer" style="display:none">
+				<li class="fui-group" id="reviewContainer">
+					<span class="fui-container">
+						<div class="fui-body">
+							<span class="fui-layout">
+								<div class="fui-section fui-alone" data-toolbar="addComment">
+									<div class="fui-cf-extend-ico ico-frozencustomized fui-cf-alone"></div>
+									<div class="fui-cf-desc">
+										<div class="fui-cf-text">增加批注</div>
+									</div>
+								</div>
+							</span>
+							<span class="fui-layout">
+								<div class="fui-section fui-alone" data-toolbar="editComment">
+									<div class="fui-cf-extend-ico ico-frozencustomized fui-cf-alone"></div>
+									<div class="fui-cf-desc">
+										<div class="fui-cf-text">编辑批注</div>
+									</div>
+								</div>
+							</span>
+							<span class="fui-layout">
+								<div class="fui-section fui-alone" data-toolbar="deleteComment">
+									<div class="fui-cf-extend-ico ico-frozencustomized fui-cf-alone"></div>
+									<div class="fui-cf-desc">
+										<div class="fui-cf-text">删除批注</div>
+									</div>
+								</div>
+							</span>
+							<span class="fui-separator"></span>
+						</div>
+					</span>
+				<li/>
+			</ul>
 		</div>
 		<div id="spreadSheet" style="width:100%;height:calc(100% - 130px);position:relative;"></div>
 		<div class="widget-list">
@@ -223,22 +262,70 @@
 			<div class="widget" data-widget="format" id="contentFormat">
 				<div class="widget-panel">
 					<ul class="widget-menu">
-						<li data-format="time">
+						<li data-format="normal">
 							<span class="fui-cf-extend-ico ico-frozencustomized widget-ico"></span>
 							<span class="widget-content">
-								<div class="widget-pad">时间</div>
-							</span>
-						</li>
-						<li data-format="number">
-							<span class="fui-cf-extend-ico ico-frozencustomized widget-ico"></span>
-							<span class="widget-content">
-								<div class="widget-pad">数字</div>
+								<div class="widget-pad">常规</div>
 							</span>
 						</li>
 						<li data-format="text">
 							<span class="fui-cf-extend-ico ico-frozencustomized widget-ico"></span>
 							<span class="widget-content">
 								<div class="widget-pad">文本</div>
+							</span>
+						</li>
+						<li data-format="number-1">
+							<span class="fui-cf-extend-ico ico-frozencustomized widget-ico"></span>
+							<span class="widget-content">
+								<div class="widget-pad">数字 0</div>
+							</span>
+						</li>
+						<li data-format="number-2">
+							<span class="fui-cf-extend-ico ico-frozencustomized widget-ico"></span>
+							<span class="widget-content">
+								<div class="widget-pad">数字 0.00</div>
+							</span>
+						</li>
+						<li data-format="number-3">
+							<span class="fui-cf-extend-ico ico-frozencustomized widget-ico"></span>
+							<span class="widget-content">
+								<div class="widget-pad">数字 0.0000</div>
+							</span>
+						</li>
+						<li data-format="date-1">
+							<span class="fui-cf-extend-ico ico-frozencustomized widget-ico"></span>
+							<span class="widget-content">
+								<div class="widget-pad">日期 1999-01-01</div>
+							</span>
+						</li>
+						<li data-format="date-2">
+							<span class="fui-cf-extend-ico ico-frozencustomized widget-ico"></span>
+							<span class="widget-content">
+								<div class="widget-pad">日期 1999年01月01日</div>
+							</span>
+						</li>
+						<li data-format="date-3">
+							<span class="fui-cf-extend-ico ico-frozencustomized widget-ico"></span>
+							<span class="widget-content">
+								<div class="widget-pad">日期 1999年01月</div>
+							</span>
+						</li>
+						<li data-format="percent">
+							<span class="fui-cf-extend-ico ico-frozencustomized widget-ico"></span>
+							<span class="widget-content">
+								<div class="widget-pad">百分比</div>
+							</span>
+						</li>
+						<li data-format="coin-1">
+							<span class="fui-cf-extend-ico ico-frozencustomized widget-ico"></span>
+							<span class="widget-content">
+								<div class="widget-pad">货币 $</div>
+							</span>
+						</li>
+						<li data-format="coin-2">
+							<span class="fui-cf-extend-ico ico-frozencustomized widget-ico"></span>
+							<span class="widget-content">
+								<div class="widget-pad">货币 ¥</div>
 							</span>
 						</li>
 					</ul>
@@ -1304,12 +1391,7 @@
 				</div>
 			</div>
 		</div>
-		<script type="text/javascript" src='../dist/my.js'></script>
-		<script>
-			var a=new SpreadSheet();
-			a.addEventListener('dataDrag',function(event){
-				console.log(event.point);
-			});
+		<script type="text/javascript" data-main='<%=request.getContextPath()%>/js/app' src="<%=request.getContextPath()%>/js/lib/require.js">
 		</script>
 	</body>
 </html>

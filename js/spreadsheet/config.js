@@ -136,6 +136,6 @@ define(function() {
 			altEnter: true,
 			enter: true
 		},
-		rootPath: 'http://192.168.1.250:8080/acmrexcel-0.1.5/'
+		rootPath: 'http://localhost:8080/acmrexcel/'
 	};
 });
