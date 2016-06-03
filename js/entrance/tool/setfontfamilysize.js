@@ -34,7 +34,7 @@ define(function(require) {
 		}
 
 		cells.operateCellsByRegion(region, function(cell) {
-			cell.set('content.size', fontSize + 'pt');
+			cell.set('content.size', fontSize);
 		});
 
 		for (i = region.startRowIndex; i < region.endRowIndex + 1; i++) {

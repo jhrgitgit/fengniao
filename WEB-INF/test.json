@@ -1,0 +1,3874 @@
+{
+	"colNum": 0,
+	"dataColStartIndex": 0,
+	"dataRowStartIndex": 0,
+	"displayColStartAlias": "1",
+	"displayRowStartAlias": "1",
+	"maxPixel": 2157,
+	"returncode": 200,
+	"returndata": {
+		"name": "新建excel",
+		"spreadSheet": [{
+			"name": "38",
+			"sheet": {
+				"cells": [{
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "分地区设有康复专业的学校情况",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "36",
+						"texts": "分地区设有康复专业的学校情况",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+						"y": ["1"]
+					},
+					"wordWrap": false
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "分地区设有康复专业的学校情况",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "36",
+						"texts": "分地区设有康复专业的学校情况",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+						"y": ["1"]
+					},
+					"wordWrap": false
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "分地区设有康复专业的学校情况",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "36",
+						"texts": "分地区设有康复专业的学校情况",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+						"y": ["1"]
+					},
+					"wordWrap": false
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "分地区设有康复专业的学校情况",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "36",
+						"texts": "分地区设有康复专业的学校情况",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+						"y": ["1"]
+					},
+					"wordWrap": false
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "分地区设有康复专业的学校情况",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "36",
+						"texts": "分地区设有康复专业的学校情况",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+						"y": ["1"]
+					},
+					"wordWrap": false
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "分地区设有康复专业的学校情况",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "36",
+						"texts": "分地区设有康复专业的学校情况",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+						"y": ["1"]
+					},
+					"wordWrap": false
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "分地区设有康复专业的学校情况",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "36",
+						"texts": "分地区设有康复专业的学校情况",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+						"y": ["1"]
+					},
+					"wordWrap": false
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "分地区设有康复专业的学校情况",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "36",
+						"texts": "分地区设有康复专业的学校情况",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+						"y": ["1"]
+					},
+					"wordWrap": false
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "分地区设有康复专业的学校情况",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "36",
+						"texts": "分地区设有康复专业的学校情况",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+						"y": ["1"]
+					},
+					"wordWrap": false
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "分地区设有康复专业的学校情况",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "36",
+						"texts": "分地区设有康复专业的学校情况",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"],
+						"y": ["1"]
+					},
+					"wordWrap": false
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "top",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["1"],
+						"y": ["2"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "top",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["2"],
+						"y": ["2"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "11",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["3"],
+						"y": ["2"]
+					},
+					"wordWrap": false
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "11",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["4"],
+						"y": ["2"]
+					},
+					"wordWrap": false
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "11",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["5"],
+						"y": ["2"]
+					},
+					"wordWrap": false
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "11",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["6"],
+						"y": ["2"]
+					},
+					"wordWrap": false
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "11",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["7"],
+						"y": ["2"]
+					},
+					"wordWrap": false
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "11",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["8"],
+						"y": ["2"]
+					},
+					"wordWrap": false
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "top",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "表    号：",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "表    号：",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["9"],
+						"y": ["2"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "ＪＹ３３１表",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "ＪＹ３３１表",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["10"],
+						"y": ["2"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "top",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["1"],
+						"y": ["3"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "top",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["2"],
+						"y": ["3"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "11",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["3"],
+						"y": ["3"]
+					},
+					"wordWrap": false
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "11",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["4"],
+						"y": ["3"]
+					},
+					"wordWrap": false
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "11",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["5"],
+						"y": ["3"]
+					},
+					"wordWrap": false
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "11",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["6"],
+						"y": ["3"]
+					},
+					"wordWrap": false
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "11",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["7"],
+						"y": ["3"]
+					},
+					"wordWrap": false
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "11",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["8"],
+						"y": ["3"]
+					},
+					"wordWrap": false
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "制定机关：",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "制定机关：",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["9"],
+						"y": ["3"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "国 家 统 计 局",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "国 家 统 计 局",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["10"],
+						"y": ["3"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "top",
+						"alignLine": "bottom",
+						"alignRow": "",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["1"],
+						"y": ["4"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "top",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["2"],
+						"y": ["4"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "11",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["3"],
+						"y": ["4"]
+					},
+					"wordWrap": false
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "11",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["4"],
+						"y": ["4"]
+					},
+					"wordWrap": false
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "11",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["5"],
+						"y": ["4"]
+					},
+					"wordWrap": false
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "11",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["6"],
+						"y": ["4"]
+					},
+					"wordWrap": false
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "11",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["7"],
+						"y": ["4"]
+					},
+					"wordWrap": false
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "11",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["8"],
+						"y": ["4"]
+					},
+					"wordWrap": false
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "文    号：",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "文    号：",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["9"],
+						"y": ["4"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "国统字(2015)62号",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "国统字(2015)62号",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["10"],
+						"y": ["4"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "top",
+						"alignLine": "bottom",
+						"alignRow": "",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "综合机关名称：教育部",
+						"family": "黑体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "36",
+						"texts": "综合机关名称：教育部",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["1"],
+						"y": ["5"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "11",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["2"],
+						"y": ["5"]
+					},
+					"wordWrap": false
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "top",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "2015年",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "2015年",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["3", "4", "5", "6", "7", "8"],
+						"y": ["5"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "top",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "2015年",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "2015年",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["3", "4", "5", "6", "7", "8"],
+						"y": ["5"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "top",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "2015年",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "2015年",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["3", "4", "5", "6", "7", "8"],
+						"y": ["5"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "top",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "2015年",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "2015年",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["3", "4", "5", "6", "7", "8"],
+						"y": ["5"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "top",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "2015年",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "2015年",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["3", "4", "5", "6", "7", "8"],
+						"y": ["5"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "top",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "2015年",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "2015年",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["3", "4", "5", "6", "7", "8"],
+						"y": ["5"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "有效期至：",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "有效期至：",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["9"],
+						"y": ["5"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["10"],
+						"y": ["5"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "地    区",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "地    区",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["1"],
+						"y": ["6", "7", "8"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "代码",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "代码",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["2"],
+						"y": ["6", "7", "8"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "学校数",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "12",
+						"texts": "学校数",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["3"],
+						"y": ["6"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "left",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["4", "5", "6"],
+						"y": ["6"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "left",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["4", "5", "6"],
+						"y": ["6"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "left",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["4", "5", "6"],
+						"y": ["6"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "专任教师数（人）",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "专任教师数（人）",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["7"],
+						"y": ["6", "7", "8"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "left",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["8", "9", "10"],
+						"y": ["6"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "left",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["8", "9", "10"],
+						"y": ["6"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "left",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["8", "9", "10"],
+						"y": ["6"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "地    区",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "地    区",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["1"],
+						"y": ["6", "7", "8"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "代码",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "代码",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["2"],
+						"y": ["6", "7", "8"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "（所）",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "（所）",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["3"],
+						"y": ["7"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "本科",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "本科",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["4"],
+						"y": ["7"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "高职（专科）学校",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "36",
+						"texts": "高职（专科）学校",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["5"],
+						"y": ["7", "8"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "中等职业学校",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "中等职业学校",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["6"],
+						"y": ["7", "8"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "专任教师数（人）",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "专任教师数（人）",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["7"],
+						"y": ["6", "7", "8"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "本科",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "本科",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["8"],
+						"y": ["7"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "高职（专科）学校",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "高职（专科）学校",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["9"],
+						"y": ["7", "8"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "中等职业学校",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "20",
+						"texts": "中等职业学校",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["10"],
+						"y": ["7", "8"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "地    区",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "地    区",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["1"],
+						"y": ["6", "7", "8"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "代码",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "代码",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["2"],
+						"y": ["6", "7", "8"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["3"],
+						"y": ["8"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "学校",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "36",
+						"texts": "学校",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["4"],
+						"y": ["8"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "高职（专科）学校",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "36",
+						"texts": "高职（专科）学校",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["5"],
+						"y": ["7", "8"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "中等职业学校",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "中等职业学校",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["6"],
+						"y": ["7", "8"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "专任教师数（人）",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "专任教师数（人）",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["7"],
+						"y": ["6", "7", "8"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "学校",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "28",
+						"texts": "学校",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["8"],
+						"y": ["8"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "高职（专科）学校",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "高职（专科）学校",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["9"],
+						"y": ["7", "8"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "中等职业学校",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "20",
+						"texts": "中等职业学校",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["10"],
+						"y": ["7", "8"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "甲",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "甲",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["1"],
+						"y": ["9"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "乙",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "乙",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["2"],
+						"y": ["9"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "1.0",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "1.0",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["3"],
+						"y": ["9"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "2.0",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "2.0",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["4"],
+						"y": ["9"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "3",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "3",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["5"],
+						"y": ["9"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "4.0",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "4.0",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["6"],
+						"y": ["9"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "5.0",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "5.0",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["7"],
+						"y": ["9"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "6.0",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "6.0",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["8"],
+						"y": ["9"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "7.0",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "7.0",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["9"],
+						"y": ["9"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "8.0",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "8.0",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["10"],
+						"y": ["9"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "left",
+						"bd": true,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "合计",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "合计",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "normal",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["1"],
+						"y": ["10"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": true,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "01",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "01",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"format": "text",
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["2"],
+						"y": ["10"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["3"],
+						"y": ["10"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["4"],
+						"y": ["10"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["5"],
+						"y": ["10"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["6"],
+						"y": ["10"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["7"],
+						"y": ["10"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["8"],
+						"y": ["10"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["9"],
+						"y": ["10"]
+					},
+					"wordWrap": true
+				}, {
+					"border": {
+						"all": false,
+						"bottom": false,
+						"left": false,
+						"none": false,
+						"outer": false,
+						"right": false,
+						"top": false
+					},
+					"content": {
+						"alignCol": "middle",
+						"alignLine": "bottom",
+						"alignRow": "center",
+						"bd": false,
+						"color": "rgb(0,0,0)",
+						"displayTexts": "",
+						"family": "宋体",
+						"italic": false,
+						"rgbColor": "0,0,0",
+						"size": "9",
+						"texts": "",
+						"weight": 0
+					},
+					"customProp": {
+						"background": "rgb(255,255,255)",
+						"decimal": 0,
+						"isValid": true,
+						"thousands": false
+					},
+					"highlight": false,
+					"occupy": {
+						"x": ["10"],
+						"y": ["10"]
+					},
+					"wordWrap": true
+				}],
+				"frozen": {},
+				"glX": [{
+					"aliasX": "1",
+					"index": 0,
+					"left": 0,
+					"width": 99
+				}, {
+					"aliasX": "2",
+					"index": 0,
+					"left": 100,
+					"width": 99
+				}, {
+					"aliasX": "3",
+					"index": 0,
+					"left": 200,
+					"width": 99
+				}, {
+					"aliasX": "4",
+					"index": 0,
+					"left": 300,
+					"width": 99
+				}, {
+					"aliasX": "5",
+					"index": 0,
+					"left": 400,
+					"width": 99
+				}, {
+					"aliasX": "6",
+					"index": 0,
+					"left": 500,
+					"width": 99
+				}, {
+					"aliasX": "7",
+					"index": 0,
+					"left": 600,
+					"width": 99
+				}, {
+					"aliasX": "8",
+					"index": 0,
+					"left": 700,
+					"width": 99
+				}, {
+					"aliasX": "9",
+					"index": 0,
+					"left": 800,
+					"width": 99
+				}, {
+					"aliasX": "10",
+					"index": 0,
+					"left": 900,
+					"width": 99
+				}, {
+					"aliasX": "11",
+					"index": 0,
+					"left": 1000,
+					"width": 69
+				}, {
+					"aliasX": "12",
+					"index": 0,
+					"left": 1070,
+					"width": 69
+				}, {
+					"aliasX": "13",
+					"index": 0,
+					"left": 1140,
+					"width": 69
+				}, {
+					"aliasX": "14",
+					"index": 0,
+					"left": 1210,
+					"width": 69
+				}, {
+					"aliasX": "15",
+					"index": 0,
+					"left": 1280,
+					"width": 69
+				}, {
+					"aliasX": "16",
+					"index": 0,
+					"left": 1350,
+					"width": 69
+				}, {
+					"aliasX": "17",
+					"index": 0,
+					"left": 1420,
+					"width": 69
+				}, {
+					"aliasX": "18",
+					"index": 0,
+					"left": 1490,
+					"width": 69
+				}, {
+					"aliasX": "19",
+					"index": 0,
+					"left": 1560,
+					"width": 69
+				}, {
+					"aliasX": "20",
+					"index": 0,
+					"left": 1630,
+					"width": 69
+				}, {
+					"aliasX": "21",
+					"index": 0,
+					"left": 1700,
+					"width": 69
+				}, {
+					"aliasX": "22",
+					"index": 0,
+					"left": 1770,
+					"width": 69
+				}, {
+					"aliasX": "23",
+					"index": 0,
+					"left": 1840,
+					"width": 69
+				}, {
+					"aliasX": "24",
+					"index": 0,
+					"left": 1910,
+					"width": 69
+				}, {
+					"aliasX": "25",
+					"index": 0,
+					"left": 1980,
+					"width": 69
+				}, {
+					"aliasX": "26",
+					"index": 0,
+					"left": 2050,
+					"width": 69
+				}],
+				"glY": [{
+					"aliasY": "1",
+					"height": 52,
+					"index": 0,
+					"top": 0
+				}, {
+					"aliasY": "2",
+					"height": 15,
+					"index": 0,
+					"top": 53
+				}, {
+					"aliasY": "3",
+					"height": 15,
+					"index": 0,
+					"top": 69
+				}, {
+					"aliasY": "4",
+					"height": 15,
+					"index": 0,
+					"top": 85
+				}, {
+					"aliasY": "5",
+					"height": 70,
+					"index": 0,
+					"top": 101
+				}, {
+					"aliasY": "6",
+					"height": 20,
+					"index": 0,
+					"top": 172
+				}, {
+					"aliasY": "7",
+					"height": 52,
+					"index": 0,
+					"top": 193
+				}, {
+					"aliasY": "8",
+					"height": 52,
+					"index": 0,
+					"top": 246
+				}, {
+					"aliasY": "9",
+					"height": 15,
+					"index": 0,
+					"top": 299
+				}, {
+					"aliasY": "10",
+					"height": 15,
+					"index": 0,
+					"top": 315
+				}],
+				"posi": {
+					"max": {},
+					"strandX": {
+						"aliasX": {}
+					},
+					"strandY": {
+						"aliasY": {}
+					}
+				},
+				"presetCells": [],
+				"startAlais": {}
+			},
+			"sort": 0
+		}]
+	},
+	"rowLength": 0,
+	"rowNum": 0
+}

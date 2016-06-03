@@ -259,7 +259,7 @@ define(function(require) {
 				startRowIndex,
 				cellsPositionX,
 				cell,
-				len,
+				len,i,
 				selectRegionModel;
 
 			rowAlias = cache.UserView.rowAlias;
@@ -302,7 +302,6 @@ define(function(require) {
 					}
 				};
 				selectRegions.add(selectRegionModel);
-			
 				siderLineCols.add({
 					left: cell.get("physicsBox").left,
 					width: cell.get('physicsBox').width
@@ -323,17 +322,17 @@ define(function(require) {
 
 				len = headItemCols.length;
 				for (i = 0; i < len; i++) {
-					headItemCols.models.set({
+					headItemCols.models[i].set({
 						activeState: false
 					});
 				}
 				for (i = 0; i < endColIndex - startColIndex + 1; i++) {
-					width += headItemColList[startColIndex + i].set({
+					headItemCols.models[startColIndex + i].set({
 						activeState: true
 					});
 				}
 				for (i = 0; i < endRowIndex - startRowIndex + 1; i++) {
-					height += headItemRowList[startRowIndex + i].set({
+					headItemRows.models[startRowIndex + i].set({
 						activeState: true
 					});
 				}

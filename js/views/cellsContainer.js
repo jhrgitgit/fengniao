@@ -70,7 +70,6 @@ define(function(require) {
 			Backbone.on('event:cellsContainer:startHighlight', this.startHighlight, this);
 			Backbone.on('event:cellsContainer:stopHighlight', this.stopHighlight, this);
 			//-----------------------------
-			this.initExtend();
 			_.bindAll(this, 'callView', 'drag', 'highlightRegionMove');
 			this.currentRule = util.clone(cache.CurrentRule);
 			this.boxAttributes = options.boxAttributes;
@@ -81,9 +80,6 @@ define(function(require) {
 					this.currentRule.displayPosition.endColIndex)) {
 				Backbone.on('event:cellsContainer:selectRegionChange', this.selectRegionChange, this);
 			}
-		},
-		initHighLightOn:function(){
-
 		},
 		/**
 		 * 渲染方法
