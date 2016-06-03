@@ -253,8 +253,13 @@ define(function(require) {
 				colAlias,
 				endRowAlias,
 				endColAlias,
+				endColIndex,
+				endRowIndex,
+				startColIndex,
+				startRowIndex,
 				cellsPositionX,
 				cell,
+				len,
 				selectRegionModel;
 
 			rowAlias = cache.UserView.rowAlias;
@@ -266,14 +271,20 @@ define(function(require) {
 			cellsPositionX = cache.CellsPosition.strandX;
 
 			if (cellsPositionX[colAlias] !== undefined &&
-				cellsPositionX[colAlias][aliasGridRow] !== undefined) {
-				cell = cells.models[cellsPositionX[colAlias][aliasGridRow]];
+				cellsPositionX[colAlias][rowAlias] !== undefined) {
+				cell = cells.models[cellsPositionX[colAlias][rowAlias]];
 			}
 			if (cell !== undefined) {
 				endRowAlias = cell.get('occupy').y;
 				endRowAlias = endRowAlias[endRowAlias.length - 1];
 				endColAlias = cell.get('occupy').x;
 				endColAlias = endColAlias[endColAlias.length - 1];
+
+				endColIndex = headItemCols.getIndexByModel(endColAlias);
+				endRowIndex = headItemRows.getIndexByModel(endRowAlias);
+				startColIndex =headItemCols.getIndexByModel(colAlias);
+				startRowIndex =headItemRows.getIndexByModel(rowAlias);
+				
 				selectRegionModel = {
 					physicsPosi: {
 						top: cell.get("physicsBox").top,
@@ -299,6 +310,42 @@ define(function(require) {
 					top: modelCell.get("physicsBox").top,
 					height: modelCell.get("physicsBox").height
 				});
+				
+				
+				siderLineRows.models[0].set({
+					top: headItemRowList[startRowIndex].get('top'),
+					height: height - 1
+				});
+				siderLineCols.models[0].set({
+					left: headItemColList[startColIndex].get('left'),
+					width: width - 1
+
+				});
+
+				len = headItemRows.length;
+
+				for (i = 0; i < len; i++) {
+					headItemRows.models[i].set({
+						activeState: false
+					});
+				}
+
+				len = headItemCols.length;
+				for (i = 0; i < len; i++) {
+					headItemCols.models.set({
+						activeState: false
+					});
+				}
+				for (i = 0; i < endColIndex - startColIndex + 1; i++) {
+					width += headItemColList[startColIndex + i].set({
+						activeState: true
+					});
+				}
+				for (i = 0; i < endRowIndex - startRowIndex + 1; i++) {
+					height += headItemRowList[startRowIndex + i].set({
+						activeState: true
+					});
+				}
 			} else {
 				selectRegionModel = {
 					physicsPosi: {

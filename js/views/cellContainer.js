@@ -66,7 +66,8 @@ define(function(require) {
 			var self = this;
 			this.overEvent = setTimeout(function() {
 				if ($('.comment').length === 0) {
-					if (self.model.get('customProp').comment !== null) {
+					if (self.model.get('customProp').comment !== null &&
+							self.model.get('customProp').comment !== undefined) {
 						self.model.set('commentShowState', true);
 					}
 				}
@@ -176,7 +177,8 @@ define(function(require) {
 			return this;
 		},
 		showCommentSign: function(modelJSON) {
-			if (modelJSON.customProp.comment !== null) {
+			if (modelJSON.customProp.comment !== null &&
+					modelJSON.customProp.comment !== undefined) {
 				this.$el.prepend('<div class="comment-ico"><div class="comment-ico-triangle"></div></div>');
 			}
 		},
