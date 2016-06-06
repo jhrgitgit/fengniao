@@ -136,6 +136,7 @@ define(function() {
 			altEnter: true,
 			enter: true
 		},
+		version: '0.5.0',
 		rootPath: 'http://localhost:8080/acmrexcel/'
 	};
 });
