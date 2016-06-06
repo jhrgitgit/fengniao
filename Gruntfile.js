@@ -38,6 +38,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.registerTask('check', ['jshint']);
-    grunt.registerTask('build',['build']);
+    grunt.registerTask('dist',['build']);
     grunt.registerTask('default', ['jshint']);
 };
