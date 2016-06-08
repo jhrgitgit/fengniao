@@ -4,6 +4,7 @@ define(function(require) {
 	var SpreadSheet = require('spreadsheet/spreadsheet');
 
 	new SpreadSheet();
+	//测试分支提交
 	// $(document).on('click','#test',function(){
 		// ss.setFillColor('','rgb(127, 127, 127)',['B6','C7']);
 		// ss.setFillColor('','rgb(127, 127, 127)','D6');
