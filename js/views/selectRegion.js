@@ -121,9 +121,11 @@ define(function(require) {
 			} else { //选中区域编辑单元格
 				rowIndex = headItemRows.getIndexByAlias(this.model.get('wholePosi').startY);
 				colIndex = headItemRows.getIndexByAlias(this.model.get('wholePosi').endX);
+				//ps:bug 合并单元格存在问题
 				if (this.model.get('wholePosi').startY === this.model.get('wholePosi').endY &&
 					this.model.get('wholePosi').startX === this.model.get('wholePosi').endX &&
 					state === 'edit') {
+
 					model = cells.getCellByX(colIndex, rowIndex);
 					if (model.length > 0) {
 						comment = model[0].get('customProp').comment || '';
@@ -145,10 +147,17 @@ define(function(require) {
 			}
 			//判断在冻结状态是否超出范围
 			if (cache.TempProp.isFrozen === true) {
+
 				if ((rowIndex < this.currentRule.displayPosition.startRowIndex || colIndex < this.currentRule.displayPosition.startColIndex)) {
 					return;
 				}
+				if (this.currentRule.displayPosition.endColIndex !== undefined && colIndex === 'MAX') {
+					return;
+				}
 				if (this.currentRule.displayPosition.endColIndex !== undefined && colIndex > (this.currentRule.displayPosition.endColIndex - 1)) {
+					return;
+				}
+				if (this.currentRule.displayPosition.endRowIndex !== undefined && rowIndex === 'MAX') {
 					return;
 				}
 				if (this.currentRule.displayPosition.endRowIndex !== undefined && rowIndex > (this.currentRule.displayPosition.endRowIndex - 1)) {

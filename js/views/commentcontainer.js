@@ -7,8 +7,9 @@ define(function(require) {
 		cells = require('collections/cells'),
 		send = require('basic/tools/send'),
 		cache = require('basic/tools/cache'),
+		rowOperate = require('entrance/row/rowoperation'),
 		commentContainer;
-	
+
 	commentContainer = Backbone.View.extend({
 		tagName: 'textarea',
 		className: 'comment',
@@ -25,9 +26,20 @@ define(function(require) {
 			this.startTop = options.startTop || 0;
 			colIndex = options.colIndex;
 			rowIndex = options.rowIndex;
-			//修改
-			this.left = headItemCols.models[colIndex].get('left') + headItemCols.models[colIndex].get('width') + 3 - this.startLeft;
-			this.top = headItemRows.models[rowIndex].get('top') - this.startTop;
+
+			if (colIndex === 'MAX') {
+				this.left = 3 - this.startLeft;
+				this.top = headItemRows.models[rowIndex + 1].get('top') - this.startTop;
+
+			}
+			// else if(rowIndex==='MAX') {
+			// 	this.left = 
+			// 	this.top = 
+			// }
+			else {
+				this.left = headItemCols.models[colIndex].get('left') + headItemCols.models[colIndex].get('width') + 3 - this.startLeft;
+				this.top = headItemRows.models[rowIndex].get('top') - this.startTop;
+			}
 			if (this.state !== 'show') {
 				cache.commentState = true;
 			}
@@ -59,20 +71,25 @@ define(function(require) {
 				comment = this.$el.val();
 				comment = comment || '';
 				select = selectRegions.getModelByType('operation')[0];
-				
+
 				startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
 				startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
-				endColIndex=headItemCols.getIndexByAlias(select.get('wholePosi').endX);
-				endRowIndex=headItemRows.getIndexByAlias(select.get('wholePosi').endY);
-
-				cellsList = cells.getFillCellsByRegion(
-					startRowIndex,
-					startColIndex,
-					endRowIndex,
-					endColIndex
-				);
-				for (i in cellsList) {
-					cellsList[i].set('customProp.comment', comment);
+				if (select.get('wholePosi').endX === 'MAX') {
+					endColIndex = 'MAX';
+					endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
+					rowOperate.rowPropOper(startRowIndex, 'customProp.comment', comment);
+				} else {
+					endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
+					endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
+					cellsList = cells.getFillCellsByRegion(
+						startRowIndex,
+						startColIndex,
+						endRowIndex,
+						endColIndex
+					);
+					for (i in cellsList) {
+						cellsList[i].set('customProp.comment', comment);
+					}
 				}
 				this.sendData(comment);
 			}
@@ -85,10 +102,14 @@ define(function(require) {
 				endColAlias,
 				endRowAlias;
 			select = selectRegions.getModelByType('operation')[0];
-
+			if (select.get('wholePosi').endX === 'MAX') {
+				endColAlias = 'MAX';
+			}else{
+				endColAlias = headItemCols.models[select.get('wholePosi').endX].get('alias');
+			}
 			startColAlias = headItemCols.models[select.get('wholePosi').startX].get('alias');
 			startRowAlias = headItemRows.models[select.get('wholePosi').startY].get('alias');
-			endColAlias = headItemCols.models[select.get('wholePosi').endX].get('alias');
+
 			endRowAlias = headItemRows.models[select.get('wholePosi').endY].get('alias');
 			send.PackAjax({
 				url: 'text.htm?m=comment_set',
