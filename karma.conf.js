@@ -39,6 +39,8 @@ module.exports = function(config) {
         preprocessors: {
             'js/entrance/tool/addrow.js': 'coverage',
             'js/entrance/tool/deleterow.js': 'coverage',
+            'js/entrance/row/rowoperation.js': 'coverage',
+
         },
 
         // web server port

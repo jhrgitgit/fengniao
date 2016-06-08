@@ -51,8 +51,8 @@ define(function(require) {
 				headRowProp[parentProp][childProp] !== undefined) {
 				if (defaultProp[parentProp][childProp] === value) {
 					delete headRowProp[parentProp][childProp];
-					if (!Object.getOwnPropertyNames(defaultProp[parentProp]).length) {
-						delete defaultProp[parentProp];
+					if (!Object.getOwnPropertyNames(headRowProp[parentProp]).length) {
+						delete headRowProp[parentProp];
 					}
 				} else {
 					headRowProp[parentProp][childProp] = value;
