@@ -849,59 +849,43 @@ define(function(require) {
 			var headLineRowModelList = headItemRows.models,
 				headLineColModelList = headItemCols.models,
 				selectRegionModel,
+				startRowAlias,
+				startColAlias,
+				endRowAlias,
+				endColAlias,
 				startX,
 				startY,
 				endX,
 				endY,
 				len,
+				region,
 				options,
 				flag = true,
 				i;
 
 			selectRegionModel = selectRegions.getModelByType("operation")[0];
-			startX = selectRegionModel.get("wholePosi").startX;
-			startY = selectRegionModel.get("wholePosi").startY;
-			endX = selectRegionModel.get("wholePosi").endX;
-			endY = selectRegionModel.get("wholePosi").endY;
 
-			while (flag) {
-				flag = false;
-				//获取选中区域内所有cell对象
-				var tempCells = cells.getCellByX(startX, startY, endX, endY);
-				//存在单元格的区域的开始索引，结束索引
-				var cellStartX, cellStartY, cellEndX, cellEndY;
-				for (i = 0; i < tempCells.length; i++) {
-					cellStartY = binary.modelBinary(tempCells[i].get('physicsBox').top, headLineRowModelList, 'top', 'height', 0, headLineRowModelList.length - 1);
-					cellStartX = binary.modelBinary(tempCells[i].get('physicsBox').left, headLineColModelList, 'left', 'width', 0, headLineColModelList.length - 1);
-					cellEndY = binary.modelBinary(tempCells[i].get('physicsBox').top + tempCells[i].get('physicsBox').height, headLineRowModelList, 'top', 'height', 0, headLineRowModelList.length - 1);
-					cellEndX = binary.modelBinary(tempCells[i].get('physicsBox').left + tempCells[i].get('physicsBox').width, headLineColModelList, 'left', 'width', 0, headLineColModelList.length - 1);
-					if (cellStartX < startX) {
-						startX = cellStartX;
-						flag = true;
-						break;
-					}
-					if (cellStartY < startY) {
-						startY = cellStartY;
-						flag = true;
-						break;
-					}
-					if (cellEndX > endX) {
-						endX = cellEndX;
-						flag = true;
-						break;
-					}
-					if (cellEndY > endY) {
-						endY = cellEndY;
-						flag = true;
-						break;
-					}
-				}
-			}
-			options = {
+			startRowAlias=selectRegionModel.get("wholePosi").startY;
+			startColAlias=selectRegionModel.get("wholePosi").startX;
+			endRowAlias=selectRegionModel.get("wholePosi").endY;
+			endColAlias=selectRegionModel.get("wholePosi").endX;
+
+			startX = headItemCols.getIndexByAlias(startColAlias);
+			startY = headItemRows.getIndexByAlias(startRowAlias);
+			endX = headItemCols.getIndexByAlias(endColAlias);
+			endY = headItemRows.getIndexByAlias(endRowAlias);
+
+			region = {
 				startColIndex: startX,
 				startRowIndex: startY,
 				endColIndex: endX,
 				endRowIndex: endY,
+			};
+			options = {
+				initColIndex: region.startColIndex,
+				initRowIndex: region.startRowIndex,
+				mouseColIndex: region.endColIndex,
+				mouseRowIndex: region.endRowIndex
 			};
 			this.adjustOperationRegion(options);
 		},

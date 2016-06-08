@@ -37,19 +37,22 @@ define(function(require) {
 
 		if (label !== undefined) {
 			region = analysisLabel(label);
-			region = cells.getFullOperationRegion(region);
-			startColIndex = region.startColIndex;
-			startRowIndex = region.startRowIndex;
-			endColIndex = region.endColIndex;
-			endRowIndex = region.endRowIndex;
 		} else {
 			select = selectRegions.getModelByType('operation')[0];
-			startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
-			startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
-			endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
-			endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
+			region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
+			region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
+			region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
+			region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
 		}
-
+		if (region.endColIndex === 'MAX' || region.endRowIndex === 'MAX') {
+			return;
+		}
+		region = cells.getFullOperationRegion(region);
+		startRowIndex = region.startRowIndex;
+		startColIndex = region.startColIndex;
+		endRowIndex = region.endRowIndex;
+		endColIndex = region.endColIndex;
+		
 		cellList = cells.getCellByRow(startRowIndex, startColIndex, endRowIndex, endColIndex);
 
 		len = cellList.length;

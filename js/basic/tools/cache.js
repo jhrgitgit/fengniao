@@ -1,6 +1,6 @@
 //attention bug , those cache objects has mix , for use 
+'use strict';
 define(function(require) {
-	'use strict';
 	var config = require('spreadsheet/config');
 	/**
 	 * 系统缓存对象
@@ -113,6 +113,9 @@ define(function(require) {
 			 */
 			colFrozen: false
 		},
+		loadStartColAlias: '1',
+		loadEndColAlias: '26',
+		//变量值重复，需要删除
 		//动态加载，模型对象已加载区域，以坐标为记录单位
 		rowRegionPosi: [],
 		//动态加载，模型对象已加载区域，以坐标为记录单位

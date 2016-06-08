@@ -5,7 +5,8 @@ define(function(require) {
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
 		cells = require('collections/cells'),
-		analysisLabel = require('basic/tools/analysislabel');
+		analysisLabel = require('basic/tools/analysislabel'),
+		rowOperate = require('entrance/row/rowoperation');
 
 
 	var setAlign = function(sheetId, alignType, label) {
@@ -48,9 +49,11 @@ define(function(require) {
 			default:
 				return;
 		}
+
+
+
 		if (label !== undefined) {
 			region = analysisLabel(label);
-			region = cells.getFullOperationRegion(region);
 		} else {
 			select = selectRegions.getModelByType('operation')[0];
 			region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
@@ -59,19 +62,30 @@ define(function(require) {
 			region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
 		}
 
-		cells.operateCellsByRegion(region, function(cell) {
+		if (region.endColIndex === 'MAX') { //整行操作
 			if (transverse !== undefined) {
-				cell.set('content.alignRow', transverse);
+				rowOperate.rowPropOper(region.startRowIndex, 'content.alignRow', transverse);
 			} else {
-				cell.set('content.alignCol', vertical);
+				rowOperate.rowPropOper(region.startRowIndex, 'content.alignCol', vertical);
 			}
-		});
-		type = transverse || vertical;
+			endColAlias = 'MAX';
+			endRowAlias = headItemRows.models[region.endRowIndex].get('alias');
+		} else {
+			region = cells.getFullOperationRegion(region);
+			cells.operateCellsByRegion(region, function(cell) {
+				if (transverse !== undefined) {
+					cell.set('content.alignRow', transverse);
+				} else {
+					cell.set('content.alignCol', vertical);
+				}
+			});
+			endColAlias = headItemCols.models[region.endColIndex].get('alias');
+			endRowAlias = headItemRows.models[region.endRowIndex].get('alias');
+		}
 
 		startColAlias = headItemCols.models[region.startColIndex].get('alias');
-		startRowAlias= headItemRows.models[region.startRowIndex].get('alias');
-		endColAlias= headItemCols.models[region.endColIndex].get('alias');
-		endRowAlias= headItemRows.models[region.endRowIndex].get('alias');
+		startRowAlias = headItemRows.models[region.startRowIndex].get('alias');
+		type = transverse || vertical;
 
 		send.PackAjax({
 			url: url,

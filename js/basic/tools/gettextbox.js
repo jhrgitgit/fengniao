@@ -1,13 +1,11 @@
+'use strict';
 define(function(require) {
-	'use strict';
 	var $ = require('lib/jquery');
 	return {
 		getTextHeight: function(text, wordWrap, fontSize, width) {
 			var tempDiv,
 				height,
-				fontSize,
-				width,
-				inputText = "",
+				inputText = '',
 				texts,
 				i = 0,
 				len;
@@ -18,19 +16,19 @@ define(function(require) {
 			}
 			tempDiv = $('<div/>').html(inputText);
 			tempDiv.css({
-				"visibility": "hidden",
-				"font-size": fontSize,
+				'visibility': 'hidden',
+				'font-size': fontSize,
 			});
 			if (wordWrap === true) {
 				tempDiv.css({
-					"word-wrap": "break-word",
-					"width": width
+					'word-wrap': 'break-word',
+					'width': width
 				});
 			}
-			$("body").append(tempDiv);
+			$('body').append(tempDiv);
 
 			tempDiv.remove();
 			return height;
 		}
-	}
+	};
 });

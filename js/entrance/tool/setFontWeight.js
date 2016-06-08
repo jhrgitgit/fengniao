@@ -5,32 +5,23 @@ define(function(require) {
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
 		cells = require('collections/cells'),
-		analysisLabel = require('basic/tools/analysislabel');
+		analysisLabel = require('basic/tools/analysislabel'),
+		rowOperate = require('entrance/row/rowoperation');
 
 	var setFontWeight = function(sheetId, bold, label) {
 		var select,
+			region = {},
 			startColAlias,
 			startRowAlias,
 			endColAlias,
 			endRowAlias,
-			region = {},
 			tempCellList;
-		if (label !== undefined) {
-			region = analysisLabel(label);
-			region = cells.getFullOperationRegion(region);
-		} else {
-			select = selectRegions.getModelByType('operation')[0];
-			region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
-			region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
-			region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
-			region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
-		}
 
 		if (bold === 'bold') {
 			bold = true;
 		} else if (bold === 'normal') {
 			bold = false;
-		} else {
+		} else{
 			tempCellList = cells.getCellByX(region.startColIndex,
 				region.startRowIndex,
 				region.endColIndex,
@@ -42,14 +33,32 @@ define(function(require) {
 				bold = !tempCellList[0].get('content').bd;
 			}
 		}
+
+		if (label !== undefined) {
+			region = analysisLabel(label);
+		} else {
+			select = selectRegions.getModelByType('operation')[0];
+			region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
+			region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
+			region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
+			region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
+		}
+		if (region.endColIndex === 'MAX') { //整行操作
+			rowOperate.rowPropOper(region.startRowIndex, 'content.bd', bold);
+			endColAlias = 'MAX';
+			endRowAlias = headItemRows.models[region.endRowIndex].get('alias');
+		} else {
+			region = cells.getFullOperationRegion(region);
+			cells.operateCellsByRegion(region, function(cell) {
+				cell.set('content.bd', bold);
+			});
+			endColAlias = headItemCols.models[region.endColIndex].get('alias');
+			endRowAlias = headItemRows.models[region.endRowIndex].get('alias');
+		}
+
 		startColAlias = headItemCols.models[region.startColIndex].get('alias');
-		startRowAlias= headItemRows.models[region.startRowIndex].get('alias');
-		endColAlias= headItemCols.models[region.endColIndex].get('alias');
-		endRowAlias= headItemRows.models[region.endRowIndex].get('alias');
+		startRowAlias = headItemRows.models[region.startRowIndex].get('alias');
 		
-		cells.operateCellsByRegion(region, function(cell) {
-			cell.set('content.bd', bold);
-		});
 		send.PackAjax({
 			url: 'text.htm?m=font_weight',
 			data: JSON.stringify({

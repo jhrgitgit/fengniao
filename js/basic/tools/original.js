@@ -1,5 +1,5 @@
+'use strict';
 define(function(require) {
-	'use strict';
 	var $ = require('lib/jquery'),
 		config = require('spreadsheet/config'),
 		binary = require('basic/util/binary'),
@@ -69,17 +69,13 @@ define(function(require) {
 		 * @param  {Array} rows 行数据数组
 		 */
 		analysisRowData: function(rows, startRowSort) {
-			var tempRow,
-				tempHeadRow,
+			var tempHeadRow,
 				index, //插入Rows中的索引值
-				i,
-				j,
-				len,
-				rowLen;
+				i;
 
 			for (i = 0; i < rows.length; i++) {
 				index = binary.indexModelBinary(rows[i].top, headItemRows.models, 'top', 'height');
-				if (headItemRows.getIndexByAlias(rows[i].aliasY) != -1) {
+				if (headItemRows.getIndexByAlias(rows[i].aliasY) !== -1) {
 					index++;
 					continue;
 				}
@@ -101,10 +97,10 @@ define(function(require) {
 		 * @param  {Array} cols 列数据数组
 		 */
 		analysisColData: function(cols, startColSort) {
-			var tempCol, tempHeadCol, i, j, len, collen;
+			var  tempHeadCol, i, j, len, collen;
 			for (i = 0; i < cols.length; i++) {
 				//去重
-				if (headItemCols.getIndexByAlias(cols[i].aliasY) != -1) {
+				if (headItemCols.getIndexByAlias(cols[i].aliasY) !== -1) {
 					continue;
 				}
 				tempHeadCol = new LineCol();
@@ -152,9 +148,6 @@ define(function(require) {
 				cellsPositionX,
 				width,
 				height,
-				left,
-				top,
-				rowEndIndex,
 				i,
 				model; //gridrow加载数量
 
@@ -175,18 +168,18 @@ define(function(require) {
 				height = 0;
 				//获取已加载行模型内，cell起始索引，结束索引
 				for (j = 0; j < gridAliasRowList.length; j++) {
-					if (headItemRows.getIndexByAlias(gridAliasRowList[j]) != -1) {
+					if (headItemRows.getIndexByAlias(gridAliasRowList[j]) !== -1) {
 						cellStartRowIndex = headItemRows.getIndexByAlias(gridAliasRowList[j]);
 						break;
 					}
 				}
 				for (j = gridAliasRowList.length - 1; j > -1; j--) {
-					if (headItemRows.getIndexByAlias(gridAliasRowList[j]) != -1) {
+					if (headItemRows.getIndexByAlias(gridAliasRowList[j]) !== -1) {
 						cellEndRowIndex = headItemRows.getIndexByAlias(gridAliasRowList[j]);
 						break;
 					}
 				}
-				if (cellStartRowIndex == -1 || cellEndRowIndex == -1) {
+				if (cellStartRowIndex === -1 || cellEndRowIndex === -1) {
 					continue;
 				}
 				//列模型未涉及动态加载功能，直接使用cell模型列索引
@@ -287,8 +280,8 @@ define(function(require) {
 				
 				selectRegionModel = {
 					physicsPosi: {
-						top: cell.get("physicsBox").top,
-						left: cell.get("physicsBox").left
+						top: cell.get('physicsBox').top,
+						left: cell.get('physicsBox').left
 					},
 					physicsBox: {
 						width: cell.get('physicsBox').width,
@@ -303,12 +296,12 @@ define(function(require) {
 				};
 				selectRegions.add(selectRegionModel);
 				siderLineCols.add({
-					left: cell.get("physicsBox").left,
+					left: cell.get('physicsBox').left,
 					width: cell.get('physicsBox').width
 				});
 				siderLineRows.add({
-					top: cell.get("physicsBox").top,
-					height: cell.get("physicsBox").height
+					top: cell.get('physicsBox').top,
+					height: cell.get('physicsBox').height
 				});
 				
 
@@ -339,8 +332,8 @@ define(function(require) {
 			} else {
 				selectRegionModel = {
 					physicsPosi: {
-						top: headItemRowModel.get("top"),
-						left: headItemColModel.get("left")
+						top: headItemRowModel.get('top'),
+						left: headItemColModel.get('left')
 					},
 					physicsBox: {
 						width: headItemColModel.get('width'),
@@ -355,7 +348,7 @@ define(function(require) {
 				};
 				selectRegions.add(selectRegionModel);
 				siderLineCols.add({
-					left: headItemColModel.get("left"),
+					left: headItemColModel.get('left'),
 					width: headItemColModel.get('width')
 				});
 				siderLineRows.add({
@@ -373,15 +366,13 @@ define(function(require) {
 		restoreExcel: function() {
 			var excelId = window.SPREADSHEET_AUTHENTIC_KEY,
 				build = window.SPREADSHEET_BUILD_STATE,
-				localRowPosi = 0, //后台存储excel数据总高度
-				startRowAliasY,
 				startRowSort,
 				startColSort,
 				sheetNames = [],
 				self = this,
 				i;
 
-			if (build === "true" || build === undefined) {
+			if (build === 'true' || build === undefined) {
 				this.bulidNewExcel();
 				cache.localRowPosi = 0;
 				return;
@@ -391,11 +382,10 @@ define(function(require) {
 				url: 'excel.htm?m=position',
 				async: false,
 				data: JSON.stringify({
-					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
+					excelId: excelId,
 					sheetId: '1',
 					containerHeight: $('#spreadSheet').height()
 				}),
-				async: false,
 				dataType: 'json',
 				success: function(data) {
 					if (data === '') {
@@ -404,7 +394,7 @@ define(function(require) {
 					cache.UserView.rowAlias = data.displayRowStartAlias;
 					cache.UserView.colAlias = data.displayColStartAlias;
 
-					if (data.returndata.spreadSheet[0].sheet.frozen.state === "1") {
+					if (data.returndata.spreadSheet[0].sheet.frozen.state === '1') {
 						cache.TempProp = {
 							isFrozen: true,
 							colAlias: data.returndata.spreadSheet[0].sheet.frozen.colIndex,

@@ -31,6 +31,11 @@ define(function(require) {
 			clipModel.destroy();
 		}
 		selectRegion = selectRegions.getModelByType("operation")[0];
+		//整行整列，禁止复制
+		if(selectRegion.get('wholePosi').endX === 'MAX' ||
+			selectRegion.get('wholePosi').endY === 'MAX'){
+			return;
+		}
 		clipModel = selectRegion.clone();
 		clipModel.set("selectType", "clip");
 		selectRegions.add(clipModel);

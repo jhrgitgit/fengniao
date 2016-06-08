@@ -70,7 +70,7 @@ define(function(require) {
 				 * 字号
 				 * @property {string} size
 				 */
-				size: '11pt',
+				size: '11',
 				/**
 				 * 字体风格
 				 * @property {string} family

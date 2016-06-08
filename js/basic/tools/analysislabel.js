@@ -16,6 +16,14 @@ define(function(require) {
 			region.startRowIndex = headItemRow.getIndexByDisplayname(getDisplayName(regionLabel[0], 'row'));
 			region.endColIndex = headItemCol.getIndexByDisplayname(getDisplayName(regionLabel[1], 'col'));
 			region.endRowIndex = headItemRow.getIndexByDisplayname(getDisplayName(regionLabel[1], 'row'));
+		} else if (/^[A-Z]+$/.test(regionLabel)) { //整列操作
+			region.startRowIndex = 0;
+			region.endRowIndex = 'MAX';
+			region.startColIndex = region.endColIndex = headItemCol.getIndexByDisplayname(regionLabel);
+		} else if (/^[0-9]+$/.test(regionLabel)) { //整行操作
+			region.startColIndex = 0;
+			region.endColIndex = 'MAX';
+			region.startRowIndex = region.endRowIndex = headItemRow.getIndexByDisplayname(regionLabel);
 		} else {
 			region.startColIndex = region.endColIndex = headItemCol.getIndexByDisplayname(getDisplayName(regionLabel, 'col'));
 			region.startRowIndex = region.endRowIndex = headItemRow.getIndexByDisplayname(getDisplayName(regionLabel, 'row'));

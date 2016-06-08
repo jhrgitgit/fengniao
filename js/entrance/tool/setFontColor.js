@@ -5,19 +5,19 @@ define(function(require) {
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
 		cells = require('collections/cells'),
-		analysisLabel = require('basic/tools/analysislabel');
+		analysisLabel = require('basic/tools/analysislabel'),
+		rowOperate = require('entrance/row/rowoperation');
 
 
 	var setFontColor = function(sheetId, color, label) {
-		var region = {},
-			select,
+		var select,
+			region = {},
 			startColAlias,
 			startRowAlias,
 			endColAlias,
 			endRowAlias;
 		if (label !== undefined) {
 			region = analysisLabel(label);
-			region = cells.getFullOperationRegion(region);
 		} else {
 			select = selectRegions.getModelByType('operation')[0];
 			region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
@@ -26,13 +26,20 @@ define(function(require) {
 			region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
 		}
 
-		cells.operateCellsByRegion(region, function(cell) {
-			cell.set('content.color', color);
-		});
+		if (region.endColIndex === 'MAX') { //整行操作
+			rowOperate.rowPropOper(region.startRowIndex, 'content.color', color);
+			endColAlias = 'MAX';
+			endRowAlias = headItemRows.models[region.endRowIndex].get('alias');
+		} else {
+			region = cells.getFullOperationRegion(region);
+			cells.operateCellsByRegion(region, function(cell) {
+				cell.set('content.color', color);
+			});
+			endColAlias = headItemCols.models[region.endColIndex].get('alias');
+			endRowAlias = headItemRows.models[region.endRowIndex].get('alias');
+		}
 		startColAlias = headItemCols.models[region.startColIndex].get('alias');
 		startRowAlias = headItemRows.models[region.startRowIndex].get('alias');
-		endColAlias = headItemCols.models[region.endColIndex].get('alias');
-		endRowAlias = headItemRows.models[region.endRowIndex].get('alias');
 
 		send.PackAjax({
 			url: 'text.htm?m=font_color',

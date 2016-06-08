@@ -1,11 +1,10 @@
+'use strict';
 define(function(require) {
-	'use strict';
 	var $ = require('lib/jquery'),
 		loadHtml;
 		
 	loadHtml = function(id) {
-		var headDomString = '',
-			mainDomString = '',
+		var mainDomString = '',
 			tailDomString = '';
 
 		mainDomString += '<div class="main-layout">';

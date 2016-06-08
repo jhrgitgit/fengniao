@@ -95,11 +95,11 @@ define(function(require) {
 			SpreadSheet.prototype.setFontWeight = setFontWeight;
 			SpreadSheet.prototype.setFrozen = setFrozen;
 
-			SpreadSheet.prototype.setTextType = setTextType.setText;
-			SpreadSheet.prototype.setNumType = setTextType.setNum;
-			SpreadSheet.prototype.setDateType = setTextType.setDate;
-			SpreadSheet.prototype.setPercentType = setTextType.setPercent;
-			SpreadSheet.prototype.setCoinType = setTextType.setCoin;
+			SpreadSheet.prototype.setType = setTextType;
+			// SpreadSheet.prototype.setNumType = setTextType.setNum;
+			// SpreadSheet.prototype.setDateType = setTextType.setDate;
+			// SpreadSheet.prototype.setPercentType = setTextType.setPercent;
+			// SpreadSheet.prototype.setCoinType = setTextType.setCoin;
 
 			SpreadSheet.prototype.getPointByPosi = getPointByPosi;
 			SpreadSheet.prototype.adaptScreen = adaptScreen;
@@ -109,10 +109,10 @@ define(function(require) {
 			SpreadSheet.prototype.getSelectRegion = getSelectRegion;
 			SpreadSheet.prototype.reloadCells = reloadCells;
 
-			SpreadSheet.prototype.modifyComment =comment.modifyComment;
-			SpreadSheet.prototype.createAddCommentView =comment.createAddCommentView;
-			SpreadSheet.prototype.createEditComment =comment.createEditComment;
-			SpreadSheet.prototype.deleteComment=comment.deleteComment;
+			SpreadSheet.prototype.comment =comment;
+			// SpreadSheet.prototype.createAddCommentView =comment.createAddCommentView;
+			// SpreadSheet.prototype.createEditComment =comment.createEditComment;
+			// SpreadSheet.prototype.deleteComment=comment.deleteComment;
 			
 		},
 		buildDataSourceOperation: function(SpreadSheet) {

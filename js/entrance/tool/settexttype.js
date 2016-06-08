@@ -7,6 +7,7 @@ define(function(require) {
 		headItemRows = require('collections/headItemRow'),
 		selectRegions = require('collections/selectRegion'),
 		analysisLabel = require('basic/tools/analysislabel'),
+		rowOperate = require('entrance/row/rowoperation'),
 		textTypeHandler;
 
 	textTypeHandler = {
@@ -37,7 +38,6 @@ define(function(require) {
 				text;
 			if (label !== undefined) {
 				region = analysisLabel(label);
-				region = cells.getFullOperationRegion(region);
 			} else {
 				select = selectRegions.getModelByType('operation')[0];
 				region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
@@ -46,15 +46,26 @@ define(function(require) {
 				region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
 			}
 
-			cells.operateCellsByRegion(region, function(cell) {
-				text = cell.get('content').texts;
-				cell.set('customProp.format', 'normal');
-				cell.set('customProp.isValid', true);
-				cell.set('customProp.decimal', null);
-				cell.set('customProp.thousands', null);
-				cell.set('customProp.dateFormat', null);
-				cell.set('customProp.currencySign', null);
-			});
+			if (region.endColIndex === 'MAX') { //整行操作
+				rowOperate.rowPropOper(region.startRowIndex, 'customProp.format', 'normal');
+				rowOperate.rowPropOper(region.startRowIndex, 'customProp.isValid', true);
+				rowOperate.rowPropOper(region.startRowIndex, 'customProp.decimal', null);
+				rowOperate.rowPropOper(region.startRowIndex, 'customProp.thousands', null);
+				rowOperate.rowPropOper(region.startRowIndex, 'customProp.dateFormat', null);
+				rowOperate.rowPropOper(region.startRowIndex, 'customProp.currencySign', null);
+			} else {
+				region = cells.getFullOperationRegion(region);
+				cells.operateCellsByRegion(region, function(cell) {
+					text = cell.get('content').texts;
+					cell.set('customProp.format', 'normal');
+					cell.set('customProp.isValid', true);
+					cell.set('customProp.decimal', null);
+					cell.set('customProp.thousands', null);
+					cell.set('customProp.dateFormat', null);
+					cell.set('customProp.currencySign', null);
+				});
+			}
+
 			this.sendData('normal', null, null, null, null, region);
 		},
 		setText: function(sheetId, label) {
@@ -63,7 +74,6 @@ define(function(require) {
 				text;
 			if (label !== undefined) {
 				region = analysisLabel(label);
-				region = cells.getFullOperationRegion(region);
 			} else {
 				select = selectRegions.getModelByType('operation')[0];
 				region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
@@ -72,15 +82,26 @@ define(function(require) {
 				region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
 			}
 
-			cells.operateCellsByRegion(region, function(cell) {
-				text = cell.get('content').texts;
-				cell.set('customProp.format', 'text');
-				cell.set('customProp.isValid', true);
-				cell.set('customProp.decimal', null);
-				cell.set('customProp.thousands', null);
-				cell.set('customProp.dateFormat', null);
-				cell.set('customProp.currencySign', null);
-			});
+			if (region.endColIndex === 'MAX') { //整行操作
+				rowOperate.rowPropOper(region.startRowIndex, 'customProp.format', 'text');
+				rowOperate.rowPropOper(region.startRowIndex, 'customProp.isValid', true);
+				rowOperate.rowPropOper(region.startRowIndex, 'customProp.decimal', null);
+				rowOperate.rowPropOper(region.startRowIndex, 'customProp.thousands', null);
+				rowOperate.rowPropOper(region.startRowIndex, 'customProp.dateFormat', null);
+				rowOperate.rowPropOper(region.startRowIndex, 'customProp.currencySign', null);
+			} else {
+				region = cells.getFullOperationRegion(region);
+				cells.operateCellsByRegion(region, function(cell) {
+					text = cell.get('content').texts;
+					cell.set('customProp.format', 'text');
+					cell.set('customProp.isValid', true);
+					cell.set('customProp.decimal', null);
+					cell.set('customProp.thousands', null);
+					cell.set('customProp.dateFormat', null);
+					cell.set('customProp.currencySign', null);
+				});
+			}
+
 			this.sendData('text', null, null, null, null, region);
 		},
 		setNum: function(sheetId, thousands, decimal, label) {
@@ -89,9 +110,9 @@ define(function(require) {
 				text,
 				isValid,
 				self = this;
+
 			if (label !== undefined) {
 				region = analysisLabel(label);
-				region = cells.getFullOperationRegion(region);
 			} else {
 				select = selectRegions.getModelByType('operation')[0];
 				region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
@@ -99,16 +120,27 @@ define(function(require) {
 				region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
 				region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
 			}
-			cells.operateCellsByRegion(region, function(cell) {
-				text = cell.get('content').texts;
-				isValid = self.isNum(text);
-				cell.set('customProp.format', 'number');
-				cell.set('customProp.isValid', isValid);
-				cell.set('customProp.decimal', decimal);
-				cell.set('customProp.thousands', thousands);
-				cell.set('customProp.dateFormat', null);
-				cell.set('customProp.currencySign', null);
-			});
+
+			if (region.endColIndex === 'MAX') { //整行操作
+				rowOperate.rowPropOper(region.startRowIndex, 'customProp.format', 'number');
+				//rowOperate.rowPropOper(region.startRowIndex, 'customProp.isValid', isValid);
+				rowOperate.rowPropOper(region.startRowIndex, 'customProp.decimal', decimal);
+				rowOperate.rowPropOper(region.startRowIndex, 'customProp.thousands', thousands);
+				rowOperate.rowPropOper(region.startRowIndex, 'customProp.dateFormat', null);
+				rowOperate.rowPropOper(region.startRowIndex, 'customProp.currencySign', null);
+			} else {
+				region = cells.getFullOperationRegion(region);
+				cells.operateCellsByRegion(region, function(cell) {
+					text = cell.get('content').texts;
+					isValid = self.isNum(text);
+					cell.set('customProp.format', 'number');
+					cell.set('customProp.isValid', isValid);
+					cell.set('customProp.decimal', decimal);
+					cell.set('customProp.thousands', thousands);
+					cell.set('customProp.dateFormat', null);
+					cell.set('customProp.currencySign', null);
+				});
+			}
 			this.sendData('number', decimal, thousands, null, null, region);
 		},
 		setDate: function(sheetId, dateFormat, label) {
@@ -119,7 +151,6 @@ define(function(require) {
 				self = this;
 			if (label !== undefined) {
 				region = analysisLabel(label);
-				region = cells.getFullOperationRegion(region);
 			} else {
 				select = selectRegions.getModelByType('operation')[0];
 				region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
@@ -128,17 +159,26 @@ define(function(require) {
 				region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
 			}
 
-			cells.operateCellsByRegion(region, function(cell) {
-				text = cell.get('content').texts;
-				isValid = self.isDate(text);
-				cell.set('customProp.format', 'date');
-				cell.set('customProp.isValid', isValid);
-				cell.set('customProp.decimal', null);
-				cell.set('customProp.thousands', null);
-				cell.set('customProp.dateFormat', dateFormat);
-				cell.set('customProp.currencySign', null);
-			});
-
+			if (region.endColIndex === 'MAX') { //整行操作
+				rowOperate.rowPropOper(region.startRowIndex, 'customProp.format', 'number');
+				//rowOperate.rowPropOper(region.startRowIndex, 'customProp.isValid', isValid);
+				rowOperate.rowPropOper(region.startRowIndex, 'customProp.decimal', null);
+				rowOperate.rowPropOper(region.startRowIndex, 'customProp.thousands', null);
+				rowOperate.rowPropOper(region.startRowIndex, 'customProp.dateFormat', dateFormat);
+				rowOperate.rowPropOper(region.startRowIndex, 'customProp.currencySign', null);
+			} else {
+				region = cells.getFullOperationRegion(region);
+				cells.operateCellsByRegion(region, function(cell) {
+					text = cell.get('content').texts;
+					isValid = self.isDate(text);
+					cell.set('customProp.format', 'date');
+					cell.set('customProp.isValid', isValid);
+					cell.set('customProp.decimal', null);
+					cell.set('customProp.thousands', null);
+					cell.set('customProp.dateFormat', dateFormat);
+					cell.set('customProp.currencySign', null);
+				});
+			}
 			this.sendData('date', null, null, dateFormat, null, region);
 		},
 		setPercent: function(sheetId, decimal, label) {
@@ -147,9 +187,10 @@ define(function(require) {
 				text,
 				isValid,
 				self = this;
+
+
 			if (label !== undefined) {
 				region = analysisLabel(label);
-				region = cells.getFullOperationRegion(region);
 			} else {
 				select = selectRegions.getModelByType('operation')[0];
 				region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
@@ -158,16 +199,26 @@ define(function(require) {
 				region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
 			}
 
-			cells.operateCellsByRegion(region, function(cell) {
-				text = cell.get('content').texts;
-				isValid = self.isPercent(text);
-				cell.set('customProp.format', 'percent');
-				cell.set('customProp.isValid', isValid);
-				cell.set('customProp.decimal', decimal);
-				cell.set('customProp.thousands', false);
-				cell.set('customProp.dateFormat', null);
-				cell.set('customProp.currencySign', null);
-			});
+			if (region.endColIndex === 'MAX') { //整行操作
+				rowOperate.rowPropOper(region.startRowIndex, 'customProp.format', 'percent');
+				//rowOperate.rowPropOper(region.startRowIndex, 'customProp.isValid', isValid);
+				rowOperate.rowPropOper(region.startRowIndex, 'customProp.decimal', decimal);
+				rowOperate.rowPropOper(region.startRowIndex, 'customProp.thousands', false);
+				rowOperate.rowPropOper(region.startRowIndex, 'customProp.dateFormat', null);
+				rowOperate.rowPropOper(region.startRowIndex, 'customProp.currencySign', null);
+			} else {
+				region = cells.getFullOperationRegion(region);
+				cells.operateCellsByRegion(region, function(cell) {
+					text = cell.get('content').texts;
+					isValid = self.isPercent(text);
+					cell.set('customProp.format', 'percent');
+					cell.set('customProp.isValid', isValid);
+					cell.set('customProp.decimal', decimal);
+					cell.set('customProp.thousands', false);
+					cell.set('customProp.dateFormat', null);
+					cell.set('customProp.currencySign', null);
+				});
+			}
 			this.sendData('percent', decimal, false, null, null, region);
 		},
 
@@ -179,7 +230,6 @@ define(function(require) {
 				self = this;
 			if (label !== undefined) {
 				region = analysisLabel(label);
-				region = cells.getFullOperationRegion(region);
 			} else {
 				select = selectRegions.getModelByType('operation')[0];
 				region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
@@ -187,16 +237,27 @@ define(function(require) {
 				region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
 				region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
 			}
-			cells.operateCellsByRegion(region, function(cell) {
-				text = cell.get('content').texts;
-				isValid = self.isCoin(text);
-				cell.set('customProp.format', 'currency');
-				cell.set('customProp.isValid', isValid);
-				cell.set('customProp.decimal', decimal);
-				cell.set('customProp.thousands', true);
-				cell.set('customProp.dateFormat', null);
-				cell.set('customProp.currencySign', sign);
-			});
+
+			if (region.endColIndex === 'MAX') { //整行操作
+				rowOperate.rowPropOper(region.startRowIndex, 'customProp.format', 'currency');
+				//rowOperate.rowPropOper(region.startRowIndex, 'customProp.isValid', isValid);
+				rowOperate.rowPropOper(region.startRowIndex, 'customProp.decimal', decimal);
+				rowOperate.rowPropOper(region.startRowIndex, 'customProp.thousands', true);
+				rowOperate.rowPropOper(region.startRowIndex, 'customProp.dateFormat', null);
+				rowOperate.rowPropOper(region.startRowIndex, 'customProp.currencySign', sign);
+			} else {
+				region = cells.getFullOperationRegion(region);
+				cells.operateCellsByRegion(region, function(cell) {
+					text = cell.get('content').texts;
+					isValid = self.isCoin(text);
+					cell.set('customProp.format', 'currency');
+					cell.set('customProp.isValid', isValid);
+					cell.set('customProp.decimal', decimal);
+					cell.set('customProp.thousands', true);
+					cell.set('customProp.dateFormat', null);
+					cell.set('customProp.currencySign', sign);
+				});
+			}
 			this.sendData('currency', decimal, true, null, sign, region);
 		},
 		sendData: function(format, decimal, thousands, dateFormat, currencySign, region) {
@@ -206,15 +267,29 @@ define(function(require) {
 				endColIndex = region.endColIndex,
 				headItemRowList = headItemRows.models,
 				headItemColList = headItemCols.models,
+				endRowAlias,
+				endColAlias,
 				data;
+
+			if (endRowIndex === 'MAX') {
+				endRowAlias = 'MAX';
+			} else {
+				endRowAlias = headItemRowList[endRowIndex].get('alias');
+			}
+			if (endColIndex === 'MAX') {
+				endColAlias = 'MAX';
+			} else {
+				endColAlias = headItemColList[endColIndex].get('alias');
+			}
+
 			data = {
 				excelId: window.SPREADSHEET_AUTHENTIC_KEY,
 				sheetId: '1',
 				coordinate: {
 					startRowAlais: headItemRowList[startRowIndex].get('alias'),
-					endRowAlais: headItemRowList[endRowIndex].get('alias'),
+					endRowAlais: endRowAlias,
 					startColAlais: headItemColList[startColIndex].get('alias'),
-					endColAlais: headItemColList[endColIndex].get('alias'),
+					endColAlais: endColAlias,
 				},
 				format: format
 			};

@@ -53,7 +53,9 @@ define(function(require) {
 			/**
 			 * 整行操作设置属性
 			 */
-			operProp:{}
+			operProp:{
+
+			}
 		},
 		/**
 		 * 销毁`model`对象的视图

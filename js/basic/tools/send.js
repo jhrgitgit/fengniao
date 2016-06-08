@@ -1,6 +1,5 @@
-
+'use strict';
 define(function(require) {
-	'use strict';
 	var $ = require('lib/jquery'),
 		systemConfig = require('spreadsheet/config');
 	/**

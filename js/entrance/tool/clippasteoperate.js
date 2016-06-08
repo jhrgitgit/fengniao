@@ -43,7 +43,6 @@ define(function(require) {
 		clipRegion = selectRegions.getModelByType("clip")[0];
 		selectRegion = selectRegions.getModelByType("operation")[0];
 
-		//ps:由alias转为index
 		startColIndex = headItemCols.getIndexByAlias(clipRegion.get("wholePosi").startX);
 		startRowIndex = headItemRows.getIndexByAlias(clipRegion.get("wholePosi").startY);
 		endColIndex = headItemCols.getIndexByAlias(clipRegion.get("wholePosi").endX);
@@ -52,7 +51,7 @@ define(function(require) {
 		relativeColIndex = startColIndex - headItemCols.getIndexByAlias(selectRegion.get("wholePosi").startX);
 		relativeRowIndex = startRowIndex - headItemRows.getIndexByAlias(selectRegion.get("wholePosi").startY);
 
-	if (isAblePaste(endRowIndex - startRowIndex + 1, endColIndex - startColIndex + 1) === false) return;
+	// if (isAblePaste(endRowIndex - startRowIndex + 1, endColIndex - startColIndex + 1) === false) return;
 		//超出已加载区域处理
 		for (i = startRowIndex; i < endRowIndex + 1; i++) {
 			for (j = startColIndex; j < endColIndex + 1; j++) {

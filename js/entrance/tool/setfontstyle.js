@@ -5,23 +5,18 @@ define(function(require) {
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
 		cells = require('collections/cells'),
-		analysisLabel = require('basic/tools/analysislabel');
+		analysisLabel = require('basic/tools/analysislabel'),
+		rowOperate = require('entrance/row/rowoperation');
 
 
 	var setFontStyle = function(sheetId, italic, label) {
 		var select,
 			region = {},
+			startColAlias,
+			startRowAlias,
+			endColAlias,
+			endRowAlias,
 			tempCellList;
-		if (label !== undefined) {
-			region = analysisLabel(label);
-			region = cells.getFullOperationRegion(region);
-		} else {
-			select = selectRegions.getModelByType('operation')[0];
-			region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
-			region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
-			region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
-			region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
-		}
 
 		if (italic === 'italic') {
 			italic = true;
@@ -38,9 +33,31 @@ define(function(require) {
 				italic = !tempCellList[0].get('content').italic;
 			}
 		}
-		cells.operateCellsByRegion(region, function(cell) {
-			cell.set('content.italic', italic);
-		});
+
+		if (label !== undefined) {
+			region = analysisLabel(label);
+		} else {
+			select = selectRegions.getModelByType('operation')[0];
+			region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
+			region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
+			region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
+			region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
+		}
+		if (region.endColIndex === 'MAX') { //整行操作
+			rowOperate.rowPropOper(region.startRowIndex, 'content.italic', italic);
+			endColAlias = 'MAX';
+			endRowAlias = headItemRows.models[region.endRowIndex].get('alias');
+		} else {
+			region = cells.getFullOperationRegion(region);
+			cells.operateCellsByRegion(region, function(cell) {
+				cell.set('content.italic', italic);
+			});
+			endColAlias = headItemCols.models[region.endColIndex].get('alias');
+			endRowAlias = headItemRows.models[region.endRowIndex].get('alias');
+		}
+
+		startColAlias = headItemCols.models[region.startColIndex].get('alias');
+		startRowAlias = headItemRows.models[region.startRowIndex].get('alias');
 
 		send.PackAjax({
 			url: 'text.htm?m=font_italic',

@@ -30,7 +30,6 @@ define(function(require) {
 		//选中区域内开始坐标，结束坐标
 		if (label !== undefined) {
 			region = analysisLabel(label);
-			region = cells.getFullOperationRegion(region);
 		} else {
 			select = selectRegions.getModelByType('operation')[0];
 			region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
@@ -38,6 +37,10 @@ define(function(require) {
 			region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
 			region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
 		}
+		if (region.endColIndex === 'MAX' || region.endRowIndex === 'MAX') {
+			return;
+		}
+		region = cells.getFullOperationRegion(region);
 		startColIndex = region.startColIndex;
 		startRowIndex = region.startRowIndex;
 		endColIndex = region.endColIndex;

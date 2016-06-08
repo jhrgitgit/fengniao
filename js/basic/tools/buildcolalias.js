@@ -1,11 +1,10 @@
+'use strict';
 define(function() {
-	'use strict';
 	var buildColAlias = function(currentIndex) {
 		var aliasCol = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
 			displayText = '',
 			remainder,
-			divisible,
-			temp = 0;
+			divisible;
 
 		remainder = currentIndex % aliasCol.length;
 		divisible = Math.floor(currentIndex / aliasCol.length);

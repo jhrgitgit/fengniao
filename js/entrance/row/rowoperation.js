@@ -1,8 +1,9 @@
 'use strict';
 define(function(require) {
 	var Cell = require('models/cell'),
-		headItemRows = require('collections/headitemrow'),
-		headItemCols = require('collections/headitemcol'),
+		cache = require('basic/tools/cache'),
+		headItemRows = require('collections/headItemRow'),
+		headItemCols = require('collections/headItemCol'),
 		cells = require('collections/cells');
 	return {
 		rowMerge: function() {
@@ -21,23 +22,28 @@ define(function(require) {
 			var parentProp,
 				childProp,
 				headRowModel,
-				headColModel,
 				headRowProp,
 				defaultProp,
 				startColAlias,
-				endRowAlias,
+				endColAlias,
 				startColIndex,
 				endColIndex,
-				cellList;
+				rowAlias,
+				colAlias,
+				cellList,
+				cell,
+				currentStrandX,
+				props,
+				len, i;
 
-			prop = prop.split('.');
-			if (prop.length > 1) {
-				childProp = prop[1];
+			props = prop.split('.');
+			if (props.length > 1) {
+				childProp = props[1];
 			}
-			parentProp = prop[0];
+			parentProp = props[0];
 
 			//维护行对象operProp属性
-			headRowModel = headItemRows.models[0];
+			headRowModel = headItemRows.models[index];
 			headRowProp = headRowModel.get('operProp');
 			defaultProp = (new Cell()).toJSON();
 
@@ -49,26 +55,56 @@ define(function(require) {
 						delete defaultProp[parentProp];
 					}
 				} else {
-					headRowProp[parentProp][childProp] = headRowProp[parentProp][childProp];
+					headRowProp[parentProp][childProp] = value;
 				}
 			} else {
 				if (defaultProp[parentProp][childProp] !== value) {
 					if (!headRowProp[parentProp]) {
 						headRowProp[parentProp] = {};
 					}
-					headRowProp[parentProp][childProp] = headRowProp[parentProp][childProp];
+					headRowProp[parentProp][childProp] = value;
 				}
 			}
 			headRowModel.set('operProp', headRowProp);
-			//修改行上已存在单元格集合
 			cellList = cells.getCellByRow(index, 0, index, headItemCols.length - 1);
-			//判断设置值与默认值是否相等
+			len = cellList.length;
+			i = 0;
+			for (; i < len; i++) {
+				if (cellList[i].get('occupy').y.length === 1) {
+					cellList[i].set(prop, value);
+				}
+			}
+			//在加载区域内，填充创建单元格，并设置属性
+			startColAlias = cache.loadStartColAlias;
+			endColAlias = cache.loadEndColAlias;
 
-			//相等删除row中属性
+			startColIndex = headItemCols.getIndexByAlias(startColAlias);
+			endColIndex = headItemCols.getIndexByAlias(endColAlias);
 
-			//不相等
-
-			//新建加载域内单元格
+			i = startColIndex;
+			currentStrandX = cache.CellsPosition.strandX;
+			for (; i < endColIndex + 1; i++) {
+				rowAlias = headItemRows.models[index].get('alias');
+				colAlias = headItemCols.models[i].get('alias');
+				if (currentStrandX[colAlias] === undefined ||
+					currentStrandX[colAlias][rowAlias] === undefined) {
+					//创建单元格
+					cell = new Cell();
+					cell.set('occupy', {
+						x: [colAlias],
+						y: [rowAlias]
+					});
+					cell.set('physicsBox', {
+						top: headItemRows.models[index].get('top'),
+						left: headItemCols.models[i].get('left'),
+						width: headItemCols.models[i].get('width'),
+						height: headItemRows.models[index].get('height')
+					});
+					cell.set(prop, value);
+					cache.cachePosition(rowAlias, colAlias, cells.length);
+					cells.add(cell);
+				}
+			}
 		},
 	};
 });

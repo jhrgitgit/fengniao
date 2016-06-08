@@ -100,6 +100,12 @@ define(function(require) {
 			if (endIndexX === undefined) {
 				endIndexX = startIndexX;
 			}
+			if (endIndexX === 'MAX') {
+				endIndexX = headItemCols.length - 1;
+			}
+			if (endIndexY === 'MAX') {
+				endIndexY = headItemRows.length - 1;
+			}
 			var cells = [],
 				i, j;
 			for (i = 0; i < endIndexX - startIndexX + 1; i++) {

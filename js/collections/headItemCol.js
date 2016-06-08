@@ -87,9 +87,13 @@ define(function(require) {
 		 * @return {int} 索引值
 		 */
 		getIndexByAlias: function(alias) {
-			return _.findIndex(this.toJSON(), {
-				'alias': alias
-			});
+			if (alias === 'MAX') {
+				return 'MAX';
+			} else {
+				return _.findIndex(this.toJSON(), {
+					'alias': alias
+				});
+			}
 		},
 		/**
 		 * 通过别名查询符合条件标线的对象

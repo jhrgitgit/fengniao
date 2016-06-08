@@ -7,7 +7,6 @@
 var requirejs = require('requirejs'),
     fs = require('fs'),
     path = require('path');
-
 // convert relative path to absolute path.
 function convert( name, _path, contents ) {
     // var rDefine = /(define\s*\(\s*('|").*?\2\s*,\s*\[)([\s\S]*?)\]/ig,
@@ -62,8 +61,8 @@ module.exports = function( grunt ) {
             skipSemiColonInsertion: true,
 
             wrap: {
-                startFile: 'build/intro.js',
-                endFile: 'build/outro.js'
+                startFile: 'tools/build/intro.js',
+                endFile: 'tools/build/outro.js'
             },
 
             rawText: {},

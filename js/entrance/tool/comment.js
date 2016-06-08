@@ -11,11 +11,8 @@ define(function(require) {
 
 	commentHandler = {
 		modifyComment: function(sheetId, comment, label) {
-			var select,
-				region = {};
 			if (label !== undefined) {
 				region = analysisLabel(label);
-				region = cells.getFullOperationRegion(region);
 			} else {
 				select = selectRegions.getModelByType('operation')[0];
 				region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
@@ -23,17 +20,32 @@ define(function(require) {
 				region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
 				region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
 			}
-			cells.operateCellsByRegion(region, function(cell) {
-				cell.set('customProp.comment', comment);
-			});
+			if (region.endColIndex === 'MAX') { //整行操作
+				return;
+			} else {
+				region = cells.getFullOperationRegion(region);
+				cells.operateCellsByRegion(region, function(cell) {
+					cell.set('customProp.comment', comment);
+				});
+			}
 			this.sendData(region, comment, 'text.htm?m=comment_set');
 		},
 
 		createAddCommentView: function(sheetId) {
+			var select = selectRegions.getModelByType('operation')[0];
+			if (select.get('wholePosi').endX === 'MAX' ||
+				select.get('wholePosi').endY === 'MAX') {
+				return;
+			}
 			Backbone.trigger('event:selectRegion:createCommentContainer', undefined, 'add');
 		},
 
 		createEditComment: function(sheetId) {
+			var select = selectRegions.getModelByType('operation')[0];
+			if (select.get('wholePosi').endX === 'MAX' ||
+				select.get('wholePosi').endY === 'MAX') {
+				return;
+			}
 			Backbone.trigger('event:selectRegion:createCommentContainer', undefined, 'edit');
 		},
 
@@ -42,7 +54,6 @@ define(function(require) {
 				region = {};
 			if (label !== undefined) {
 				region = analysisLabel(label);
-				region = cells.getFullOperationRegion(region);
 			} else {
 				select = selectRegions.getModelByType('operation')[0];
 				region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
@@ -50,9 +61,14 @@ define(function(require) {
 				region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
 				region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
 			}
-			cells.operateCellsByRegion(region, function(cell) {
-				cell.set('customProp.comment', null);
-			});
+			if (region.endColIndex === 'MAX') { //整行操作
+				return;
+			} else {
+				region = cells.getFullOperationRegion(region);
+				cells.operateCellsByRegion(region, function(cell) {
+					cell.set('customProp.comment', null);
+				});
+			}
 			this.sendData(region, undefined, 'text.htm?m=comment_del');
 		},
 		sendData: function(region, comment, url) {

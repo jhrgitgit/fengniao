@@ -107,9 +107,13 @@ define(function(require) {
 		 * @return {int} 索引
 		 */
 		getIndexByAlias: function(alias) {
-			return _.findIndex(this.toJSON(), {
-				'alias': alias
-			});
+			if (alias==='MAX') {
+				return 'MAX';
+			} else {
+				return _.findIndex(this.toJSON(), {
+					'alias': alias
+				});
+			}
 		},
 		getNextAliasByAlias: function(alias) {
 			var index,

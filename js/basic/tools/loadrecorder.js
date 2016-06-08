@@ -1,5 +1,5 @@
+'use strict';
 define(function(require) {
-	'use strict';
 	var binary = require('basic/util/binary');
 
 	return {
@@ -10,7 +10,7 @@ define(function(require) {
 				endExist,
 				newStartPosi,
 				newEndPosi,
-				i, len;
+				len;
 			startIndex = binary.indexArrayBinary(startPosi, region, 'start', 'end');
 			endIndex = binary.indexArrayBinary(endPosi, region, 'start', 'end');
 			startExist = binary.existArrayBinary(startPosi, region, 'start', 'end');
@@ -20,7 +20,9 @@ define(function(require) {
 			newEndPosi = endExist === false ? endPosi : region[endIndex].end;
 			//ps:对于相应区域，未进行合并，需要改进
 			if (startIndex === endIndex) {
-				if (startExist === true && endExist === true) return;
+				if (startExist === true && endExist === true) {
+					return;
+				}
 				len = (startExist === true || endExist === true) ? 1 : 0;
 			} else {
 				if (startExist === true && endExist === true) {
