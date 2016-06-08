@@ -40,5 +40,9 @@ module.exports = function(grunt) {
 
     grunt.registerTask('check', ['jshint']);
     grunt.registerTask('dist',['build']);
+<<<<<<< HEAD
     grunt.registerTask('default', ['jshint','build']);
+=======
+    grunt.registerTask('default', ['jshint']);
+>>>>>>> 42f2f7f05b57505fb23562892b154ed1b1c38843
 };

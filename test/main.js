@@ -11,7 +11,8 @@ requirejs([
 	// '../test/unit/wordWrapTest',
 	// '../test/unit/texttype.spec',
 	// '../test/unit/commentspec',
-	'../test/unit/row.spec'
+	//'../test/unit/row.spec',
+	'../test/unit/rowoper.spec.js'
 ], function() {
 	window.onload();
 });

@@ -90,7 +90,7 @@ define(function(require) {
 				 * 字体颜色RGB
 				 * @property {string} color
 				 */
-				color: '#000',
+				color: 'rgb(0, 0, 0)',
 				/**
 				 * 左右对齐
 				 * @property {string} alignRow
@@ -148,7 +148,7 @@ define(function(require) {
 				 * 单元格背景颜色RGB
 				 * @property {string} background
 				 */
-				background: '#fff',
+				background: 'rgb(255, 255, 255)',
 				/**
 				 * 单元格数据类型: 
 				 * 货币 currency

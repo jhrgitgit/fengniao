@@ -1,10 +1,10 @@
 'use strict';
 define(function(require) {
-	var $ = require('lib/jquery');
+	// var $ = require('lib/jquery');
 	var SpreadSheet = require('spreadsheet/spreadsheet');
-    var	Backbone = require('lib/backbone');
-	var ss=new SpreadSheet();
-	$(document).on('click','#test',function(){
+
+	new SpreadSheet();
+	// $(document).on('click','#test',function(){
 		// ss.setFillColor('','rgb(127, 127, 127)',['B6','C7']);
 		// ss.setFillColor('','rgb(127, 127, 127)','D6');
 		// ss.setFillColor('','rgb(127, 127, 127)','5');
@@ -53,6 +53,7 @@ define(function(require) {
 
 		//ps:增加测试
 		//
-		Backbone.trigger('event:cellsContainer:adaptSelectRegion');
-	});
+		// Backbone.trigger('event:cellsContainer:adaptSelectRegion');
+	// });
+
 });

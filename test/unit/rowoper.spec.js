@@ -1,6 +1,8 @@
 'use strict';
 define(function(require) {
 	var cache = require('basic/tools/cache'),
+		headItemRows = require('collections/headItemRow'),
+		headItemCols = require('collections/headItemCol'),
 		buildColAlias = require('basic/tools/buildcolalias'),
 		rowOper = require('/entrance/row/rowoperation');
 	describe("行属性测试", function() {
@@ -28,7 +30,12 @@ define(function(require) {
 			cache.loadEndColAlias = '10';
 		});
 		it('设置属性测试',function(){
-			rowOper.rowPropOper(3,'content.color','');
+			var headModel;
+			headModel = headItemRows.models[3];
+			rowOper.rowPropOper(3,'content.color','rgb(89, 89, 89)');
+			expect(headModel.get('operProp')).toEqual({content:{color:'rgb(89, 89, 89)'}});
+			rowOper.rowPropOper(3,'content.color','rgb(0,0,0)');
+			expect(headModel.get('operProp')).toEqual({content:{color:'rgb(0,0,0)'}});
 		});
 	});
 	describe("单元格创建测试", function() {
