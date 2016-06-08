@@ -29,7 +29,6 @@ define(function(require) {
 			region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
 		}
 
-<<<<<<< HEAD
 		if (region.endColIndex === 'MAX') { //整行操作
 			rowOperate.rowPropOper(region.startRowIndex, 'content.size', fontSize);
 			endColAlias = 'MAX';
@@ -41,21 +40,6 @@ define(function(require) {
 			});
 			endColAlias = headItemCols.models[region.endColIndex].get('alias');
 			endRowAlias = headItemRows.models[region.endRowIndex].get('alias');
-=======
-		cells.operateCellsByRegion(region, function(cell) {
-			cell.set('content.size', fontSize);
-		});
-
-		for (i = region.startRowIndex; i < region.endRowIndex + 1; i++) {
-			headItemModel = headItemRows.models[i];
-			headItemHeight = headItemModel.get('height');
-			fontHeight = Math.round(fontSize / 3 * 4);
-			containerHeight = fontHeight + 4;
-			if (containerHeight > headItemHeight) {
-				setCellHeight('sheetId', headItemModel.get('displayName'), containerHeight);
-				
-			}
->>>>>>> 42f2f7f05b57505fb23562892b154ed1b1c38843
 		}
 
 		startColAlias = headItemCols.models[region.startColIndex].get('alias');
