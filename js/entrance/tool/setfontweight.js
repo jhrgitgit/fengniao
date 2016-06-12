@@ -17,6 +17,17 @@ define(function(require) {
 			endRowAlias,
 			tempCellList;
 
+
+		if (label !== undefined) {
+			region = analysisLabel(label);
+		} else {
+			select = selectRegions.getModelByType('operation')[0];
+			region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
+			region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
+			region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
+			region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
+		}
+
 		if (bold === 'bold') {
 			bold = true;
 		} else if (bold === 'normal') {
@@ -32,16 +43,6 @@ define(function(require) {
 			} else {
 				bold = !tempCellList[0].get('content').bd;
 			}
-		}
-
-		if (label !== undefined) {
-			region = analysisLabel(label);
-		} else {
-			select = selectRegions.getModelByType('operation')[0];
-			region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
-			region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
-			region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
-			region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
 		}
 		if (region.endColIndex === 'MAX') { //整行操作
 			rowOperate.rowPropOper(region.startRowIndex, 'content.bd', bold);

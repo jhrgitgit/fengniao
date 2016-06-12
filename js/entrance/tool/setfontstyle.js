@@ -18,6 +18,17 @@ define(function(require) {
 			endRowAlias,
 			tempCellList;
 
+
+		if (label !== undefined) {
+			region = analysisLabel(label);
+		} else {
+			select = selectRegions.getModelByType('operation')[0];
+			region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
+			region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
+			region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
+			region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
+		}
+
 		if (italic === 'italic') {
 			italic = true;
 		} else if (italic === 'normal') {
@@ -32,16 +43,6 @@ define(function(require) {
 			} else {
 				italic = !tempCellList[0].get('content').italic;
 			}
-		}
-
-		if (label !== undefined) {
-			region = analysisLabel(label);
-		} else {
-			select = selectRegions.getModelByType('operation')[0];
-			region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
-			region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
-			region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
-			region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
 		}
 		if (region.endColIndex === 'MAX') { //整行操作
 			rowOperate.rowPropOper(region.startRowIndex, 'content.italic', italic);
