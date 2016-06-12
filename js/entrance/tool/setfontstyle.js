@@ -65,10 +65,10 @@ define(function(require) {
 				excelId: window.SPREADSHEET_AUTHENTIC_KEY,
 				sheetId: '1',
 				coordinate: {
-					startX: region.startColIndex,
-					startY: region.startRowIndex,
-					endX: region.endColIndex,
-					endY: region.endRowIndex
+					startX: startColAlias,
+					startY: startRowAlias,
+					endX: endColAlias,
+					endY: endRowAlias
 				},
 				italic: italic
 			})

@@ -40,12 +40,8 @@ define(function(require) {
 		},
 		adaptPosi: function(startPosi, value, region) {
 			var startIndex,
-				endIndex,
 				startExist,
-				endExist,
-				newStartPosi,
-				newEndPosi,
-				i, len;
+				i;
 			startIndex = binary.indexArrayBinary(startPosi, region, 'start', 'end');
 			startExist = binary.existArrayBinary(startPosi, region, 'start', 'end');
 			//问题

@@ -58,7 +58,7 @@ define(function(require) {
 				region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
 			}
 			if (region.endColIndex === 'MAX') { //整行操作
-				return;
+				rowOperate.rowPropOper(region.startRowIndex,'customProp.comment', null);
 			} else {
 				region = cells.getFullOperationRegion(region);
 				cells.operateCellsByRegion(region, function(cell) {
