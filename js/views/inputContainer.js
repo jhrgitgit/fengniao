@@ -69,11 +69,12 @@ define(function(require) {
 		 * @method render
 		 */
 		render: function() {
+			//修改
 			var modelJSON = this.model.toJSON();
-			if (modelJSON.content.italic === true) this.$el.css({
+			if (modelJSON.content.bd === true) this.$el.css({
 				'font-weight': 'bold'
 			});
-			if (modelJSON.content.bd === true) this.$el.css({
+			if (modelJSON.content.italic === true) this.$el.css({
 				'font-style': 'italic'
 			});
 			this.$el.css({
