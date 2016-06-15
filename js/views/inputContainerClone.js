@@ -1,8 +1,6 @@
 define(function(require) {
 	'use strict';
-	var $ = require('lib/jquery'),
-		_ = require('lib/underscore'),
-		Backbone = require('lib/backbone'),
+	var Backbone = require('lib/backbone'),
 		cache = require('basic/tools/cache'),
 		getTextBox = require('basic/tools/gettextbox'),
 		util = require('basic/util/clone'),
@@ -46,7 +44,6 @@ define(function(require) {
 		 * @type {Object}
 		 */
 		events: {
-			'blur': 'close',
 			'input': 'adapt',
 			'propertychange': 'adapt',
 			'keydown': 'keyHandle'
@@ -56,46 +53,173 @@ define(function(require) {
 		 * @method initialize
 		 */
 		initialize: function(options) {
-			var modelRowList = headItemRows,
-				modelColList = headItemCols;
-			this.currentRule = options.currentRule;
-			this.offsetLeft = cache.TempProp.isFrozen ? (this.currentRule.displayPosition.offsetLeft || 0) : 0;
-			this.offsetTop = cache.TempProp.isFrozen ? (this.currentRule.displayPosition.offsetTop || 0) : 0;
-			this.userViewTop = cache.TempProp.isFrozen ? modelRowList.getModelByAlias(cache.UserView.rowAlias).get('top') : 0;
-			this.userViewLeft = cache.TempProp.isFrozen ? modelColList.getModelByAlias(cache.UserView.colAlias).get('left') : 0;
+			Backbone.on('event:InputContainer:show', this.show, this);
+			Backbone.on('event:InputContainer:hide', this.hide, this);
 		},
-		
+		/**
+		 * 显示输入框
+		 */
+		show: function() {
+			var mainContainer,
+				rowAlias,
+				colAlias,
+				colIndex,
+				rowIndex,
+				scrollTop,
+				scrollLeft,
+				offsetTop,
+				offsetLeft,
+				select,
+				left,
+				top,
+				cell;
+
+			select = selectRegions.getModelByType('operation')[0];
+			colAlias = select.get('wholePosi').startX;
+			colIndex = headItemCols.getIndexByAlias(colAlias);
+			rowAlias = select.get('wholePosi').startY;
+			rowIndex = headItemRows.getIndexByAlias(rowAlias);
+			Backbone.trigger('call:mainContainer', function(container) {
+				mainContainer = container;
+			});
+			this.rowIndex = rowIndex;
+			this.colIndex = colIndex;
+			this.mainContainer = mainContainer;
+			this.showState = true;
+
+			left = this.getAbsoluteLeft();
+			top = this.getAbsoluteTop();
+			this.$el.css({
+				'left': left,
+				'top': top
+			});
+			this.$el.focus();
+		},
+		/**
+		 * 隐藏输入框
+		 */
+		hide: function() {
+			this.showState = false;
+			this.$el.css({
+				'left': 0,
+				'top': 0,
+				'width': 0,
+				'height': 0
+			});
+			this.$el.focus();
+		},
+		/**
+		 * 横向移动输入框
+		 */
+		transverseScroll: function() {
+			var left;
+			if (this.showState === true) {
+				left = this.getAbsoluteLeft();
+				this.$el.css({
+					'left': left
+				});
+			}
+		},
+		/**
+		 * 纵向移动输入框
+		 */
+		verticalScroll: function() {
+			var top;
+			if (this.showState === true) {
+				top = this.getAbsoluteTop();
+				this.$el.css({
+					'top': top
+				});
+			}
+		},
+		/**
+		 * 获取输入框left坐标
+		 * @param  {object} mainContainer mainContainer
+		 * @param  {number} colIndex 选中区域列索引
+		 */
+		getAbsoluteLeft: function(mainContainer, colIndex) {
+			var outLeft,
+				scrollLeft,
+				userViewLeft,
+				userViewIndex,
+				frozenColIndex,
+				headItemLeft,
+				result;
+
+			colIndex = this.colIndex;
+			mainContainer = this.mainContainer;
+
+			outLeft = config.System.outerLeft;
+			scrollLeft = mainContainer.$el.scrollLeft();
+			headItemLeft = headItemCols.models[colIndex].get('left');
+
+			if (cache.TempProp.colFrozen) { //冻结情况
+				frozenColIndex = headItemCols.getIndexByAlias(cache.TempProp.colAlias);
+				if (frozenColIndex > colIndex) {
+					scrollLeft = 0;
+				}
+				userViewIndex = headItemCols.getIndexByAlias(cache.UserView.colAlias);
+				userViewLeft = headItemCols.models[userViewIndex].get('left');
+				result = headItemLeft - userViewLeft + outLeft - scrollLeft + 1;
+				return result;
+			} else { //非冻结情况
+				result = headItemLeft + outLeft - scrollLeft + 1;
+				return result;
+			}
+		},
+		getAbsoluteTop: function() {
+			var outTop,
+				scrollTop,
+				userViewTop,
+				userViewIndex,
+				frozenRowIndex,
+				mainContainer,
+				rowIndex,
+				headItemTop,
+				result;
+
+			rowIndex = this.rowIndex;
+			mainContainer = this.mainContainer;
+
+			outTop = config.System.outerTop;
+			scrollTop = mainContainer.$el.scrollTop();
+			headItemTop = headItemRows.models[rowIndex].get('top');
+
+			if (cache.TempProp.colFrozen) { //冻结情况
+				frozenRowIndex = headItemRows.getIndexByAlias(cache.TempProp.rowAlias);
+				if (frozenRowIndex > rowIndex) {
+					scrollTop = 0;
+				}
+				userViewIndex = headItemRows.getIndexByAlias(cache.UserView.rowAlias);
+				userViewTop = headItemRows.models[userViewIndex].get('top');
+				result = headItemTop - userViewTop + outTop - scrollTop + 1;
+				return result;
+			} else { //非冻结情况
+				result = headItemTop + outTop - scrollTop + 1;
+				return result;
+			}
+		},
 		/**
 		 * 视图显示函数
 		 * @method render
 		 */
 		render: function() {
-			//修改
-			var modelJSON = this.model.toJSON();
-			if (modelJSON.content.bd === true) this.$el.css({
-				'font-weight': 'bold'
-			});
-			if (modelJSON.content.italic === true) this.$el.css({
-				'font-style': 'italic'
-			});
 			this.$el.css({
-				'width': modelJSON.physicsBox.width,
-				'height': modelJSON.physicsBox.height - 2,
-				'left': modelJSON.physicsBox.left - this.offsetLeft - this.userViewLeft + 1,
-				'top': modelJSON.physicsBox.top - this.offsetTop - this.userViewTop + 1,
-				'color': modelJSON.content.color,
-				'font-size': modelJSON.content.size,
-				'font-family': modelJSON.content.family,
-			}).val(modelJSON.content.texts);
-			this.adjustWidth();
+				'width': 20,
+				'height': 18,
+				'left': 0,
+				'top': 0,
+				'z-index': 10000,
+				'background-color': 'grey'
+			});
 			return this;
 		},
 		/**
 		 * 自适应输入框的大小
 		 */
 		adapt: function() {
-			this.adjustWidth();
-			this.adjustHight();
+			// this.adjustWidth();
+			// this.adjustHight();
 		},
 		/**
 		 * 调整输入框高度
@@ -235,6 +359,12 @@ define(function(require) {
 				currentTexts,
 				self = this,
 				len, i, isShortKey, keyboard;
+
+			if (this.showState === undefined || this.showState === false) {
+				this.showState === true;
+				this.show();
+			}
+
 			keyboard = config.keyboard;
 			isShortKey = this.isShortKey(e.keyCode);
 			if (isShortKey) {
@@ -245,7 +375,7 @@ define(function(require) {
 						this.close();
 					} else if (config.shortcuts.altEnter && e.altKey) {
 						insertAtCursor('\n');
-						this.adjustHight();
+						// this.adjustHight();
 						return;
 					}
 				}
@@ -279,7 +409,8 @@ define(function(require) {
 		 * @method destroy
 		 */
 		destroy: function() {
-			this.undelegateEvents();
+			Backbone.off('event:InputContainer:show');
+			Backbone.off('event:InputContainer:hide');
 			this.remove();
 		}
 	});

@@ -12,6 +12,7 @@ define(function(require) {
 		MainContainer = require('views/mainContainer'),
 		ColsPanelContainer = require('views/colsPanelContainer'),
 		RowsPanelContainer = require('views/rowsPanelContainer'),
+		InputContainer = require('views/inputContainerClone'),
 		BodyContainer;
 
 	/**
@@ -52,9 +53,12 @@ define(function(require) {
 		 * @chainable
 		 */
 		render: function() {
+			this.inputContainer = new InputContainer();
+			this.$el.append(this.inputContainer.render().el);
 			this.calculation();
 			this.adaptScreen();
 			this.generateSheet();
+			this.inputContainer.$el.focus();
 		},
 
 		generateSheet: function() {
@@ -181,6 +185,17 @@ define(function(require) {
 				$('tr:eq(1) td:eq(0)', customID).prepend(rowsPanelContainer.render().el);
 				buildObserverPattern(rowsPanelContainer);
 			}
+
+			//输入框订阅maincontainer滚动事件
+			publisherList['mainContainer'].subscribe({
+				master: this.inputContainer,
+				behavior: 'transverseScroll'
+			}, 'transversePublish');
+			publisherList['mainContainer'].subscribe({
+				master: this.inputContainer,
+				behavior: 'verticalScroll'
+			}, 'verticalPublish');
+
 			/**
 			 * 发布/订阅
 			 * @method buildObserverPattern
@@ -384,7 +399,7 @@ define(function(require) {
 			userViewRowIndex = modelRowList.getIndexByAlias(cache.UserView.rowAlias);
 			userViewColModel = modelColList.getModelByAlias(cache.UserView.colAlias);
 			userViewColIndex = modelColList.getIndexByAlias(cache.UserView.colAlias);
-			
+
 
 			if (cache.TempProp.isFrozen) {
 				if (cache.TempProp.rowFrozen && cache.TempProp.colFrozen) {
@@ -594,6 +609,7 @@ define(function(require) {
 		 * @param  {object}  e body页面移动的event
 		 */
 		mouseInfo: function(e) {
+			//获取相对位置
 			this.mousePageX = e.pageX - this.$el.left;
 			this.mousePageY = e.pageY - this.$el.top;
 		},

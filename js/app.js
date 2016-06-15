@@ -1,9 +1,19 @@
 'use strict';
 define(function(require) {
-	// var $ = require('lib/jquery');
+	
+	
 	var SpreadSheet = require('spreadsheet/spreadsheet');
-
 	new SpreadSheet();
+
+	var $ = require('lib/jquery');
+	var Backbone = require('lib/backbone');
+	
+	$('#test1').click(function(){
+		Backbone.trigger('event:InputContainer:show');
+	});
+	$('#test2').click(function(){
+		Backbone.trigger('event:InputContainer:hide');
+	});
 	//测试分支提交
 	// $(document).on('click','#test',function(){
 		// ss.setFillColor('','rgb(127, 127, 127)',['B6','C7']);
@@ -17,6 +27,7 @@ define(function(require) {
 		// ss.setFontFamilySize('','16', ['E8','F9']);
 		// ss.setFontFamilySize('','16', 'E10');
 		// ss.setFontFamilySize('','16', '11');
+		
 
 		// ss.setFontWeight('','bold',['B6','C7']);
 		// ss.setFontWeight('','bold','D6');

@@ -76,22 +76,27 @@ define(function(require) {
 			return this;
 		},
 		showComment: function(event) {
-			var model;
+			//增加延时效果
+			var model,
+				self = this;
 			model = this.viewCellsContainer.getCoordinateByMouseEvent(event).model;
 			if (cache.commentState) {
 				return;
 			}
-
 			if (this.MouseModel !== model) {
-				if (model !== undefined &&
-					model.get('customProp').comment !== null &&
-					model.get('customProp').comment !== undefined
-				) {
-					model.set('commentShowState', true);
-				}
+				clearTimeout(this.overEvent);
+				this.overEvent = setTimeout(function() {
+					if (model !== undefined &&
+						model.get('customProp').comment !== null &&
+						model.get('customProp').comment !== undefined
+					) {
+						model.set('commentShowState', true);
+					}
+				}, 1000);
 				if (this.MouseModel !== null && this.MouseModel !== undefined) {
 					this.MouseModel.set('commentShowState', false);
 				}
+
 			}
 			this.MouseModel = model;
 		},

@@ -205,8 +205,8 @@ define(function(require) {
 				physicsBox = {
 					top: gridLineRowList[cellStartRowIndex].get('top') + 1,
 					left: gridLineColList[cellStartColIndex].get('left') + 1,
-					width: width - 2,
-					height: height - 2
+					width: width - 1,
+					height: height - 1
 				};
 				if (existCell !== null && existCell !== undefined) {
 					//重新渲染cell模型宽高

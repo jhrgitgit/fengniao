@@ -34,8 +34,8 @@ define(function(require) {
 		 */
 		className: 'item',
 		events: {
-			'mouseover': 'overCellView',
-			'mouseout': 'outCellView'
+			'mouseenter': 'overCellView',
+			'mouseleave': 'outCellView'
 		},
 		/**
 		 * 监听model事件
@@ -48,8 +48,9 @@ define(function(require) {
 			this.listenTo(this.model, 'change', this.render);
 			this.listenTo(this.model, 'change:isDestroy', this.destroy);
 			this.listenTo(this.model, 'destroy', this.modelDestroy);
+
 			this.listenTo(this.model, 'change:commentShowState', this.commentViewHandler);
-			
+
 			this.currentRule = options.currentRule;
 			if (cache.TempProp.isFrozen !== true ||
 				this.currentRule.displayPosition.endRowIndex === undefined) {
@@ -67,15 +68,15 @@ define(function(require) {
 			this.overEvent = setTimeout(function() {
 				if ($('.comment').length === 0) {
 					if (self.model.get('customProp').comment !== null &&
-							self.model.get('customProp').comment !== undefined) {
-						self.model.set('commentShowState', true);
+						self.model.get('customProp').comment !== undefined) {
+						self.showComment();
 					}
 				}
 			}, 1000);
 		},
 		outCellView: function() {
-			this.model.set('commentShowState', false);
-			clearTimeout(this.overEvent);	
+			this.hideComment();
+			clearTimeout(this.overEvent);
 		},
 		commentViewHandler: function() {
 			if (this.model.get('commentShowState') === true) {
@@ -178,7 +179,7 @@ define(function(require) {
 		},
 		showCommentSign: function(modelJSON) {
 			if (modelJSON.customProp.comment !== null &&
-					modelJSON.customProp.comment !== undefined) {
+				modelJSON.customProp.comment !== undefined) {
 				this.$el.prepend('<div class="comment-ico"><div class="comment-ico-triangle"></div></div>');
 			}
 		},

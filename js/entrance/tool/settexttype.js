@@ -212,6 +212,7 @@ define(function(require) {
 					text = cell.get('content').texts;
 					isValid = self.isPercent(text);
 					cell.set('customProp.format', 'percent');
+					//存在问题
 					cell.set('customProp.isValid', isValid);
 					cell.set('customProp.decimal', decimal);
 					cell.set('customProp.thousands', false);
@@ -402,7 +403,6 @@ define(function(require) {
 				remainder = head.length % 3 > 0 ? head.length % 3 : 3;
 				temp = head;
 				head = '';
-				//ps:问题
 				for (i = len - 1; i > -1; i--) {
 					if (i === 0) {
 						// remainder = remainder > 0 ? remainder : 3;
@@ -426,8 +426,9 @@ define(function(require) {
 				if (values.length > 1) {
 					tail = values[1];
 				}
-				if (tail.length >= decimal) {
-					tail = tail.substring(0, decimal);
+				if (tail.length > decimal) {
+					tail = tail.substring(0, decimal + 1);
+					tail = Math.round(parseInt(tail) / 10).toString();
 				} else {
 					for (i = tail.length; i < decimal; i++) {
 						tail += '0';
@@ -595,7 +596,7 @@ define(function(require) {
 				}
 			} else {
 				if (this.isNum(value)) {
-					value = (parseInt(value) * 100).toString();
+					value = (Number(value) * 100).toString();
 					value = this.getFormatNumber(value, false, decimal);
 					return value + '%';
 				}

@@ -57,7 +57,6 @@ define(function(require) {
 				userViewEndRowModel,
 				userViewEndColModel,
 				len;
-			Backbone.on('call:mainContainer', this.callMainContainer, this);
 			Backbone.on('event:mainContainer:destroy', this.destroy, this);
 			Backbone.on('event:mainContainer:attributesRender', this.attributesRender, this);
 			Backbone.on('event:mainContainer:appointPosition', this.appointPosition, this);
@@ -74,6 +73,7 @@ define(function(require) {
 				this.delegateEvents({
 					'scroll': 'syncScroll'
 				});
+				Backbone.on('call:mainContainer', this.callMainContainer, this);
 				Backbone.on('event:mainContainer:nextCellPosition', this.nextCellPosition, this);
 				Backbone.on('event:mainContainer:addBottom', this.addBottom, this);
 			}
