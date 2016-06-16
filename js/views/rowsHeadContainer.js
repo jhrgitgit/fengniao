@@ -15,6 +15,7 @@ define(function(require) {
 		siderLineCols = require('collections/siderLineCol'),
 		RowsSpaceLineContainer = require('views/rowsSpaceLineContainer'),
 		HeadItemRowContainer = require('views/headItemRowContainer'),
+		loadRecorder = require('basic/tools/loadrecorder'),
 		selectCellCols = require('entrance/cell/selectcellcols');
 
 
@@ -235,6 +236,7 @@ define(function(require) {
 			this.viewRowsAllHeadContainer.$el.css({
 				height: headItemRows.getMaxDistanceHeight()
 			});
+			loadRecorder.adaptPosi(headItemRows.models[itemElIndex].get('top'), diffDistance, cache.rowRegionPosi);
 			// this.requstAdjust();
 		},
 		/**

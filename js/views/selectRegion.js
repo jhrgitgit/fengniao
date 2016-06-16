@@ -11,7 +11,6 @@ define(function(require) {
 		headItemRows = require('collections/headItemRow'),
 		headItemCols = require('collections/headItemCol'),
 		cells = require('collections/cells'),
-		InputContainer = require('views/inputContainer'),
 		commentContainer = require('views/commentcontainer'),
 		SelectRegion;
 
@@ -50,7 +49,6 @@ define(function(require) {
 			this.viewCellsContainer = options.parentView;
 			if (this.model.get("selectType") === "operation") {
 				Backbone.on('event:selectRegion:patchOprCell', this.patchOprCell, this);
-				Backbone.on('event:selectRegion:createInputContainer', this.addInputContainer, this);
 				Backbone.on('event:selectRegion:createCommentContainer', this.createCommentContainer, this);
 			}
 			this.listenTo(this.model, 'change', this.changePosition);
@@ -96,7 +94,6 @@ define(function(require) {
 				if (this.MouseModel !== null && this.MouseModel !== undefined) {
 					this.MouseModel.set('commentShowState', false);
 				}
-
 			}
 			this.MouseModel = model;
 		},
@@ -186,59 +183,6 @@ define(function(require) {
 				this.MouseModel.set('commentShowState', false)
 			}
 			this.MouseModel = null;
-		},
-		addInputContainer: function(text) {
-			var gridLineRowModelList,
-				gridLineColModelList,
-				modelIndexRow,
-				modelIndexCol,
-				cellModel,
-				cellModelList,
-				modelJSON = this.model.toJSON(),
-				modelRow,
-				modelCol,
-				aliasRow,
-				aliasCol;
-			gridLineColModelList = headItemCols.models;
-			gridLineRowModelList = headItemRows.models;
-
-			modelIndexRow = binary.modelBinary(modelJSON.physicsPosi.top, gridLineRowModelList, 'top', 'height', 0, gridLineRowModelList.length - 1);
-			modelIndexCol = binary.modelBinary(modelJSON.physicsPosi.left, gridLineColModelList, 'left', 'width', 0, gridLineColModelList.length - 1);
-
-			modelRow = gridLineRowModelList[modelIndexRow];
-			modelCol = gridLineColModelList[modelIndexCol];
-
-			if (cache.TempProp.isFrozen === true) {
-				if ((modelIndexRow < this.currentRule.displayPosition.startRowIndex || modelIndexCol < this.currentRule.displayPosition.startColIndex)) {
-					return;
-				}
-				if (this.currentRule.displayPosition.endColIndex !== undefined && modelIndexCol > (this.currentRule.displayPosition.endColIndex - 1)) {
-					return;
-				}
-				if (this.currentRule.displayPosition.endRowIndex !== undefined && modelIndexRow > (this.currentRule.displayPosition.endRowIndex - 1)) {
-					return;
-				}
-			}
-
-			cellModelList = cells.getRegionCells(modelIndexCol, modelIndexRow);
-			//doesn't exist cell
-			if (cellModelList[0] === null) {
-				aliasRow = modelRow.get('alias');
-				aliasCol = modelCol.get('alias');
-				cellModel = this.createCell(modelIndexRow, modelIndexCol);
-				cells.add(cellModel);
-				cache.cachePosition(aliasRow, aliasCol, cells.length - 1);
-			} else {
-				cellModel = cellModelList[0];
-			}
-			cellModel.set('content.texts', '');
-
-			var inputContainer = new InputContainer({
-				model: cellModel,
-				currentRule: this.currentRule
-			});
-			this.viewCellsContainer.$el.append(inputContainer.render().el);
-			inputContainer.$el.focus();
 		},
 		/**
 		 * 更新显示视图大小，坐标
@@ -332,89 +276,7 @@ define(function(require) {
 		 * @method editState
 		 */
 		editState: function() {
-			var gridLineRowModelList,
-				gridLineColModelList,
-				modelIndexRow,
-				modelIndexCol,
-				cellModel,
-				cellModelList,
-				modelJSON = this.model.toJSON(),
-				modelRow,
-				modelCol,
-				aliasRow,
-				aliasCol;
-
-			gridLineColModelList = headItemCols.models;
-			gridLineRowModelList = headItemRows.models;
-
-			modelIndexRow = binary.modelBinary(modelJSON.physicsPosi.top, gridLineRowModelList, 'top', 'height', 0, gridLineRowModelList.length - 1);
-			modelIndexCol = binary.modelBinary(modelJSON.physicsPosi.left, gridLineColModelList, 'left', 'width', 0, gridLineColModelList.length - 1);
-
-			modelRow = gridLineRowModelList[modelIndexRow];
-			modelCol = gridLineColModelList[modelIndexCol];
-
-			cellModelList = cells.getRegionCells(modelIndexCol, modelIndexRow);
-			//doesn't exist cell
-			if (cellModelList[0] === null) {
-				aliasRow = modelRow.get('alias');
-				aliasCol = modelCol.get('alias');
-
-				cellModel = this.createCell(modelIndexRow, modelIndexCol);
-				cells.add(cellModel);
-				cache.cachePosition(aliasRow, aliasCol, cells.length - 1);
-			} else {
-				cellModel = cellModelList[0];
-			}
-			this.addInput(cellModel);
-		},
-		/**
-		 * 输入框渲染
-		 * @method addInput
-		 * @param {Cell} cell 单元格对象
-		 */
-		addInput: function(cell) {
-			var inputContainer = new InputContainer({
-				model: cell,
-				currentRule: this.currentRule
-			});
-			this.viewCellsContainer.$el.append(inputContainer.render().el);
-			inputContainer.$el.focus();
-		},
-		/**
-		 * 创建单元格
-		 * @method createCell
-		 * @param  {num} indexRow 行索引
-		 * @param  {num} indexCol 列索引
-		 * @return {Cell} cell 单元格对象
-		 */
-		createCell: function(indexRow, indexCol) {
-			var cacheCell,
-				aliasCol,
-				aliasRow,
-				gridLineColList,
-				gridLineRowList;
-
-			gridLineColList = headItemCols.models;
-			gridLineRowList = headItemRows.models;
-			aliasCol = gridLineColList[indexCol].get('alias');
-			aliasRow = gridLineRowList[indexRow].get('alias');
-			var top, left, width, height;
-			top = gridLineRowList[indexRow].get('top');
-			left = gridLineColList[indexCol].get('left');
-			width = gridLineColList[indexCol].get('width');
-			height = gridLineRowList[indexRow].get('height');
-			cacheCell = new Cell();
-			cacheCell.set('occupy', {
-				x: [aliasCol],
-				y: [aliasRow]
-			});
-			cacheCell.set('physicsBox', {
-				top: top,
-				left: left,
-				width: width,
-				height: height
-			});
-			return cacheCell;
+			Backbone.trigger('event:InputContainer:show');
 		},
 		/**
 		 * 视图销毁
@@ -424,7 +286,6 @@ define(function(require) {
 			if (this.model.get("selectType") === "operation") {
 				Backbone.off('event:selectRegion:patchOprCell');
 				Backbone.off('event:selectRegion:createCommentContainer');
-				Backbone.off('event:selectRegion:createInputContainer');
 			}
 			if (this.model.get('selectType') === 'drag') {
 				this.viewCellsContainer.dragView = null;

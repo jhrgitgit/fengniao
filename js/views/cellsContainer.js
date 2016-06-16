@@ -45,6 +45,7 @@ define(function(require) {
 		 */
 		events: {
 			'mousedown': 'located',
+		//	'mouseup' : 'hideInputContainer',
 			// 'dragover': 'onDragOver',
 			// 'dragleave': 'onDragLeave',
 			// 'drop': 'onDrop',
@@ -693,6 +694,9 @@ define(function(require) {
 			this.changePosi(event);
 			Backbone.trigger('event:cellsContainer:bindDrag');
 		},
+		// hideInputContainer:function(){
+		// 	Backbone.trigger('event:InputContainer:hide');
+		// },
 		/**
 		 * 单元格区域单击事件处理
 		 * @method changePosi
@@ -865,10 +869,10 @@ define(function(require) {
 
 			selectRegionModel = selectRegions.getModelByType("operation")[0];
 
-			startRowAlias=selectRegionModel.get("wholePosi").startY;
-			startColAlias=selectRegionModel.get("wholePosi").startX;
-			endRowAlias=selectRegionModel.get("wholePosi").endY;
-			endColAlias=selectRegionModel.get("wholePosi").endX;
+			startRowAlias = selectRegionModel.get("wholePosi").startY;
+			startColAlias = selectRegionModel.get("wholePosi").startX;
+			endRowAlias = selectRegionModel.get("wholePosi").endY;
+			endColAlias = selectRegionModel.get("wholePosi").endX;
 
 			startX = headItemCols.getIndexByAlias(startColAlias);
 			startY = headItemRows.getIndexByAlias(startRowAlias);

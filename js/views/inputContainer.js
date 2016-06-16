@@ -1,7 +1,6 @@
 define(function(require) {
 	'use strict';
 	var $ = require('lib/jquery'),
-		_ = require('lib/underscore'),
 		Backbone = require('lib/backbone'),
 		cache = require('basic/tools/cache'),
 		getTextBox = require('basic/tools/gettextbox'),
@@ -9,12 +8,15 @@ define(function(require) {
 		config = require('spreadsheet/config'),
 		binary = require('basic/util/binary'),
 		send = require('basic/tools/send'),
+		Cell = require('models/cell'),
 		siderLineRows = require('collections/siderLineRow'),
 		siderLineCols = require('collections/siderLineCol'),
 		headItemRows = require('collections/headItemRow'),
 		headItemCols = require('collections/headItemCol'),
 		selectRegions = require('collections/selectRegion'),
-		textTypeHandler = require('entrance/tool/settexttype'),
+		cells = require('collections/cells'),
+		clipSelectOperate = require('entrance/tool/clipselectoperate'),
+		clipPasteOperate = require('entrance/tool/clippasteoperate'),
 		InputContainer;
 
 
@@ -46,32 +48,69 @@ define(function(require) {
 		 * @type {Object}
 		 */
 		events: {
-			'blur': 'close',
 			'input': 'adapt',
 			'propertychange': 'adapt',
-			'keydown': 'keyHandle'
+			'keydown': 'keypressHandle',
+			'blur': 'hideNoFocus',
+			'copy': 'copyData',
+			'paste': 'pasteData',
+			'cut': 'cutData'
 		},
 		/**
 		 * 类初始化函数
 		 * @method initialize
 		 */
 		initialize: function(options) {
-			var modelRowList = headItemRows,
-				modelColList = headItemCols;
-			this.currentRule = options.currentRule;
-			this.offsetLeft = cache.TempProp.isFrozen ? (this.currentRule.displayPosition.offsetLeft || 0) : 0;
-			this.offsetTop = cache.TempProp.isFrozen ? (this.currentRule.displayPosition.offsetTop || 0) : 0;
-			this.userViewTop = cache.TempProp.isFrozen ? modelRowList.getModelByAlias(cache.UserView.rowAlias).get('top') : 0;
-			this.userViewLeft = cache.TempProp.isFrozen ? modelColList.getModelByAlias(cache.UserView.colAlias).get('left') : 0;
+			Backbone.on('event:InputContainer:show', this.show, this);
+			Backbone.on('event:InputContainer:hide', this.hide, this);
 		},
-		
 		/**
-		 * 视图显示函数
-		 * @method render
+		 * 显示输入框
+		 * @param  {Boolean} dblclick 是否为双击进入输入框
 		 */
-		render: function() {
-			//修改
-			var modelJSON = this.model.toJSON();
+		show: function(dblclick) {
+			var mainContainer,
+				modelJSON,
+				rowAlias,
+				colAlias,
+				colIndex,
+				rowIndex,
+				scrollTop,
+				scrollLeft,
+				offsetTop,
+				offsetLeft,
+				select,
+				left,
+				top,
+				width,
+				height,
+				cell;
+
+			select = selectRegions.getModelByType('operation')[0];
+			colAlias = select.get('wholePosi').startX;
+			colIndex = headItemCols.getIndexByAlias(colAlias);
+			rowAlias = select.get('wholePosi').startY;
+			rowIndex = headItemRows.getIndexByAlias(rowAlias);
+			Backbone.trigger('call:mainContainer', function(container) {
+				mainContainer = container;
+			});
+			this.rowIndex = rowIndex;
+			this.colIndex = colIndex;
+			this.mainContainer = mainContainer;
+			cell = cells.getRegionCells(colIndex, rowIndex)[0];
+			if (cell === null) {
+				cell = this.createCell(rowIndex, colIndex);
+			}
+			this.model = cell;
+			this.showState = true;
+			left = this.getAbsoluteLeft();
+			top = this.getAbsoluteTop();
+			this.adjustWidth();
+			this.adjustHeight();
+			if (dblclick === false) {
+				this.model.set('content.texts', '');
+			}
+			modelJSON = this.model.toJSON();
 			if (modelJSON.content.bd === true) this.$el.css({
 				'font-weight': 'bold'
 			});
@@ -81,26 +120,235 @@ define(function(require) {
 			this.$el.css({
 				'width': modelJSON.physicsBox.width,
 				'height': modelJSON.physicsBox.height - 2,
-				'left': modelJSON.physicsBox.left - this.offsetLeft - this.userViewLeft + 1,
-				'top': modelJSON.physicsBox.top - this.offsetTop - this.userViewTop + 1,
 				'color': modelJSON.content.color,
 				'font-size': modelJSON.content.size,
 				'font-family': modelJSON.content.family,
+				'left': left,
+				'top': top,
+				'z-index': 100,
 			}).val(modelJSON.content.texts);
-			this.adjustWidth();
+
+		},
+		/**
+		 * 粘贴监听事件
+		 * @method pasteData
+		 */
+		pasteData: function(event) {
+			if (this.showState === false) {
+				event.preventDefault();
+				var pasteText;
+				if (window.clipboardData && window.clipboardData.getData) { // IE
+					pasteText = window.clipboardData.getData('Text');
+				} else {
+					pasteText = event.originalEvent.clipboardData.getData('Text'); //e.clipboardData.getData('text/plain');
+				}
+				clipPasteOperate(pasteText);
+			}
+		},
+		copyData: function(event) {
+			if (this.showState === false) {
+				clipSelectOperate("copy", event);
+			}
+		},
+		cutData: function(event) {
+			if (this.showState === false) {
+				clipSelectOperate("cut", event);
+			}
+		},
+		/**
+		 * 创建单元格
+		 * @method createCell
+		 * @param  {num} indexRow 行索引
+		 * @param  {num} indexCol 列索引
+		 * @return {Cell} cell 单元格对象
+		 */
+		createCell: function(indexRow, indexCol) {
+			var cacheCell,
+				aliasCol,
+				aliasRow,
+				gridLineColList,
+				gridLineRowList;
+
+			gridLineColList = headItemCols.models;
+			gridLineRowList = headItemRows.models;
+			aliasCol = gridLineColList[indexCol].get('alias');
+			aliasRow = gridLineRowList[indexRow].get('alias');
+			var top, left, width, height;
+			top = gridLineRowList[indexRow].get('top');
+			left = gridLineColList[indexCol].get('left');
+			width = gridLineColList[indexCol].get('width');
+			height = gridLineRowList[indexRow].get('height');
+			cacheCell = new Cell();
+			cacheCell.set('occupy', {
+				x: [aliasCol],
+				y: [aliasRow]
+			});
+			cacheCell.set('physicsBox', {
+				top: top,
+				left: left,
+				width: width,
+				height: height
+			});
+			cache.cachePosition(aliasRow, aliasCol, cells.length);
+			cells.add(cacheCell);
+			return cacheCell;
+		},
+		/**
+		 * 隐藏输入框
+		 */
+		hide: function() {
+			if (this.showState === true) {
+				this.$el.css({
+					'left': 0,
+					'top': 0,
+					'width': 0,
+					'height': 0,
+					'z-index': -100
+				});
+				this.model.set('content.texts', this.$el.val());
+				this.sendData();
+			}
+			this.$el.val('');
+			this.$el.focus();
+			this.showState = false;
+			//请求
+		},
+		hideNoFocus: function() {
+			if (this.showState === true) {
+				this.$el.css({
+					'left': 0,
+					'top': 0,
+					'width': 0,
+					'height': 0,
+					'z-index': -100
+				});
+				this.sendData();
+				this.model.set('content.texts', this.$el.val());
+			}
+			this.$el.val('');
+			this.showState = false;
+			//请求
+		},
+		/**
+		 * 横向移动输入框
+		 */
+		transverseScroll: function() {
+			var left;
+			if (this.showState === true) {
+				left = this.getAbsoluteLeft();
+				this.$el.css({
+					'left': left
+				});
+			}
+		},
+		/**
+		 * 纵向移动输入框
+		 */
+		verticalScroll: function() {
+			var top;
+			if (this.showState === true) {
+				top = this.getAbsoluteTop();
+				this.$el.css({
+					'top': top
+				});
+			}
+		},
+		/**
+		 * 获取输入框left坐标
+		 * @param  {object} mainContainer mainContainer
+		 * @param  {number} colIndex 选中区域列索引
+		 */
+		getAbsoluteLeft: function() {
+			var outLeft,
+				scrollLeft,
+				userViewLeft,
+				userViewIndex,
+				frozenColIndex,
+				headItemLeft,
+				mainContainer,
+				colIndex,
+				result;
+
+			colIndex = this.colIndex;
+			mainContainer = this.mainContainer;
+
+			outLeft = config.System.outerLeft;
+			scrollLeft = mainContainer.$el.scrollLeft();
+			headItemLeft = headItemCols.models[colIndex].get('left');
+
+			if (cache.TempProp.colFrozen) { //冻结情况
+				frozenColIndex = headItemCols.getIndexByAlias(cache.TempProp.colAlias);
+				if (frozenColIndex > colIndex) {
+					scrollLeft = 0;
+				}
+				userViewIndex = headItemCols.getIndexByAlias(cache.UserView.colAlias);
+				userViewLeft = headItemCols.models[userViewIndex].get('left');
+				result = headItemLeft - userViewLeft + outLeft - scrollLeft + 1;
+				return result;
+			} else { //非冻结情况
+				result = headItemLeft + outLeft - scrollLeft + 1;
+				return result;
+			}
+		},
+		getAbsoluteTop: function() {
+			var outTop,
+				scrollTop,
+				userViewTop,
+				userViewIndex,
+				frozenRowIndex,
+				mainContainer,
+				rowIndex,
+				headItemTop,
+				result;
+
+			rowIndex = this.rowIndex;
+			mainContainer = this.mainContainer;
+
+			outTop = config.System.outerTop;
+			scrollTop = mainContainer.$el.scrollTop();
+			headItemTop = headItemRows.models[rowIndex].get('top');
+
+			if (cache.TempProp.colFrozen) { //冻结情况
+				frozenRowIndex = headItemRows.getIndexByAlias(cache.TempProp.rowAlias);
+				if (frozenRowIndex > rowIndex) {
+					scrollTop = 0;
+				}
+				userViewIndex = headItemRows.getIndexByAlias(cache.UserView.rowAlias);
+				userViewTop = headItemRows.models[userViewIndex].get('top');
+				result = headItemTop - userViewTop + outTop - scrollTop + 1;
+				return result;
+			} else { //非冻结情况
+				result = headItemTop + outTop - scrollTop + 1;
+				return result;
+			}
+		},
+		/**
+		 * 视图显示函数
+		 * @method render
+		 */
+		render: function() {
+			this.$el.css({
+				'width': 20,
+				'height': 18,
+				'left': 0,
+				'top': 0,
+				'z-index': -100,
+			});
 			return this;
 		},
 		/**
 		 * 自适应输入框的大小
 		 */
 		adapt: function() {
-			this.adjustWidth();
-			this.adjustHight();
+			if (this.showState === true) {
+				this.adjustWidth();
+				this.adjustHeight();
+			}
 		},
 		/**
 		 * 调整输入框高度
 		 */
-		adjustHight: function() {
+		adjustHeight: function() {
 			var height,
 				cellHeight,
 				fontSize,
@@ -120,7 +368,7 @@ define(function(require) {
 		 * @method adjustWidth
 		 * @param e {event} propertychange函数
 		 */
-		adjustWidth: function(e) {
+		adjustWidth: function() {
 			var text,
 				texts,
 				inputText,
@@ -147,7 +395,7 @@ define(function(require) {
 			currentWidth = parseInt(this.el.offsetWidth, 0);
 			tempDivWidth = tempDiv.width();
 			if (currentWidth - 10 < tempDivWidth && this.model.get('physicsBox').width < tempDivWidth) {
-				this.$el.width(tempDivWidth + 30);
+				this.$el.width(tempDivWidth + 20);
 			}
 			tempDiv.remove();
 		},
@@ -156,26 +404,18 @@ define(function(require) {
 		 * @method close
 		 * @param e {event}  输入焦点移除
 		 */
-		close: function(e) {
-			var text, currentTexts,
-				headLineRowModelList,
-				headLineColModelList,
-				modelIndexCol,
-				modelIndexRow,
-				startAliasCol,
-				startAliasRow;
-			text = this.$el.val();
-			headLineRowModelList = headItemRows.models;
-			headLineColModelList = headItemCols.models;
-			modelIndexCol = binary.modelBinary(this.model.get('physicsBox').left,
-				headLineColModelList, 'left', 'width', 0, headLineColModelList.length - 1);
-			modelIndexRow = binary.modelBinary(this.model.get('physicsBox').top,
-				headLineRowModelList, 'top', 'height', 0, headLineRowModelList.length - 1);
+		sendData: function() {
+			var text,
+				select,
+				colAlias,
+				rowAlias;
 
-			startAliasCol = headLineColModelList[modelIndexCol].get('alias');
-			startAliasRow = headLineRowModelList[modelIndexRow].get('alias');
-			this.model.set('content.texts', text);
-			text = textTypeHandler.textTypeRecognize(this.model);
+
+			text = this.$el.val();
+			select = selectRegions.getModelByType('operation')[0];
+			colAlias = select.get('wholePosi').startX;
+			rowAlias = select.get('wholePosi').startY;
+
 
 			send.PackAjax({
 				url: 'text.htm?m=data',
@@ -183,14 +423,13 @@ define(function(require) {
 					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
 					sheetId: '1',
 					coordinate: {
-						startX: startAliasCol,
-						startY: startAliasRow
+						startX: colAlias,
+						startY: rowAlias
 					},
 					content: encodeURIComponent(text)
 				})
 			});
 
-			//ps：增加设置显示内容
 			if (text.indexOf("\n") > 0 && (this.model.get('wordWrap') === false)) {
 				this.model.set({
 					'wordWrap': true
@@ -201,16 +440,13 @@ define(function(require) {
 						excelId: window.SPREADSHEET_AUTHENTIC_KEY,
 						sheetId: '1',
 						coordinate: {
-							startX: headItemCols.models[modelIndexCol].get("alias"),
-							startY: headItemRows.models[modelIndexRow].get("alias"),
-							endX: headItemCols.models[modelIndexCol].get("alias"),
-							endY: headItemRows.models[modelIndexRow].get("alias")
+							startX: colAlias,
+							startY: rowAlias,
 						},
 						wordWrap: true
 					})
 				});
 			}
-			this.destroy();
 		},
 		isShortKey: function(needle) {
 			var prop,
@@ -222,7 +458,7 @@ define(function(require) {
 			}
 			return false;
 		},
-		keyHandle: function(e) {
+		keypressHandle: function(e) {
 			var aliasRow,
 				aliasCol,
 				endIndexRow,
@@ -235,20 +471,43 @@ define(function(require) {
 				currentTexts,
 				self = this,
 				len, i, isShortKey, keyboard;
+
 			keyboard = config.keyboard;
 			isShortKey = this.isShortKey(e.keyCode);
 			if (isShortKey) {
-				if (e.keyCode === keyboard.enter) {
-					if (config.shortcuts.enter && e.altKey === false) {
-						Backbone.trigger('event:mainContainer:nextCellPosition', 'DOWN');
-						Backbone.trigger('event:cellsContainer:selectRegionChange', 'DOWN');
-						this.close();
-					} else if (config.shortcuts.altEnter && e.altKey) {
-						insertAtCursor('\n');
-						this.adjustHight();
-						return;
+				//处理回车键
+				if (config.shortcuts.enter &&
+					e.altKey === false &&
+					e.keyCode === keyboard.enter) {
+					Backbone.trigger('event:mainContainer:nextCellPosition', 'DOWN');
+					Backbone.trigger('event:cellsContainer:selectRegionChange', 'DOWN');
+					if (this.showState === true) {
+						this.hide();
 					}
+					return;
+				};
+			}
+			//处理剪切板操作键
+
+			//未显示输入框时,输入字符处理
+			if (this.showState === undefined || this.showState === false) {
+				if (this.keyHandle(e) === false) {
+					return;
 				}
+				this.showState === true;
+				this.show(false);
+			}
+
+			//内部换行处理
+			if (isShortKey) {
+				if (config.shortcuts.altEnter && e.altKey) {
+					insertAtCursor('\n');
+					this.model.set({
+						'wordWrap': true
+					});
+					this.adjustHeight();
+					return;
+				};
 			}
 
 			function insertAtCursor(myValue) {
@@ -275,11 +534,55 @@ define(function(require) {
 
 		},
 		/**
+		 * 判断未显示输入框时，点击按键是否填出输入框
+		 * @param  {[type]} e 键盘点击事件
+		 */
+		keyHandle: function(e) {
+			var flag = false;
+			if (e.ctrlKey === true || e.altKey === true) {
+				return false;
+			}
+			switch (true) {
+				//判断回车按钮
+				case (e.keyCode === 32):
+					flag = true;
+					break;
+				case (36 <= e.keyCode && e.keyCode <= 46):
+					flag = true;
+					break;
+				case (48 <= e.keyCode && e.keyCode <= 57):
+					flag = true;
+					break;
+				case (65 <= e.keyCode && e.keyCode <= 90):
+					flag = true;
+					break;
+				case (96 <= e.keyCode && e.keyCode <= 107):
+					flag = true;
+					break;
+				case (109 <= e.keyCode && e.keyCode <= 111):
+					flag = true;
+					break;
+				case (186 <= e.keyCode && e.keyCode <= 192):
+					flag = true;
+					break;
+				case (219 <= e.keyCode && e.keyCode <= 222):
+					flag = true;
+					break;
+				case (e.keyCode === 229):
+					flag = true;
+					break;
+				default:
+					break;
+			}
+			return flag;
+		},
+		/**
 		 * 视图销毁
 		 * @method destroy
 		 */
 		destroy: function() {
-			this.undelegateEvents();
+			Backbone.off('event:InputContainer:show');
+			Backbone.off('event:InputContainer:hide');
 			this.remove();
 		}
 	});

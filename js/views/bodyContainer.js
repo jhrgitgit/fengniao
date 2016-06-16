@@ -12,7 +12,7 @@ define(function(require) {
 		MainContainer = require('views/mainContainer'),
 		ColsPanelContainer = require('views/colsPanelContainer'),
 		RowsPanelContainer = require('views/rowsPanelContainer'),
-		InputContainer = require('views/inputContainerClone'),
+		InputContainer = require('views/inputContainer'),
 		BodyContainer;
 
 	/**
@@ -58,6 +58,9 @@ define(function(require) {
 			this.calculation();
 			this.adaptScreen();
 			this.generateSheet();
+			this.$el.css({
+				'overflow': 'hidden'
+			});
 			this.inputContainer.$el.focus();
 		},
 

@@ -142,6 +142,7 @@ textarea {
 	border-style: solid;
 	height: 19px;
 	width: 36px;
+	z-index:1000;
 }
 
 .col-active {
@@ -235,6 +236,7 @@ textarea {
 	position: relative;
 	height: inherit;
 	width: inherit;
+	z-index:102;
 }
 
 .cells-container {
