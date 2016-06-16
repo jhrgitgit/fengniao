@@ -48,6 +48,9 @@ define(function(require) {
 			cells.reset();
 		});
 	});
+	describe("tst",function(){
+		expect(rowOper.rowMerge()).toEqual(true);
+	});
 	describe("单元格创建测试", function() {
 		beforeEach(function() {
 			var i = 0,
