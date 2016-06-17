@@ -15,6 +15,7 @@ define(function(require) {
 		headItemCols = require('collections/headItemCol'),
 		selectRegions = require('collections/selectRegion'),
 		cells = require('collections/cells'),
+		setTextType= require('entrance/tool/settexttype'),
 		clipSelectOperate = require('entrance/tool/clipselectoperate'),
 		clipPasteOperate = require('entrance/tool/clippasteoperate'),
 		InputContainer;
@@ -51,7 +52,7 @@ define(function(require) {
 			'input': 'adapt',
 			'propertychange': 'adapt',
 			'keydown': 'keypressHandle',
-			'blur': 'hideNoFocus',
+			'blur': 'hide',
 			'copy': 'copyData',
 			'paste': 'pasteData',
 			'cut': 'cutData'
@@ -196,7 +197,7 @@ define(function(require) {
 		/**
 		 * 隐藏输入框
 		 */
-		hide: function() {
+		hide: function(event) {
 			if (this.showState === true) {
 				this.$el.css({
 					'left': 0,
@@ -209,25 +210,13 @@ define(function(require) {
 				this.sendData();
 			}
 			this.$el.val('');
-			this.$el.focus();
-			this.showState = false;
-			//请求
-		},
-		hideNoFocus: function() {
-			if (this.showState === true) {
-				this.$el.css({
-					'left': 0,
-					'top': 0,
-					'width': 0,
-					'height': 0,
-					'z-index': -100
-				});
-				this.sendData();
-				this.model.set('content.texts', this.$el.val());
+			if(event!==undefined){
+				this.$el.focus();
 			}
-			this.$el.val('');
+			if(this.model !== undefined){
+				setTextType.textTypeRecognize(this.model);
+			}
 			this.showState = false;
-			//请求
 		},
 		/**
 		 * 横向移动输入框
@@ -406,15 +395,13 @@ define(function(require) {
 		 */
 		sendData: function() {
 			var text,
-				select,
 				colAlias,
 				rowAlias;
 
 
 			text = this.$el.val();
-			select = selectRegions.getModelByType('operation')[0];
-			colAlias = select.get('wholePosi').startX;
-			rowAlias = select.get('wholePosi').startY;
+			colAlias = this.model.get('occupy').x[0];
+			rowAlias = this.model.get('occupy').y[0];
 
 
 			send.PackAjax({

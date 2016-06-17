@@ -52,7 +52,11 @@ define(function(require) {
 		startColIndex = region.startColIndex;
 		endRowIndex = region.endRowIndex;
 		endColIndex = region.endColIndex;
-		
+		/**
+		 * 合并操作：
+		 * 存在含有文本单元格，按照先行后列，
+		 *
+		 */
 		cellList = cells.getCellByRow(startRowIndex, startColIndex, endRowIndex, endColIndex);
 
 		len = cellList.length;

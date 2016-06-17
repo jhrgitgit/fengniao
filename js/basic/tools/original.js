@@ -203,8 +203,8 @@ define(function(require) {
 					height += model.get('height') + 1;
 				}
 				physicsBox = {
-					top: gridLineRowList[cellStartRowIndex].get('top') + 1,
-					left: gridLineColList[cellStartColIndex].get('left') + 1,
+					top: gridLineRowList[cellStartRowIndex].get('top'),
+					left: gridLineColList[cellStartColIndex].get('left'),
 					width: width - 1,
 					height: height - 1
 				};
