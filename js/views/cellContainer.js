@@ -269,11 +269,20 @@ define(function(require) {
 			}
 
 			if (occupyX.length > 1 || occupyY.length > 1) return text;
-			if (this.model.get("wordWrap") === true && occupyX.length === 1 && occupyY.length === 1) {
+			if (this.model.get("wordWrap") === true) {
 				headModelCol = headItemCols.getModelByAlias(occupyX[0]);
 				headModelRow = headItemRows.getModelByAlias(occupyY[0]);
 				height = getTextBox.getTextHeight(temp, true, fontsize, headModelCol.get('width'));
-				if (height > 17 && headModelRow.get('height') < height) setCellHeight('sheetId', headModelRow.get('displayName'), height);
+				if (height > 17 && headModelRow.get('height') < height) {
+					setCellHeight('sheetId', headModelRow.get('displayName'), height);
+				}
+			} else {
+				headModelCol = headItemCols.getModelByAlias(occupyX[0]);
+				headModelRow = headItemRows.getModelByAlias(occupyY[0]);
+				height = getTextBox.getTextHeight('', true, fontsize, headModelCol.get('width'));
+				if (height > 17 && headModelRow.get('height') < height) {
+					setCellHeight('sheetId', headModelRow.get('displayName'), height);
+				}
 			}
 			return text;
 		},

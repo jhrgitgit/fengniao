@@ -3,12 +3,8 @@
 define(function(require) {
 	'use strict';
 	var $ = require('lib/jquery'),
-		_ = require('lib/underscore'),
 		Backbone = require('lib/backbone'),
-		send = require('basic/tools/send'),
-		selectRegions = require('collections/selectRegion'),
-		setAlign = require('entrance/tool/setalign'),
-		setWordWrap = require('entrance/tool/setwordwrap');
+		setAlign = require('entrance/tool/setalign');
 
 	/**
 	 * ContentAlignContainer
@@ -23,7 +19,7 @@ define(function(require) {
 		/**
 		 * @property {element} el
 		 */
-		el: "#contentAlignContainer",
+		el: '#contentAlignContainer',
 		/**
 		 * @property {object} events
 		 */
@@ -40,18 +36,9 @@ define(function(require) {
 		 * @param  {event} e 鼠标点击事件
 		 */
 		setAlignAction: function(e) {
-			var alignType,
-				transverse,
-				data,
-				url,
-				vertical;
+			var alignType;
 			alignType = $(e.currentTarget).data('align');
-			if(alignType==='wordWrap'){
-				setWordWrap();
-			}else{
-				setAlign('1', alignType);
-			}
-			
+			setAlign('1', alignType);
 		}
 	});
 	return ContentAlignContainer;

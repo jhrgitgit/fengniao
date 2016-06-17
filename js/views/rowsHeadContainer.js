@@ -377,14 +377,17 @@ define(function(require) {
 		adjustSelectRegion: function(index, pixel) {
 			var startRowIndex,
 				endRowIndex,
+				startRowAlias,
+				endRowAlias,
 				selectRegionModel,
 				siderLineRowModel,
 				cacheHeight,
 				cacheTop;
 			selectRegionModel = selectRegions.models[0];
-			startRowIndex = selectRegionModel.get('wholePosi').startY;
-			endRowIndex = selectRegionModel.get('wholePosi').endY;
-
+			startRowAlias = selectRegionModel.get('wholePosi').startY;
+			endRowAlias = selectRegionModel.get('wholePosi').endY;
+			startRowIndex = headItemRows.getIndexByAlias(startRowAlias);
+			endRowIndex = headItemRows.getIndexByAlias(endRowAlias);
 			if (endRowIndex < index) {
 				return;
 			}

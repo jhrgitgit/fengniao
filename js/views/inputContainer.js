@@ -15,7 +15,7 @@ define(function(require) {
 		headItemCols = require('collections/headItemCol'),
 		selectRegions = require('collections/selectRegion'),
 		cells = require('collections/cells'),
-		setTextType= require('entrance/tool/settexttype'),
+		setTextType = require('entrance/tool/settexttype'),
 		clipSelectOperate = require('entrance/tool/clipselectoperate'),
 		clipPasteOperate = require('entrance/tool/clippasteoperate'),
 		InputContainer;
@@ -122,13 +122,14 @@ define(function(require) {
 				'width': modelJSON.physicsBox.width,
 				'height': modelJSON.physicsBox.height - 2,
 				'color': modelJSON.content.color,
-				'font-size': modelJSON.content.size,
+				'font-size': modelJSON.content.size + 'pt',
 				'font-family': modelJSON.content.family,
 				'left': left,
 				'top': top,
 				'z-index': 100,
 			}).val(modelJSON.content.texts);
-
+			this.adjustWidth();
+			this.adjustHeight();
 		},
 		/**
 		 * 粘贴监听事件
@@ -210,10 +211,10 @@ define(function(require) {
 				this.sendData();
 			}
 			this.$el.val('');
-			if(event===undefined){
+			if (event === undefined) {
 				this.$el.focus();
 			}
-			if(this.model !== undefined){
+			if (this.model !== undefined) {
 				setTextType.textTypeRecognize(this.model);
 			}
 			this.showState = false;
@@ -345,7 +346,7 @@ define(function(require) {
 				text;
 			text = this.$el.val();
 			fontSize = this.model.get("content").size;
-			width = this.model.get("physicsBox").width;
+			width = this.$el.width();
 			height = getTextBox.getTextHeight(text, this.model.get("wordWrap"), fontSize, width);
 			cellHeight = this.model.get("physicsBox").height;
 			height = height > cellHeight ? height : cellHeight;
@@ -358,7 +359,7 @@ define(function(require) {
 		 * @param e {event} propertychange函数
 		 */
 		adjustWidth: function() {
-			var text,
+			var text = '',
 				texts,
 				inputText,
 				tempDiv,
@@ -371,9 +372,16 @@ define(function(require) {
 			texts = inputText.split('\n');
 			len = texts.length;
 			for (i = 0; i < len; i++) {
-				text += texts[i] + '<br>';
+				text += texts[i];
+				if (i !== len - 1) {
+					text += '<br>';
+				}
 			}
 
+			/**
+			 * 宽度计算
+			 * @type {[type]}
+			 */
 			tempDiv = $('<div/>').html(text);
 			fontSize = this.model.get("content").size;
 			tempDiv.css({
@@ -381,10 +389,10 @@ define(function(require) {
 				"font-size": fontSize
 			});
 			$('body').append(tempDiv);
-			currentWidth = parseInt(this.el.offsetWidth, 0);
+			currentWidth = parseInt(this.$el.width(), 0);
 			tempDivWidth = tempDiv.width();
-			if (currentWidth - 10 < tempDivWidth && this.model.get('physicsBox').width < tempDivWidth) {
-				this.$el.width(tempDivWidth + 20);
+			if (currentWidth < tempDivWidth && this.model.get('physicsBox').width < tempDivWidth) {
+				this.$el.width(tempDivWidth + 10);
 			}
 			tempDiv.remove();
 		},
