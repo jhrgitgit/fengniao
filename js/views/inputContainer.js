@@ -210,7 +210,7 @@ define(function(require) {
 				this.sendData();
 			}
 			this.$el.val('');
-			if(event!==undefined){
+			if(event===undefined){
 				this.$el.focus();
 			}
 			if(this.model !== undefined){

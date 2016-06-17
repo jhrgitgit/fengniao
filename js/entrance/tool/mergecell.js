@@ -21,7 +21,7 @@ define(function(require) {
 			startColAlias,
 			endRowAlias,
 			endColAlias,
-			textCellNum,
+			textCellNum = 0,
 			region = {},
 			select,
 			cacheCell,
@@ -54,27 +54,28 @@ define(function(require) {
 		endColIndex = region.endColIndex;
 		/**
 		 * 合并操作：
-		 * 存在含有文本单元格，按照先行后列，
-		 *
+		 * 存在含有文本单元格，按照先行后列，按照查找到第一个单元格作为模板进行扩大
+		 * 不存在含有文本单元格，直接以左上角为模板进行扩大
 		 */
 		cellList = cells.getCellByRow(startRowIndex, startColIndex, endRowIndex, endColIndex);
-
 		len = cellList.length;
 		for (i = 0; i < len; i++) {
 			if (cellList[i].get('content').texts !== '') {
-				textCellNum++;
 				cacheCell = cellList[i].clone();
+				break;
 			}
 		}
-		if (textCellNum > 1) {
-			return;
-		}
-		if (textCellNum === 0 && cellList.length > 0) {
-			cacheCell = cellList[0].clone();
+
+		if (cacheCell === undefined) {
+			cacheCell = cells.getCellByRow(startRowIndex, startColIndex)[0];
+			if(cacheCell !== undefined){
+				cacheCell =cacheCell.clone();
+			}
 		}
 		if (cacheCell === undefined) {
 			cacheCell = new Cell();
 		}
+
 		if (len) {
 			for (i = 0; i < len; i++) {
 				cellList[i].set('isDestroy', true);
@@ -117,6 +118,7 @@ define(function(require) {
 		}
 		startRowAlias = gridLineRowList[startRowIndex].get('alias');
 		startColAlias = gridLineColList[startColIndex].get('alias');
+
 		endRowAlias = gridLineRowList[endRowIndex].get('alias');
 		endColAlias = gridLineColList[endColIndex].get('alias');
 
