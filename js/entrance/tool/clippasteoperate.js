@@ -7,7 +7,8 @@ define(function(require) {
 		send = require('basic/tools/send'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
-		selectRegions = require('collections/selectRegion');
+		selectRegions = require('collections/selectRegion'),
+		setTextType = require('entrance/tool/settexttype');
 
 	function clipPasteOperate(pasteText) {
 		if (cache.clipState === 'copy') {
@@ -39,7 +40,7 @@ define(function(require) {
 			text = "",
 			i,
 			j;
-		
+
 		clipRegion = selectRegions.getModelByType("clip")[0];
 		selectRegion = selectRegions.getModelByType("operation")[0];
 
@@ -96,14 +97,14 @@ define(function(require) {
 				excelId: window.SPREADSHEET_AUTHENTIC_KEY,
 				sheetId: '1',
 				orignal: {
-					startColAlias: headItemCols.models[clipRegion.get("wholePosi").startX].get('alias'),
-					endColAlias: headItemCols.models[clipRegion.get("wholePosi").endX].get('alias'),
-					startRowAlias: headItemRows.models[clipRegion.get("wholePosi").startY].get('alias'),
-					endRowAlias: headItemRows.models[clipRegion.get("wholePosi").endY].get('alias')
+					startColAlias: clipRegion.get("wholePosi").startX,
+					endColAlias: clipRegion.get("wholePosi").endX,
+					startRowAlias: clipRegion.get("wholePosi").startY,
+					endRowAlias: clipRegion.get("wholePosi").endY
 				},
 				target: {
-					colAlias: headItemCols.models[selectRegion.get("wholePosi").startX].get('alias'),
-					rowAlias: headItemRows.models[selectRegion.get("wholePosi").startY].get('alias'),
+					colAlias: selectRegion.get("wholePosi").startX,
+					rowAlias: selectRegion.get("wholePosi").startY,
 				}
 			})
 		});
@@ -249,8 +250,8 @@ define(function(require) {
 
 		clipRegion = selectRegions.getModelByType("clip")[0];
 		selectRegion = selectRegions.getModelByType("operation")[0];
-		startRowAlias = headItemRows.models[selectRegion.get('wholePosi').startY].get('alias');
-		startColAlias = headItemRows.models[selectRegion.get('wholePosi').startX].get('alias');
+		startRowAlias = selectRegion.get('wholePosi').startY;
+		startColAlias = selectRegion.get('wholePosi').startX;
 
 		if (clipRegion !== null && clipRegion !== undefined) {
 			clipRegion.destroy();
@@ -302,15 +303,21 @@ define(function(require) {
 			indexRow,
 			aliasCol,
 			aliasRow,
+			selectRowIndex,
+			selectColIndex,
 			gridLineColList,
 			gridLineRowList,
+			displaytext,
 			result;
 
 		if (text === '') return;
 		gridLineColList = headItemCols.models;
 		gridLineRowList = headItemRows.models;
-		indexCol = selectRegions.models[0].get('wholePosi').startX + relativeColIndex;
-		indexRow = selectRegions.models[0].get('wholePosi').startY + relativeRowIndex;
+
+		selectRowIndex = headItemRows.getIndexByAlias(selectRegions.models[0].get('wholePosi').startX);
+		selectColIndex = headItemCols.getIndexByAlias(selectRegions.models[0].get('wholePosi').startY);
+		indexCol = selectRowIndex + relativeColIndex;
+		indexRow = selectColIndex + relativeRowIndex;
 
 		result = {
 			relativeColIndex: relativeColIndex,
@@ -347,6 +354,8 @@ define(function(require) {
 			height: height
 		});
 		cacheCell.set("content.texts", text);
+		displaytext = setTextType.textTypeRecognize(cacheCell);
+		cacheCell.set("content.displayTexts", displaytext);
 		cache.cachePosition(aliasRow, aliasCol, cells.length);
 		cells.add(cacheCell);
 		return result;
