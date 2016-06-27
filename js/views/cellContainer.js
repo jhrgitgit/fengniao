@@ -264,12 +264,17 @@ define(function(require) {
 			}
 
 			if (occupyX.length > 1 || occupyY.length > 1) return text;
+			//冻结情况，不进行自动宽高调整
+
 			if (this.model.get("wordWrap") === true) {
 				headModelCol = headItemCols.getModelByAlias(occupyX[0]);
 				headModelRow = headItemRows.getModelByAlias(occupyY[0]);
 				height = getTextBox.getTextHeight(temp, true, fontsize, headModelCol.get('width'));
 				if (height > 17 && headModelRow.get('height') < height) {
 					setCellHeight('sheetId', headModelRow.get('displayName'), height);
+					if (cache.TempProp.isFrozen) {
+						Backbone.trigger('event:bodyContainer:executiveFrozen');
+					};
 				}
 			} else {
 				//处理设置字体问题
@@ -278,6 +283,9 @@ define(function(require) {
 				height = getTextBox.getTextHeight('', false, fontsize);
 				if (height > 17 && headModelRow.get('height') < height) {
 					setCellHeight('sheetId', headModelRow.get('displayName'), height);
+					if (cache.TempProp.isFrozen) {
+						Backbone.trigger('event:bodyContainer:executiveFrozen');
+					};
 				}
 			}
 			return text;
