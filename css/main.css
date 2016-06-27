@@ -60,6 +60,7 @@ textarea {
 	position: absolute;
 	cursor: pointer;
 	overflow: hidden;
+	background-color: white
 }
 
 .col-head-item .item,
@@ -134,6 +135,8 @@ textarea {
 	font-family: "Microsoft Yahei", sans-serif;
 	font-size: 10pt;
 	overflow: hidden;
+	z-index:11;
+	/*background-color: white;*/
 }
 
 .left-corner {
@@ -142,7 +145,6 @@ textarea {
 	border-style: solid;
 	height: 19px;
 	width: 36px;
-	z-index:1000;
 }
 
 .col-active {
@@ -159,7 +161,6 @@ textarea {
 }
 
 .row-head-line {
-	z-index: 10;
 	border: 2px solid #217346;
 	border-right-width: 0;
 	right: 0;
@@ -169,7 +170,6 @@ textarea {
 }
 
 .col-head-line {
-	z-index: 10;
 	border: 2px solid #217346;
 	border-bottom-width: 0;
 	bottom: 0;
@@ -190,7 +190,7 @@ textarea {
 	border: 2px solid #217346;
 	margin: -1px;
 	overflow: hidden;
-	z-index: 99;
+	/*z-index: 99;*/
 }
 
 .datasource-container {
@@ -236,7 +236,7 @@ textarea {
 	position: relative;
 	height: inherit;
 	width: inherit;
-	z-index:102;
+	
 }
 
 .cells-container {
@@ -265,6 +265,7 @@ textarea {
 
 .container {
 	overflow: hidden;
+	position: relative;
 }
 
 .col-head-highlight,
@@ -426,8 +427,6 @@ textarea {
 .comment{
 	position: absolute;
 	font-size: 16px;
-	width: 150px;
-	height: 150px;
 	resize: none;
 	border-color: gray;
 	border-width: 2px;

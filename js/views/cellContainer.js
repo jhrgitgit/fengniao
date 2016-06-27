@@ -14,8 +14,7 @@ define(function(require) {
 		config = require('spreadsheet/config'),
 		getTextBox = require('basic/tools/gettextbox'),
 		setCellHeight = require('entrance/cell/setcellheight'),
-		textTypeHandler = require('entrance/tool/settexttype'),
-		commentContainer = require('views/commentcontainer');
+		textTypeHandler = require('entrance/tool/settexttype');
 
 	/**
 	 * 单元格视图类，用于显示单元格对象
@@ -79,6 +78,7 @@ define(function(require) {
 			clearTimeout(this.overEvent);
 		},
 		commentViewHandler: function() {
+
 			if (this.model.get('commentShowState') === true) {
 				this.showComment();
 			} else {
@@ -93,6 +93,7 @@ define(function(require) {
 		},
 
 		newCommentView: function() {
+			//ps:修改
 			var rowAlias,
 				colAlias,
 				rowIndex,
@@ -113,22 +114,16 @@ define(function(require) {
 				colIndex: colIndex,
 				rowIndex: rowIndex,
 				comment: comment,
-				startLeft: this.offsetLeft + this.userViewLeft,
-				startTop: this.offsetTop + this.userViewTop
+				state: 'show'
 			};
-
-			this.commentView = new commentContainer(options);
-			$(this.el.parentNode.parentNode).append(this.commentView.render().el);
+			Backbone.trigger('event:commentContainer:show', options);
 		},
 		hideComment: function() {
 			clearTimeout(this.overEvent);
 			if (cache.commentState) {
 				return;
 			}
-			if (this.commentView !== undefined && this.commentView !== null) {
-				this.commentView.remove();
-				this.commentView = null;
-			}
+			Backbone.trigger('event:commentContainer:remove');
 		},
 		/**
 		 * 渲染单元格
@@ -277,9 +272,10 @@ define(function(require) {
 					setCellHeight('sheetId', headModelRow.get('displayName'), height);
 				}
 			} else {
+				//处理设置字体问题
 				headModelCol = headItemCols.getModelByAlias(occupyX[0]);
 				headModelRow = headItemRows.getModelByAlias(occupyY[0]);
-				height = getTextBox.getTextHeight('', true, fontsize, headModelCol.get('width'));
+				height = getTextBox.getTextHeight('', false, fontsize);
 				if (height > 17 && headModelRow.get('height') < height) {
 					setCellHeight('sheetId', headModelRow.get('displayName'), height);
 				}

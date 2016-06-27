@@ -10,7 +10,7 @@ define(function(require) {
 		mainDomString += '<div class="main-layout">';
 		mainDomString += '<table class="cui-grid" cellspacing="0" cellpadding="0" id="tableContainer">';
 		mainDomString += '<tbody><tr><td><div class="left-corner"></div></td><td></td><td></td></tr><tr><td></td><td></td><td></td></tr></tbody>';
-		mainDomString += '</table></div>';
+		mainDomString += '</table><div class="input"></div></div>';
 		mainDomString += '<div class="sheet-layout"><div class="sheet-body">';
 		//mainDomString += '<div class="sheet-cf-box active glyphicons glyphicon-th-list"></div>';
 		mainDomString += '<div class="sheet-cf-list">';

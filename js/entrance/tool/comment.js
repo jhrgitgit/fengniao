@@ -23,7 +23,7 @@ define(function(require) {
 			}
 
 			if (region.endColIndex === 'MAX') { //整行操作
-				rowOperate.rowPropOper(region.startRowIndex,'customProp.comment', comment);
+				rowOperate.rowPropOper(region.startRowIndex, 'customProp.comment', comment);
 				endColAlias = 'MAX';
 			} else {
 				region = cells.getFullOperationRegion(region);
@@ -37,12 +37,16 @@ define(function(require) {
 
 		createAddCommentView: function(sheetId) {
 			var select = selectRegions.getModelByType('operation')[0];
-			Backbone.trigger('event:selectRegion:createCommentContainer', undefined, 'add');
+			Backbone.trigger('event:commentContainer:show', {
+				'state': 'add',
+			});
 		},
 
 		createEditComment: function(sheetId) {
 			var select = selectRegions.getModelByType('operation')[0];
-			Backbone.trigger('event:selectRegion:createCommentContainer', undefined, 'edit');
+			Backbone.trigger('event:commentContainer:show', {
+				'state': 'edit'
+			});
 		},
 
 		deleteComment: function(sheetId, label) {
@@ -58,7 +62,7 @@ define(function(require) {
 				region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
 			}
 			if (region.endColIndex === 'MAX') { //整行操作
-				rowOperate.rowPropOper(region.startRowIndex,'customProp.comment', null);
+				rowOperate.rowPropOper(region.startRowIndex, 'customProp.comment', null);
 			} else {
 				region = cells.getFullOperationRegion(region);
 				cells.operateCellsByRegion(region, function(cell) {
@@ -76,12 +80,12 @@ define(function(require) {
 
 			startColAlias = headItemCols.models[region.startColIndex].get('alias');
 			startRowAlias = headItemRows.models[region.startRowIndex].get('alias');
-			if(region.endColIndex==='MAX'){
+			if (region.endColIndex === 'MAX') {
 				endColAlias = 'MAX';
-			}else{
+			} else {
 				endColAlias = headItemCols.models[region.endColIndex].get('alias');
 			}
-			if(region.endRowIndex==='MAX'){
+			if (region.endRowIndex === 'MAX') {
 				endRowAlias = headItemRows.models[region.endRowIndex].get('alias');
 			}
 

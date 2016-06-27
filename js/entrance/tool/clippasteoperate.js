@@ -181,14 +181,8 @@ define(function(require) {
 			clipRegion,
 			result = false;
 
-		// clipRegion = selectRegions.getModelByType('clip')[0];
-
-		// clipColStartIndex = clipRegion.get('wholePosi').startX;
-		// clipRowStartIndex = clipRegion.get('wholePosi').startY;
-		colStartIndex = selectRegions.models[0].get('wholePosi').startX;
-		rowStartIndex = selectRegions.models[0].get('wholePosi').startY;
-		startColAlias = headItemCols.models[colStartIndex].get('alias');
-		startRowAlias = headItemRows.models[rowStartIndex].get('alias');
+		startColAlias = selectRegions.models[0].get('wholePosi').startX;
+		startRowAlias = selectRegions.models[0].get('wholePosi').startY;
 		send.PackAjax({
 			url: "plate.htm?m=isAblePaste",
 			async: false,

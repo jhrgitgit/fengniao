@@ -10,7 +10,7 @@ define(function(require) {
 		binary = require('basic/util/binary'),
 		cache = require('basic/tools/cache'),
 		send = require('basic/tools/send'),
-		buildColAlias = require('basic/tools/buildcolalias'),
+		buildAlias = require('basic/tools/buildalias'),
 		headItemRows = require('collections/headItemRow'),
 		headItemCols = require('collections/headItemCol'),
 		cells = require('collections/cells'),
@@ -302,7 +302,7 @@ define(function(require) {
 				alias: (this.colNumber + 1).toString(),
 				left: this.colNumber * config.User.cellWidth,
 				width: config.User.cellWidth - 1,
-				displayName: buildColAlias(this.colNumber)
+				displayName: buildAlias.buildColAlias(this.colNumber)
 			};
 			return currentObject;
 		},

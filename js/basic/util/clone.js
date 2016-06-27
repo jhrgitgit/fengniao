@@ -1,6 +1,5 @@
-define(function(require) {
-    'use strict';
-
+ 'use strict';
+define(function() {
     var BUILTIN_OBJECT = {
         '[object Function]': 1,
         '[object RegExp]': 1,
@@ -18,7 +17,7 @@ define(function(require) {
      */
     return {
         clone: function(source) {
-            if (typeof source == 'object' && source !== null) {
+            if (typeof source === 'object' && source !== null) {
                 var result = source;
                 if (source instanceof Array) {
                     result = [];

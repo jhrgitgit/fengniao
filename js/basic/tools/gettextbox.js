@@ -17,9 +17,9 @@ define(function(require) {
 			tempDiv = $('<div/>').html(inputText);
 			tempDiv.css({
 				'visibility': 'hidden',
-				'font-size': fontSize + 'pt',
+				'font-size': fontSize + 'pt'				
 			});
-			if (wordWrap === true) {
+			if (wordWrap === true || width !== undefined) {
 				tempDiv.css({
 					'word-wrap': 'break-word',
 					'width': width

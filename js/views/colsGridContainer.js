@@ -7,7 +7,7 @@ define(function(require) {
 		binary = require('basic/util/binary'),
 		cache = require('basic/tools/cache'),
 		headItemCols = require('collections/headItemCol'),
-		buildColAlias= require('basic/tools/buildcolalias'),
+		buildAlias= require('basic/tools/buildalias'),
 		GridLineColContainer = require('views/gridLineColContainer');
 
 	/**
@@ -95,7 +95,7 @@ define(function(require) {
 				alias: (this.colNumber + 1).toString(),
 				left: this.colNumber * config.User.cellWidth,
 				width: config.User.cellWidth - 1,
-				displayName: buildColAlias(this.colNumber)
+				displayName: buildAlias.buildColAlias(this.colNumber)
 			};
 			return currentObject;
 		},

@@ -144,7 +144,7 @@ define(function(require) {
 			if (region.endColIndex === 'MAX') {
 				rowOperate.rowPropOper(region.startRowIndex, 'border.left', true);
 			} else {
-				cellList = cells.getTopHeadModelByIndex(region.startColIndex,
+				cellList = cells.getLeftHeadModelByIndex(region.startColIndex,
 					region.startRowIndex,
 					region.endColIndex,
 					region.endRowIndex);
@@ -164,7 +164,7 @@ define(function(require) {
 			if (region.endColIndex === 'MAX') {
 				rowOperate.rowPropOper(region.startRowIndex, 'border.bottom', true);
 			} else {
-				cellList = cells.getTopHeadModelByIndex(region.startColIndex,
+				cellList = cells.getBottomHeadModelByIndex(region.startColIndex,
 					region.startRowIndex,
 					region.endColIndex,
 					region.endRowIndex);
@@ -184,7 +184,7 @@ define(function(require) {
 			if (region.endColIndex === 'MAX') {
 				rowOperate.rowPropOper(region.startRowIndex, 'border.right', true);
 			} else {
-				cellList = cells.getTopHeadModelByIndex(region.startColIndex,
+				cellList = cells.getRightHeadModelByIndex(region.startColIndex,
 					region.startRowIndex,
 					region.endColIndex,
 					region.endRowIndex);

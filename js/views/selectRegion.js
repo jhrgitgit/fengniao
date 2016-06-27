@@ -11,7 +11,6 @@ define(function(require) {
 		headItemRows = require('collections/headItemRow'),
 		headItemCols = require('collections/headItemCol'),
 		cells = require('collections/cells'),
-		commentContainer = require('views/commentcontainer'),
 		SelectRegion;
 
 	/**
@@ -49,7 +48,6 @@ define(function(require) {
 			this.viewCellsContainer = options.parentView;
 			if (this.model.get("selectType") === "operation") {
 				Backbone.on('event:selectRegion:patchOprCell', this.patchOprCell, this);
-				Backbone.on('event:selectRegion:createCommentContainer', this.createCommentContainer, this);
 			}
 			this.listenTo(this.model, 'change', this.changePosition);
 			this.listenTo(this.model, 'destroy', this.destroy);
@@ -74,13 +72,13 @@ define(function(require) {
 			return this;
 		},
 		showComment: function(event) {
-			//增加延时效果
 			var model,
 				self = this;
-			model = this.viewCellsContainer.getCoordinateByMouseEvent(event).model;
+			
 			if (cache.commentState) {
 				return;
 			}
+			model = this.viewCellsContainer.getCoordinateByMouseEvent(event).model;
 			if (this.MouseModel !== model) {
 				clearTimeout(this.overEvent);
 				this.overEvent = setTimeout(function() {
@@ -97,83 +95,8 @@ define(function(require) {
 			}
 			this.MouseModel = model;
 		},
-		/**
-		 * 创建备注视图
-		 * @param  {object} model 单元格模型
-		 * @param  {string} type  'eidt':编辑状态, 'show':显示状态 ,'add':添加
-		 */
-		createCommentContainer: function(model, state) {
-			var rowAlias,
-				colAlias,
-				rowIndex,
-				colIndex,
-				occupy,
-				comment = '',
-				options,
-				commentView;
-
-
-			if (model !== undefined) {
-				occupy = model.get('occupy');
-				comment = model.get('customProp').comment;
-				rowAlias = occupy.y[0];
-				colAlias = occupy.x[occupy.x.length - 1];
-				rowIndex = headItemRows.getIndexByAlias(rowAlias);
-				colIndex = headItemCols.getIndexByAlias(colAlias);
-			} else { //选中区域编辑单元格
-				rowIndex = headItemRows.getIndexByAlias(this.model.get('wholePosi').startY);
-				colIndex = headItemRows.getIndexByAlias(this.model.get('wholePosi').endX);
-				//ps:bug 合并单元格存在问题
-				if (this.model.get('wholePosi').startY === this.model.get('wholePosi').endY &&
-					this.model.get('wholePosi').startX === this.model.get('wholePosi').endX &&
-					state === 'edit') {
-
-					model = cells.getCellByX(colIndex, rowIndex);
-					if (model.length > 0) {
-						comment = model[0].get('customProp').comment || '';
-					}
-				}
-			}
-
-			options = {
-				colIndex: colIndex,
-				rowIndex: rowIndex,
-				startLeft: this.offsetLeft + this.userViewLeft,
-				startTop: this.offsetTop + this.userViewTop,
-				comment: comment,
-				state: state
-			};
-			if (this.commentView !== undefined && this.commentView !== null) {
-				this.commentView.remove();
-				this.commentView = null;
-			}
-			//判断在冻结状态是否超出范围
-			if (cache.TempProp.isFrozen === true) {
-
-				if ((rowIndex < this.currentRule.displayPosition.startRowIndex || colIndex < this.currentRule.displayPosition.startColIndex)) {
-					return;
-				}
-				if (this.currentRule.displayPosition.endColIndex !== undefined && colIndex === 'MAX') {
-					return;
-				}
-				if (this.currentRule.displayPosition.endColIndex !== undefined && colIndex > (this.currentRule.displayPosition.endColIndex - 1)) {
-					return;
-				}
-				if (this.currentRule.displayPosition.endRowIndex !== undefined && rowIndex === 'MAX') {
-					return;
-				}
-				if (this.currentRule.displayPosition.endRowIndex !== undefined && rowIndex > (this.currentRule.displayPosition.endRowIndex - 1)) {
-					return;
-				}
-			}
-			commentView = new commentContainer(options);
-			$(this.el.parentNode).append(commentView.render().el);
-			if (state !== 'show') {
-				commentView.$el.focus();
-			}
-			this.commentView = commentView;
-		},
 		hideComment: function() {
+			clearTimeout(this.overEvent);
 			if (cache.commentState) {
 				return;
 			}
@@ -285,7 +208,6 @@ define(function(require) {
 		destroy: function() {
 			if (this.model.get("selectType") === "operation") {
 				Backbone.off('event:selectRegion:patchOprCell');
-				Backbone.off('event:selectRegion:createCommentContainer');
 			}
 			if (this.model.get('selectType') === 'drag') {
 				this.viewCellsContainer.dragView = null;

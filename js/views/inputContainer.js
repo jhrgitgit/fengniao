@@ -92,6 +92,7 @@ define(function(require) {
 			colIndex = headItemCols.getIndexByAlias(colAlias);
 			rowAlias = select.get('wholePosi').startY;
 			rowIndex = headItemRows.getIndexByAlias(rowAlias);
+
 			Backbone.trigger('call:mainContainer', function(container) {
 				mainContainer = container;
 			});
@@ -106,18 +107,31 @@ define(function(require) {
 			this.showState = true;
 			left = this.getAbsoluteLeft();
 			top = this.getAbsoluteTop();
+			this.adjustZIndex();
 			this.adjustWidth();
 			this.adjustHeight();
 			if (dblclick === false) {
 				this.model.set('content.texts', '');
 			}
 			modelJSON = this.model.toJSON();
-			if (modelJSON.content.bd === true) this.$el.css({
-				'font-weight': 'bold'
-			});
-			if (modelJSON.content.italic === true) this.$el.css({
-				'font-style': 'italic'
-			});
+			if (modelJSON.content.bd === true) {
+				this.$el.css({
+					'font-weight': 'bold'
+				});
+			} else {
+				this.$el.css({
+					'font-weight': 'normal'
+				});
+			}
+			if (modelJSON.content.italic === true) {
+				this.$el.css({
+					'font-style': 'italic'
+				});
+			} else {
+				this.$el.css({
+					'font-style': 'normal'
+				});
+			}
 			this.$el.css({
 				'width': modelJSON.physicsBox.width,
 				'height': modelJSON.physicsBox.height - 2,
@@ -126,7 +140,6 @@ define(function(require) {
 				'font-family': modelJSON.content.family,
 				'left': left,
 				'top': top,
-				'z-index': 100,
 			}).val(modelJSON.content.texts);
 			this.adjustWidth();
 			this.adjustHeight();
@@ -201,8 +214,8 @@ define(function(require) {
 		hide: function(event) {
 			if (this.showState === true) {
 				this.$el.css({
-					'left': 0,
-					'top': 0,
+					'left': -1000,
+					'top': -1000,
 					'width': 0,
 					'height': 0,
 					'z-index': -100
@@ -241,6 +254,42 @@ define(function(require) {
 				this.$el.css({
 					'top': top
 				});
+			}
+		},
+		/**
+		 * 输入内容时，输入框位于显示区域外，自动滚动回显示区
+		 */
+		autoScrollLeft: function() {
+			var scrollBarWidth,
+				right,
+				limitRight,
+				scrollLeft,
+				differ;
+			scrollBarWidth = this.mainContainer.$el[0].offsetWidth - this.mainContainer.$el[0].clientWidth;
+			right = this.$el.position().left + this.$el.width();
+			limitRight = this.$el.parent()[0].clientWidth - scrollBarWidth;
+			differ = limitRight - right;
+			if (differ < 0) {
+				scrollLeft = this.mainContainer.$el.scrollLeft();
+				this.mainContainer.$el.scrollLeft(scrollLeft - differ);
+			}
+		},
+		/**
+		 * 输入内容时，输入框位于显示区域外，自动滚动回显示区
+		 */
+		autoScrollTop: function() {
+			var scrollBarHeight,
+				bottom,
+				limitBottom,
+				scrollTop,
+				differ;
+			scrollBarHeight = this.mainContainer.$el[0].offsetHeight - this.mainContainer.$el[0].clientHeight;
+			bottom = this.$el.position().top + this.$el.height();
+			limitBottom = this.$el.parent()[0].clientHeight - scrollBarHeight;
+			differ = limitBottom - bottom;
+			if (differ < 0) {
+				scrollTop = this.mainContainer.$el.scrollTop() - differ;
+				this.mainContainer.$el.scrollTop(scrollTop);
 			}
 		},
 		/**
@@ -312,18 +361,65 @@ define(function(require) {
 				return result;
 			}
 		},
+		adjustZIndex: function() {
+			var colIndex,
+				rowIndex,
+				frozenColIndex,
+				frozenRowIndex;
+
+			colIndex = this.colIndex;
+			rowIndex = this.rowIndex;
+
+			if (cache.TempProp.colFrozen && cache.TempProp.rowFrozen) { //冻结情况
+				frozenColIndex = headItemCols.getIndexByAlias(cache.TempProp.colAlias);
+				frozenRowIndex = headItemRows.getIndexByAlias(cache.TempProp.rowAlias);
+				if (frozenColIndex > colIndex && frozenRowIndex > rowIndex) {
+					this.$el.css({
+						'z-index': '15'
+					});
+				} else if (frozenColIndex > colIndex || frozenRowIndex > rowIndex) {
+					this.$el.css({
+						'z-index': '12'
+					});
+				} else {
+					this.$el.css({
+						'z-index': '9'
+					});
+				}
+			} else if (cache.TempProp.colFrozen) {
+				frozenColIndex = headItemCols.getIndexByAlias(cache.TempProp.colAlias);
+				if (frozenColIndex > colIndex) {
+					this.$el.css({
+						'z-index': '12'
+					});
+				} else {
+					this.$el.css({
+						'z-index': '9'
+					});
+				}
+			} else if (cache.TempProp.rowFrozen) {
+				frozenRowIndex = headItemRows.getIndexByAlias(cache.TempProp.rowAlias);
+				if (frozenRowIndex > rowIndex) {
+					this.$el.css({
+						'z-index': '12'
+					});
+				} else {
+					this.$el.css({
+						'z-index': '9'
+					});
+				}
+			} else { //非冻结情况
+				this.$el.css({
+					'z-index': '9'
+				});
+			}
+		},
 		/**
 		 * 视图显示函数
 		 * @method render
 		 */
 		render: function() {
-			this.$el.css({
-				'width': 20,
-				'height': 18,
-				'left': 0,
-				'top': 0,
-				'z-index': -100,
-			});
+			this.hide();
 			return this;
 		},
 		/**
@@ -340,18 +436,28 @@ define(function(require) {
 		 */
 		adjustHeight: function() {
 			var height,
+				scrollBarHeight,
+				limitHeight,
 				cellHeight,
 				fontSize,
 				width,
 				text;
+
+			scrollBarHeight = this.mainContainer.$el[0].offsetHeight - this.mainContainer.$el[0].clientHeight;
+			limitHeight = this.$el.parent().height() - this.$el.position().top - scrollBarHeight;
+
 			text = this.$el.val();
 			fontSize = this.model.get("content").size;
 			width = this.$el.width();
+
 			height = getTextBox.getTextHeight(text, this.model.get("wordWrap"), fontSize, width);
 			cellHeight = this.model.get("physicsBox").height;
-			height = height > cellHeight ? height : cellHeight;
-			this.$el.css("height", height);
-			return height;
+			if (height < cellHeight || height > limitHeight) {
+				return cellHeight;
+			} else {
+				this.$el.css("height", height);
+				return height;
+			}
 		},
 		/**
 		 * 调整输入框宽度
@@ -364,9 +470,16 @@ define(function(require) {
 				inputText,
 				tempDiv,
 				currentWidth,
+				scrollBarWidth,
 				fontSize,
 				tempDivWidth,
+				limitWidth,
 				len, i;
+			//不能超出当前显示区域
+			scrollBarWidth = this.mainContainer.$el[0].offsetWidth - this.mainContainer.$el[0].clientWidth;
+			limitWidth = this.$el.parent().width() - this.$el.position().left - scrollBarWidth;
+
+
 			if (this.model.get("wordWrap") === true) return;
 			inputText = this.$el.val();
 			texts = inputText.split('\n');
@@ -391,7 +504,9 @@ define(function(require) {
 			$('body').append(tempDiv);
 			currentWidth = parseInt(this.$el.width(), 0);
 			tempDivWidth = tempDiv.width();
-			if (currentWidth < tempDivWidth && this.model.get('physicsBox').width < tempDivWidth) {
+			if (currentWidth < tempDivWidth &&
+				this.model.get('physicsBox').width < tempDivWidth &&
+				tempDivWidth + 10 < limitWidth) {
 				this.$el.width(tempDivWidth + 10);
 			}
 			tempDiv.remove();
@@ -467,6 +582,7 @@ define(function(require) {
 				self = this,
 				len, i, isShortKey, keyboard;
 
+
 			keyboard = config.keyboard;
 			isShortKey = this.isShortKey(e.keyCode);
 			if (isShortKey) {
@@ -482,7 +598,6 @@ define(function(require) {
 					return;
 				};
 			}
-			//处理剪切板操作键
 
 			//未显示输入框时,输入字符处理
 			if (this.showState === undefined || this.showState === false) {
@@ -504,6 +619,8 @@ define(function(require) {
 					return;
 				};
 			}
+			this.autoScrollLeft();
+			this.autoScrollTop();
 
 			function insertAtCursor(myValue) {
 				var $t = self.$el[0];

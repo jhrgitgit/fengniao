@@ -6,8 +6,8 @@
  * @since 1.0.0
  * @main basic
  */
-define(function(require) {
-	'use strict';
+'use strict';
+define(function() {
 	return {
 		/**
 		 * @method getScrollbarWidth

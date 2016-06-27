@@ -4,6 +4,7 @@ define(function(require) {
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
 		selectRegions = require('collections/selectRegion'),
+		config = require('spreadsheet/config'),
 		cells = require('collections/cells'),
 		send = require('basic/tools/send'),
 		cache = require('basic/tools/cache'),
@@ -12,42 +13,74 @@ define(function(require) {
 
 	commentContainer = Backbone.View.extend({
 		tagName: 'textarea',
+
 		className: 'comment',
+
 		state: 'show', // show:显示状态   edit: 编辑状态  
+
 		events: {
 			'blur': 'close'
 		},
+
 		initialize: function(options) {
-			var colIndex,
-				rowIndex;
-			this.state = options.state || 'show';
-			this.comment = options.comment;
-			this.startLeft = options.startLeft || 0;
-			this.startTop = options.startTop || 0;
-			colIndex = options.colIndex;
-			rowIndex = options.rowIndex;
+			var mainContainer,
+				colAliasLen,
+				colAlias,
+				rowAlias,
+				colIndex,
+				rowIndex,
+				endRowAlias,
+				endColAlias,
+				select,
+				model;
 
-			if (colIndex === 'MAX') {
-				this.left = 3 - this.startLeft;
-				this.top = headItemRows.models[rowIndex + 1].get('top') - this.startTop;
+			if (options.colIndex !== undefined) {
+				this.colIndex = options.colIndex;
+				this.rowIndex = options.rowIndex;
+				this.comment = options.comment;
+			} else {
+				select = selectRegions.getModelByType('operation')[0];
+				colAlias = select.get('wholePosi').endX;
+				rowAlias = select.get('wholePosi').startY;
 
+				this.colIndex = headItemCols.getIndexByAlias(colAlias);
+				this.rowIndex = headItemRows.getIndexByAlias(rowAlias);
+				if (options.state === 'edit') {
+					if (select.get('wholePosi').endX === select.get('wholePosi').startX &&
+						select.get('wholePosi').endY === select.get('wholePosi').startY) {
+						model = cells.getCellByX(this.colIndex, this.rowIndex);
+						if (model.length > 0) {
+							this.comment = model[0].get('customProp').comment || '';
+						}
+					} else { //含有多个单元格
+						this.comment = '';
+					}
+				} else {
+					this.comment = '';
+				}
 			}
-			// else if(rowIndex==='MAX') {
-			// 	this.left = 
-			// 	this.top = 
-			// }
-			else {
-				this.left = headItemCols.models[colIndex].get('left') + headItemCols.models[colIndex].get('width') + 3 - this.startLeft;
-				this.top = headItemRows.models[rowIndex].get('top') - this.startTop;
-			}
+			this.parentNode = options.parentNode;
+			this.state = options.state;
 			if (this.state !== 'show') {
 				cache.commentState = true;
 			}
+
+			Backbone.trigger('call:mainContainer', function(container) {
+				mainContainer = container;
+			});
+			this.mainContainer = mainContainer;
 		},
 		render: function() {
+			var left,
+				top;
+			left = this.getAbsoluteLeft();
+			top = this.getAbsoluteTop();
+			this.adjustZIndex();
 			this.$el.css({
-				left: this.left,
-				top: this.top,
+				left: left,
+				top: top,
+				width: config.User.commentWidth + 'px',
+				height: config.User.commentHeight + 'px'
 			});
 			this.$el.val(this.comment);
 			if (this.state === 'show') {
@@ -55,7 +88,168 @@ define(function(require) {
 			}
 			return this;
 		},
+		/**
+		 * 横向移动输入框
+		 */
+		transverseScroll: function() {
+			var left;
+			left = this.getAbsoluteLeft();
+			this.$el.css({
+				'left': left
+			});
+		},
+		/**
+		 * 纵向移动输入框
+		 */
+		verticalScroll: function() {
+			var top;
+			top = this.getAbsoluteTop();
+			this.$el.css({
+				'top': top
+			});
+		},
+		/**
+		 * 获取输入框left坐标
+		 * @param  {object} mainContainer mainContainer
+		 * @param  {number} colIndex 选中区域列索引
+		 */
+		getAbsoluteLeft: function() {
+			var outLeft,
+				scrollLeft,
+				userViewLeft,
+				userViewIndex,
+				frozenColIndex,
+				headItemLeft,
+				mainContainer,
+				limitRight,
+				right,
+				tempLeft,
+				colIndex,
+				result;
 
+			colIndex = this.colIndex;
+			mainContainer = this.mainContainer;
+
+			outLeft = config.System.outerLeft;
+			scrollLeft = mainContainer.$el.scrollLeft();
+			//判断边界值
+			if (colIndex === 'MAX') {
+				headItemLeft = 0;
+			} else {
+				headItemLeft = headItemCols.models[colIndex].get('left') + headItemCols.models[colIndex].get('width');
+			}
+
+			if (cache.TempProp.colFrozen) { //冻结情况
+				frozenColIndex = headItemCols.getIndexByAlias(cache.TempProp.colAlias);
+				if (frozenColIndex > colIndex) {
+					scrollLeft = 0;
+				}
+				userViewIndex = headItemCols.getIndexByAlias(cache.UserView.colAlias);
+				userViewLeft = headItemCols.models[userViewIndex].get('left');
+				headItemLeft = headItemLeft - userViewLeft + outLeft - scrollLeft + 1;
+			} else { //非冻结情况
+				headItemLeft = headItemLeft + outLeft - scrollLeft + 1;
+			}
+
+			//判断备注是否超过了显示区域
+			right = headItemLeft + config.User.commentWidth + 1;
+
+			limitRight = this.parentNode.$el.width();
+
+			if (right > limitRight) {
+				tempLeft = headItemLeft - config.User.commentWidth - headItemCols.models[colIndex].get('width') - 10;
+				if (tempLeft > 0) {
+					headItemLeft = tempLeft;
+				}
+			}
+			return headItemLeft;
+		},
+		getAbsoluteTop: function() {
+			var outTop,
+				scrollTop,
+				userViewTop,
+				userViewIndex,
+				frozenRowIndex,
+				mainContainer,
+				rowIndex,
+				headItemTop,
+				result;
+
+			rowIndex = this.rowIndex;
+			mainContainer = this.mainContainer;
+
+			outTop = config.System.outerTop;
+			scrollTop = mainContainer.$el.scrollTop();
+
+			headItemTop = headItemRows.models[rowIndex].get('top');
+
+			if (cache.TempProp.rowFrozen) { //冻结情况
+				frozenRowIndex = headItemRows.getIndexByAlias(cache.TempProp.rowAlias);
+				if (frozenRowIndex > rowIndex) {
+					scrollTop = 0;
+				}
+				userViewIndex = headItemRows.getIndexByAlias(cache.UserView.rowAlias);
+				userViewTop = headItemRows.models[userViewIndex].get('top');
+				result = headItemTop - userViewTop + outTop - scrollTop + 1;
+				return result;
+			} else { //非冻结情况
+				result = headItemTop + outTop - scrollTop + 1;
+				return result;
+			}
+		},
+		adjustZIndex: function() {
+			var colIndex,
+				rowIndex,
+				frozenColIndex,
+				frozenRowIndex;
+
+			colIndex = this.colIndex;
+			rowIndex = this.rowIndex;
+
+			if (cache.TempProp.colFrozen && cache.TempProp.rowFrozen) { //冻结情况
+				frozenColIndex = headItemCols.getIndexByAlias(cache.TempProp.colAlias);
+				frozenRowIndex = headItemRows.getIndexByAlias(cache.TempProp.rowAlias);
+				if (frozenColIndex > colIndex && frozenRowIndex > rowIndex) {
+					this.$el.css({
+						'z-index': '15'
+					});
+				} else if (frozenColIndex > colIndex || frozenRowIndex > rowIndex) {
+					this.$el.css({
+						'z-index': '12'
+					});
+				} else {
+					this.$el.css({
+						'z-index': '9'
+					});
+				}
+			} else if (cache.TempProp.colFrozen) {
+				frozenColIndex = headItemCols.getIndexByAlias(cache.TempProp.colAlias);
+				if (frozenColIndex > colIndex) {
+					this.$el.css({
+						'z-index': '12'
+					});
+				} else {
+					this.$el.css({
+						'z-index': '9'
+					});
+				}
+			} else if (cache.TempProp.rowFrozen) {
+				frozenRowIndex = headItemRows.getIndexByAlias(cache.TempProp.rowAlias);
+				if (frozenRowIndex > rowIndex) {
+					this.$el.css({
+						'z-index': '12'
+					});
+				} else {
+					this.$el.css({
+						'z-index': '9'
+					});
+				}
+			} else { //非冻结情况
+				this.$el.css({
+					'z-index': '9'
+				});
+			}
+		},
 		close: function() {
 			var comment,
 				select,
@@ -104,13 +298,12 @@ define(function(require) {
 			select = selectRegions.getModelByType('operation')[0];
 			if (select.get('wholePosi').endX === 'MAX') {
 				endColAlias = 'MAX';
-			}else{
-				endColAlias = headItemCols.models[select.get('wholePosi').endX].get('alias');
+			} else {
+				endColAlias =select.get('wholePosi').endX;
 			}
-			startColAlias = headItemCols.models[select.get('wholePosi').startX].get('alias');
-			startRowAlias = headItemRows.models[select.get('wholePosi').startY].get('alias');
-
-			endRowAlias = headItemRows.models[select.get('wholePosi').endY].get('alias');
+			startColAlias = select.get('wholePosi').startX;
+			startRowAlias = select.get('wholePosi').startY;
+			endRowAlias = select.get('wholePosi').endY;
 			send.PackAjax({
 				url: 'text.htm?m=comment_set',
 				data: JSON.stringify({

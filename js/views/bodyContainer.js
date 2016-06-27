@@ -13,6 +13,7 @@ define(function(require) {
 		ColsPanelContainer = require('views/colsPanelContainer'),
 		RowsPanelContainer = require('views/rowsPanelContainer'),
 		InputContainer = require('views/inputContainer'),
+		CommentContainer = require('views/commentcontainer'),
 		BodyContainer;
 
 	/**
@@ -46,6 +47,9 @@ define(function(require) {
 			Backbone.on('call:bodyContainer', this.callBodyContainer, this);
 			Backbone.on('event:bodyContainer:executiveFrozen',
 				this.executiveFrozen, this);
+			Backbone.on('event:commentContainer:show', this.showCommentContainer, this);
+			Backbone.on('event:commentContainer:remove', this.removeCommentContainer, this);
+			_.bindAll(this, 'executiveFrozen', 'showCommentContainer', 'removeCommentContainer');
 		},
 		/**
 		 * 渲染页面
@@ -54,7 +58,7 @@ define(function(require) {
 		 */
 		render: function() {
 			this.inputContainer = new InputContainer();
-			this.$el.append(this.inputContainer.render().el);
+			this.$el.find('.main-layout').append(this.inputContainer.render().el);
 			this.calculation();
 			this.adaptScreen();
 			this.generateSheet();
@@ -63,7 +67,45 @@ define(function(require) {
 			});
 			this.inputContainer.$el.focus();
 		},
+		showCommentContainer: function(options) {
+			if (cache.commentState) {
+				return;
+			}
+			options.parentNode=this;
+			this.commentContainer = new CommentContainer(options);
+			this.publisherList['mainContainer'].subscribe({
+				master: this.commentContainer,
+				behavior: 'transverseScroll'
+			}, 'transversePublish');
+			this.publisherList['mainContainer'].subscribe({
+				master: this.commentContainer,
+				behavior: 'verticalScroll'
+			}, 'verticalPublish');
 
+			this.$el.find('.main-layout').append(this.commentContainer.render().el);
+			if (options.state !== 'show') {
+				this.commentContainer.$el.focus();
+			}
+		},
+		removeCommentContainer: function(model) {
+
+			if (this.commentContainer === undefined ||
+				this.commentContainer === null ||
+				this.commentContainer.state !== 'show') {
+				return;
+			}
+			this.publisherList['mainContainer'].unsubscribe({
+				master: this.commentContainer,
+				behavior: 'transverseScroll'
+			}, 'transversePublish');
+			this.publisherList['mainContainer'].unsubscribe({
+				master: this.commentContainer,
+				behavior: 'verticalScroll'
+			}, 'verticalPublish');
+			//判断状态
+			this.commentContainer.close();
+			this.commentContainer = null;
+		},
 		generateSheet: function() {
 			var sheetsView = new SheetsContainer();
 			this.sheetsView = sheetsView;
@@ -121,10 +163,11 @@ define(function(require) {
 		 * @method clearFrozenRule
 		 */
 		executiveFrozen: function() {
-			var customID = '#spreadSheet';
-			var modelRowList = headItemRows,
+			var customID = '#spreadSheet',
+				modelRowList = headItemRows,
 				modelColList = headItemCols,
-				i, j, publisherList = {},
+				self = this,
+				i, j,
 				len,
 				mainContainer;
 
@@ -132,6 +175,7 @@ define(function(require) {
 			this.ruleRow();
 			this.ruleCol();
 			this.ruleMain();
+			this.publisherList = {};
 			// destory old view
 			Backbone.trigger('event:colsPanelContainer:destroy');
 			Backbone.trigger('event:rowsPanelContainer:destroy');
@@ -143,6 +187,7 @@ define(function(require) {
 				len = cache.FrozenRules.main.length;
 				for (i = len - 1; i >= 0; i--) {
 					cache.CurrentRule = cache.FrozenRules.main[i];
+					//添加白色背景，并设置z值
 					mainContainer = new MainContainer();
 					$('tr:eq(1) td:eq(' + (i + 1) + ')', customID).prepend(mainContainer.render().el);
 					buildObserverPattern(mainContainer);
@@ -190,14 +235,15 @@ define(function(require) {
 			}
 
 			//输入框订阅maincontainer滚动事件
-			publisherList['mainContainer'].subscribe({
+			this.publisherList['mainContainer'].subscribe({
 				master: this.inputContainer,
 				behavior: 'transverseScroll'
 			}, 'transversePublish');
-			publisherList['mainContainer'].subscribe({
+			this.publisherList['mainContainer'].subscribe({
 				master: this.inputContainer,
 				behavior: 'verticalScroll'
 			}, 'verticalPublish');
+			//订阅问题？
 
 			/**
 			 * 发布/订阅
@@ -210,13 +256,13 @@ define(function(require) {
 
 				if (currentRule.isPublisher) {
 					observerPattern.buildPublisher(container);
-					publisherList[currentRule.publisherName] = container;
+					self.publisherList[currentRule.publisherName] = container;
 				}
 				currentSubscribe = currentRule.isSubscribe || false;
 				if (currentSubscribe) {
 					len = currentSubscribe.length;
 					for (i = 0; i < len; i++) {
-						publisherList[currentSubscribe[i].publisherName].subscribe({
+						self.publisherList[currentSubscribe[i].publisherName].subscribe({
 							master: container,
 							behavior: currentSubscribe[i].behavior,
 							args: currentSubscribe[i].args

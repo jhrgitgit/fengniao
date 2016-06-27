@@ -505,7 +505,7 @@ define(function(require) {
 					sort: i,
 					alias: (i + 1).toString(),
 					top: i * 72,
-					displayName: buildColAlias(i)
+					displayName: buildAlias.buildColAlias(i)
 				});
 			}
 		},

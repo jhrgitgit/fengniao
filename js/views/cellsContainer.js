@@ -1010,8 +1010,8 @@ define(function(require) {
 					left: headItemColList[startColIndex].get('left')
 				},
 				physicsBox: {
-					width: width - 1,
-					height: height - 1
+					width: width,
+					height: height
 				},
 				wholePosi: {
 					startX: headItemColList[startColIndex].get('alias'),
@@ -1136,8 +1136,8 @@ define(function(require) {
 					left: headItemColList[startColIndex].get('left')
 				},
 				physicsBox: {
-					width: width - 1,
-					height: height - 1
+					width: width,
+					height: height
 				},
 				wholePosi: {
 					startX: headItemColList[startColIndex].get('alias'),

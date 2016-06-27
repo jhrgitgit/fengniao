@@ -16,7 +16,7 @@ define(function(require) {
 		original = require('basic/tools/original'),
 		clone = require('basic/util/clone'),
 		send = require('basic/tools/send'),
-		buildColAlias = require('basic/tools/buildcolalias'),
+		buildAlias = require('basic/tools/buildalias'),
 		loadRecorder = require('basic/tools/loadrecorder'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
@@ -25,7 +25,7 @@ define(function(require) {
 		GridLineRowContainer = require('views/gridLineRowContainer'),
 		CellContainer = require('views/cellContainer'),
 		CellsContainer = require('views/cellsContainer');
-		
+
 	/**
 	 *单元格显示区域视图类
 	 *@class MainContainer 
@@ -61,7 +61,6 @@ define(function(require) {
 			Backbone.on('event:mainContainer:attributesRender', this.attributesRender, this);
 			Backbone.on('event:mainContainer:appointPosition', this.appointPosition, this);
 
-			//ps:定位事件，只由主区域订阅
 			this.currentRule = clone.clone(cache.CurrentRule);
 
 			if (this.currentRule.eventScroll) {
@@ -114,6 +113,21 @@ define(function(require) {
 			cache.visibleRegion.top = 0;
 			cache.visibleRegion.bottom = this.rowsViewBottomPosi;
 		},
+		/**
+		 * 生成白色背景，用于遮挡输入框
+		 */
+		addBackGround: function() {
+			if (this.currentRule.displayPosition.endColAlias !== undefined &&
+				this.currentRule.displayPosition.endRowAlias !== undefined) {
+				//修改为模板
+				this.$el.append('<div style="position:absolute;width:inherit;height:inherit;background-color:white;top:0;left:0;z-index:13"></div>');
+				this.cellsContainer.$el.css({'z-index': '14'});
+			} else if (this.currentRule.displayPosition.endColAlias !== undefined ||
+				this.currentRule.displayPosition.endRowAlias !== undefined) {
+				this.$el.append('<div style="position:absolute;width:inherit;height:inherit;background-color:white;top:0;left:0;z-index:10"></div>');
+				this.cellsContainer.$el.css({'z-index': '11'});
+			}
+		},
 		addCellViewPublish: function(cellModel) {
 			this.publish(cellModel, 'addCellViewPublish');
 		},
@@ -136,7 +150,7 @@ define(function(require) {
 			});
 			this.cellsContainer.contentCellsContainer.$el.prepend(tempView.render().el);
 		},
-		adaptViewHeight: function(){
+		adaptViewHeight: function() {
 
 		},
 		/**
@@ -154,6 +168,7 @@ define(function(require) {
 				parentView: this
 			});
 			this.$el.append(this.cellsContainer.render().el);
+			this.addBackGround();
 			this.triggerCallback();
 			return this;
 		},
@@ -314,7 +329,7 @@ define(function(require) {
 				modelColList = headItemCols;
 				userViewRowModel = modelRowList.getModelByPosition(this.recordScrollTop);
 				userViewEndRowModel = modelRowList.getModelByPosition(this.recordScrollTop + this.el.offsetHeight);
-				
+
 				cache.UserView.rowAlias = userViewRowModel.get('alias');
 				cache.UserView.rowEndAlias = userViewEndRowModel.get('alias');
 				userViewColModel = modelColList.getModelByPosition(this.recordScrollLeft);
@@ -847,7 +862,7 @@ define(function(require) {
 					alias: (colValue + 1).toString(),
 					left: colValue * config.User.cellWidth,
 					width: config.User.cellWidth - 1,
-					displayName: buildColAlias(colValue)
+					displayName: buildAlias.buildColAlias(colValue)
 				});
 				colValue++;
 				i++;
@@ -917,7 +932,7 @@ define(function(require) {
 						alias: (sort + 2 + i).toString(),
 						top: lastModelTop + lastModelHeight + config.User.cellHeight * i + 1,
 						height: config.User.cellHeight - 1,
-						displayName: binary.buildRowAlias(sort + i + 1)
+						displayName: buildAlias.buildRowAlias(sort + i + 1)
 					});
 					i++;
 				}

@@ -1,6 +1,5 @@
-define(function(require) {
-	'use strict';
-
+'use strict';
+define(function() {
 	/**
 	 * 订阅模式装饰类
 	 * 系统配置变量
@@ -20,13 +19,13 @@ define(function(require) {
 			},
 			subscribe: function(fn, type) {
 				type = type || 'any';
-				if (typeof this.subscribers[type] === "undefined") {
+				if (typeof this.subscribers[type] === 'undefined') {
 					this.subscribers[type] = [];
 				}
 				this.subscribers[type].push(fn);
 			},
 			unsubscribe: function(fn, type) {
-				this.visitSubscribers("unsubscribe", fn, type);
+				this.visitSubscribers('unsubscribe', fn, type);
 			},
 			publish: function(publication, type) {
 				this.visitSubscribers('publish', publication, type);
@@ -64,7 +63,7 @@ define(function(require) {
 		 */
 		buildPublisher: function(obj) {
 			for (var i in this.publisher) {
-				if (this.publisher.hasOwnProperty(i) && typeof this.publisher[i] === "function") {
+				if (this.publisher.hasOwnProperty(i) && typeof this.publisher[i] === 'function') {
 					obj[i] = this.publisher[i];
 				}
 			}

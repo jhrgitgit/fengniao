@@ -316,7 +316,7 @@ define(function(require) {
 				alias: (this.rowNumber + 1).toString(),
 				top: this.rowNumber * 20,
 				height: 19,
-				displayName: binary.buildRowAlias(this.rowNumber)
+				displayName: buildAlias.buildRowAlias(this.rowNumber)
 			};
 			return currentObject;
 		},

@@ -1,5 +1,5 @@
-define(function(require) {
-	'use strict';
+'use strict';
+define(function() {	
 	/**
 	 * 二分查询工具类
 	 * @author ray wu
@@ -126,23 +126,11 @@ define(function(require) {
 			}
 			return start;
 		},
-		/**
-		 * 生成行名称
-		 * @method buildRowAlias
-		 * @param  {int} 当前索引值
-		 * @return {string} 当前显示的名称
-		 */
-		buildRowAlias: function(currentIndex) {
-			return (currentIndex + 1).toString();
-		},
 		existArrayBinary: function(value, array, startAttr, endAttr, startIndex, endIndex) {
 			var middle,
 				start = startIndex ? startIndex : 0,
 				end = endIndex ? endIndex : array.length - 1,
-				findValue = Math.floor(value),
-				strandAttrByArray,
-				rangeAttrByArray,
-				middleArray;
+				findValue = Math.floor(value);
 			if (array.length === 0) {
 				return false;
 			}
@@ -175,10 +163,7 @@ define(function(require) {
 			var middle,
 				start = startIndex ? startIndex : 0,
 				end = endIndex ? endIndex : array.length - 1,
-				findValue = Math.floor(value),
-				strandAttrByArray,
-				rangeAttrByArray,
-				middleArray;
+				findValue = Math.floor(value);
 			if (array.length === 0) {
 				return 0;
 			}

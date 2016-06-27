@@ -44,8 +44,16 @@ define(function() {
 			 * excel最大支持行数
 			 * @property {number} maxRowNum
 			 */
-			maxRowNum: 9999
-
+			maxRowNum: 9999,
+			/**
+			 * 备注宽度
+			 * @type {Number}
+			 */
+			commentWidth: 150,
+			/**
+			 * 备注高度
+			 */
+			commentHeight: 150,
 		},
 		/**
 		 * 系统配置属性

@@ -6,7 +6,7 @@ define(function(require) {
 		cache = require('basic/tools/cache'),
 		send = require('basic/tools/send'),
 		loadRecorder = require('basic/tools/loadrecorder'),
-		buildColAlias = require('basic/tools/buildcolalias'),
+		buildAlias = require('basic/tools/buildalias'),
 		LineRow = require('models/lineRow'),
 		LineCol = require('models/lineCol'),
 		Cell = require('models/cell'),
@@ -45,7 +45,7 @@ define(function(require) {
 					alias: (i + 1).toString(),
 					left: i * config.User.cellWidth,
 					width: config.User.cellWidth - 1,
-					displayName: buildColAlias(i)
+					displayName: buildAlias.buildColAlias(i)
 				};
 				headItemCols.add(currentObject);
 			}
@@ -55,7 +55,7 @@ define(function(require) {
 					alias: (j + 1).toString(),
 					top: j * config.User.cellHeight,
 					height: config.User.cellHeight - 1,
-					displayName: binary.buildRowAlias(j)
+					displayName: buildAlias.buildRowAlias(j)
 				};
 				headItemRows.add(currentObject);
 			}
@@ -84,7 +84,7 @@ define(function(require) {
 				tempHeadRow.set('top', rows[i].top);
 				tempHeadRow.set('height', rows[i].height);
 				tempHeadRow.set('alias', rows[i].aliasY);
-				tempHeadRow.set('displayName', binary.buildRowAlias(startRowSort + i));
+				tempHeadRow.set('displayName', buildAlias.buildRowAlias(startRowSort + i));
 				headItemRows.push(tempHeadRow, {
 					at: index
 				});
@@ -108,7 +108,7 @@ define(function(require) {
 				tempHeadCol.set('left', cols[i].left);
 				tempHeadCol.set('width', cols[i].width);
 				tempHeadCol.set('alias', cols[i].aliasX);
-				tempHeadCol.set('displayName', buildColAlias(startColSort + i));
+				tempHeadCol.set('displayName', buildAlias.buildColAlias(startColSort + i));
 				headItemCols.add(tempHeadCol);
 			}
 
@@ -121,7 +121,7 @@ define(function(require) {
 					tempHeadCol.set('left', headItemCols.models[collen + j - 1].get('left') + headItemCols.models[collen + j - 1].get('width') + 1);
 					tempHeadCol.set('width', 71);
 					tempHeadCol.set('alias', (headItemCols.length + 1).toString());
-					tempHeadCol.set('displayName', buildColAlias(collen + j));
+					tempHeadCol.set('displayName', buildAlias.buildColAlias(collen + j));
 					headItemCols.add(tempHeadCol);
 				}
 			}

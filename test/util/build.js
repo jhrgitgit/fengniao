@@ -2,7 +2,7 @@
 define(function(require) {
 	var headItemRows = require('collections/headItemRow'),
 		headItemCols = require('collections/headItemCol'),
-		buildColAlias = require('basic/tools/buildcolalias');
+		buildAlias = require('basic/tools/buildalias');
 
 	return {
 		/**
@@ -38,7 +38,7 @@ define(function(require) {
 					sort: i,
 					alias: (i + 1).toString(),
 					top: i * 72,
-					displayName: buildColAlias(i)
+					displayName: buildAlias.buildColAlias(i)
 				});
 			}
 		},
