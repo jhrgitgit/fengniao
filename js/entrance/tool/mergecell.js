@@ -24,6 +24,7 @@ define(function(require) {
 			textCellNum = 0,
 			region = {},
 			select,
+			clip,
 			cacheCell,
 			cellList,
 			occupyX = [],
@@ -46,6 +47,12 @@ define(function(require) {
 		}
 		if (region.endColIndex === 'MAX' || region.endRowIndex === 'MAX') {
 			return;
+		}
+		
+		clip = selectRegions.getModelByType('clip')[0];
+		if (clip !== undefined) {
+			cache.clipState = 'null';
+			clip.destroy();
 		}
 		region = cells.getFullOperationRegion(region);
 		startRowIndex = region.startRowIndex;

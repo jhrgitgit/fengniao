@@ -5,6 +5,7 @@ define(function(require) {
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
 		cells = require('collections/cells'),
+		cache = require('basic/tools/cache'),
 		analysisLabel = require('basic/tools/analysislabel'),
 		rowOperate = require('entrance/row/rowoperation');
 
@@ -16,8 +17,15 @@ define(function(require) {
 			startRowAlias,
 			endColAlias,
 			endRowAlias,
-			tempCellList;
+			tempCellList,
+			clip;
 
+
+		clip = selectRegions.getModelByType('clip')[0];
+		if (clip !== undefined) {
+			cache.clipState = 'null';
+			clip.destroy();
+		}
 		if (label !== undefined) {
 			region = analysisLabel(label);
 			region = cells.getFullOperationRegion(region);

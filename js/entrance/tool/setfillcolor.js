@@ -4,6 +4,7 @@ define(function(require) {
 		selectRegions = require('collections/selectRegion'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
+		cache = require('basic/tools/cache'),
 		cells = require('collections/cells'),
 		analysisLabel = require('basic/tools/analysislabel'),
 		rowOperate = require('entrance/row/rowoperation');
@@ -16,6 +17,7 @@ define(function(require) {
 	 */
 	var setFillColor = function(sheetId, color, label) {
 		var select,
+			clip,
 			region = {},
 			startColAlias,
 			startRowAlias,
@@ -29,6 +31,11 @@ define(function(require) {
 			region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
 			region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
 			region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
+		}
+		clip = selectRegions.getModelByType('clip')[0];
+		if (clip !== undefined) {
+			cache.clipState = 'null';
+			clip.destroy();
 		}
 
 		if (region.endColIndex === 'MAX') { //整行操作

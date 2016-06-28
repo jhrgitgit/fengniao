@@ -2,6 +2,7 @@
 define(function(require) {
 	var send = require('basic/tools/send'),
 		cells = require('collections/cells'),
+		cache = require('basic/tools/cache'),
 		selectRegions = require('collections/selectRegion'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
@@ -11,6 +12,7 @@ define(function(require) {
 	var setCellBorder = function(sheetId, border, label) {
 		var region = {},
 			select,
+			clip,
 			startColAlias,
 			startRowAlias,
 			endColAlias,
@@ -25,7 +27,11 @@ define(function(require) {
 			region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
 			region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
 		}
-
+		clip = selectRegions.getModelByType('clip')[0];
+		if (clip !== undefined) {
+			cache.clipState = 'null';
+			clip.destroy();
+		}
 		if (region.endColIndex === 'MAX') { //整行操作
 			endColAlias = 'MAX';
 			endRowAlias = headItemRows.models[region.endRowIndex].get('alias');

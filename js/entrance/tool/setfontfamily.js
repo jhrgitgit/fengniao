@@ -2,6 +2,7 @@
 define(function(require) {
 	var send = require('basic/tools/send'),
 		cells = require('collections/cells'),
+		cache = require('basic/tools/cache'),
 		selectRegions = require('collections/selectRegion'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
@@ -10,6 +11,7 @@ define(function(require) {
 
 	var setFontFamily = function(sheetId, fontFamily, label) {
 		var select,
+			clip,
 			region = {},
 			startColAlias,
 			startRowAlias,
@@ -25,7 +27,11 @@ define(function(require) {
 			region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
 			region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
 		}
-
+		clip = selectRegions.getModelByType('clip')[0];
+		if (clip !== undefined) {
+			cache.clipState = 'null';
+			clip.destroy();
+		}
 		if (region.endColIndex === 'MAX') { //整行操作
 			rowOperate.rowPropOper(region.startRowIndex, 'content.family', fontFamily);
 			endColAlias = 'MAX';
@@ -41,7 +47,7 @@ define(function(require) {
 
 		startColAlias = headItemCols.models[region.startColIndex].get('alias');
 		startRowAlias = headItemRows.models[region.startRowIndex].get('alias');
-		
+
 		send.PackAjax({
 			url: 'text.htm?m=font_family',
 			data: JSON.stringify({

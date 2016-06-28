@@ -2,6 +2,7 @@
 define(function(require) {
 	var send = require('basic/tools/send'),
 		cells = require('collections/cells'),
+		cache = require('basic/tools/cache'),
 		headItemRows = require('collections/headItemRow'),
 		headItemCols = require('collections/headItemCol'),
 		selectRegions = require('collections/selectRegion'),
@@ -13,6 +14,7 @@ define(function(require) {
 
 	var setFontFamilySize = function(sheetId, fontSize, label) {
 		var select,
+			clip,
 			region = {},
 			startColAlias,
 			startRowAlias,
@@ -28,7 +30,11 @@ define(function(require) {
 			region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
 			region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
 		}
-
+		clip = selectRegions.getModelByType('clip')[0];
+		if (clip !== undefined) {
+			cache.clipState = 'null';
+			clip.destroy();
+		}
 		if (region.endColIndex === 'MAX') { //整行操作
 			rowOperate.rowPropOper(region.startRowIndex, 'content.size', fontSize);
 			endColAlias = 'MAX';

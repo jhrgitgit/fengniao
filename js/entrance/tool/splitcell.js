@@ -22,6 +22,7 @@ define(function(require) {
 			endRowAlias,
 			selectRegionCells,
 			cacheCell,
+			clip,
 			headLineColList,
 			headLineRowList,
 			i, j, len,
@@ -39,6 +40,11 @@ define(function(require) {
 		}
 		if (region.endColIndex === 'MAX' || region.endRowIndex === 'MAX') {
 			return;
+		}
+		clip = selectRegions.getModelByType('clip')[0];
+		if (clip !== undefined) {
+			cache.clipState = 'null';
+			clip.destroy();
 		}
 		region = cells.getFullOperationRegion(region);
 		startColIndex = region.startColIndex;

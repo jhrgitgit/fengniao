@@ -1,6 +1,7 @@
 'use strict';
 define(function(require) {
 	var send = require('basic/tools/send'),
+		cache = require('basic/tools/cache'),
 		selectRegions = require('collections/selectRegion'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
@@ -10,6 +11,7 @@ define(function(require) {
 
 	var setFontWeight = function(sheetId, bold, label) {
 		var select,
+			clip,
 			region = {},
 			startColAlias,
 			startRowAlias,
@@ -27,12 +29,16 @@ define(function(require) {
 			region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
 			region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
 		}
-
+		clip = selectRegions.getModelByType('clip')[0];
+		if (clip !== undefined) {
+			cache.clipState = 'null';
+			clip.destroy();
+		}
 		if (bold === 'bold') {
 			bold = true;
 		} else if (bold === 'normal') {
 			bold = false;
-		} else{
+		} else {
 			tempCellList = cells.getCellByX(region.startColIndex,
 				region.startRowIndex,
 				region.endColIndex,
@@ -59,7 +65,7 @@ define(function(require) {
 
 		startColAlias = headItemCols.models[region.startColIndex].get('alias');
 		startRowAlias = headItemRows.models[region.startRowIndex].get('alias');
-		
+
 		send.PackAjax({
 			url: 'text.htm?m=font_weight',
 			data: JSON.stringify({

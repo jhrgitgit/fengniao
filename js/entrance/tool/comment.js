@@ -8,7 +8,9 @@ define(function(require) {
 		selectRegions = require('collections/selectRegion'),
 		analysisLabel = require('basic/tools/analysislabel'),
 		rowOperate = require('entrance/row/rowoperation'),
-		commentHandler;
+		cache = require('basic/tools/cache'),
+		commentHandler,
+		clip;
 
 	commentHandler = {
 		modifyComment: function(sheetId, comment, label) {
@@ -20,6 +22,12 @@ define(function(require) {
 				region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
 				region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
 				region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
+			}
+
+			clip = selectRegions.getModelByType('clip')[0];
+			if (clip !== undefined) {
+				cache.clipState = 'null';
+				clip.destroy();
 			}
 
 			if (region.endColIndex === 'MAX') { //整行操作
@@ -37,6 +45,11 @@ define(function(require) {
 
 		createAddCommentView: function(sheetId) {
 			var select = selectRegions.getModelByType('operation')[0];
+			clip = selectRegions.getModelByType('clip')[0];
+			if (clip !== undefined) {
+				cache.clipState = 'null';
+				clip.destroy();
+			}
 			Backbone.trigger('event:commentContainer:show', {
 				'state': 'add',
 			});
@@ -44,6 +57,11 @@ define(function(require) {
 
 		createEditComment: function(sheetId) {
 			var select = selectRegions.getModelByType('operation')[0];
+			clip = selectRegions.getModelByType('clip')[0];
+			if (clip !== undefined) {
+				cache.clipState = 'null';
+				clip.destroy();
+			}
 			Backbone.trigger('event:commentContainer:show', {
 				'state': 'edit'
 			});
@@ -60,6 +78,11 @@ define(function(require) {
 				region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
 				region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
 				region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
+			}
+			clip = selectRegions.getModelByType('clip')[0];
+			if (clip !== undefined) {
+				cache.clipState = 'null';
+				clip.destroy();
 			}
 			if (region.endColIndex === 'MAX') { //整行操作
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.comment', null);

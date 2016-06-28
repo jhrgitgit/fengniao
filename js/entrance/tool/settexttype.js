@@ -8,6 +8,7 @@ define(function(require) {
 		selectRegions = require('collections/selectRegion'),
 		analysisLabel = require('basic/tools/analysislabel'),
 		rowOperate = require('entrance/row/rowoperation'),
+		cache = require('basic/tools/cache'),
 		textTypeHandler;
 
 	textTypeHandler = {
@@ -35,6 +36,7 @@ define(function(require) {
 		setNormal: function(sheetId, label) {
 			var region = {},
 				select,
+				clip,
 				text;
 			if (label !== undefined) {
 				region = analysisLabel(label);
@@ -45,7 +47,11 @@ define(function(require) {
 				region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
 				region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
 			}
-
+			clip = selectRegions.getModelByType('clip')[0];
+			if (clip !== undefined) {
+				cache.clipState = 'null';
+				clip.destroy();
+			}
 			if (region.endColIndex === 'MAX') { //整行操作
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.format', 'normal');
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.isValid', true);
@@ -71,6 +77,7 @@ define(function(require) {
 		setText: function(sheetId, label) {
 			var region = {},
 				select,
+				clip,
 				text;
 			if (label !== undefined) {
 				region = analysisLabel(label);
@@ -81,7 +88,11 @@ define(function(require) {
 				region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
 				region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
 			}
-
+			clip = selectRegions.getModelByType('clip')[0];
+			if (clip !== undefined) {
+				cache.clipState = 'null';
+				clip.destroy();
+			}
 			if (region.endColIndex === 'MAX') { //整行操作
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.format', 'text');
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.isValid', true);
@@ -109,6 +120,7 @@ define(function(require) {
 				select,
 				text,
 				isValid,
+				clip,
 				self = this;
 
 			if (label !== undefined) {
@@ -120,7 +132,11 @@ define(function(require) {
 				region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
 				region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
 			}
-
+			clip = selectRegions.getModelByType('clip')[0];
+			if (clip !== undefined) {
+				cache.clipState = 'null';
+				clip.destroy();
+			}
 			if (region.endColIndex === 'MAX') { //整行操作
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.format', 'number');
 				//rowOperate.rowPropOper(region.startRowIndex, 'customProp.isValid', isValid);
@@ -148,6 +164,7 @@ define(function(require) {
 				select,
 				text,
 				isValid,
+				clip,
 				self = this;
 			if (label !== undefined) {
 				region = analysisLabel(label);
@@ -158,7 +175,11 @@ define(function(require) {
 				region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
 				region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
 			}
-
+			clip = selectRegions.getModelByType('clip')[0];
+			if (clip !== undefined) {
+				cache.clipState = 'null';
+				clip.destroy();
+			}
 			if (region.endColIndex === 'MAX') { //整行操作
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.format', 'number');
 				//rowOperate.rowPropOper(region.startRowIndex, 'customProp.isValid', isValid);
@@ -186,6 +207,7 @@ define(function(require) {
 				select,
 				text,
 				isValid,
+				clip,
 				self = this;
 
 
@@ -198,7 +220,11 @@ define(function(require) {
 				region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
 				region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
 			}
-
+			clip = selectRegions.getModelByType('clip')[0];
+			if (clip !== undefined) {
+				cache.clipState = 'null';
+				clip.destroy();
+			}
 			if (region.endColIndex === 'MAX') { //整行操作
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.format', 'percent');
 				//rowOperate.rowPropOper(region.startRowIndex, 'customProp.isValid', isValid);
@@ -228,6 +254,7 @@ define(function(require) {
 				select,
 				text,
 				isValid,
+				clip,
 				self = this;
 			if (label !== undefined) {
 				region = analysisLabel(label);
@@ -238,7 +265,11 @@ define(function(require) {
 				region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
 				region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
 			}
-
+			clip = selectRegions.getModelByType('clip')[0];
+			if (clip !== undefined) {
+				cache.clipState = 'null';
+				clip.destroy();
+			}
 			if (region.endColIndex === 'MAX') { //整行操作
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.format', 'currency');
 				//rowOperate.rowPropOper(region.startRowIndex, 'customProp.isValid', isValid);

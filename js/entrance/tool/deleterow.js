@@ -18,8 +18,14 @@ define(function(require) {
 			var index = -1,
 				alias,
 				select,
+				clip,
 				box;
 
+			clip = selectRegions.getModelByType('clip')[0];
+			if (clip !== undefined) {
+				cache.clipState = 'null';
+				clip.destroy();
+			}
 			if (label !== undefined) {
 				index = headItemRows.getIndexByDisplayname(label);
 				if (index === -1) {

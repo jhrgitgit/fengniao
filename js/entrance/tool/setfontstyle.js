@@ -1,6 +1,7 @@
 'use strict';
 define(function(require) {
 	var send = require('basic/tools/send'),
+		cache = require('basic/tools/cache'),
 		selectRegions = require('collections/selectRegion'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
@@ -11,6 +12,7 @@ define(function(require) {
 
 	var setFontStyle = function(sheetId, italic, label) {
 		var select,
+			clip,
 			region = {},
 			startColAlias,
 			startRowAlias,
@@ -28,7 +30,11 @@ define(function(require) {
 			region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
 			region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
 		}
-
+		clip = selectRegions.getModelByType('clip')[0];
+		if (clip !== undefined) {
+			cache.clipState = 'null';
+			clip.destroy();
+		}
 		if (italic === 'italic') {
 			italic = true;
 		} else if (italic === 'normal') {

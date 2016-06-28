@@ -5,6 +5,7 @@ define(function(require) {
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
 		cells = require('collections/cells'),
+		cache = require('basic/tools/cache'),
 		analysisLabel = require('basic/tools/analysislabel'),
 		rowOperate = require('entrance/row/rowoperation');
 
@@ -19,7 +20,8 @@ define(function(require) {
 			startRowAlias,
 			endColAlias,
 			endRowAlias,
-			select;
+			select,
+			clip;
 
 		switch (alignType) {
 			case 'left':
@@ -61,7 +63,11 @@ define(function(require) {
 			region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
 			region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
 		}
-
+		clip = selectRegions.getModelByType('clip')[0];
+		if (clip !== undefined) {
+			cache.clipState = 'null';
+			clip.destroy();
+		}
 		if (region.endColIndex === 'MAX') { //整行操作
 			if (transverse !== undefined) {
 				rowOperate.rowPropOper(region.startRowIndex, 'content.alignRow', transverse);
