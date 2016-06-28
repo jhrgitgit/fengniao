@@ -12,6 +12,7 @@ define(function(require) {
 
 	var setFontColor = function(sheetId, color, label) {
 		var select,
+			clip,
 			region = {},
 			startColAlias,
 			startRowAlias,
