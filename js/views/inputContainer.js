@@ -612,9 +612,9 @@ define(function(require) {
 			if (isShortKey) {
 				if (config.shortcuts.altEnter && e.altKey) {
 					insertAtCursor('\n');
-					this.model.set({
-						'wordWrap': true
-					});
+					// this.model.set({
+					// 	'wordWrap': true
+					// });
 					this.adjustHeight();
 					return;
 				};
