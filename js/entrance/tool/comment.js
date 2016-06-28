@@ -87,6 +87,8 @@ define(function(require) {
 			}
 			if (region.endRowIndex === 'MAX') {
 				endRowAlias = headItemRows.models[region.endRowIndex].get('alias');
+			} else{
+				endRowAlias = headItemRows.models[region.startRowIndex].get('alias');
 			}
 
 			data = {

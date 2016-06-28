@@ -89,7 +89,7 @@ define(function(require) {
 					at: index
 				});
 			}
-			//ps:数据还原
+			
 		},
 		/**
 		 * 解析后台返回列索引数据，如果列数未满足加载区域，则生成新列，进行补充
@@ -126,7 +126,6 @@ define(function(require) {
 				}
 			}
 		},
-
 		/**
 		 * @method 解析cell模型数据
 		 * @param  {Array} cellsData cell模型数组数据
