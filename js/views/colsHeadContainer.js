@@ -402,15 +402,21 @@ define(function(require) {
 		 * @param  {移动的距离差} pixel
 		 */
 		adjustSelectRegion: function(index, pixel) {
-			var startColIndex,
+			var startColAlias,
+				endColAlias,
+				startColIndex,
 				endColIndex,
 				selectRegionModel,
 				siderLineColModel,
 				cacheWidth,
 				cacheLeft;
 			selectRegionModel = selectRegions.models[0];
-			startColIndex = selectRegionModel.get('wholePosi').startX;
-			endColIndex = selectRegionModel.get('wholePosi').endX;
+			//ps:修改
+			startColAlias = selectRegionModel.get('wholePosi').startX;
+			endColAlias = selectRegionModel.get('wholePosi').endX;
+			startColIndex = headItemCols.getIndexByAlias(startColAlias);
+			endColIndex = headItemCols.getIndexByAlias(endColAlias);
+
 			if (endColIndex < index) {
 				return;
 			}

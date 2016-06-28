@@ -8,7 +8,8 @@ define(function(require) {
 		cache = require('basic/tools/cache'),
 		headItemCols = require('collections/headItemCol'),
 		buildAlias= require('basic/tools/buildalias'),
-		GridLineColContainer = require('views/gridLineColContainer');
+		GridLineColContainer = require('views/gridLineColContainer'),
+		ColsGridContainer;
 
 	/**
 	 * ColsGridContainer
@@ -19,12 +20,12 @@ define(function(require) {
 	 * @extends Backbone.View
 	 * @constructor
 	 */
-	var ColsGridContainer = Backbone.View.extend({
+	ColsGridContainer = Backbone.View.extend({
 		/**
 		 * @property {element} el
 		 * @default div
 		 */
-		className: 'cols-container',
+		className: 'col-container',
 		/**
 		 * 初始化事件监听
 		 * @method initialize
