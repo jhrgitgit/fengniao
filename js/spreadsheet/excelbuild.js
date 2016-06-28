@@ -97,7 +97,7 @@ define(function(require) {
 			SpreadSheet.prototype.setFontWeight = setFontWeight;
 			SpreadSheet.prototype.setFrozen = setFrozen;
 
-			SpreadSheet.prototype.setType = setTextType;
+			SpreadSheet.prototype.type = setTextType;
 			// SpreadSheet.prototype.setNumType = setTextType.setNum;
 			// SpreadSheet.prototype.setDateType = setTextType.setDate;
 			// SpreadSheet.prototype.setPercentType = setTextType.setPercent;
