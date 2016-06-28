@@ -20,6 +20,7 @@ define(function(require) {
 			var index = -1,
 				alias,
 				select,
+				clip,
 				box;
 			if (label !== undefined) {
 				index = headItemRows.getIndexByDisplayname(label);
@@ -30,16 +31,21 @@ define(function(require) {
 					index = headItemRows.getIndexByAlias(box.startY);
 				}
 			}
+			clip = selectRegions.getModelByType('clip')[0];
+			if (clip !== undefined) {
+				cache.clipState = 'null';
+				clip.destroy();
+			}
 			if (index === -1) {
 				return;
 			}
 			alias = headItemRows.models[index].get('alias');
-			
+
 			this._adaptHeadRowItem(index);
 			this._adaptSelectRegion(index);
 			this._adaptCells(index);
 			this._frozenHandle(index);
-			
+
 			send.PackAjax({
 				url: 'cells.htm?m=rows_insert',
 				data: JSON.stringify({

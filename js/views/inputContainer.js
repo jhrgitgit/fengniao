@@ -81,12 +81,18 @@ define(function(require) {
 				offsetTop,
 				offsetLeft,
 				select,
+				clip,
 				left,
 				top,
 				width,
 				height,
 				cell;
 
+			clip = selectRegions.getModelByType('clip')[0];
+			if (clip !== undefined) {
+				cache.clipState = 'null';
+				clip.destroy();
+			}
 			select = selectRegions.getModelByType('operation')[0];
 			colAlias = select.get('wholePosi').startX;
 			colIndex = headItemCols.getIndexByAlias(colAlias);

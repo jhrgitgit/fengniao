@@ -78,7 +78,6 @@ define(function(require) {
 			clearTimeout(this.overEvent);
 		},
 		commentViewHandler: function() {
-
 			if (this.model.get('commentShowState') === true) {
 				this.showComment();
 			} else {
@@ -130,18 +129,8 @@ define(function(require) {
 		 * @method render 
 		 */
 		render: function() {
-			var modelJSON = this.model.toJSON(),
-				clipRegion;
-			/**
-			 * 设置模板
-			 * @property template
-			 * @type {html}
-			 */
-			clipRegion = selectRegions.getModelByType('clip')[0];
-			if (clipRegion !== undefined) {
-				cache.clipState = 'null';
-				clipRegion.destroy();
-			}
+			var modelJSON = this.model.toJSON();
+			
 			this.template = Handlebars.compile($('#tempItemCell').html());
 			// this.$el.removeAttr('style');
 			this.$el.css({
@@ -172,6 +161,19 @@ define(function(require) {
 			this.showCommentSign(modelJSON);
 			return this;
 		},
+		/**
+		 * 更新单元格显示状态
+		 * @method changeShowState 
+		 */
+		changeShowState: function() {
+			if (this.model.get('showState') === false) {
+				this.remove();
+			}
+		},
+		/**
+		 * 显示备注标记
+		 * @param  {object} modelJSON showCommentSign
+		 */
 		showCommentSign: function(modelJSON) {
 			if (modelJSON.customProp.comment !== null &&
 				modelJSON.customProp.comment !== undefined) {

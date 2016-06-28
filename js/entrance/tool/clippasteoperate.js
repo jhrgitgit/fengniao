@@ -314,10 +314,10 @@ define(function(require) {
 		gridLineColList = headItemCols.models;
 		gridLineRowList = headItemRows.models;
 
-		selectRowIndex = headItemRows.getIndexByAlias(selectRegions.models[0].get('wholePosi').startX);
-		selectColIndex = headItemCols.getIndexByAlias(selectRegions.models[0].get('wholePosi').startY);
-		indexCol = selectRowIndex + relativeColIndex;
-		indexRow = selectColIndex + relativeRowIndex;
+		selectRowIndex = headItemRows.getIndexByAlias(selectRegions.models[0].get('wholePosi').startY);
+		selectColIndex = headItemCols.getIndexByAlias(selectRegions.models[0].get('wholePosi').startX);
+		indexCol = selectColIndex + relativeColIndex;
+		indexRow = selectRowIndex + relativeRowIndex;
 
 		result = {
 			relativeColIndex: relativeColIndex,

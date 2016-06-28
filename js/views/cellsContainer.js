@@ -1020,7 +1020,8 @@ define(function(require) {
 					endY: headItemRowList[endRowIndex].get('alias')
 				}
 			});
-
+			console.log('X:'+headItemColList[startColIndex].get('alias'));
+			console.log('Y:'+headItemRowList[startRowIndex].get('alias'));
 			siderLineRows.models[0].set({
 				top: headItemRowList[startRowIndex].get('top'),
 				height: height - 1
