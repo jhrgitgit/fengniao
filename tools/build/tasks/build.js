@@ -57,18 +57,18 @@ module.exports = function(grunt) {
 
             onBuildWrite: function(name, _path) {
                 var compiled = convert.apply(null, arguments);
-
                 if (options.process) {
                     compiled = options.process(compiled, _path);
                 }
-
                 // 调整缩进
                 compiled = compiled.replace(/(^|\r\n|\r|\n)/g, '$1    ');
 
                 compiled = compiled.replace(/@version@/g, function() {
                     return pkg.version;
                 });
-
+                compiled = compiled.replace(/@rootPath@/g,function(){
+                    return pkg.rootPath;
+                })
                 return compiled;
             },
 
@@ -118,10 +118,10 @@ module.exports = function(grunt) {
 
             custom.unshift('\'./base\'');
             custom = 'define([\n    ' + custom.join(',\n    ') + '\n], function( Base ) {\n    return Base;\n});';
-            config.rawText.webuploader = custom;
+            config.rawText.spreadsheet = custom;
         } else if (this.data.preset) {
 
-            config.rawText.webuploader = 'define([\n    ' + ['\'./preset/' +
+            config.rawText.spreadsheet = 'define([\n    ' + ['\'./preset/' +
                     this.data.preset + '\''
                 ].join(',\n    ') +
                 '\n], function( preset ) {\n    return preset;\n});';
