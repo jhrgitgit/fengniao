@@ -145,6 +145,6 @@ define(function() {
 			enter: true
 		},
 		version: '@version@',
-		rootPath: '@rootPath@'
+		rootPath: 'http://localhost:4711/'
 	};
 });

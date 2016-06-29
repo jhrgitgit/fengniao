@@ -1,7 +1,6 @@
 {
   "name": "practice",
   "version": "0.5.2",
-  "rootPath":"http://localhost:4711/",
   "description": "a simple example",
   "devDependencies": {
     "grunt": "0.4.1",

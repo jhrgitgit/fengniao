@@ -5,11 +5,8 @@ define(function(require) {
 		config = require('spreadsheet/config'),
 		excelBuild = require('spreadsheet/excelbuild');
 
-	window.SPREADSHEET_AUTHENTIC_KEY = $('#excelId').val();
-	window.SPREADSHEET_BUILD_STATE = $('#build').val();
-
 	function SpreadSheet(id, cfg) {
-		if (cfg !== undefined && window.SPREADSHEET_BUILD_STATE === "true") {
+		if (cfg !== undefined && window.SPREADSHEET_BUILD_STATE === 'true') {
 			config.User.initRowNum = cfg.initRowNum || config.User.initRowNum;
 			config.User.initColNum = cfg.initColNum || config.User.initColNum;
 			config.User.cellWidth = cfg.cellWidth || config.User.cellWidth;
