@@ -62,10 +62,10 @@ define(function(require) {
 				excelId: window.SPREADSHEET_AUTHENTIC_KEY,
 				sheetId: '1',
 				coordinate: {
-					startX: startColAlias,
-					startY: startRowAlias,
-					endX: endColAlias,
-					endY: endRowAlias
+					startColAlias: startColAlias,
+					startRowAlias: startRowAlias,
+					endColAlias: endColAlias,
+					endRowAlias: endRowAlias
 				}
 			})
 		});
