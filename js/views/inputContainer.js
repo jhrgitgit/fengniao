@@ -51,7 +51,7 @@ define(function(require) {
 		events: {
 			'input': 'adapt',
 			'propertychange': 'adapt',
-			'keydown': 'keypressHandle',
+			'keypress': 'keypressHandle',
 			'blur': 'hide',
 			'copy': 'copyData',
 			'paste': 'pasteData',
@@ -587,8 +587,7 @@ define(function(require) {
 				currentTexts,
 				self = this,
 				len, i, isShortKey, keyboard;
-
-
+			//正则
 			keyboard = config.keyboard;
 			isShortKey = this.isShortKey(e.keyCode);
 			if (isShortKey) {
@@ -604,7 +603,6 @@ define(function(require) {
 					return;
 				};
 			}
-
 			//未显示输入框时,输入字符处理
 			if (this.showState === undefined || this.showState === false) {
 				if (this.keyHandle(e) === false) {
@@ -618,9 +616,6 @@ define(function(require) {
 			if (isShortKey) {
 				if (config.shortcuts.altEnter && e.altKey) {
 					insertAtCursor('\n');
-					// this.model.set({
-					// 	'wordWrap': true
-					// });
 					this.adjustHeight();
 					return;
 				};
@@ -656,43 +651,23 @@ define(function(require) {
 		 * @param  {[type]} e 键盘点击事件
 		 */
 		keyHandle: function(e) {
-			var flag = false;
+			var flag = true,
+				charcode,
+				inputChar,
+				regular;
 			if (e.ctrlKey === true || e.altKey === true) {
 				return false;
 			}
-			switch (true) {
-				//判断回车按钮
-				case (e.keyCode === 32):
-					flag = true;
-					break;
-				case (36 <= e.keyCode && e.keyCode <= 46):
-					flag = true;
-					break;
-				case (48 <= e.keyCode && e.keyCode <= 57):
-					flag = true;
-					break;
-				case (65 <= e.keyCode && e.keyCode <= 90):
-					flag = true;
-					break;
-				case (96 <= e.keyCode && e.keyCode <= 107):
-					flag = true;
-					break;
-				case (109 <= e.keyCode && e.keyCode <= 111):
-					flag = true;
-					break;
-				case (186 <= e.keyCode && e.keyCode <= 192):
-					flag = true;
-					break;
-				case (219 <= e.keyCode && e.keyCode <= 222):
-					flag = true;
-					break;
-				case (e.keyCode === 229):
-					flag = true;
-					break;
-				default:
-					break;
+			charcode = typeof e.charCode == 'number' ? e.charCode : e.keyCode;
+			regular=/[a-zA-Z0-9]/;
+
+			inputChar = String.fromCharCode(charcode);
+			if(regular.test(inputChar)){
+				return true;
+			}else{
+				return false;
 			}
-			return flag;
+
 		},
 		/**
 		 * 视图销毁

@@ -52,7 +52,7 @@ define(function(require) {
 		relativeColIndex = startColIndex - headItemCols.getIndexByAlias(selectRegion.get("wholePosi").startX);
 		relativeRowIndex = startRowIndex - headItemRows.getIndexByAlias(selectRegion.get("wholePosi").startY);
 
-		if (isAblePaste(endRowIndex - startRowIndex + 1, endColIndex - startColIndex + 1) === false) return;
+		// if (isAblePaste(endRowIndex - startRowIndex + 1, endColIndex - startColIndex + 1) === false) return;
 		//超出已加载区域处理
 		for (i = startRowIndex; i < endRowIndex + 1; i++) {
 			for (j = startColIndex; j < endColIndex + 1; j++) {
@@ -82,7 +82,7 @@ define(function(require) {
 				}
 			}
 		}
-		cache.clipState = "null";
+
 		Backbone.trigger('event:cellsContainer:adjustSelectRegion', {
 			initColIndex: startColIndex - relativeColIndex,
 			initRowIndex: startRowIndex - relativeRowIndex,
@@ -90,7 +90,6 @@ define(function(require) {
 			mouseRowIndex: endRowIndex - relativeRowIndex < headItemRows.models.length - 1 ? endRowIndex - relativeRowIndex : headItemRows.models.length - 1
 		});
 
-		clipRegion.destroy();
 		send.PackAjax({
 			url: 'plate.htm?m=' + type,
 			data: JSON.stringify({
@@ -108,6 +107,18 @@ define(function(require) {
 				}
 			})
 		});
+		if (type === 'cut') {
+			cache.clipState = "null";
+			clipRegion.destroy();
+		} //进行区域判断，判断复制区域与目标区域是否重叠 
+		if (startColIndex - relativeColIndex > endColIndex || 
+			endColIndex - relativeColIndex < startColIndex || 
+			startRowIndex - relativeRowIndex > endRowIndex || 
+			endRowIndex - relativeRowIndex < startRowIndex){
+		}else{
+			cache.clipState = "null";
+			clipRegion.destroy();
+		}
 	}
 
 	function cacheCellPosition(cell) {

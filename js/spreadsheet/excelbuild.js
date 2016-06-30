@@ -61,7 +61,8 @@ define(function(require) {
 				InsertOperation = require('widgets/insert/insertoperation'),
 				DeleteOperation = require('widgets/delete/deleteoperation'),
 				CommentContainer =require('widgets/celloperation/commentcontainer'),
-				WordWrapContainer =require('widgets/celloperation/wordwrapcontainer');
+				WordWrapContainer =require('widgets/celloperation/wordwrapcontainer'),
+				RegionDelContainer =require('widgets/celldel/regiondel');
 			new ShearPlateContainer();
 			new FontFamilyContainer();
 			new FontSizeContainer();
@@ -77,6 +78,7 @@ define(function(require) {
 			new InsertOperation();
 			new DeleteOperation();
 			new WordWrapContainer();
+			new RegionDelContainer();
 		},
 		buildExcelPublicAPI: function(SpreadSheet) {
 			SpreadSheet.prototype.setFontColor = setFontColor;
