@@ -3,7 +3,7 @@ module.exports = function(grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         jshint: {
-            files: ['Gruntfile.js', 'js/collections/*.js','js/models/*.js','js/basic/**/*.js'],
+            files: ['Gruntfile.js', 'js/collections/*.js', 'js/models/*.js', 'js/basic/**/*.js'],
             options: {
                 jshintrc: true,
                 globals: {
@@ -18,7 +18,7 @@ module.exports = function(grunt) {
         },
         build: {
             options: {
-                banner: '/*! WebUploader <%= pkg.version %> */\n'
+                banner: '/*! Spreadsheet <%= pkg.version %> */\n'
             },
 
             all: {
@@ -39,6 +39,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
 
     grunt.registerTask('check', ['jshint']);
-    grunt.registerTask('dist',['build']);
-    grunt.registerTask('default', ['jshint','build']);
+    grunt.registerTask('dist', ['build']);
+    grunt.registerTask('default', ['jshint', 'build']);
 };

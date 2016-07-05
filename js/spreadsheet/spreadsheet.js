@@ -5,15 +5,11 @@ define(function(require) {
 		cache = require('basic/tools/cache'),
 		excelBuild = require('spreadsheet/excelbuild');
 
-	//ps:移除
-	window.SPREADSHEET_AUTHENTIC_KEY = $('#excelId').val();
-	window.SPREADSHEET_BUILD_STATE = $('#build').val();
-
 	function SpreadSheet(id, cfg) {
 		if (!document.getElementById(id)) {
 			throw new Error('未找到id为' + id + '容器');
 		}
-		if (cfg !== undefined && window.SPREADSHEET_BUILD_STATE === "true") {
+		if (cfg !== undefined && window.SPREADSHEET_BUILD_STATE === 'true') {
 			config.User.initRowNum = cfg.initRowNum || config.User.initRowNum;
 			config.User.initColNum = cfg.initColNum || config.User.initColNum;
 			config.User.cellWidth = cfg.cellWidth || config.User.cellWidth;

@@ -144,7 +144,7 @@ define(function() {
 			altEnter: true,
 			enter: true
 		},
-		version: '0.5.2',
-		rootPath: 'http://localhost:8080/acmrexcel/'
+		version: '@version@',
+		rootPath: 'http://localhost:4711/'
 	};
 });
