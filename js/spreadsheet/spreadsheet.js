@@ -1,14 +1,18 @@
 define(function(require) {
 	'use strict';
 	var $ = require('lib/jquery'),
-		template = require('basic/tools/template'),
 		config = require('spreadsheet/config'),
+		cache = require('basic/tools/cache'),
 		excelBuild = require('spreadsheet/excelbuild');
 
+	//ps:移除
 	window.SPREADSHEET_AUTHENTIC_KEY = $('#excelId').val();
 	window.SPREADSHEET_BUILD_STATE = $('#build').val();
 
 	function SpreadSheet(id, cfg) {
+		if (!document.getElementById(id)) {
+			throw new Error('未找到id为' + id + '容器');
+		}
 		if (cfg !== undefined && window.SPREADSHEET_BUILD_STATE === "true") {
 			config.User.initRowNum = cfg.initRowNum || config.User.initRowNum;
 			config.User.initColNum = cfg.initColNum || config.User.initColNum;
@@ -17,15 +21,15 @@ define(function(require) {
 			config.User.maxColNum = cfg.maxColNum || config.User.maxColNum;
 			config.User.maxRowNum = cfg.maxRowNum || config.User.maxRowNum;
 		}
-		template('#spreadSheet');
-		excelBuild.buildExcelOriginalData();
-		excelBuild.buildExcelView();
+		cache.containerId = id;
+		excelBuild.buildDom(id);
+		excelBuild.buildExcelOriginalData(id);
+		excelBuild.buildExcelView(id);
 		excelBuild.buildExcelToolbar();
 		excelBuild.buildExcelPublicAPI(SpreadSheet);
 		excelBuild.buildDataSourceOperation(SpreadSheet);
 		excelBuild.buildExcelEventListener(SpreadSheet);
 		excelBuild.buildExcelExtend(SpreadSheet);
-
 	}
 	return SpreadSheet;
 });

@@ -11,6 +11,7 @@ define(function(require) {
 	 */
 	return {
 		aliasRowCounter: '100',
+		containerId: '',
 		//ps:CurrentRule ，FrozenRules ，TempProp 都存有冻结信息，具体功能，需要说明
 		CurrentRule: {},
 		FrozenRules: {

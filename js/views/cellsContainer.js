@@ -45,7 +45,7 @@ define(function(require) {
 		 */
 		events: {
 			'mousedown': 'located',
-		//	'mouseup' : 'hideInputContainer',
+			//	'mouseup' : 'hideInputContainer',
 			// 'dragover': 'onDragOver',
 			// 'dragleave': 'onDragLeave',
 			// 'drop': 'onDrop',
@@ -151,34 +151,36 @@ define(function(require) {
 			}
 			listener.excute('dataDrag', e);
 		},
-		onDragLeave: function(event) {
-			var width = this.viewMainContainer.el.clientWidth,
-				height = this.viewMainContainer.el.clientHeight,
-				clientX = event.originalEvent.clientX - config.System.outerLeft - $('#spreadSheet').offset().left,
-				clientY = event.originalEvent.clientY - config.System.outerTop - $('#spreadSheet').offset().top;
+		// onDragLeave: function(event) {
+		// 	var width = this.viewMainContainer.el.clientWidth,
+		// 		height = this.viewMainContainer.el.clientHeight,
+		// 		//ps:修改id
+		// 		clientX = event.originalEvent.clientX - config.System.outerLeft - $('#spreadSheet').offset().left,
+		// 		clientY = event.originalEvent.clientY - config.System.outerTop - $('#spreadSheet').offset().top;
 
-			if (clientX < 0 || clientY < 0 || clientX > width || clientY > height) {
-				var dragRegions, i;
-				dragRegions = selectRegions.getModelByType('drag');
-				for (i = 0; i < dragRegions.length; i++) {
-					dragRegions[i].destroy();
-				}
-			}
-		},
+		// 	if (clientX < 0 || clientY < 0 || clientX > width || clientY > height) {
+		// 		var dragRegions, i;
+		// 		dragRegions = selectRegions.getModelByType('drag');
+		// 		for (i = 0; i < dragRegions.length; i++) {
+		// 			dragRegions[i].destroy();
+		// 		}
+		// 	}
+		// },
 		getCoordinate: function(callback, mouseColPosi, mouseRowPosi) {
 			var currentRowModel = headItemRows.getModelByAlias(cache.TempProp.rowAlias),
 				currentColModel = headItemCols.getModelByAlias(cache.TempProp.colAlias),
 				headLineRowModelList = headItemRows.models,
 				headLineColModelList = headItemCols.models,
-				reduceLeftValue,
-				reduceTopValue,
-				clientX,
-				clientY,
-				mainMousePosiX,
-				mainMousePosiY,
-				modelIndexCol,
-				modelIndexRow,
-				coordinate = {};
+				containerId = cache.containerId;
+			reduceLeftValue,
+			reduceTopValue,
+			clientX,
+			clientY,
+			mainMousePosiX,
+			mainMousePosiY,
+			modelIndexCol,
+			modelIndexRow,
+			coordinate = {};
 
 			this.userViewTop = cache.TempProp.isFrozen ? headItemRows.getModelByAlias(cache.UserView.rowAlias).get('top') : 0;
 			this.userViewLeft = cache.TempProp.isFrozen ? headItemCols.getModelByAlias(cache.UserView.colAlias).get('left') : 0;
@@ -194,8 +196,8 @@ define(function(require) {
 				reduceTopValue = currentRowModel.get('top');
 			}
 			//ps:增加过滤
-			clientX = mouseColPosi - config.System.outerLeft - $('#spreadSheet').offset().left;
-			clientY = mouseRowPosi - config.System.outerTop - $('#spreadSheet').offset().top;
+			clientX = mouseColPosi - config.System.outerLeft - $('#' + containerId).offset().left;
+			clientY = mouseRowPosi - config.System.outerTop - $('#' + containerId).offset().top;
 			if (clientX < 0 || clientY < 0) return;
 
 			//position of mouse in mainContainer
@@ -331,6 +333,7 @@ define(function(require) {
 		getMouseColRelativePosi: function(event) {
 			var currentColModel = headItemCols.getModelByAlias(cache.TempProp.colAlias),
 				headLineColModelList = headItemCols.models,
+				containerId = cache.containerId,
 				reduceLeftValue,
 				mainMousePosiX;
 
@@ -345,12 +348,13 @@ define(function(require) {
 				event.clientX = event.originalEvent.clientX;
 			}
 			//position of mouse in mainContainer
-			mainMousePosiX = event.clientX - config.System.outerLeft - $('#spreadSheet').offset().left + this.parentView.el.scrollLeft - this.currentRule.displayPosition.offsetLeft + reduceLeftValue;
+			mainMousePosiX = event.clientX - config.System.outerLeft - $('#' + containerId).offset().left + this.parentView.el.scrollLeft - this.currentRule.displayPosition.offsetLeft + reduceLeftValue;
 			return mainMousePosiX;
 		},
 		getMouseRowRelativePosi: function(event) {
 			var currentRowModel = headItemRows.getModelByAlias(cache.TempProp.rowAlias),
 				headLineRowModelList = headItemRows.models,
+				containerId = cache.containerId,
 				reduceTopValue,
 				mainMousePosiY,
 				modelIndexRow,
@@ -368,7 +372,8 @@ define(function(require) {
 			}
 
 			//position of mouse in mainContainer
-			mainMousePosiY = event.clientY - config.System.outerTop - $('#spreadSheet').offset().top + this.parentView.el.scrollTop - this.currentRule.displayPosition.offsetTop + reduceTopValue;
+			//
+			mainMousePosiY = event.clientY - config.System.outerTop - $('#' + containerId).offset().top + this.parentView.el.scrollTop - this.currentRule.displayPosition.offsetTop + reduceTopValue;
 			return mainMousePosiY;
 		},
 		/**

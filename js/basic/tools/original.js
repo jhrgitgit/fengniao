@@ -89,7 +89,7 @@ define(function(require) {
 					at: index
 				});
 			}
-			
+
 		},
 		/**
 		 * 解析后台返回列索引数据，如果列数未满足加载区域，则生成新列，进行补充
@@ -97,7 +97,7 @@ define(function(require) {
 		 * @param  {Array} cols 列数据数组
 		 */
 		analysisColData: function(cols, startColSort) {
-			var  tempHeadCol, i, j, len, collen;
+			var tempHeadCol, i, j, len, collen;
 			for (i = 0; i < cols.length; i++) {
 				//去重
 				if (headItemCols.getIndexByAlias(cols[i].aliasY) !== -1) {
@@ -251,7 +251,7 @@ define(function(require) {
 				startRowIndex,
 				cellsPositionX,
 				cell,
-				len,i,
+				len, i,
 				selectRegionModel;
 
 			rowAlias = cache.UserView.rowAlias;
@@ -274,9 +274,9 @@ define(function(require) {
 
 				endColIndex = headItemCols.getIndexByAlias(endColAlias);
 				endRowIndex = headItemRows.getIndexByAlias(endRowAlias);
-				startColIndex =headItemCols.getIndexByAlias(colAlias);
-				startRowIndex =headItemRows.getIndexByAlias(rowAlias);
-				
+				startColIndex = headItemCols.getIndexByAlias(colAlias);
+				startRowIndex = headItemRows.getIndexByAlias(rowAlias);
+
 				selectRegionModel = {
 					physicsPosi: {
 						top: cell.get('physicsBox').top,
@@ -302,7 +302,7 @@ define(function(require) {
 					top: cell.get('physicsBox').top,
 					height: cell.get('physicsBox').height
 				});
-				
+
 
 				len = headItemRows.length;
 
@@ -362,7 +362,7 @@ define(function(require) {
 		 * 从后台发送请求，得到excel数据，进行重新加载
 		 * @method  
 		 */
-		restoreExcel: function() {
+		restoreExcel: function(domId) {
 			var excelId = window.SPREADSHEET_AUTHENTIC_KEY,
 				build = window.SPREADSHEET_BUILD_STATE,
 				startRowSort,
@@ -370,20 +370,21 @@ define(function(require) {
 				sheetNames = [],
 				self = this,
 				i;
-
 			if (build === 'true' || build === undefined) {
 				this.bulidNewExcel();
 				cache.localRowPosi = 0;
 				return;
 			}
 
+
 			send.PackAjax({
+				//ps:修改id
 				url: 'excel.htm?m=position',
 				async: false,
 				data: JSON.stringify({
 					excelId: excelId,
 					sheetId: '1',
-					containerHeight: $('#spreadSheet').height()
+					containerHeight: $('#' + domId).height()
 				}),
 				dataType: 'json',
 				success: function(data) {

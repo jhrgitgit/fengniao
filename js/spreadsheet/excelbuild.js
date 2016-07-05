@@ -39,12 +39,12 @@ define(function(require) {
 		buildDom: function(id) {
 			domloader(id);
 		},
-		buildExcelOriginalData: function() {
-			original.restoreExcel();
+		buildExcelOriginalData: function(domId) {
+			original.restoreExcel(domId);
 		},
-		buildExcelView: function(id) {
+		buildExcelView: function(containerId) {
 			var Screen = require('views/screen');
-			new Screen();
+			new Screen(containerId);
 		},
 		buildExcelToolbar: function() {
 			var ShearPlateContainer = require('widgets/clipboard/shearPlateContainer'),

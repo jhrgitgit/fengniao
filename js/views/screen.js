@@ -44,19 +44,21 @@ define(function(require) {
 		 * @method initialize
 		 * @return {[type]} [description]
 		 */
-		initialize: function(id) {
+		initialize: function(containerId) {
 			Backbone.on('call:screenContainer', this.screenContainer, this);
 			Backbone.on('event:screenContainer:destroy', this.destroy, this);
 			Backbone.on('call:screenContainer:adaptScreen', this.attributesRender, this);
 			_.bindAll(this, 'callView');
-			this.render();
+			this.render(containerId);
 		},
 		/**
 		 * 视图渲染方法
 		 * @method render
 		 */
-		render: function() {
-			this.bodyContainer = new BodyContainer();
+		render: function(containerId) {
+			this.bodyContainer = new BodyContainer({
+				el: '#' + containerId
+			});
 			this.bodyContainer.render();
 			this.triggerCallback();
 		},
@@ -92,7 +94,7 @@ define(function(require) {
 			}
 			len = widgetList.length;
 			currentBar = $target.data('toolbar');
-			if(currentBar===undefined){
+			if (currentBar === undefined) {
 				return;
 			}
 			for (; i < len; i++) {
@@ -204,8 +206,8 @@ define(function(require) {
 			Backbone.trigger('event:colsSpaceLineContainer:destroy');
 			this.$el.off('mousemove', this.viewRowsHeadContainer.moveEvent);
 			Backbone.trigger('event:rowsSpaceLineContainer:destroy');
-			if ($(e.target)[0].type!=='textarea' && $(e.target)[0].type!=='text' && 
-				$(e.target)[0].type!=='password'){
+			if ($(e.target)[0].type !== 'textarea' && $(e.target)[0].type !== 'text' &&
+				$(e.target)[0].type !== 'password') {
 				Backbone.trigger('event:InputContainer:hide');
 			}
 		},

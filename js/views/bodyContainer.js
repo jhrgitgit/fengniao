@@ -26,7 +26,6 @@ define(function(require) {
 	 * @constructor
 	 */
 	BodyContainer = Backbone.View.extend({
-		el: '#spreadSheet',
 		/**
 		 * 初始化绑定事件
 		 * @property events
@@ -71,7 +70,7 @@ define(function(require) {
 			if (cache.commentState) {
 				return;
 			}
-			options.parentNode=this;
+			options.parentNode = this;
 			this.commentContainer = new CommentContainer(options);
 			this.publisherList['mainContainer'].subscribe({
 				master: this.commentContainer,
@@ -163,7 +162,7 @@ define(function(require) {
 		 * @method clearFrozenRule
 		 */
 		executiveFrozen: function() {
-			var customID = '#spreadSheet',
+			var customID = '#' + this.el.id,
 				modelRowList = headItemRows,
 				modelColList = headItemCols,
 				self = this,

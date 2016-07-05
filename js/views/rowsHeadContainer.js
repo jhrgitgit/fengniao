@@ -260,7 +260,8 @@ define(function(require) {
 		 * @param  {event} e 鼠标点击事件
 		 */
 		rowLocate: function(e) {
-			var mainMousePosiY,
+			var containerId = cache.containerId,
+				mainMousePosiY,
 				modelCell,
 				headModelRow,
 				headModelCol,
@@ -270,7 +271,7 @@ define(function(require) {
 			if (!this.viewMainContainer) {
 				this.triggerCallback();
 			}
-			mainMousePosiY = e.clientY - config.System.outerTop - $('#spreadSheet').offset().top + this.viewMainContainer.el.scrollTop;
+			mainMousePosiY = e.clientY - config.System.outerTop - $('#' + containerId).offset().top + this.viewMainContainer.el.scrollTop;
 			//headColModels,headRowModels list
 			headLineRowModelList = headItemRows.models;
 			//this model index of headline

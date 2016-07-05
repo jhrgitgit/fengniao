@@ -324,7 +324,8 @@ define(function(require) {
 		 * @param  {event}  e
 		 */
 		colLocate: function(e) {
-			var rowMousePosiX,
+			var containerId = cache.containerId,
+				rowMousePosiX,
 				modelCell,
 				headModelRow,
 				headModelCol,
@@ -335,7 +336,8 @@ define(function(require) {
 			if (!this.viewMainContainer) {
 				this.triggerCallback();
 			}
-			rowMousePosiX = e.clientX - $('#spreadSheet').offset().left - config.System.outerLeft + this.viewMainContainer.el.scrollLeft;
+			containerId
+			rowMousePosiX = e.clientX - $('#' + containerId).offset().left - config.System.outerLeft + this.viewMainContainer.el.scrollLeft;
 			//headColModels,headRowModels list
 			headLineRowModelList = headItemRows.models;
 			headLineColModelList = headItemCols.models;

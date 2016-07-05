@@ -2,7 +2,7 @@
 define(function(require) {
 	var $ = require('lib/jquery'),
 		loadHtml;
-		
+
 	loadHtml = function(id) {
 		var mainDomString = '',
 			tailDomString = '';
@@ -15,7 +15,7 @@ define(function(require) {
 		//mainDomString += '<div class="sheet-cf-box active glyphicons glyphicon-th-list"></div>';
 		mainDomString += '<div class="sheet-cf-list">';
 		mainDomString += '</div></div></div>';
-		
+
 
 		tailDomString += '<script type="text/x-handlebars-template" id="colsPanelContainer"></script>';
 		tailDomString += '<script type="text/x-handlebars-template" id="rowsPanelContainer"></script>';
@@ -34,9 +34,9 @@ define(function(require) {
 		tailDomString += '<script type="text/x-handlebars-template" id="comment"><div></div></script>';
 		tailDomString += '<script type="text/x-handlebars-template" id="coltemp"><div class="col" style="left:{{left}}px;"></div></script>';
 		tailDomString += '<script type="text/x-handlebars-template" id="rowtemp"><div class="row" style="top:{{top}}px;"></div></script>';
-		
-		$(id)[0].innerHTML = mainDomString;
-		$(id).after(tailDomString);
+
+		$('#' + id)[0].innerHTML = mainDomString;
+		$('#' + id).after(tailDomString);
 	};
 	return loadHtml;
 });
