@@ -13,9 +13,12 @@ define(function(require) {
 		},
 		action: function(e) {
 			var operate = $(e.currentTarget).data('type');
-			if(operate === 'column'){
-				this.deleteColumn();
-			}else{
+			// if(operate === 'column'){
+			// 	this.deleteColumn();
+			// }else{
+			// 	this.deleteRow();
+			// }
+			if(operate === 'row'){
 				this.deleteRow();
 			}
 		},
