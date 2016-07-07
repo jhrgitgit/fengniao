@@ -1,3 +1,3 @@
 
-    return require('app');
+    return require('spreadsheet/spreadsheet');
 });
