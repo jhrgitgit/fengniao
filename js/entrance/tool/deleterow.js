@@ -34,7 +34,7 @@ define(function(require) {
 			} else {
 				select = selectRegions.getModelByType('operation')[0];
 				box = select.get('wholePosi');
-				if (box.endY !== 'max') {
+				if (box.endY !== 'MAX') {
 					index = headItemRows.getIndexByAlias(box.startY);
 				}
 			}

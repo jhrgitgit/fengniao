@@ -106,8 +106,7 @@ define(function(require) {
 				physicsBox: {
 					width: width,
 					height: height
-				}
-				,
+				},
 				wholePosi: {
 					startX: colAlias,
 					startY: rowAlias,
