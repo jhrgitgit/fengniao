@@ -51,7 +51,7 @@ define(function(require) {
 		events: {
 			'input': 'adapt',
 			'propertychange': 'adapt',
-			'keypress': 'keypressHandle',
+			'keydown': 'keypressHandle',
 			'blur': 'hide',
 			'copy': 'copyData',
 			'paste': 'pasteData',
@@ -146,7 +146,10 @@ define(function(require) {
 				'font-family': modelJSON.content.family,
 				'left': left,
 				'top': top,
-			}).val(modelJSON.content.texts);
+			})
+			if (dblclick !== false) {
+				this.$el.val(modelJSON.content.texts);
+			}
 			this.adjustWidth();
 			this.adjustHeight();
 		},
@@ -435,7 +438,17 @@ define(function(require) {
 			if (this.showState === true) {
 				this.adjustWidth();
 				this.adjustHeight();
+			} else {
+				if (this.keyHandle() === false) {
+					return;
+				}
+				this.showState === true;
+				this.show(false);
 			}
+			//未显示输入框时,输入字符处理
+			// if (this.showState === undefined || this.showState === false) {
+
+			// }
 		},
 		/**
 		 * 调整输入框高度
@@ -587,11 +600,12 @@ define(function(require) {
 				currentTexts,
 				self = this,
 				len, i, isShortKey, keyboard;
-			//正则
+
 			keyboard = config.keyboard;
 			isShortKey = this.isShortKey(e.keyCode);
+
+			//处理用户输入回车键
 			if (isShortKey) {
-				//处理回车键
 				if (config.shortcuts.enter &&
 					e.altKey === false &&
 					e.keyCode === keyboard.enter) {
@@ -600,28 +614,22 @@ define(function(require) {
 					if (this.showState === true) {
 						this.hide();
 					}
+					e.preventDefault();
 					return;
 				};
 			}
-			//未显示输入框时,输入字符处理
-			if (this.showState === undefined || this.showState === false) {
-				if (this.keyHandle(e) === false) {
-					return;
+			if (this.showState === true) {
+				//内部换行处理
+				if (isShortKey) {
+					if (config.shortcuts.altEnter && e.altKey) {
+						insertAtCursor('\n');
+						this.adjustHeight();
+						return;
+					};
 				}
-				this.showState === true;
-				this.show(false);
+				this.autoScrollLeft();
+				this.autoScrollTop();
 			}
-
-			//内部换行处理
-			if (isShortKey) {
-				if (config.shortcuts.altEnter && e.altKey) {
-					insertAtCursor('\n');
-					this.adjustHeight();
-					return;
-				};
-			}
-			this.autoScrollLeft();
-			this.autoScrollTop();
 
 			function insertAtCursor(myValue) {
 				var $t = self.$el[0];
@@ -650,21 +658,28 @@ define(function(require) {
 		 * 判断未显示输入框时，点击按键是否填出输入框
 		 * @param  {[type]} e 键盘点击事件
 		 */
-		keyHandle: function(e) {
+		keyHandle: function() {
 			var flag = true,
 				charcode,
 				inputChar,
 				regular;
-			if (e.ctrlKey === true || e.altKey === true) {
-				return false;
-			}
-			charcode = typeof e.charCode == 'number' ? e.charCode : e.keyCode;
-			regular=/[a-zA-Z0-9]/;
-
-			inputChar = String.fromCharCode(charcode);
-			if(regular.test(inputChar)){
+			// if (e.ctrlKey === true || e.altKey === true) {
+			// 	return false;
+			// }
+			// console.log(this.$el);
+			// charcode = typeof e.charCode == 'number' ? e.charCode : e.keyCode;
+			// charcode = e.keyCode;
+			// console.log(e);
+			// console.log(String.fromCharCode(e.which));
+			// inputChar = String.fromCharCode(e.keyCode);
+			// 
+			// console.log(inputChar);
+			regular = /[a-zA-Z0-9]/;
+			inputChar = this.$el.val();
+			if (regular.test(inputChar)) {
 				return true;
-			}else{
+			} else {
+				this.$el.val('');
 				return false;
 			}
 
