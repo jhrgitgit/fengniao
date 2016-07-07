@@ -336,7 +336,6 @@ define(function(require) {
 			if (!this.viewMainContainer) {
 				this.triggerCallback();
 			}
-			containerId
 			rowMousePosiX = e.clientX - $('#' + containerId).offset().left - config.System.outerLeft + this.viewMainContainer.el.scrollLeft;
 			//headColModels,headRowModels list
 			headLineRowModelList = headItemRows.models;

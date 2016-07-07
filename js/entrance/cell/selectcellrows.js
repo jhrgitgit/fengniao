@@ -16,6 +16,9 @@ define(function(require) {
 			headLineRowModelList,
 			colDisplayNames = [],
 			rowDisplayNames = [],
+			rowAlias,
+			colAlias,
+			select,
 			left,
 			top,
 			width,
@@ -40,7 +43,7 @@ define(function(require) {
 		top = 0;
 		width = headModelCol.toJSON().width;
 		height = headLineRowModelList[len - 1].get('top') + headLineRowModelList[len - 1].get('height');
-		
+
 		rowDisplayNames.push('1');
 		rowDisplayNames.push(headLineRowModelList[len - 1].get('displayName'));
 		colDisplayNames.push(headLineColModelList[modelIndexCol].get('displayName'));
@@ -50,75 +53,81 @@ define(function(require) {
 			row: rowDisplayNames
 		};
 
-		if (e === undefined || e.isDefaultPrevented() === false) {
-			if (cache.setDataSource === true) {
-				if (selectRegions.getModelByType('dataSource')[0] === undefined) {
-					Backbone.trigger('event:cellsContainer:createDataSourceRegion', {});
+		if (cache.setDataSource === true) {
+			if (selectRegions.getModelByType('dataSource')[0] === undefined) {
+				Backbone.trigger('event:cellsContainer:createDataSourceRegion', {});
+			}
+			selectRegions.getModelByType('dataSource')[0].set({
+				physicsPosi: {
+					left: left,
+					top: top
+				},
+				physicsBox: {
+					width: width,
+					height: height
 				}
-				selectRegions.getModelByType('dataSource')[0].set({
-					physicsPosi: {
-						left: left,
-						top: top
-					},
-					physicsBox: {
-						width: width,
-						height: height
-					}
+			});
+			if (e !== undefined) {
+				e = {};
+				e.point = point;
+				listener.excute('dataSourceRegionChange', e);
+				listener.excute('regionChange', e);
+				listener.excute('mousedown', e);
+			}
+		} else {
+			select = selectRegions.getModelByType('operation')[0];
+			for (i = 0; i < len; i++) {
+				headLineRowModelList[i].set({
+					activeState: true
 				});
-				if (e !== undefined) {
-					e={};
-					e.point=point;
-					listener.excute('dataSourceRegionChange', e);
-					listener.excute('regionChange', e);
-					listener.excute('mousedown', e);
-				}
-			} else {
-				for (i = 0; i < len; i++) {
-					headLineRowModelList[i].set({
+			}
+			len = headLineColModelList.length;
+			for (i = 0; i < len; i++) {
+				if (i === modelIndexCol) {
+					headLineColModelList[i].set({
 						activeState: true
 					});
+					continue;
 				}
-				len = headLineColModelList.length;
-				for (i = 0; i < len; i++) {
-					if (i === modelIndexCol) {
-						headLineColModelList[i].set({
-							activeState: true
-						});
-						continue;
-					}
-					headLineColModelList[i].set({
-						activeState: false
-					});
-				}
-				//selectregion effect
-				selectRegions.models[0].set({
-					physicsPosi: {
-						left: left,
-						top: top
-					},
-					physicsBox: {
-						width: width,
-						height: height
-					}
+				headLineColModelList[i].set({
+					activeState: false
 				});
-				//siderline effect
-				siderLineCols.models[0].set({
-					left: left,
-					width: width
-				});
-				siderLineRows.models[0].set({
-					top: top,
-					height: height
-				});
-				if (e !== undefined) {
-					e = {};
-					e.point=point;
-					listener.excute('selectRegionChange', e);
-					listener.excute('regionChange', e);
-					listener.excute('mousedown', e);
-				}
 			}
-
+			rowAlias = headItemRows.models[0].get('alias');
+			colAlias = headLineColModelList[0].get('alias');
+			//selectregion effect
+			select.set({
+				physicsPosi: {
+					left: left,
+					top: top
+				},
+				physicsBox: {
+					width: width,
+					height: height
+				},
+				wholePosi: {
+					startX: colAlias,
+					startY: rowAlias,
+					endX: colAlias,
+					endY: 'MAX'
+				}
+			});
+			//siderline effect
+			siderLineCols.models[0].set({
+				left: left,
+				width: width
+			});
+			siderLineRows.models[0].set({
+				top: top,
+				height: height
+			});
+			if (e !== undefined) {
+				e = {};
+				e.point = point;
+				listener.excute('selectRegionChange', e);
+				listener.excute('regionChange', e);
+				listener.excute('mousedown', e);
+			}
 		}
 	};
 	return selectCellRows;
