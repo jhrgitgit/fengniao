@@ -1,7 +1,7 @@
 {
-  "name": "practice",
-  "version": "0.5.2",
-  "description": "a simple example",
+  "name": "spreadsheet",
+  "version": "0.5.3",
+  "description": "online share spreadsheet",
   "devDependencies": {
     "grunt": "0.4.1",
     "grunt-contrib-connect": "0.7.1",

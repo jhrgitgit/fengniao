@@ -66,6 +66,7 @@ define(function(require) {
 			});
 		},
 		/**
+<<<<<<< HEAD
 		 * 尾部补充列
 		 */
 		_addColItem: function() {
@@ -123,10 +124,8 @@ define(function(require) {
 			endColAlias = select.get('wholePosi').endX;
 			startColIndex = headItemCols.getIndexByAlias(startColAlias);
 			endColIndex = headItemCols.getIndexByAlias(endColAlias);
-
 			left = select.get('physicsPosi').left;
 			width = select.get('physicsBox').width;
-
 
 			if (endColIndex < index) {
 				return;

@@ -22,8 +22,8 @@ module.exports = function(grunt) {
             },
 
             all: {
-                name: 'app',
-                dest: 'dist/my.js',
+                name: 'spreadsheet/spreadsheet',
+                dest: 'dist/fengniao.js',
 
                 // 在没有jquery类似的库的前提下可以设置builtin,去除强行依赖。
                 builtin: {
