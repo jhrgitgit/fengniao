@@ -66,7 +66,6 @@ define(function(require) {
 			});
 		},
 		/**
-<<<<<<< HEAD
 		 * 尾部补充列
 		 */
 		_addColItem: function() {

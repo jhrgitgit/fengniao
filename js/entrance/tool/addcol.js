@@ -59,7 +59,7 @@ define(function(require) {
 				data: JSON.stringify({
 					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
 					sheetId: '1',
-					rowAlias: alias,
+					colAlias: alias,
 				}),
 			});
 		},
