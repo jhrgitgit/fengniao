@@ -212,7 +212,7 @@ define(function(require) {
 					tempCell.set('physicsBox.left', left);
 				}
 				for (j = 0; j < aliasLen; j++) {
-					cache.deletePosi(aliasRowArray[i], deleteAlias);
+					cache.deletePosi(aliasRowArray[j], deleteAlias);
 				}
 			}
 		},
