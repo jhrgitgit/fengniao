@@ -238,7 +238,7 @@ define(function(require) {
 					aliasLen = cellRowAliasArray.length;
 					cellIndex = cache.CellsPosition.strandX[cellColAlias][cellRowAlias];
 					for (j = 0; j < aliasLen; j++) {
-						cache.cachePosition(cellRowAliasArray[i],
+						cache.cachePosition(cellRowAliasArray[j],
 							insertAlias,
 							cellIndex);
 					}
