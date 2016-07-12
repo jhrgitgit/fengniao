@@ -55,7 +55,7 @@ define(function(require) {
 			if (cache.TempProp.isFrozen !== true || this.currentRule.displayPosition.endIndex === undefined) {
 				this.listenTo(headItemRows, 'add', this.addRowsHeadContainer);
 			}
-
+			
 		},
 		/**
 		 * 页面渲染方法

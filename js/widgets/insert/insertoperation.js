@@ -3,6 +3,7 @@ define(function(require) {
 	var $ = require('lib/jquery'),
 		Backbone = require('lib/backbone'),
 		rowOperation = require('entrance/tool/addrow'),
+		colOperation = require('entrance/tool/addcol'),
 		InsertOperation;
 		
 	InsertOperation = Backbone.View.extend({
@@ -22,7 +23,7 @@ define(function(require) {
 			rowOperation.addRow();
 		},
 		insertColumn: function(){
-
+			colOperation.addCol();
 		}
 	});
 	return InsertOperation;

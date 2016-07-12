@@ -122,7 +122,7 @@ define(function(require) {
 				select.set('physicsBox.height', height);
 				siderLineRows.models[0].set('height', height);
 				headItemRows.models[index].set('activeState', true);
-				endRowIndex++;
+			//	endRowIndex++;
 			}
 
 		},

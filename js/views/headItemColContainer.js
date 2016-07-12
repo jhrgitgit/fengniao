@@ -35,6 +35,8 @@ define(function(require) {
 			this.listenTo(this.model, 'change:isView', this.remove);
 			this.listenTo(this.model, 'change:left', this.changeLeft);
 			this.listenTo(this.model, 'change:width', this.changeWidth);
+			this.listenTo(this.model, 'change:displayName', this.changeDisplayName);
+			this.listenTo(this.model, 'destroy', this.remove);
 			this.currentRule = util.clone(cache.CurrentRule);
 			this.offsetLeft = cache.TempProp.isFrozen ? (this.currentRule.displayPosition.offsetLeft || 0) : 0;
 		},
@@ -84,6 +86,9 @@ define(function(require) {
 			this.$el.css({
 				width: this.model.toJSON().width
 			});
+		},
+		changeDisplayName: function() {
+			this.$el.children('.item').html(this.model.get('displayName'));
 		},
 		/**
 		 * 视图销毁

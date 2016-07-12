@@ -12,7 +12,8 @@ requirejs([
 	// '../test/unit/texttype.spec',
 	// '../test/unit/commentspec',
 	//'../test/unit/row.spec',
-	'../test/unit/rowoper.spec.js'
+	//'../test/unit/rowoper.spec.js',
+	'../test/unit/col.spec'
 ], function() {
 	window.onload();
 });

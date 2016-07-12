@@ -2,10 +2,13 @@
 define(function(require) {
 	var Backbone = require('lib/backbone'),
 		cache = require('basic/tools/cache'),
+		config = require('spreadsheet/config'),
 		headItemRows = require('collections/headItemRow'),
+		headItemCols = require('collections/headItemCol'),
+		aliasBuild = require('basic/tools/buildalias'),
 		cells = require('collections/cells'),
 		selectRegions = require('collections/selectRegion'),
-		siderLineRows = require('collections/siderLineRow'),
+		siderLineCols = require('collections/siderLineCol'),
 		send = require('basic/tools/send');
 
 	return {
@@ -21,7 +24,7 @@ define(function(require) {
 				clip,
 				box;
 
-			clip = selectRegions.getModelByType('clip')[0];                                                                                                                                                                                                                                                                                                                          
+			clip = selectRegions.getModelByType('clip')[0];
 			if (clip !== undefined) {
 				cache.clipState = 'null';
 				clip.destroy();
@@ -35,22 +38,24 @@ define(function(require) {
 				select = selectRegions.getModelByType('operation')[0];
 				box = select.get('wholePosi');
 				if (box.endX !== 'MAX') {
-					index = headItemCols.getIndexByAlias(box.startY);
+					index = headItemCols.getIndexByAlias(box.startX);
+				} else {
+					index = 0;
 				}
 			}
 
 			alias = headItemCols.models[index].get('alias');
-
+			//未完成动态加载功能，先用方法，处理边界值问题
+			this._addColItem();
 			this._adaptCells(index);
 			this._adaptSelectRegion(index);
 			this._frozenHandle(index);
-			this._adaptHeadRowItem(index);
+			this._adaptHeadColItem(index);
 
+			
 			if (cache.TempProp.isFrozen === true) {
 				Backbone.trigger('event:bodyContainer:executiveFrozen');
 			}
-			Backbone.on('event:mainContainer:addBottom');
-
 			send.PackAjax({
 				url: 'cells.htm?m=cols_delete',
 				data: JSON.stringify({
@@ -61,29 +66,43 @@ define(function(require) {
 			});
 		},
 		/**
+		 * 尾部补充列
+		 */
+		_addColItem: function() {
+			var index = headItemCols.length,
+				width = config.User.cellWidth,
+				previousModel = headItemCols.models[index - 1];
+				
+			headItemCols.add({
+				sort: previousModel.get('sort') + 1,
+				alias: cache.aliasGenerator('col'),
+				left: previousModel.get('left') + previousModel.get('width') + 1
+			});
+		},
+		/**
 		 * 调整行对象
 		 * @param  {number} index 行索引值
 		 */
-		_adaptHeadRowItem: function(index) {
-			var currentRowModel,
-				height,
+		_adaptHeadColItem: function(index) {
+			var currentColModel,
+				width,
 				sort,
-				top,
+				left,
 				len,
 				i = index;
 			currentColModel = headItemCols.models[index];
-			height = currentRowModel.get('height');
-			headItemRows.remove(currentRowModel);
-			currentRowModel.destroy();
+			width = currentColModel.get('width');
+			headItemCols.remove(currentColModel);
+			currentColModel.destroy();
 
-			len = headItemRows.length;
+			len = headItemCols.length;
 			for (; i < len; i++) {
-				currentRowModel = headItemRows.models[i];
-				top = currentRowModel.get('top') - height - 1;
-				sort = currentRowModel.get('sort') - 1;
-				currentRowModel.set('top', top);
-				currentRowModel.set('displayName', (sort + 1).toString());
-				currentRowModel.set('sort', sort);
+				currentColModel = headItemCols.models[i];
+				left = currentColModel.get('left') - width - 1;
+				sort = currentColModel.get('sort') - 1;
+				currentColModel.set('left', left);
+				currentColModel.set('displayName', aliasBuild.buildColAlias(i));
+				currentColModel.set('sort', sort);
 			}
 		},
 		/**
@@ -105,8 +124,8 @@ define(function(require) {
 			startColIndex = headItemCols.getIndexByAlias(startColAlias);
 			endColIndex = headItemCols.getIndexByAlias(endColAlias);
 
-			top = select.get('physicsPosi').top;
-			height = select.get('physicsBox').height;
+			left = select.get('physicsPosi').left;
+			width = select.get('physicsBox').width;
 
 
 			if (endColIndex < index) {
@@ -116,14 +135,14 @@ define(function(require) {
 				if (endColIndex === startColIndex) {
 					width = headItemCols.models[index + 1].get('width');
 					endColAlias = headItemCols.models[index + 1].get('alias');
-					select.set('wholePosi.endY', endColAlias);
-					select.set('wholePosi.startY', endColAlias);
+					select.set('wholePosi.endX', endColAlias);
+					select.set('wholePosi.startX', endColAlias);
 					headItemCols.models[index + 1].set('activeState', true);
 				} else {
 					width = width - headItemCols.models[index].get('width') - 1;
 				}
 				startColAlias = headItemCols.models[index + 1].get('alias');
-				select.set('wholePosi.startY', startColAlias);
+				select.set('wholePosi.startX', startColAlias);
 				select.set('physicsBox.width', width);
 
 			}
@@ -143,7 +162,7 @@ define(function(require) {
 				left = left - headItemCols.models[index].get('width') - 1;
 				select.set('physicsPosi.left', left);
 			}
-			siderLineRows.models[0].set('width', width);
+			siderLineCols.models[0].set('width', width);
 		},
 		/**
 		 * 调整单元格
@@ -153,7 +172,7 @@ define(function(require) {
 			var width,
 				left,
 				deleteAlias,
-				rowAlias,
+				colAlias,
 				aliasRowArray,
 				aliasColArray,
 				startIndex,
@@ -188,9 +207,10 @@ define(function(require) {
 					tempCell.set('physicsBox.width', width - 1);
 					aliasColArray.splice(index - startIndex, 1);
 					tempCell.set('occupy.x', aliasColArray);
+
 				} else if (startIndex > index) {
 					left = tempCell.get('physicsBox').left;
-					left = left - headItemCols.models[index].get('width') - 1;
+					left = left - headItemCols.models[index].get('width') -1;
 					tempCell.set('physicsBox.left', left);
 				}
 				for (j = 0; j < aliasLen; j++) {
