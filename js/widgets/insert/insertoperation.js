@@ -12,7 +12,7 @@ define(function(require) {
 			'mousedown li': 'action'
 		},
 		action: function(e) {
-			var operate = $(e.currentTarget).data('operate');
+			var operate = $(e.currentTarget).data('type');
 			if(operate === 'column'){
 				this.insertColumn();
 			}else{
