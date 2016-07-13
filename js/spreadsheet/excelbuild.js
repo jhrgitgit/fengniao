@@ -32,6 +32,11 @@ define(function(require) {
 		highlight = require('entrance/extention/highlight'),
 		reloadCells = require('entrance/cell/reloadcells'),
 		setTextType = require('entrance/tool/settexttype'),
+		addRow = require('entrance/tool/addrow'),
+		addCol = require('entrance/tool/addcol'),
+		deleteRow = require('entrance/tool/deleterow'),
+		deleteCol = require('entrance/tool/deletecol'),
+		regionDel = require('entrance/tool/regiondel'),
 		comment = require('entrance/tool/comment');
 
 
@@ -60,9 +65,9 @@ define(function(require) {
 				FrozenContainer = require('widgets/frozen/frozenContainer'),
 				InsertOperation = require('widgets/insert/insertoperation'),
 				DeleteOperation = require('widgets/delete/deleteoperation'),
-				CommentContainer =require('widgets/celloperation/commentcontainer'),
-				WordWrapContainer =require('widgets/celloperation/wordwrapcontainer'),
-				RegionDelContainer =require('widgets/celldel/regiondel');
+				CommentContainer = require('widgets/celloperation/commentcontainer'),
+				WordWrapContainer = require('widgets/celloperation/wordwrapcontainer'),
+				RegionDelContainer = require('widgets/celldel/regiondel');
 			new ShearPlateContainer();
 			new FontFamilyContainer();
 			new FontSizeContainer();
@@ -112,12 +117,18 @@ define(function(require) {
 			SpreadSheet.prototype.setWordWrap = setWordWrap;
 			SpreadSheet.prototype.getSelectRegion = getSelectRegion;
 			SpreadSheet.prototype.reloadCells = reloadCells;
+			//ps:修改
+			SpreadSheet.prototype.comment = comment;
 
-			SpreadSheet.prototype.comment =comment;
+			SpreadSheet.prototype.addRow = addRow;
+			SpreadSheet.prototype.addCol = addCol;
+			SpreadSheet.prototype.deleteRow = deleteRow;
+			SpreadSheet.prototype.deleteCol = deleteCol;
+			SpreadSheet.prototype.regionDel = regionDel;
 			// SpreadSheet.prototype.createAddCommentView =comment.createAddCommentView;
 			// SpreadSheet.prototype.createEditComment =comment.createEditComment;
 			// SpreadSheet.prototype.deleteComment=comment.deleteComment;
-			
+
 		},
 		buildDataSourceOperation: function(SpreadSheet) {
 			SpreadSheet.prototype.setDataSourceRegion = operationDataSourceRegion.setDataSourceRegion;
