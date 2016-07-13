@@ -14,7 +14,8 @@ define(function(require) {
 		config = require('spreadsheet/config'),
 		getTextBox = require('basic/tools/gettextbox'),
 		setCellHeight = require('entrance/cell/setcellheight'),
-		textTypeHandler = require('entrance/tool/settexttype');
+		textTypeHandler = require('entrance/tool/settexttype'),
+		CellContainer;
 
 	/**
 	 * 单元格视图类，用于显示单元格对象
@@ -25,7 +26,7 @@ define(function(require) {
 	 * @extends Backbone.View
 	 * @constructor
 	 */
-	var CellContainer = Backbone.View.extend({
+	CellContainer = Backbone.View.extend({
 		/**
 		 * 单元格标签class属性
 		 * @property className  
@@ -130,7 +131,7 @@ define(function(require) {
 		 */
 		render: function() {
 			var modelJSON = this.model.toJSON();
-			
+
 			this.template = Handlebars.compile($('#tempItemCell').html());
 			// this.$el.removeAttr('style');
 			this.$el.css({
@@ -177,7 +178,7 @@ define(function(require) {
 		showCommentSign: function(modelJSON) {
 			if (modelJSON.customProp.comment !== null &&
 				modelJSON.customProp.comment !== undefined) {
-				this.$el.prepend('<div class="comment-ico"><div class="comment-ico-triangle"></div></div>');
+				this.$el.prepend('<div class="comment-ico"><div class="triangle"></div></div>');
 			}
 		},
 

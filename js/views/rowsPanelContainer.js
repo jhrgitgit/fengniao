@@ -7,7 +7,8 @@ define(function(require) {
 		config = require('spreadsheet/config'),
 		util = require('basic/util/clone'),
 		headItemRows = require('collections/headItemRow'),
-		RowsAllHeadContainer = require('views/rowsAllHeadContainer');
+		RowsAllHeadContainer = require('views/rowsAllHeadContainer'),
+		RowsPanelContainer;
 
 	/**
 	 * 行标题容器视图类
@@ -18,13 +19,13 @@ define(function(require) {
 	 * @extends Backbone.View
 	 * @constructor
 	 */
-	var RowsPanelContainer = Backbone.View.extend({
+	RowsPanelContainer = Backbone.View.extend({
 		/**
 		 * 绑定视图
 		 * @property el
 		 * @type {String}
 		 */
-		className: 'row-head-container row-head-highlight',
+		className: 'row-head-container',
 		/**
 		 * 初始化事函数
 		 * @method initialize
@@ -36,7 +37,7 @@ define(function(require) {
 				modellastHeadLineRow,
 				len;
 
-		//ps:监听selectRegion
+			//ps:监听selectRegion
 			Backbone.on('call:rowsPanelContainer', this.rowsPanelContainer, this);
 			Backbone.on('event:rowsPanelContainer:destroy', this.destroy, this);
 			this.boxModel = {};

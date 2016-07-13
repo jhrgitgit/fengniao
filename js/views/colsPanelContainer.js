@@ -23,7 +23,7 @@ define(function(require) {
 		/**
 		 * @property {element} el
 		 */
-		className: 'col-head-container col-head-highlight',
+		className: 'col-head-container',
 		/**
 		 * 初始化事件监听
 		 * @method initialize
