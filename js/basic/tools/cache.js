@@ -10,7 +10,10 @@ define(function(require) {
 	 * @module basic
 	 */
 	return {
+		//ps:如果加载超过100行，问题
 		aliasRowCounter: '100',
+		aliasColCounter: '26',
+		sendQueueStep: 1,
 		containerId: '',
 		//ps:CurrentRule ，FrozenRules ，TempProp 都存有冻结信息，具体功能，需要说明
 		CurrentRule: {},
@@ -184,13 +187,22 @@ define(function(require) {
 				}
 			}
 		},
-		aliasGenerator: function() {
+		aliasGenerator: function(type) {
 			var alias,
 				num;
-			alias = this.aliasRowCounter;
+			if(type==='col'){
+				alias = this.aliasColCounter;
+			}else{
+				alias = this.aliasRowCounter;
+			}
+			
 			num = parseInt(alias);
 			alias = (num + 1).toString();
-			this.aliasRowCounter = alias;
+			if(type==='col'){
+				this.aliasColCounter = alias;
+			}else{
+				this.aliasRowCounter = alias;
+			}
 			return alias;
 		}
 	};

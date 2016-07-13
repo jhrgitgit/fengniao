@@ -1,6 +1,7 @@
 'use strict';
 define(function(require) {
 	var $ = require('lib/jquery'),
+		cache = require('basic/tools/cache'),
 		systemConfig = require('spreadsheet/config');
 	/**
 	 * ajax工具类
@@ -18,7 +19,8 @@ define(function(require) {
 		 */
 		PackAjax: function(cfg) {
 			var config = {},
-				NULLFUNC = function() {};
+				NULLFUNC = function() {},
+				step;
 			if (!cfg.url) {
 				return;
 			}
@@ -35,8 +37,14 @@ define(function(require) {
 				complete: cfg.complete || NULLFUNC
 			};
 
+			
+			step = cache.sendQueueStep;
 			$.ajax({
 				url: config.url,
+				beforeSend: function(request) {
+					request.setRequestHeader("step", step);
+					request.setRequestHeader("excelId", window.SPREADSHEET_AUTHENTIC_KEY);
+				},
 				type: config.type,
 				contentType: config.contentType,
 				dataType: config.dataType,
@@ -49,6 +57,7 @@ define(function(require) {
 					config.complete();
 				}
 			});
+			cache.sendQueueStep = step + 1;
 
 		}
 	};

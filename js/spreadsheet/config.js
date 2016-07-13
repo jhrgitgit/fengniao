@@ -145,6 +145,6 @@ define(function() {
 			enter: true
 		},
 		version: '@version@',
-		rootPath: 'http://localhost:4711/'
+		rootPath: 'http://localhost:8080/acmrexcel/'
 	};
 });

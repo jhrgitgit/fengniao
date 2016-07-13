@@ -30,6 +30,7 @@ define(function(require) {
 			this.listenTo(this.model, 'change:isView', this.destroy);
 			this.listenTo(this.model, 'change:left', this.changeLeft);
 			this.listenTo(this.model, 'change:width', this.changeWidth);
+			this.listenTo(this.model, 'destroy', this.destroy);
 			modelList = headItemCols;
 			currentModel = modelList.getModelByAlias(cache.TempProp.colAlias);
 			this.userViewLeft = cache.TempProp.isFrozen ? modelList.getModelByAlias(cache.UserView.colAlias).get('left') : 0;

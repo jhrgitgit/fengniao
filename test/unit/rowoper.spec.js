@@ -3,7 +3,7 @@ define(function(require) {
 	var cache = require('basic/tools/cache'),
 		headItemRows = require('collections/headItemRow'),
 		headItemCols = require('collections/headItemCol'),
-		buildColAlias = require('basic/tools/buildcolalias'),
+		buildAlias = require('basic/tools/buildalias'),
 		cells = require('collections/cells'),
 		rowOper = require('entrance/row/rowoperation');
 	describe("行属性测试", function() {
@@ -24,7 +24,7 @@ define(function(require) {
 					sort: i,
 					alias: (i + 1).toString(),
 					top: i * 72,
-					displayName: buildColAlias(i)
+					displayName: buildAlias.buildColAlias(i)
 				});
 			}
 			cache.loadStartColAlias = '1';
@@ -69,7 +69,7 @@ define(function(require) {
 					sort: i,
 					alias: (i + 1).toString(),
 					top: i * 72,
-					displayName: buildColAlias(i)
+					displayName: buildAlias.buildColAlias(i)
 				});
 			}
 			cells.add({
