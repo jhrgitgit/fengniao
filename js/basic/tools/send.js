@@ -37,13 +37,16 @@ define(function(require) {
 				complete: cfg.complete || NULLFUNC
 			};
 
-			
+
 			step = cache.sendQueueStep;
 			$.ajax({
 				url: config.url,
 				beforeSend: function(request) {
-					request.setRequestHeader("step", step);
-					request.setRequestHeader("excelId", window.SPREADSHEET_AUTHENTIC_KEY);
+					if (url.indexOf('position') === -1) {
+						request.setRequestHeader("step", step);
+						request.setRequestHeader("excelId", window.SPREADSHEET_AUTHENTIC_KEY);
+						cache.sendQueueStep = step + 1;
+					}
 				},
 				type: config.type,
 				contentType: config.contentType,
@@ -57,8 +60,6 @@ define(function(require) {
 					config.complete();
 				}
 			});
-			cache.sendQueueStep = step + 1;
-
 		}
 	};
 });
