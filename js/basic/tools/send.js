@@ -42,9 +42,9 @@ define(function(require) {
 			$.ajax({
 				url: config.url,
 				beforeSend: function(request) {
-					if (url.indexOf('position') === -1) {
-						request.setRequestHeader("step", step);
-						request.setRequestHeader("excelId", window.SPREADSHEET_AUTHENTIC_KEY);
+					if (config.url.indexOf('position') === -1) {
+						request.setRequestHeader('step', step);
+						request.setRequestHeader('excelId', window.SPREADSHEET_AUTHENTIC_KEY);
 						cache.sendQueueStep = step + 1;
 					}
 				},
