@@ -15,7 +15,7 @@ define(function(require) {
 		mainDomString += '<div class="sheet-cf-box glyphicons glyphicon-plus"></div>';
 		mainDomString += '<div class="sheet-cf-box active glyphicons glyphicon-th-list"></div>';
 		mainDomString += '<div class="sheet-cf-list">';
-		mainDomString += '</div></div></div>';
+		mainDomString += '</div></div>';
 
 		tailDomString += '<script type="text/x-handlebars-template" id="colsPanelContainer"></script>';
 		tailDomString += '<script type="text/x-handlebars-template" id="rowsPanelContainer"></script>';

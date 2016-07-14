@@ -68,6 +68,7 @@ define(function(require) {
 				}
 			}
 		}
+		console.log(text);
 		if (e !== undefined) {
 			e.preventDefault();
 			if (window.clipboardData) {
@@ -79,8 +80,8 @@ define(function(require) {
 
 		function cellToText(cell) {
 			var text,
-				head = '',
-				tail = '';
+				head = '"',
+				tail = '"';
 			text = cell.get("content").texts;
 
 			if (text.indexOf('\n') === -1) {
@@ -94,6 +95,7 @@ define(function(require) {
 					break;
 				}
 			}
+
 			while (true) {
 				if (text.lastIndexOf('"') === text.length - 1 && text.length > 1) {
 					text = text.substring(0, text.length - 1);
