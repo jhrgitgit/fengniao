@@ -133,10 +133,6 @@ define(function(require) {
 				startX: cache.UserView.rowAlias,
 				startY: cache.UserView.colAlias
 			};
-			send.PackAjax({
-				url: '',
-				data: JSON.stringify(data)
-			});
 		},
 		/**
 		 * 自动适应屏幕的宽高

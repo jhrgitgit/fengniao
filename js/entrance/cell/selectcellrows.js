@@ -93,8 +93,8 @@ define(function(require) {
 					activeState: false
 				});
 			}
-			rowAlias = headItemRows.models[0].get('alias');
-			colAlias = headLineColModelList[0].get('alias');
+			rowAlias = headLineRowModelList[0].get('alias');
+			colAlias = headLineColModelList[modelIndexCol].get('alias');
 			//selectregion effect
 			select.set({
 				physicsPosi: {

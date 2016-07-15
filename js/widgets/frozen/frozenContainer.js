@@ -178,11 +178,17 @@ define(function(require) {
 		requestFrozen: function(frozenColAlias, frozenRowAlias, startColAlias, startRowAlias) {
 			var excelId = SPREADSHEET_AUTHENTIC_KEY,
 				sheetId = $("#sheetId").val();
+				
 			send.PackAjax({
-				url: 'sheet.htm?m=frozen&excelId=' + excelId + '&sheetId=' + sheetId + '&frozenX=' + frozenColAlias + '&frozenY=' + frozenRowAlias + '&startX=' + startColAlias + '&startY=' + startRowAlias,
-				success: function(data) {
-					console.log('success');
-				}
+				url: 'sheet.htm?m=frozen',
+				data: JSON.stringify({
+					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
+					sheetId: '1',
+					frozenX: frozenColAlias,
+					frozenY: frozenRowAlias,
+					startX: startColAlias,
+					startY: startRowAlias
+				})
 			});
 		},
 		/**

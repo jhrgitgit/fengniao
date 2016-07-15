@@ -90,7 +90,7 @@ define(function(require) {
 		},
 		getCells: function(top, bottom) {
 			send.PackAjax({
-				url: 'excel.htm?m=openExcel',
+				url: 'excel.htm?m=openexcel',
 				async: false,
 				data: JSON.stringify({
 					excelId: window.SPREADSHEET_AUTHENTIC_KEY,

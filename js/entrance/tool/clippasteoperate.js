@@ -196,7 +196,7 @@ define(function(require) {
 		startColAlias = selectRegions.models[0].get('wholePosi').startX;
 		startRowAlias = selectRegions.models[0].get('wholePosi').startY;
 		send.PackAjax({
-			url: "plate.htm?m=isAblePaste",
+			url: "plate.htm?m=isablepaste",
 			async: false,
 			data: JSON.stringify({
 				excelId: window.SPREADSHEET_AUTHENTIC_KEY,

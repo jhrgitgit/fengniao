@@ -121,11 +121,15 @@ define(function(require) {
 				this.currentRule.displayPosition.endRowAlias !== undefined) {
 				//修改为模板
 				this.$el.append('<div style="position:absolute;width:inherit;height:inherit;background-color:white;top:0;left:0;z-index:13"></div>');
-				this.cellsContainer.$el.css({'z-index': '14'});
+				this.cellsContainer.$el.css({
+					'z-index': '14'
+				});
 			} else if (this.currentRule.displayPosition.endColAlias !== undefined ||
 				this.currentRule.displayPosition.endRowAlias !== undefined) {
 				this.$el.append('<div style="position:absolute;width:inherit;height:inherit;background-color:white;top:0;left:0;z-index:10"></div>');
-				this.cellsContainer.$el.css({'z-index': '11'});
+				this.cellsContainer.$el.css({
+					'z-index': '11'
+				});
 			}
 		},
 		addCellViewPublish: function(cellModel) {
@@ -149,9 +153,6 @@ define(function(require) {
 				currentRule: this.currentRule
 			});
 			this.cellsContainer.contentCellsContainer.$el.prepend(tempView.render().el);
-		},
-		adaptViewHeight: function() {
-
 		},
 		/**
 		 * 页面渲染方法
@@ -559,7 +560,7 @@ define(function(require) {
 				getBottomPosi = temp;
 			}
 			send.PackAjax({
-				url: 'excel.htm?m=openExcel',
+				url: 'excel.htm?m=openexcel',
 				async: false,
 				data: JSON.stringify({
 					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
@@ -593,7 +594,7 @@ define(function(require) {
 				getBottomPosi = temp;
 			}
 			send.PackAjax({
-				url: 'excel.htm?m=openExcel',
+				url: 'excel.htm?m=openexcel',
 				async: false,
 				data: JSON.stringify({
 					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
@@ -704,7 +705,7 @@ define(function(require) {
 			//ps:修改
 			this.loadRegionRows(offsetTop, userViewTop);
 			this.addRows();
-
+			this.adaptSelectRegion();
 			headItemRowList = headItemRows.models;
 
 			limitTopPosi = this.el.scrollTop - config.System.prestrainHeight + offsetTop + userViewTop;
@@ -758,6 +759,30 @@ define(function(require) {
 			this.rowsViewBottomPosi = headItemRowList[limitBottomIndex].get('top') + headItemRowList[limitBottomIndex].get('height') - offsetTop - userViewTop;
 			config.displayRowHeight = this.rowsViewBottomPosi;
 			cache.visibleRegion.bottom = this.rowsViewBottomPosi;
+		},
+		/**
+		 * 在整行整列选中时，进行滚动操作，时时修改选中区域的宽高
+		 * @return {[type]} [description]
+		 */
+		adaptSelectRegion: function() {
+			var select = selectRegions.getModelByType("operation")[0],
+				endColAlias = select.get('wholePosi').endX,
+				endRowAlias = select.get('wholePosi').endY,
+				height,
+				len,
+				model;
+
+			if (endColAlias !== 'MAX' && endRowAlias !== 'MAX') {
+				return;
+			}
+			//暂时只做整列选中的调节
+			if (endRowAlias === 'MAX') {
+				height = select.get('physicsBox').height;
+				len = headItemRows.length;
+				model = headItemRows.models[len - 1];
+				height = model.get('top') + model.get('height') - 1;
+				select.set('physicsBox.height', height);
+			}
 		},
 		/**
 		 * 动态加载cell对象，对于一次未加载完全cell对象，重新计算cell对象physicsBox属性
@@ -940,9 +965,16 @@ define(function(require) {
 			} else {
 				return;
 			}
+
 			send.PackAjax({
-				url: 'sheet.htm?m=addRowLine&excelId=' + window.SPREADSHEET_AUTHENTIC_KEY + '&sheetId=1&rowNum=' + len
+				url: 'sheet.htm?m=addrowline',
+				data: JSON.stringify({
+					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
+					sheetId: '1',
+					rowNum : len
+				})
 			});
+
 			loadRecorder.insertPosi(startPosi, endPosi, cache.rowRegionPosi);
 			width = headItemCols.getMaxDistanceWidth();
 			height = headItemRows.getMaxDistanceHeight();

@@ -73,7 +73,7 @@ define(function(require) {
 		startRowAlias = headItemRows.models[region.startRowIndex].get('alias');
 
 		send.PackAjax({
-			url: 'text.htm?m=wordWrap',
+			url: 'text.htm?m=wordwrap',
 			data: JSON.stringify({
 				excelId: window.SPREADSHEET_AUTHENTIC_KEY,
 				sheetId: '1',
