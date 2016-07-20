@@ -55,7 +55,7 @@ define(function(require) {
 			if (cache.TempProp.isFrozen !== true || this.currentRule.displayPosition.endIndex === undefined) {
 				this.listenTo(headItemRows, 'add', this.addRowsHeadContainer);
 			}
-			
+
 		},
 		/**
 		 * 页面渲染方法
@@ -246,12 +246,13 @@ define(function(require) {
 		requstAdjust: function(rowIndex, offset) {
 			var rowAlias = headItemRows.models[rowIndex].get('alias');
 			send.PackAjax({
-				url: 'cells.htm?m=rows_height&excelId=' + window.SPREADSHEET_AUTHENTIC_KEY + '&sheetId=1&rowAlias=' + rowAlias + '&offset=' + offset,
-				success: function(data) {
-					if (data.returnCode === 200) {
-						console.log('success');
-					}
-				}
+				url: 'cells.htm?m=rows_height',
+				data: JSON.stringify({
+					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
+					sheetId: '1',
+					rowAlias: rowAlias,
+					offset: offset
+				})
 			});
 		},
 		/**

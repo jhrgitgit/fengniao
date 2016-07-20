@@ -235,6 +235,7 @@ define(function(require) {
 				width: headItemCols.getMaxDistanceWidth(),
 				height: headItemRows.getMaxDistanceHeight()
 			});
+
 			this.viewColsAllHeadContainer.$el.css({
 				width: headItemCols.getMaxDistanceWidth()
 			});
@@ -246,12 +247,13 @@ define(function(require) {
 		requstAdjust: function(colIndex, offset) {
 			var colAlias = headItemCols.models[colIndex].get('alias');
 			send.PackAjax({
-				url: 'cells.htm?m=cols_width&excelId=' + window.SPREADSHEET_AUTHENTIC_KEY + '&sheetId=1&colAlias=' + colAlias + '&offset=' + offset,
-				success: function(data) {
-					if (data.returnCode === 200) {
-						console.log('success');
-					}
-				}
+				url: 'cells.htm?m=cols_width',
+				data: JSON.stringify({
+					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
+					sheetId: '1',
+					colAlias: colAlias,
+					offset: offset
+				}),
 			});
 		},
 		/**

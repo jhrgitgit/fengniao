@@ -132,14 +132,21 @@ define(function(require) {
 		 * @method closeWindow
 		 */
 		closeWindow: function() {
-			var url = 'excel.htm?m=close&excelId=' + window.SPREADSHEET_AUTHENTIC_KEY;
-			if (cache.TempProp.isFrozen === true) {
-				url += '&startX=' + cache.UserView.colAlias + '&startY=' + cache.UserView.colAlias;
+			var data = {};
+
+			data.excelId = window.SPREADSHEET_AUTHENTIC_KEY;
+			data.sheetId = '1';
+			if (cache.TempProp.isFrozen === true) {	
+				data.startX= cache.UserView.colAlias;
+				data.startY= cache.UserView.rowAlias;
 			} else {
-				url += '&startX=1&startY=1';
+				data.startX= '1';
+				data.startY= '1';
 			}
+
 			send.PackAjax({
-				url: url
+				url: 'excel.htm?m=close',
+				data: JSON.stringify(data)
 			});
 		},
 		/**

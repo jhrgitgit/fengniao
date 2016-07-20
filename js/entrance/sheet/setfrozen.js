@@ -140,8 +140,17 @@ define(function(require) {
 	var requestFrozen = function(frozenColAlias, frozenRowAlias, startColAlias, startRowAlias) {
 		var excelId = window.SPREADSHEET_AUTHENTIC_KEY,
 			sheetId = '1';
+
 		send.PackAjax({
-			url: 'sheet.htm?m=frozen&excelId=' + excelId + '&sheetId=' + sheetId + '&frozenX=' + frozenColAlias + '&frozenY=' + frozenRowAlias + '&startX=' + startColAlias + '&startY=' + startRowAlias
+			url: 'excel.htm?m=frozen',
+			data: JSON.stringify({
+				excelId: excelId,
+				sheetId: '1',
+				frozenX: frozenColAlias,
+				frozenY: frozenRowAlias,
+				startX: startColAlias,
+				startY: startRowAlias
+			})
 		});
 	};
 	/**
