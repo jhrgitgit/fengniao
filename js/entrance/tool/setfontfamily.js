@@ -7,6 +7,7 @@ define(function(require) {
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
 		analysisLabel = require('basic/tools/analysislabel'),
+		colOperate = require('entrance/col/coloperation'),
 		rowOperate = require('entrance/row/rowoperation');
 
 	var setFontFamily = function(sheetId, fontFamily, label) {
@@ -36,7 +37,11 @@ define(function(require) {
 			rowOperate.rowPropOper(region.startRowIndex, 'content.family', fontFamily);
 			endColAlias = 'MAX';
 			endRowAlias = headItemRows.models[region.endRowIndex].get('alias');
-		} else {
+		} else if(region.endRowIndex === 'MAX'){
+			colOperate.colPropOper(region.startColIndex, 'content.family', fontFamily);
+			endRowAlias = 'MAX';
+			endColAlias = headItemCols.models[region.endColIndex].get('alias');
+		}else {
 			region = cells.getFullOperationRegion(region);
 			cells.operateCellsByRegion(region, function(cell) {
 				cell.set('content.family', fontFamily);

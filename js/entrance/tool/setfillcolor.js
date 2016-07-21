@@ -7,7 +7,8 @@ define(function(require) {
 		cache = require('basic/tools/cache'),
 		cells = require('collections/cells'),
 		analysisLabel = require('basic/tools/analysislabel'),
-		rowOperate = require('entrance/row/rowoperation');
+		rowOperate = require('entrance/row/rowoperation'),
+		colOperate = require('entrance/col/coloperation');
 
 	/**
 	 * 设置单元格填充颜色
@@ -42,7 +43,11 @@ define(function(require) {
 			rowOperate.rowPropOper(region.startRowIndex, 'customProp.background', color);
 			endColAlias = 'MAX';
 			endRowAlias = headItemRows.models[region.endRowIndex].get('alias');
-		} else {
+		}else if(region.endRowIndex === 'MAX'){
+			colOperate.colPropOper(region.startColIndex, 'customProp.background', color);
+			endRowAlias = 'MAX';
+			endColAlias = headItemCols.models[region.endColIndex].get('alias');
+		}else {
 			region = cells.getFullOperationRegion(region);
 			cells.operateCellsByRegion(region, function(cell) {
 				cell.set('customProp.background', color);

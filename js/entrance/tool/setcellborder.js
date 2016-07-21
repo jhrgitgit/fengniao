@@ -7,7 +7,8 @@ define(function(require) {
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
 		analysisLabel = require('basic/tools/analysislabel'),
-		rowOperate = require('entrance/row/rowoperation');
+		rowOperate = require('entrance/row/rowoperation'),
+		colOperate = require('entrance/col/coloperation');
 
 	var setCellBorder = function(sheetId, border, label) {
 		var region = {},
@@ -35,6 +36,9 @@ define(function(require) {
 		if (region.endColIndex === 'MAX') { //整行操作
 			endColAlias = 'MAX';
 			endRowAlias = headItemRows.models[region.endRowIndex].get('alias');
+		} else if (region.endRowIndex === 'MAX') {
+			endRowAlias = 'MAX';
+			endColAlias = headItemCols.models[region.endColIndex].get('alias');
 		} else {
 			region = cells.getFullOperationRegion(region);
 			endColAlias = headItemCols.models[region.endColIndex].get('alias');
@@ -92,6 +96,11 @@ define(function(require) {
 				rowOperate.rowPropOper(region.startRowIndex, 'border.right', false);
 				rowOperate.rowPropOper(region.startRowIndex, 'border.top', false);
 				rowOperate.rowPropOper(region.startRowIndex, 'border.bottom', false);
+			} else if (region.endRowIndex === 'MAX') {
+				colOperate.colPropOper(region.startColIndex, 'border.left', false);
+				colOperate.colPropOper(region.startColIndex, 'border.right', false);
+				colOperate.colPropOper(region.startColIndex, 'border.top', false);
+				colOperate.colPropOper(region.startColIndex, 'border.bottom', false);
 			} else {
 				cells.operateCellsByRegion(region, function(cell) {
 					cell.set('border.left', false);
@@ -111,6 +120,11 @@ define(function(require) {
 				rowOperate.rowPropOper(region.startRowIndex, 'border.right', true);
 				rowOperate.rowPropOper(region.startRowIndex, 'border.top', true);
 				rowOperate.rowPropOper(region.startRowIndex, 'border.bottom', true);
+			} else if (region.endRowIndex === 'MAX') {
+				colOperate.colPropOper(region.startColIndex, 'border.left', true);
+				colOperate.colPropOper(region.startColIndex, 'border.right', true);
+				colOperate.colPropOper(region.startColIndex, 'border.top', true);
+				colOperate.colPropOper(region.startColIndex, 'border.bottom', true);
 			} else {
 				cells.operateCellsByRegion(region, function(cell) {
 					cell.set('border.left', true);
@@ -129,6 +143,8 @@ define(function(require) {
 			var cellList, i;
 			if (region.endColIndex === 'MAX') {
 				rowOperate.rowPropOper(region.startRowIndex, 'border.top', true);
+			} else if (region.endRowIndex === 'MAX') {
+				colOperate.colPropOper(region.startColIndex, 'border.top', true);
 			} else {
 				cellList = cells.getTopHeadModelByIndex(region.startColIndex,
 					region.startRowIndex,
@@ -149,6 +165,8 @@ define(function(require) {
 			var cellList, i;
 			if (region.endColIndex === 'MAX') {
 				rowOperate.rowPropOper(region.startRowIndex, 'border.left', true);
+			} else if (region.endRowIndex === 'MAX') {
+				colOperate.colPropOper(region.startColIndex, 'border.left', true);
 			} else {
 				cellList = cells.getLeftHeadModelByIndex(region.startColIndex,
 					region.startRowIndex,
@@ -169,6 +187,8 @@ define(function(require) {
 			var cellList, i;
 			if (region.endColIndex === 'MAX') {
 				rowOperate.rowPropOper(region.startRowIndex, 'border.bottom', true);
+			} else if (region.endRowIndex === 'MAX') {
+				colOperate.colPropOper(region.startColIndex, 'border.bottom', true);
 			} else {
 				cellList = cells.getBottomHeadModelByIndex(region.startColIndex,
 					region.startRowIndex,
@@ -189,6 +209,8 @@ define(function(require) {
 			var cellList, i;
 			if (region.endColIndex === 'MAX') {
 				rowOperate.rowPropOper(region.startRowIndex, 'border.right', true);
+			} else if (region.endRowIndex === 'MAX') {
+				colOperate.colPropOper(region.startColIndex, 'border.right', true);
 			} else {
 				cellList = cells.getRightHeadModelByIndex(region.startColIndex,
 					region.startRowIndex,
@@ -204,12 +226,15 @@ define(function(require) {
 		 * @method setOuter
 		 */
 		function setOuter() {
-			setTop(region);
-			setBottom(region);
+			if (region.endRowIndex !== 'MAX') {
+				setTop(region);
+				setBottom(region);
+			}
 			if (region.endColIndex !== 'MAX') {
 				setLeft(region);
 				setRight(region);
 			}
+
 		}
 
 	};

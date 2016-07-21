@@ -6,12 +6,6 @@ define(function(require) {
 		headItemCols = require('collections/headItemCol'),
 		cells = require('collections/cells');
 	return {
-		rowMerge: function() {
-
-		},
-		rowSplit: function() {
-
-		},
 		/**
 		 * 整行设置单元格属性
 		 * @param  {number} index 行索引

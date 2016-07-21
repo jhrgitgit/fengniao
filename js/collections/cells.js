@@ -24,9 +24,17 @@ define(function(require) {
 		 */
 		model: CellModel,
 		url: '/cell.htm',
+		/**
+		 * 创建单元格
+		 * @param  {int} startColIndex 起始列索引
+		 * @param  {int} startRowIndex 起始行索引
+		 * @param  {int} endColIndex   结束列索引
+		 * @param  {int} endRowIndex   结束行索引
+		 * @param  {object} prop   	单元格初始化属性
+		 * @return {object} cellModel 创建对象
+		 */
 		createCellModel: function(startColIndex, startRowIndex,
-			endColIndex, endRowIndex) {
-
+			endColIndex, endRowIndex, prop) {
 			var headItemColList,
 				headItemRowList,
 				rowLen,
@@ -35,11 +43,15 @@ define(function(require) {
 				j = 0,
 				occupyCol = [],
 				occupyRow = [],
+				cell,
 				width = 0,
 				height = 0,
 				top,
 				left;
 			if (endColIndex === undefined) {
+				endColIndex = startColIndex;
+			}else if(typeof endColIndex === 'object'){
+				prop = endColIndex;
 				endColIndex = startColIndex;
 			}
 			if (endRowIndex === undefined) {
@@ -70,19 +82,35 @@ define(function(require) {
 						this.length);
 				}
 			}
-			this.add({
-				occupy: {
-					x: occupyCol,
-					y: occupyRow
-				},
-				physicsBox: {
-					top: top,
-					left: left,
-					width: width - 1,
-					height: height - 1
-				}
+			cell = new CellModel();
+			cell.set('occupy', {
+				x: occupyCol,
+				y: occupyRow
+			})
+			cell.set('physicsBox', {
+				top: top,
+				left: left,
+				width: width - 1,
+				height: height - 1
 			});
-			return this.models[this.length - 1];
+
+			if (prop !== undefined) {
+				setProp(cell, prop);
+			}
+			this.add(cell);
+
+			function setProp(cell, prop) {
+				var parentKey,
+					childKey;
+				for (parentKey in prop) {
+					if (typeof prop[parentKey] === 'object') {
+						for (childKey in prop[parentKey]) {
+							cell.set(parentKey + '.' + childKey, prop[parentKey][childKey]);
+						}
+					}
+				}
+			}
+			return cell;
 		},
 		/**
 		 * 通过cache.CellsPosition.strandX变量，获取区域内，包含所有cell对象
@@ -136,21 +164,20 @@ define(function(require) {
 		 * @return {array} Cell数组
 		 */
 		getCellByRow: function(startIndexRow, startIndexCol, endIndexRow, endIndexCol) {
+			var cells = [],
+				i, j,
+				rowAlias,
+				colAlias;
 			if (endIndexRow === undefined) {
 				endIndexRow = startIndexRow;
 			}
 			if (endIndexCol === undefined) {
 				endIndexCol = startIndexCol;
 			}
-			var cells = [],
-				i, j,
-				rowAlias,
-				colAlias;
-			for (i = 0; i < endIndexRow - startIndexRow + 1; i++) {
-				for (j = 0; j < endIndexCol - startIndexCol + 1; j++) {
-					rowAlias = headItemRows.models[startIndexRow + i].get('alias');
-					colAlias = headItemCols.models[startIndexCol + j].get('alias');
-
+			for (i = startIndexRow; i < endIndexRow + 1; i++) {
+				for (j = endIndexCol; j < endIndexCol + 1; j++) {
+					rowAlias = headItemRows.models[i].get('alias');
+					colAlias = headItemCols.models[j].get('alias');
 					if (cache.CellsPosition.strandY[rowAlias] !== undefined && cache.CellsPosition.strandY[rowAlias][colAlias] !== undefined) {
 						//cells去掉重复
 						if (cells.indexOf(this.at(cache.CellsPosition.strandY[rowAlias][colAlias])) === -1) {

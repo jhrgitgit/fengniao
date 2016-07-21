@@ -41,6 +41,10 @@ define(function(require) {
 			endColAlias = 'MAX';
 			endRowAlias = headItemRows.models[region.endRowIndex].get('alias');
 			region.endColIndex = headItemCols.length - 1;
+		}else if (region.endRowIndex === 'MAX') { //整列操作
+			endRowAlias = 'MAX';
+			endColAlias = headItemCols.models[region.endColIndex].get('alias');
+			region.endRowIndex = headItemRows.length - 1;
 		} else {
 			region = cells.getFullOperationRegion(region);
 		}

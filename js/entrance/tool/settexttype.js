@@ -8,6 +8,7 @@ define(function(require) {
 		selectRegions = require('collections/selectRegion'),
 		analysisLabel = require('basic/tools/analysislabel'),
 		rowOperate = require('entrance/row/rowoperation'),
+		colOperate = require('entrance/col/coloperation'),
 		cache = require('basic/tools/cache'),
 		textTypeHandler;
 
@@ -59,6 +60,13 @@ define(function(require) {
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.thousands', null);
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.dateFormat', null);
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.currencySign', null);
+			} else if (region.endRowIndex === 'MAX') {
+				colOperate.colPropOper(region.startColIndex, 'customProp.format', 'normal');
+				colOperate.colPropOper(region.startColIndex, 'customProp.isValid', true);
+				colOperate.colPropOper(region.startColIndex, 'customProp.decimal', null);
+				colOperate.colPropOper(region.startColIndex, 'customProp.thousands', null);
+				colOperate.colPropOper(region.startColIndex, 'customProp.dateFormat', null);
+				colOperate.colPropOper(region.startColIndex, 'customProp.currencySign', null);
 			} else {
 				region = cells.getFullOperationRegion(region);
 				cells.operateCellsByRegion(region, function(cell) {
@@ -100,6 +108,13 @@ define(function(require) {
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.thousands', null);
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.dateFormat', null);
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.currencySign', null);
+			} else if (region.endRowIndex === 'MAX') {
+				colOperate.colPropOper(region.startColIndex, 'customProp.format', 'text');
+				colOperate.colPropOper(region.startColIndex, 'customProp.isValid', true);
+				colOperate.colPropOper(region.startColIndex, 'customProp.decimal', null);
+				colOperate.colPropOper(region.startColIndex, 'customProp.thousands', null);
+				colOperate.colPropOper(region.startColIndex, 'customProp.dateFormat', null);
+				colOperate.colPropOper(region.startColIndex, 'customProp.currencySign', null);
 			} else {
 				region = cells.getFullOperationRegion(region);
 				cells.operateCellsByRegion(region, function(cell) {
@@ -139,11 +154,16 @@ define(function(require) {
 			}
 			if (region.endColIndex === 'MAX') { //整行操作
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.format', 'number');
-				//rowOperate.rowPropOper(region.startRowIndex, 'customProp.isValid', isValid);
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.decimal', decimal);
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.thousands', thousands);
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.dateFormat', null);
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.currencySign', null);
+			} else if (region.endColIndex === 'MAX') { //整行操作
+				colOperate.colPropOper(region.startColIndex, 'customProp.format', 'number');
+				colOperate.colPropOper(region.startColIndex, 'customProp.decimal', decimal);
+				colOperate.colPropOper(region.startColIndex, 'customProp.thousands', thousands);
+				colOperate.colPropOper(region.startColIndex, 'customProp.dateFormat', null);
+				colOperate.colPropOper(region.startColIndex, 'customProp.currencySign', null);
 			} else {
 				region = cells.getFullOperationRegion(region);
 				cells.operateCellsByRegion(region, function(cell) {
@@ -182,11 +202,16 @@ define(function(require) {
 			}
 			if (region.endColIndex === 'MAX') { //整行操作
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.format', 'number');
-				//rowOperate.rowPropOper(region.startRowIndex, 'customProp.isValid', isValid);
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.decimal', null);
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.thousands', null);
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.dateFormat', dateFormat);
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.currencySign', null);
+			} else if (region.endRowIndex === 'MAX') { //整列操作
+				colOperate.colPropOper(region.startColIndex, 'customProp.format', 'number');
+				colOperate.colPropOper(region.startColIndex, 'customProp.decimal', null);
+				colOperate.colPropOper(region.startColIndex, 'customProp.thousands', null);
+				colOperate.colPropOper(region.startColIndex, 'customProp.dateFormat', dateFormat);
+				colOperate.colPropOper(region.startColIndex, 'customProp.currencySign', null);
 			} else {
 				region = cells.getFullOperationRegion(region);
 				cells.operateCellsByRegion(region, function(cell) {
@@ -227,11 +252,16 @@ define(function(require) {
 			}
 			if (region.endColIndex === 'MAX') { //整行操作
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.format', 'percent');
-				//rowOperate.rowPropOper(region.startRowIndex, 'customProp.isValid', isValid);
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.decimal', decimal);
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.thousands', false);
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.dateFormat', null);
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.currencySign', null);
+			} else if (region.endColIndex === 'MAX') { //整行操作
+				colOperate.colPropOper(region.startColIndex, 'customProp.format', 'percent');
+				colOperate.colPropOper(region.startColIndex, 'customProp.decimal', decimal);
+				colOperate.colPropOper(region.startColIndex, 'customProp.thousands', false);
+				colOperate.colPropOper(region.startColIndex, 'customProp.dateFormat', null);
+				colOperate.colPropOper(region.startColIndex, 'customProp.currencySign', null);
 			} else {
 				region = cells.getFullOperationRegion(region);
 				cells.operateCellsByRegion(region, function(cell) {
@@ -272,11 +302,16 @@ define(function(require) {
 			}
 			if (region.endColIndex === 'MAX') { //整行操作
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.format', 'currency');
-				//rowOperate.rowPropOper(region.startRowIndex, 'customProp.isValid', isValid);
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.decimal', decimal);
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.thousands', true);
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.dateFormat', null);
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.currencySign', sign);
+			}else if (region.endRowIndex === 'MAX') { //整行操作
+				colOperate.colPropOper(region.startColIndex, 'customProp.format', 'currency');
+				colOperate.colPropOper(region.startColIndex, 'customProp.decimal', decimal);
+				colOperate.colPropOper(region.startColIndex, 'customProp.thousands', true);
+				colOperate.colPropOper(region.startColIndex, 'customProp.dateFormat', null);
+				colOperate.colPropOper(region.startColIndex, 'customProp.currencySign', sign);
 			} else {
 				region = cells.getFullOperationRegion(region);
 				cells.operateCellsByRegion(region, function(cell) {

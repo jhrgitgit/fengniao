@@ -7,7 +7,8 @@ define(function(require) {
 		headItemRows = require('collections/headItemRow'),
 		cells = require('collections/cells'),
 		analysisLabel = require('basic/tools/analysislabel'),
-		rowOperate = require('entrance/row/rowoperation');
+		rowOperate = require('entrance/row/rowoperation'),
+		colOperate = require('entrance/col/coloperation');
 
 
 	var setFontColor = function(sheetId, color, label) {
@@ -36,6 +37,10 @@ define(function(require) {
 			rowOperate.rowPropOper(region.startRowIndex, 'content.color', color);
 			endColAlias = 'MAX';
 			endRowAlias = headItemRows.models[region.endRowIndex].get('alias');
+		}else if(region.endRowIndex === 'MAX'){
+			colOperate.colPropOper(region.startColIndex, 'content.color', color);
+			endRowAlias = 'MAX';
+			endColAlias = headItemCols.models[region.endColIndex].get('alias');
 		} else {
 			region = cells.getFullOperationRegion(region);
 			cells.operateCellsByRegion(region, function(cell) {

@@ -8,6 +8,7 @@ define(function(require) {
 		selectRegions = require('collections/selectRegion'),
 		analysisLabel = require('basic/tools/analysislabel'),
 		rowOperate = require('entrance/row/rowoperation'),
+		colOperate = require('entrance/col/coloperation'),
 		cache = require('basic/tools/cache'),
 		commentHandler,
 		clip;
@@ -33,6 +34,8 @@ define(function(require) {
 			if (region.endColIndex === 'MAX') { //整行操作
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.comment', comment);
 				endColAlias = 'MAX';
+			}else if(region.endRowIndex === 'MAX'){
+				colOperate.colPropOper(region.startColIndex, 'customProp.comment', comment);
 			} else {
 				region = cells.getFullOperationRegion(region);
 				cells.operateCellsByRegion(region, function(cell) {
@@ -86,7 +89,9 @@ define(function(require) {
 			}
 			if (region.endColIndex === 'MAX') { //整行操作
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.comment', null);
-			} else {
+			} else if (region.endRowIndex === 'MAX'){
+				colOperate.colPropOper(region.startColIndex, 'customProp.comment', null);
+			}else {
 				region = cells.getFullOperationRegion(region);
 				cells.operateCellsByRegion(region, function(cell) {
 					cell.set('customProp.comment', null);
@@ -109,7 +114,7 @@ define(function(require) {
 				endColAlias = headItemCols.models[region.endColIndex].get('alias');
 			}
 			if (region.endRowIndex === 'MAX') {
-				endRowAlias = headItemRows.models[region.endRowIndex].get('alias');
+				endRowAlias = 'MAX';
 			} else{
 				endRowAlias = headItemRows.models[region.startRowIndex].get('alias');
 			}

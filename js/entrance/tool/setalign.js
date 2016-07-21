@@ -7,7 +7,8 @@ define(function(require) {
 		cells = require('collections/cells'),
 		cache = require('basic/tools/cache'),
 		analysisLabel = require('basic/tools/analysislabel'),
-		rowOperate = require('entrance/row/rowoperation');
+		rowOperate = require('entrance/row/rowoperation'),
+		colOperate = require('entrance/col/coloperation');
 
 
 	var setAlign = function(sheetId, alignType, label) {
@@ -76,6 +77,14 @@ define(function(require) {
 			}
 			endColAlias = 'MAX';
 			endRowAlias = headItemRows.models[region.endRowIndex].get('alias');
+		}else if (region.endRowIndex === 'MAX') { //整行操作
+			if (transverse !== undefined) {
+				colOperate.colPropOper(region.startColIndex, 'content.alignRow', transverse);
+			} else {
+				colOperate.colPropOper(region.startColIndex, 'content.alignCol', vertical);
+			}
+			endRowAlias = 'MAX';
+			endColAlias = headItemRows.models[region.endColIndex].get('alias');
 		} else {
 			region = cells.getFullOperationRegion(region);
 			cells.operateCellsByRegion(region, function(cell) {

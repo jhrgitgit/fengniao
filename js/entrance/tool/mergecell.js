@@ -54,6 +54,7 @@ define(function(require) {
 			cache.clipState = 'null';
 			clip.destroy();
 		}
+		//bug
 		region = cells.getFullOperationRegion(region);
 		startRowIndex = region.startRowIndex;
 		startColIndex = region.startColIndex;
@@ -72,7 +73,6 @@ define(function(require) {
 				break;
 			}
 		}
-
 		if (cacheCell === undefined) {
 			cacheCell = cells.getCellByRow(startRowIndex, startColIndex)[0];
 			if(cacheCell !== undefined){
@@ -89,11 +89,11 @@ define(function(require) {
 			}
 		}
 		//删除position索引
-		for (i = 0; i < endColIndex - startColIndex + 1; i++) {
-			for (j = 0; j < endRowIndex - startRowIndex + 1; j++) {
-				aliasCol = gridLineColList[startColIndex + i].get('alias');
-				aliasRow = gridLineRowList[startRowIndex + j].get('alias');
-				cache.deletePosi(aliasCol, aliasRow);
+		for (i = startColIndex; i < endColIndex+ 1; i++) {
+			for (j = startRowIndex; j < endRowIndex + 1; j++) {
+				aliasCol = gridLineColList[i].get('alias');
+				aliasRow = gridLineRowList[j].get('alias');
+				cache.deletePosi(aliasRow,aliasCol);
 			}
 		}
 		//获取occupy信息

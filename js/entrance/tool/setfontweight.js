@@ -7,6 +7,7 @@ define(function(require) {
 		headItemRows = require('collections/headItemRow'),
 		cells = require('collections/cells'),
 		analysisLabel = require('basic/tools/analysislabel'),
+		colOperate = require('entrance/col/coloperation'),
 		rowOperate = require('entrance/row/rowoperation');
 
 	var setFontWeight = function(sheetId, bold, label) {
@@ -50,7 +51,11 @@ define(function(require) {
 				bold = !tempCellList[0].get('content').bd;
 			}
 		}
-		if (region.endColIndex === 'MAX') { //整行操作
+		if(region.endRowIndex === 'MAX'){ //整列操作
+			colOperate.colPropOper(region.startColIndex, 'content.bd', bold);
+			endRowAlias = 'MAX';
+			endColAlias = headItemCols.models[region.endColIndex].get('alias');
+		}else if (region.endColIndex === 'MAX') { //整行操作
 			rowOperate.rowPropOper(region.startRowIndex, 'content.bd', bold);
 			endColAlias = 'MAX';
 			endRowAlias = headItemRows.models[region.endRowIndex].get('alias');

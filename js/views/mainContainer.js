@@ -20,6 +20,7 @@ define(function(require) {
 		loadRecorder = require('basic/tools/loadrecorder'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
+		siderLineRows = require('collections/siderLineRow'),
 		cells = require('collections/cells'),
 		selectRegions = require('collections/selectRegion'),
 		GridLineRowContainer = require('views/gridLineRowContainer'),
@@ -146,13 +147,6 @@ define(function(require) {
 				frozenTop: this.currentRule.displayPosition.offsetTop
 			});
 			this.cellsContainer.gridLineContainer.rowsGridContainer.$el.append(gridLineRowContainer.render().el);
-		},
-		addCellView: function(CellModel, args) {
-			var tempView = new CellContainer({
-				model: CellModel,
-				currentRule: this.currentRule
-			});
-			this.cellsContainer.contentCellsContainer.$el.prepend(tempView.render().el);
 		},
 		/**
 		 * 页面渲染方法
@@ -466,9 +460,7 @@ define(function(require) {
 				offsetTop = 0;
 				userViewTop = 0;
 			}
-
 			this.loadRegionRows(offsetTop, userViewTop);
-
 
 			limitTopPosi = this.el.scrollTop - config.System.prestrainHeight + offsetTop + userViewTop;
 			limitTopPosi = limitTopPosi < 0 ? 0 : limitTopPosi;
@@ -484,7 +476,6 @@ define(function(require) {
 
 
 			for (i = currentTopIndex - 1; i >= limitTopIndex; i--) {
-
 				headItemRowModel = headItemRowList[i];
 				if (headItemRowModel.get('isView') === false) {
 					headItemRowModel.set('isView', true);
@@ -517,6 +508,7 @@ define(function(require) {
 					}
 				}
 			}
+			this.adjustColPropCell(limitTopIndex, currentTopIndex);
 			cache.visibleRegion.top = headItemRowList[limitTopIndex].get("top");
 		},
 		/**
@@ -546,6 +538,7 @@ define(function(require) {
 			}
 			unloadRegions = loadRecorder.getUnloadPosi(limitTopPosi, limitBottomPosi, cache.rowRegionPosi);
 			unloadCellRegions = loadRecorder.getUnloadPosi(limitTopPosi, limitBottomPosi, cache.cellRegionPosi.vertical);
+			rowLen
 			for (; i < unloadRegions.length; i++) {
 				this.requestRegionData(unloadRegions[i].start, unloadRegions[i].end);
 			}
@@ -583,6 +576,7 @@ define(function(require) {
 
 			var width = headItemCols.getMaxDistanceWidth(),
 				height = headItemRows.getMaxDistanceHeight();
+
 			this.adjustContainerHeight(height);
 			this.publish(height, 'adjustHeadItemContainerPublish');
 			this.publish(height, 'adjustContainerHeightPublish');
@@ -702,7 +696,6 @@ define(function(require) {
 				offsetTop = 0;
 				userViewTop = 0;
 			}
-			//ps:修改
 			this.loadRegionRows(offsetTop, userViewTop);
 			this.addRows();
 			this.adaptSelectRegion();
@@ -719,7 +712,7 @@ define(function(require) {
 			currentBottomPosi = this.rowsViewBottomPosi + offsetTop + userViewTop;
 			currentBottomIndex = binary.indexModelBinary(currentBottomPosi, headItemRowList, 'top', 'height');
 
-			if (currentBottomIndex > limitBottomIndex) {
+			if (currentBottomIndex >= limitBottomIndex) {
 				return;
 			}
 			currentBottomIndex = currentBottomIndex < limitTopIndex ? limitTopIndex : currentBottomIndex;
@@ -735,27 +728,24 @@ define(function(require) {
 					this.addRowHeadItemViewPublish(headItemRowModel);
 				}
 			}
-			if (currentBottomIndex < limitBottomIndex) {
-				tempCells = cells.getCellsByRowIndex(currentBottomIndex, limitBottomIndex);
+			tempCells = cells.getCellsByRowIndex(currentBottomIndex, limitBottomIndex);
+			for (var i = 0; i < tempCells.length; i++) {
+				if (tempCells[i] === undefined && tempCells[i] === null) {
+					continue;
+				}
+				if (tempCells[i].get('showState') === false) {
+					tempCells[i].set('showState', true);
+					tempCells[i].set('physicsBox', this.recountCellPhysicsBox(tempCells[i]));
 
-				for (var i = 0; i < tempCells.length; i++) {
-					if (tempCells[i] === undefined && tempCells[i] === null) {
-						continue;
-					}
-					if (tempCells[i].get('showState') === false) {
-						tempCells[i].set('showState', true);
-						tempCells[i].set('physicsBox', this.recountCellPhysicsBox(tempCells[i]));
-
-						var tempView = new CellContainer({
-							model: tempCells[i],
-							currentRule: this.currentRule
-						});
-						this.cellsContainer.contentCellsContainer.$el.prepend(tempView.render().el);
-						this.addCellViewPublish(tempCells[i]);
-					}
+					var tempView = new CellContainer({
+						model: tempCells[i],
+						currentRule: this.currentRule
+					});
+					this.cellsContainer.contentCellsContainer.$el.prepend(tempView.render().el);
+					this.addCellViewPublish(tempCells[i]);
 				}
 			}
-
+			this.adjustColPropCell(currentBottomIndex, limitBottomIndex);
 			this.rowsViewBottomPosi = headItemRowList[limitBottomIndex].get('top') + headItemRowList[limitBottomIndex].get('height') - offsetTop - userViewTop;
 			config.displayRowHeight = this.rowsViewBottomPosi;
 			cache.visibleRegion.bottom = this.rowsViewBottomPosi;
@@ -766,10 +756,12 @@ define(function(require) {
 		 */
 		adaptSelectRegion: function() {
 			var select = selectRegions.getModelByType("operation")[0],
+				headLineRowModelList = headItemRows.models,
 				endColAlias = select.get('wholePosi').endX,
 				endRowAlias = select.get('wholePosi').endY,
+				currentModelIndex,
 				height,
-				len,
+				len, i,
 				model;
 
 			if (endColAlias !== 'MAX' && endRowAlias !== 'MAX') {
@@ -778,10 +770,17 @@ define(function(require) {
 			//暂时只做整列选中的调节
 			if (endRowAlias === 'MAX') {
 				height = select.get('physicsBox').height;
+				currentModelIndex = binary.modelBinary(height - 1, headLineRowModelList, 'top', 'height', 0, headLineRowModelList.length - 1);
 				len = headItemRows.length;
 				model = headItemRows.models[len - 1];
 				height = model.get('top') + model.get('height') - 1;
 				select.set('physicsBox.height', height);
+				siderLineRows.models[0].set({
+					height: height
+				});
+			}
+			for (i = currentModelIndex + 1; i < len; i++) {
+				headLineRowModelList[i].set('activeState', true);
 			}
 		},
 		/**
@@ -961,26 +960,64 @@ define(function(require) {
 					});
 					i++;
 				}
+
 				endPosi = lastModelTop + lastModelHeight + config.User.cellHeight * i;
 			} else {
 				return;
 			}
-
 			send.PackAjax({
 				url: 'sheet.htm?m=addrowline',
 				data: JSON.stringify({
 					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
 					sheetId: '1',
-					rowNum : len
+					rowNum: len
 				})
 			});
-
+			this.adjustColPropCell(rowLen, rowLen + len - 1);
 			loadRecorder.insertPosi(startPosi, endPosi, cache.rowRegionPosi);
 			width = headItemCols.getMaxDistanceWidth();
 			height = headItemRows.getMaxDistanceHeight();
 			this.adjustContainerHeight(height);
 			this.publish(height, 'adjustHeadItemContainerPublish');
 			this.publish(height, 'adjustContainerHeightPublish');
+
+		},
+		/**
+		 * 加载行对象时，对进行过整列操作的列的所在单元格进行相应的渲染
+		 * @param  {int} startIndex 行起始坐标
+		 * @param  {int} endIndex   行结束坐标
+		 */
+		adjustColPropCell: function(startIndex, endIndex) {
+			var headItemColList,
+				headItemRowList,
+				headItemModel,
+				aliasCol,
+				aliasRow,
+				cellModel,
+				occupyCol,
+				colProp,
+				cellProp,
+				len, i = 0,
+				j;
+
+			headItemColList = headItemCols.models;
+			headItemRowList = headItemRows.models;
+
+			len = headItemColList.length;
+			occupyCol = cache.CellsPosition.strandX;
+			for (; i < len; i++) {
+				headItemModel = headItemColList[i];
+				colProp = headItemModel.get('operProp');
+				if (!$.isEmptyObject(colProp)) {
+					for (j = startIndex; j < endIndex + 1; j++) {
+						aliasCol = headItemColList[i].get('alias');
+						aliasRow = headItemRowList[j].get('alias');
+						if (occupyCol[aliasCol] === undefined || occupyCol[aliasCol][aliasRow] === undefined) {
+							cells.createCellModel(i, j, colProp);
+						}
+					}
+				}
+			}
 		},
 		adjustContainerHeight: function(height) {
 			this.cellsContainer.attributesRender({
