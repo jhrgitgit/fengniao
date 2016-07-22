@@ -34,6 +34,7 @@ define(function(require) {
 			relativeColIndex,
 			relativeRowIndex,
 			tempCopyCellModel,
+			selectCells,
 			tempCellModel,
 			CellModel,
 			sendData = [],
@@ -52,7 +53,21 @@ define(function(require) {
 		relativeColIndex = startColIndex - headItemCols.getIndexByAlias(selectRegion.get("wholePosi").startX);
 		relativeRowIndex = startRowIndex - headItemRows.getIndexByAlias(selectRegion.get("wholePosi").startY);
 
-		if (isAblePaste(endRowIndex - startRowIndex + 1, endColIndex - startColIndex + 1) === false) return;
+		// if (isAblePaste(endRowIndex - startRowIndex + 1, endColIndex - startColIndex + 1) === false) return;
+		for (i = startRowIndex; i < endRowIndex + 1; i++) {
+			for (j = startColIndex; j < endColIndex + 1; j++) {
+				if (j - relativeColIndex > headItemCols.models.length - 1) continue;
+				if (i - relativeRowIndex > headItemRows.models.length - 1) continue;
+				selectColAlias = headItemCols.models[j - relativeColIndex].get('alias');
+				selectRowAlias = headItemRows.models[i - relativeRowIndex].get('alias');
+				tempCellModel = cells.getCellByAlias(selectColAlias, selectRowAlias);
+				if (tempCellModel !== null) {
+					tempCellModel.set('isDestroy', true);
+					deletePosi(selectColAlias, selectRowAlias);
+				}
+			}
+		}
+
 		//超出已加载区域处理
 		for (i = startRowIndex; i < endRowIndex + 1; i++) {
 			for (j = startColIndex; j < endColIndex + 1; j++) {
@@ -60,16 +75,8 @@ define(function(require) {
 				clipRowAlias = headItemRows.models[i].get('alias');
 				if (j - relativeColIndex > headItemCols.models.length - 1) continue;
 				if (i - relativeRowIndex > headItemRows.models.length - 1) continue;
-				selectColAlias = headItemCols.models[j - relativeColIndex].get('alias');
-				selectRowAlias = headItemRows.models[i - relativeRowIndex].get('alias');
-				tempCellModel = cells.getCellByAlias(selectColAlias, selectRowAlias);
-
 				CellModel = cells.getCellByAlias(clipColAlias, clipRowAlias);
 
-				if (tempCellModel !== null) {
-					tempCellModel.set('isDestroy', true);
-					deletePosi(selectColAlias, selectRowAlias);
-				}
 				if (type === "cut") deletePosi(clipColAlias, clipRowAlias);
 				if (CellModel !== null && CellModel.get('occupy').x[0] === clipColAlias && CellModel.get('occupy').y[0] === clipRowAlias) {
 					tempCopyCellModel = CellModel.clone();
@@ -111,11 +118,10 @@ define(function(require) {
 			cache.clipState = "null";
 			clipRegion.destroy();
 		} //进行区域判断，判断复制区域与目标区域是否重叠 
-		if (startColIndex - relativeColIndex > endColIndex || 
-			endColIndex - relativeColIndex < startColIndex || 
-			startRowIndex - relativeRowIndex > endRowIndex || 
-			endRowIndex - relativeRowIndex < startRowIndex){
-		}else{
+		if (startColIndex - relativeColIndex > endColIndex ||
+			endColIndex - relativeColIndex < startColIndex ||
+			startRowIndex - relativeRowIndex > endRowIndex ||
+			endRowIndex - relativeRowIndex < startRowIndex) {} else {
 			cache.clipState = "null";
 			clipRegion.destroy();
 		}

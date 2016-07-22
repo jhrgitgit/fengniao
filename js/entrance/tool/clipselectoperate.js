@@ -68,7 +68,6 @@ define(function(require) {
 				}
 			}
 		}
-		console.log(text);
 		if (e !== undefined) {
 			e.preventDefault();
 			if (window.clipboardData) {

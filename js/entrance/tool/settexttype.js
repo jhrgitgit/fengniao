@@ -306,7 +306,7 @@ define(function(require) {
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.thousands', true);
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.dateFormat', null);
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.currencySign', sign);
-			}else if (region.endRowIndex === 'MAX') { //整行操作
+			} else if (region.endRowIndex === 'MAX') { //整行操作
 				colOperate.colPropOper(region.startColIndex, 'customProp.format', 'currency');
 				colOperate.colPropOper(region.startColIndex, 'customProp.decimal', decimal);
 				colOperate.colPropOper(region.startColIndex, 'customProp.thousands', true);
@@ -480,6 +480,9 @@ define(function(require) {
 			}
 			if (head === undefined || head === '') {
 				head = '0';
+			}
+			while (head.indexOf('0') === 0 && head.length > 1) {
+				head = head.substring(1);
 			}
 			if (decimal === undefined) {
 				decimal === 2;
