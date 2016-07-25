@@ -511,7 +511,6 @@ define(function(require) {
 			return sign + head + tail;
 		},
 		isDate: function(value) {
-			//ps:正则修改
 			var regularLine = /^\d{4}\/\d{1,2}\/\d{1,2}$/,
 				regularWord = /^\d{4}\u5e74\d{1,2}\u6708(\d{1,2}\u65e5)?$/,
 				year,
