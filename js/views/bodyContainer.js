@@ -36,7 +36,8 @@ define(function(require) {
 			 * 当`mousemove`时，获取实时的鼠标信息
 			 * @event mousemove
 			 */
-			'mousemove': 'mouseInfo'
+			'mousemove': 'mouseInfo',
+			'mouseup': 'getFocus'
 		},
 		/**
 		 * 初始化bodyContainer
@@ -65,6 +66,13 @@ define(function(require) {
 				'overflow': 'hidden'
 			});
 			this.inputContainer.$el.focus();
+		},
+		/**
+		 * 在body区域，进行点击操作，输入框隐藏并获取输入焦点
+		 * @return {[type]} [description]
+		 */
+		getFocus:function(){
+			Backbone.trigger('event:InputContainer:hide');
 		},
 		showCommentContainer: function(options) {
 			if (cache.commentState) {
