@@ -52,6 +52,34 @@ define(function(require) {
 			endRowAlias = headItemRows.models[region.endRowIndex].get('alias');
 		}
 
+		
+		
+		// if (this.model.get("wordWrap") === true) {
+		// 	headModelCol = headItemCols.getModelByAlias(occupyX[0]);
+		// 	headModelRow = headItemRows.getModelByAlias(occupyY[0]);
+		// 	height = getTextBox.getTextHeight(temp, true, fontsize, headModelCol.get('width'));
+		// 	if (height > 17 && headModelRow.get('height') < height) {
+
+		// 		setCellHeight('sheetId', headModelRow.get('displayName'), height);
+		// 		if (cache.TempProp.isFrozen) {
+		// 			Backbone.trigger('event:bodyContainer:executiveFrozen');
+		// 		};
+		// 	}
+		// } else {
+		// 	//处理设置字体问题
+		// 	headModelCol = headItemCols.getModelByAlias(occupyX[0]);
+		// 	headModelRow = headItemRows.getModelByAlias(occupyY[0]);
+		// 	height = getTextBox.getTextHeight('', false, fontsize);
+		// 	if (height > 17 && headModelRow.get('height') < height) {
+
+		// 		setCellHeight('sheetId', headModelRow.get('displayName'), height);
+		// 		if (cache.TempProp.isFrozen) {
+		// 			Backbone.trigger('event:bodyContainer:executiveFrozen');
+		// 		};
+		// 	}
+		// }
+
+
 		startColAlias = headItemCols.models[region.startColIndex].get('alias');
 		startRowAlias = headItemRows.models[region.startRowIndex].get('alias');
 

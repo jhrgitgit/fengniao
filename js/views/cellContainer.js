@@ -47,6 +47,7 @@ define(function(require) {
 				modelColList = headItemCols;
 			this.listenTo(this.model, 'change', this.render);
 			this.listenTo(this.model, 'change:isDestroy', this.destroy);
+			
 			this.listenTo(this.model, 'destroy', this.modelDestroy);
 
 			this.listenTo(this.model, 'change:commentShowState', this.commentViewHandler);
@@ -269,32 +270,33 @@ define(function(require) {
 
 			if (occupyX.length > 1 || occupyY.length > 1) return text;
 
+			//将代码先，迁移到自动换行与设置字体的功能中
 			//冻结情况，不进行自动宽高调整
 			//备注：需要代码调整
-			if (this.model.get("wordWrap") === true) {
-				headModelCol = headItemCols.getModelByAlias(occupyX[0]);
-				headModelRow = headItemRows.getModelByAlias(occupyY[0]);
-				height = getTextBox.getTextHeight(temp, true, fontsize, headModelCol.get('width'));
-				if (height > 17 && headModelRow.get('height') < height) {
+			// if (this.model.get("wordWrap") === true) {
+			// 	headModelCol = headItemCols.getModelByAlias(occupyX[0]);
+			// 	headModelRow = headItemRows.getModelByAlias(occupyY[0]);
+			// 	height = getTextBox.getTextHeight(temp, true, fontsize, headModelCol.get('width'));
+			// 	if (height > 17 && headModelRow.get('height') < height) {
 
-					setCellHeight('sheetId', headModelRow.get('displayName'), height);
-					if (cache.TempProp.isFrozen) {
-						Backbone.trigger('event:bodyContainer:executiveFrozen');
-					};
-				}
-			} else {
-				//处理设置字体问题
-				headModelCol = headItemCols.getModelByAlias(occupyX[0]);
-				headModelRow = headItemRows.getModelByAlias(occupyY[0]);
-				height = getTextBox.getTextHeight('', false, fontsize);
-				if (height > 17 && headModelRow.get('height') < height) {
+			// 		setCellHeight('sheetId', headModelRow.get('displayName'), height);
+			// 		if (cache.TempProp.isFrozen) {
+			// 			Backbone.trigger('event:bodyContainer:executiveFrozen');
+			// 		};
+			// 	}
+			// } else {
+			// 	//处理设置字体问题
+			// 	headModelCol = headItemCols.getModelByAlias(occupyX[0]);
+			// 	headModelRow = headItemRows.getModelByAlias(occupyY[0]);
+			// 	height = getTextBox.getTextHeight('', false, fontsize);
+			// 	if (height > 17 && headModelRow.get('height') < height) {
 
-					setCellHeight('sheetId', headModelRow.get('displayName'), height);
-					if (cache.TempProp.isFrozen) {
-						Backbone.trigger('event:bodyContainer:executiveFrozen');
-					};
-				}
-			}
+			// 		setCellHeight('sheetId', headModelRow.get('displayName'), height);
+			// 		if (cache.TempProp.isFrozen) {
+			// 			Backbone.trigger('event:bodyContainer:executiveFrozen');
+			// 		};
+			// 	}
+			// }
 			return text;
 		},
 		/**

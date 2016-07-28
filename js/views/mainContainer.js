@@ -555,6 +555,7 @@ define(function(require) {
 			send.PackAjax({
 				url: 'excel.htm?m=openexcel',
 				async: false,
+				isPublic: false,
 				data: JSON.stringify({
 					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
 					sheetId: '1',
@@ -590,6 +591,7 @@ define(function(require) {
 			send.PackAjax({
 				url: 'excel.htm?m=openexcel',
 				async: false,
+				isPublic: false,
 				data: JSON.stringify({
 					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
 					sheetId: '1',

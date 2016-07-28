@@ -1,7 +1,9 @@
 'use strict';
 define(function(require) {
 	var $ = require('lib/jquery'),
+		ajaxQueue = require('lib/ajaxQueue'),
 		cache = require('basic/tools/cache'),
+		listener = require('basic/util/listener'),
 		systemConfig = require('spreadsheet/config');
 	/**
 	 * ajax工具类
@@ -34,19 +36,19 @@ define(function(require) {
 				timeout: cfg.timeout || 5000,
 				success: cfg.success || NULLFUNC,
 				error: cfg.error || NULLFUNC,
-				complete: cfg.complete || NULLFUNC
+				complete: cfg.complete || NULLFUNC,
+				isPublic: cfg.isPublic !== undefined ? isPublic : false
 			};
-
-
 			step = cache.sendQueueStep;
-			$.ajax({
+			//请求过滤,回调数据
+			ajaxQueue({
 				url: config.url,
 				beforeSend: function(request) {
-					if (config.url.indexOf('position') === -1) {
+					if (config.isPublic === true) {
 						request.setRequestHeader('step', step);
-						request.setRequestHeader('excelId', window.SPREADSHEET_AUTHENTIC_KEY);
 						cache.sendQueueStep = step + 1;
 					}
+					request.setRequestHeader('excelId', window.SPREADSHEET_AUTHENTIC_KEY);
 				},
 				type: config.type,
 				contentType: config.contentType,
@@ -54,11 +56,14 @@ define(function(require) {
 				async: config.async,
 				data: config.data,
 				timeout: config.timeout,
-				success: config.success,
+				success: function(data) {
+					config.success(data);
+					if (config.isPublic === true && data.returncode ===200) {
+						listener.excute('dataChange');
+					}
+				},
 				error: config.error,
-				complete: function() {
-					config.complete();
-				}
+				complete: config.complete
 			});
 		}
 	};

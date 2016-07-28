@@ -86,11 +86,12 @@ define(function(require) {
 			for (; i < len; i++) {
 				this.addCell(cells.models[i]);
 			}
-			
+
 		},
 		getCells: function(top, bottom) {
 			send.PackAjax({
 				url: 'excel.htm?m=openexcel',
+				isPublic: false,
 				async: false,
 				data: JSON.stringify({
 					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
@@ -134,8 +135,8 @@ define(function(require) {
 				len = currentOccupy.x.length;
 
 				startRowIndex = headItemRowList.getIndexByAlias(displayPosition.startRowAlias);
-				startColIndex =headItemColList.getIndexByAlias(displayPosition.startColAlias);
-				endRowIndex =headItemRowList.getIndexByAlias(displayPosition.endRowAlias);
+				startColIndex = headItemColList.getIndexByAlias(displayPosition.startColAlias);
+				endRowIndex = headItemRowList.getIndexByAlias(displayPosition.endRowAlias);
 				endColIndex = headItemColList.getIndexByAlias(displayPosition.endColAlias);
 
 				cellColStartIndex = headItemColList.getIndexByAlias(currentOccupy.x[0]);

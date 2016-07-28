@@ -381,6 +381,7 @@ define(function(require) {
 				//ps:修改id
 				url: 'excel.htm?m=position',
 				async: false,
+				isPublic: false,
 				data: JSON.stringify({
 					excelId: excelId,
 					sheetId: '1',

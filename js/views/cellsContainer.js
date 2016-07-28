@@ -171,16 +171,16 @@ define(function(require) {
 				currentColModel = headItemCols.getModelByAlias(cache.TempProp.colAlias),
 				headLineRowModelList = headItemRows.models,
 				headLineColModelList = headItemCols.models,
-				containerId = cache.containerId;
-			reduceLeftValue,
-			reduceTopValue,
-			clientX,
-			clientY,
-			mainMousePosiX,
-			mainMousePosiY,
-			modelIndexCol,
-			modelIndexRow,
-			coordinate = {};
+				containerId = cache.containerId,
+				reduceLeftValue,
+				reduceTopValue,
+				clientX,
+				clientY,
+				mainMousePosiX,
+				mainMousePosiY,
+				modelIndexCol,
+				modelIndexRow,
+				coordinate = {};
 
 			this.userViewTop = cache.TempProp.isFrozen ? headItemRows.getModelByAlias(cache.UserView.rowAlias).get('top') : 0;
 			this.userViewLeft = cache.TempProp.isFrozen ? headItemCols.getModelByAlias(cache.UserView.colAlias).get('left') : 0;

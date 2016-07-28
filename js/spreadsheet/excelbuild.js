@@ -5,6 +5,7 @@ define(function(require) {
 		domloader = require('basic/tools/template'),
 		listener = require('basic/util/listener'),
 		extend = require('basic/util/extend'),
+		cache = require('basic/tools/cache'),
 		setFontColor = require('entrance/tool/setfontcolor'),
 		setFillColor = require('entrance/tool/setfillcolor'),
 		setFontFamily = require('entrance/tool/setfontfamily'),
@@ -125,6 +126,10 @@ define(function(require) {
 			SpreadSheet.prototype.deleteRow = deleteRow;
 			SpreadSheet.prototype.deleteCol = deleteCol;
 			SpreadSheet.prototype.regionDel = regionDel;
+			SpreadSheet.prototype.clearQueue = function() {
+				cache.sendQueueStep = 1;
+			};
+
 			// SpreadSheet.prototype.createAddCommentView =comment.createAddCommentView;
 			// SpreadSheet.prototype.createEditComment =comment.createEditComment;
 			// SpreadSheet.prototype.deleteComment=comment.deleteComment;
