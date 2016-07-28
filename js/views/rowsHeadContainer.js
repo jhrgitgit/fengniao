@@ -220,6 +220,7 @@ define(function(require) {
 			this.itemEl = this.$itemEl = this.$lockData = null;
 		},
 		rowHeightAdjust: function(itemElIndex, height) {
+			
 			var diffDistance = height - headItemRows.models[itemElIndex].get('height');
 			this.adjustHeadLine(itemElIndex, diffDistance);
 			this.adjustCells(itemElIndex, diffDistance);

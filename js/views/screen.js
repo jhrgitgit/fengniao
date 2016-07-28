@@ -213,10 +213,10 @@ define(function(require) {
 			Backbone.trigger('event:colsSpaceLineContainer:destroy');
 			this.$el.off('mousemove', this.viewRowsHeadContainer.moveEvent);
 			Backbone.trigger('event:rowsSpaceLineContainer:destroy');
-			if ($(e.target)[0].type !== 'textarea' && $(e.target)[0].type !== 'text' &&
-				$(e.target)[0].type !== 'password') {
-				Backbone.trigger('event:InputContainer:hide');
-			}
+			// if ($(e.target)[0].type !== 'textarea' && $(e.target)[0].type !== 'text' &&
+			// 	$(e.target)[0].type !== 'password') {
+			// 	Backbone.trigger('event:InputContainer:hide');
+			// }
 		},
 		/**
 		 * 行列标题区域，鼠标移动事件绑定
