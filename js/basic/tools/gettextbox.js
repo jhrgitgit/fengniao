@@ -30,5 +30,18 @@ define(function(require) {
 			tempDiv.remove();
 			return height;
 		}
+		// ,
+		// getTextWidth: function(fontSize,){
+		// 	var tempDiv,
+
+		// 	tempDiv = $('<div/>').html(text);
+		// 	fontSize = this.model.get("content").size;
+		// 	tempDiv.css({
+		// 		"display": "none",
+		// 		"font-size": fontSize
+		// 	});
+		// 	$('body').append(tempDiv);
+		// 	currentWidth = parseInt(this.$el.width(), 0);
+		// }
 	};
 });

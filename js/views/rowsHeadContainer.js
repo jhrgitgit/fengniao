@@ -220,7 +220,7 @@ define(function(require) {
 			this.itemEl = this.$itemEl = this.$lockData = null;
 		},
 		rowHeightAdjust: function(itemElIndex, height) {
-			
+
 			var diffDistance = height - headItemRows.models[itemElIndex].get('height');
 			this.adjustHeadLine(itemElIndex, diffDistance);
 			this.adjustCells(itemElIndex, diffDistance);
@@ -238,6 +238,7 @@ define(function(require) {
 				height: headItemRows.getMaxDistanceHeight()
 			});
 			loadRecorder.adaptPosi(headItemRows.models[itemElIndex].get('top'), diffDistance, cache.rowRegionPosi);
+			loadRecorder.adaptPosi(headItemRows.models[itemElIndex].get('top'), diffDistance, cache.cellRegionPosi.vertical);
 			// this.requstAdjust();
 		},
 		/**

@@ -37,16 +37,19 @@ define(function(require) {
 				success: cfg.success || NULLFUNC,
 				error: cfg.error || NULLFUNC,
 				complete: cfg.complete || NULLFUNC,
-				isPublic: cfg.isPublic !== undefined ? isPublic : false
+				isPublic: cfg.isPublic !== undefined ? cfg.isPublic : true
 			};
-			step = cache.sendQueueStep;
 			//请求过滤,回调数据
 			ajaxQueue({
 				url: config.url,
 				beforeSend: function(request) {
+					var step = cache.sendQueueStep;
 					if (config.isPublic === true) {
 						request.setRequestHeader('step', step);
-						cache.sendQueueStep = step + 1;
+						cache.sendQueueStep++;
+					} else if (config.url.indexOf('openexcel') !== -1) {
+						step = step - 1 < 1 ? 1 : step - 1;
+						request.setRequestHeader('step', step);
 					}
 					request.setRequestHeader('excelId', window.SPREADSHEET_AUTHENTIC_KEY);
 				},
@@ -58,8 +61,8 @@ define(function(require) {
 				timeout: config.timeout,
 				success: function(data) {
 					config.success(data);
-					if (config.isPublic === true && data.returncode ===200) {
-						listener.excute('dataChange');
+					if (config.isPublic === true && data.returncode === 200) {
+						listener.excute('dataChange', cache.sendQueueStep - 1);
 					}
 				},
 				error: config.error,

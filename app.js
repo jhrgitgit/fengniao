@@ -7,11 +7,6 @@ define(function(require) {
 		SpreadSheet = require('spreadsheet/spreadsheet');
 	window.SPREADSHEET_AUTHENTIC_KEY = $('#excelId').val();
 	window.SPREADSHEET_BUILD_STATE = $('#build').val();
+	new SpreadSheet('spreadsheet');
 
-
-	var s =new SpreadSheet('spreadsheet');
-
-	$('#btn').click(function(){
-		s.clearQueue();
-	});
 });

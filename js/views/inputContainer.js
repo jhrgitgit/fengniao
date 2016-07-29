@@ -469,7 +469,9 @@ define(function(require) {
 			fontSize = this.model.get("content").size;
 			width = this.$el.width();
 
+			
 			height = getTextBox.getTextHeight(text, this.model.get("wordWrap"), fontSize, width);
+			
 			cellHeight = this.model.get("physicsBox").height;
 			if (height < cellHeight || height > limitHeight) {
 				return cellHeight;

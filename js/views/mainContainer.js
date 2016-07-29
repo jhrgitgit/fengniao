@@ -538,7 +538,6 @@ define(function(require) {
 			}
 			unloadRegions = loadRecorder.getUnloadPosi(limitTopPosi, limitBottomPosi, cache.rowRegionPosi);
 			unloadCellRegions = loadRecorder.getUnloadPosi(limitTopPosi, limitBottomPosi, cache.cellRegionPosi.vertical);
-			rowLen
 			for (; i < unloadRegions.length; i++) {
 				this.requestRegionData(unloadRegions[i].start, unloadRegions[i].end);
 			}

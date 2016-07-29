@@ -76,6 +76,7 @@ define(function(require) {
 			}
 			cache.CellsPosition.strandX = {};
 			cache.CellsPosition.strandY = {};
+			//清空单元格记录区域
 			cache.cellRegionPosi.vertical = [];
 			top = cache.visibleRegion.top;
 			bottom = cache.visibleRegion.bottom;
