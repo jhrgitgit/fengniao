@@ -1,7 +1,7 @@
 'use strict';
 define(function(require) {
 	var $ = require('lib/jquery'),
-		ajaxQueue = require('lib/ajaxQueue'),
+		ajaxQueue = require('lib/ajaxqueue'),
 		cache = require('basic/tools/cache'),
 		listener = require('basic/util/listener'),
 		systemConfig = require('spreadsheet/config');
