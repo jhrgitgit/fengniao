@@ -22,7 +22,7 @@ textarea{resize:none;overflow:hidden;}
 .left-corner{border-width:0 1px 1px 0;border-color:#bfbfbf;border-style:solid;height:19px;width:36px;}
 .row-head-container,.col-head-container{position:relative;font-family:"Microsoft Yahei",sans-serif;font-size:10pt;overflow:hidden;z-index:11;}
 .col-head-bg{border-bottom:1px solid #bbb;}
-.row-head-bg{border-right:1px solid #bbb;}
+.row-head-bg{border-right:1px solid #bbb;height:inherit}
 .col-head-height{height:19px;}
 .row-head-width{width:36px;}
 .col-head-panel,.row-head-panel{position:relative;height:inherit;width:inherit;z-index:9;}
@@ -91,6 +91,7 @@ textarea{resize:none;overflow:hidden;}
  */
 .frozen-right-border{border-right:1px solid #777;}
 .frozen-bottom-border{border-bottom:1px solid #777;}
+.container{position:relative;overflow:hidden;}
 /**
  * end
  */
