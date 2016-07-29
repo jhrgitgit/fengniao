@@ -12,6 +12,16 @@ module.exports = function(grunt) {
                 ignores: ['js/lib/*.js']
             }
         },
+        less: {
+            production: {
+                options: {
+                    paths: ['css']
+                },
+                files: {
+                    'css/toolbar.css': 'css/toolbar.less'
+                }
+            },
+        },
         watch: {
             files: ['<%= jshint.files %>'],
             tasks: ['jshint']
@@ -37,8 +47,10 @@ module.exports = function(grunt) {
     grunt.loadTasks('tools/build/tasks'); // 加载build目录下的所有task
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-contrib-less');
 
     grunt.registerTask('check', ['jshint']);
     grunt.registerTask('dist', ['build']);
     grunt.registerTask('default', ['jshint', 'build']);
+    grunt.registerTask('css', ['less']);
 };
