@@ -86,7 +86,7 @@ define(function(require) {
 			cell.set('occupy', {
 				x: occupyCol,
 				y: occupyRow
-			})
+			});
 			cell.set('physicsBox', {
 				top: top,
 				left: left,

@@ -1,9 +1,7 @@
 'use strict';
 define(function(require) {
 	var $ = require('lib/jquery'),
-		ajaxQueue = require('lib/ajaxqueue'),
 		cache = require('basic/tools/cache'),
-		listener = require('basic/util/listener'),
 		systemConfig = require('spreadsheet/config');
 	/**
 	 * ajax工具类
@@ -21,8 +19,7 @@ define(function(require) {
 		 */
 		PackAjax: function(cfg) {
 			var config = {},
-				NULLFUNC = function() {},
-				step;
+				NULLFUNC = function() {};
 			if (!cfg.url) {
 				return;
 			}
@@ -40,18 +37,20 @@ define(function(require) {
 				isPublic: cfg.isPublic !== undefined ? cfg.isPublic : true
 			};
 			//请求过滤,回调数据
-			ajaxQueue({
+			if(config.isPublic=== true){
+				cache.sendQueueStep++;
+			}
+			$.ajax({
 				url: config.url,
 				beforeSend: function(request) {
 					var step = cache.sendQueueStep;
 					if (config.isPublic === true) {
 						request.setRequestHeader('step', step);
-						cache.sendQueueStep++;
 					} else if (config.url.indexOf('openexcel') !== -1) {
-						step = step - 1 < 1 ? 1 : step - 1;
 						request.setRequestHeader('step', step);
 					}
 					request.setRequestHeader('excelId', window.SPREADSHEET_AUTHENTIC_KEY);
+
 				},
 				type: config.type,
 				contentType: config.contentType,
@@ -61,9 +60,6 @@ define(function(require) {
 				timeout: config.timeout,
 				success: function(data) {
 					config.success(data);
-					if (config.isPublic === true && data.returncode === 200) {
-						listener.excute('dataChange', cache.sendQueueStep - 1);
-					}
 				},
 				error: config.error,
 				complete: config.complete
