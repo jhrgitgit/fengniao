@@ -127,7 +127,10 @@ define(function(require) {
 			SpreadSheet.prototype.deleteCol = deleteCol;
 			SpreadSheet.prototype.regionDel = regionDel;
 			SpreadSheet.prototype.clearQueue = function() {
-				cache.sendQueueStep = 1;
+				cache.sendQueueStep = 0;
+			};
+			SpreadSheet.prototype.getLastStep = function(){
+				return cache.sendQueueStep;
 			};
 
 			// SpreadSheet.prototype.createAddCommentView =comment.createAddCommentView;

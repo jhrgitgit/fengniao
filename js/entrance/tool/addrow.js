@@ -29,8 +29,11 @@ define(function(require) {
 				box = select.get('wholePosi');
 				if (box.endY !== 'max') {
 					index = headItemRows.getIndexByAlias(box.startY);
+				}else{
+					return;
 				}
 			}
+
 			clip = selectRegions.getModelByType('clip')[0];
 			if (clip !== undefined) {
 				cache.clipState = 'null';

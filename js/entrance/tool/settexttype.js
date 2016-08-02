@@ -158,7 +158,7 @@ define(function(require) {
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.thousands', thousands);
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.dateFormat', null);
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.currencySign', null);
-			} else if (region.endColIndex === 'MAX') { //整行操作
+			} else if (region.endRowIndex === 'MAX') { //整行操作
 				colOperate.colPropOper(region.startColIndex, 'customProp.format', 'number');
 				colOperate.colPropOper(region.startColIndex, 'customProp.decimal', decimal);
 				colOperate.colPropOper(region.startColIndex, 'customProp.thousands', thousands);
@@ -256,7 +256,7 @@ define(function(require) {
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.thousands', false);
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.dateFormat', null);
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.currencySign', null);
-			} else if (region.endColIndex === 'MAX') { //整行操作
+			} else if (region.endRowIndex === 'MAX') { //整行操作
 				colOperate.colPropOper(region.startColIndex, 'customProp.format', 'percent');
 				colOperate.colPropOper(region.startColIndex, 'customProp.decimal', decimal);
 				colOperate.colPropOper(region.startColIndex, 'customProp.thousands', false);
