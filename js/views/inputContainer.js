@@ -102,6 +102,7 @@ define(function(require) {
 			Backbone.trigger('call:mainContainer', function(container) {
 				mainContainer = container;
 			});
+
 			this.rowIndex = rowIndex;
 			this.colIndex = colIndex;
 			this.mainContainer = mainContainer;
@@ -114,8 +115,6 @@ define(function(require) {
 			left = this.getAbsoluteLeft();
 			top = this.getAbsoluteTop();
 			this.adjustZIndex();
-			this.adjustWidth();
-			this.adjustHeight();
 			if (dblclick === false) {
 				this.model.set('content.texts', '');
 			}
@@ -139,8 +138,6 @@ define(function(require) {
 				});
 			}
 			this.$el.css({
-				'width': modelJSON.physicsBox.width,
-				'height': modelJSON.physicsBox.height - 2,
 				'color': modelJSON.content.color,
 				'font-size': modelJSON.content.size + 'pt',
 				'font-family': modelJSON.content.family,
@@ -150,6 +147,7 @@ define(function(require) {
 			if (dblclick !== false) {
 				this.$el.val(modelJSON.content.texts);
 			}
+			//适应文本宽度高度
 			this.adjustWidth();
 			this.adjustHeight();
 		},
@@ -445,10 +443,6 @@ define(function(require) {
 				this.showState === true;
 				this.show(false);
 			}
-			//未显示输入框时,输入字符处理
-			// if (this.showState === undefined || this.showState === false) {
-
-			// }
 		},
 		/**
 		 * 调整输入框高度
@@ -456,27 +450,41 @@ define(function(require) {
 		adjustHeight: function() {
 			var height,
 				scrollBarHeight,
-				limitHeight,
+				maxHeight,
+				minHeight,
 				cellHeight,
 				fontSize,
 				width,
-				text;
+				inputText,
+				texts,
+				text = '',
+				len, i;
 
 			scrollBarHeight = this.mainContainer.$el[0].offsetHeight - this.mainContainer.$el[0].clientHeight;
-			limitHeight = this.$el.parent().height() - this.$el.position().top - scrollBarHeight;
+			maxHeight = this.$el.parent().height() - this.$el.position().top - scrollBarHeight;
+			minHeight = this.model.get('physicsBox').height;
 
-			text = this.$el.val();
+			inputText = this.$el.val();
+
+			texts = inputText.split('\n');
+			len = texts.length;
+			for (i = 0; i < len; i++) {
+				text += texts[i];
+				if (i !== len - 1) {
+					text += '<br>';
+				}
+			}
 			fontSize = this.model.get("content").size;
 			width = this.$el.width();
 
-			
 			height = getTextBox.getTextHeight(text, this.model.get("wordWrap"), fontSize, width);
-			
-			cellHeight = this.model.get("physicsBox").height;
-			if (height < cellHeight || height > limitHeight) {
-				return cellHeight;
+			height = height > minHeight ? height : minHeight;
+
+			if (height < maxHeight) {
+				this.$el.height(height);
+				return height;
 			} else {
-				this.$el.css("height", height);
+				this.$el.height(maxHeight);
 				return height;
 			}
 		},
@@ -488,21 +496,31 @@ define(function(require) {
 		adjustWidth: function() {
 			var text = '',
 				texts,
+				width,
 				inputText,
 				tempDiv,
 				currentWidth,
 				scrollBarWidth,
 				fontSize,
 				tempDivWidth,
-				limitWidth,
+				maxWidth,
+				minWidth,
 				len, i;
+
+
 			//不能超出当前显示区域
 			scrollBarWidth = this.mainContainer.$el[0].offsetWidth - this.mainContainer.$el[0].clientWidth;
-			limitWidth = this.$el.parent().width() - this.$el.position().left - scrollBarWidth;
+			maxWidth = this.$el.parent().width() - this.$el.position().left - scrollBarWidth;
+			minWidth = this.model.get('physicsBox').width - 1;
 
-
-			if (this.model.get("wordWrap") === true) return;
+			//自动换行，宽度等于输入框初始化列宽
+			if (this.model.get("wordWrap") === true) {
+				this.$el.width(minWidth);
+				return;
+			}
 			inputText = this.$el.val();
+			fontSize = this.model.get('content').size;
+
 			texts = inputText.split('\n');
 			len = texts.length;
 			for (i = 0; i < len; i++) {
@@ -511,26 +529,16 @@ define(function(require) {
 					text += '<br>';
 				}
 			}
-
-			/**
-			 * 宽度计算
-			 * @type {[type]}
-			 */
-			tempDiv = $('<div/>').html(text);
-			fontSize = this.model.get("content").size;
-			tempDiv.css({
-				"display": "none",
-				"font-size": fontSize
-			});
-			$('body').append(tempDiv);
-			currentWidth = parseInt(this.$el.width(), 0);
-			tempDivWidth = tempDiv.width();
-			if (currentWidth < tempDivWidth &&
-				this.model.get('physicsBox').width < tempDivWidth &&
-				tempDivWidth + 10 < limitWidth) {
-				this.$el.width(tempDivWidth + 10);
+			width = getTextBox.getTextWidth(text, fontSize) + 5;
+			width = width > minWidth ? width : minWidth;
+			if (width < maxWidth) {
+				this.$el.width(width);
+				return width;
+			} else {
+				this.$el.width(maxWidth);
+				return maxWidth;
 			}
-			tempDiv.remove();
+
 		},
 		/**
 		 * 输入框移除输入焦点，视图销毁

@@ -48,6 +48,9 @@ define(function(require) {
 			this.listenTo(this.model, 'change', this.render);
 			this.listenTo(this.model, 'change:isDestroy', this.destroy);
 			
+			//监听字体变换 单独处理
+			//监听自动换行 单独处理
+			
 			this.listenTo(this.model, 'destroy', this.modelDestroy);
 
 			this.listenTo(this.model, 'change:commentShowState', this.commentViewHandler);

@@ -17,7 +17,7 @@ define(function(require) {
 			tempDiv = $('<div/>').html(inputText);
 			tempDiv.css({
 				'visibility': 'hidden',
-				'font-size': fontSize + 'pt'				
+				'font-size': fontSize + 'pt'
 			});
 			if (wordWrap === true || width !== undefined) {
 				tempDiv.css({
@@ -26,22 +26,22 @@ define(function(require) {
 				});
 			}
 			$('body').append(tempDiv);
-			height = tempDiv.height();
+			height = parseInt(tempDiv.height());
 			tempDiv.remove();
 			return height;
+		},
+		getTextWidth: function(text, fontSize) {
+			var tempDiv,
+				tempDiv = $('<div/>').html(text),
+				currentWidth;
+			tempDiv.css({
+				"display": "none",
+				"font-size": fontSize + 'pt'
+			});
+			$('body').append(tempDiv);
+			currentWidth = parseInt(tempDiv.width());
+			tempDiv.remove();
+			return currentWidth;
 		}
-		// ,
-		// getTextWidth: function(fontSize,){
-		// 	var tempDiv,
-
-		// 	tempDiv = $('<div/>').html(text);
-		// 	fontSize = this.model.get("content").size;
-		// 	tempDiv.css({
-		// 		"display": "none",
-		// 		"font-size": fontSize
-		// 	});
-		// 	$('body').append(tempDiv);
-		// 	currentWidth = parseInt(this.$el.width(), 0);
-		// }
 	};
 });
