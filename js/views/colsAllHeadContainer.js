@@ -4,7 +4,8 @@ define(function(require) {
 	var Backbone = require('lib/backbone'),
 		siderLineCols = require('collections/siderLineCol'),
 		ColsHeadContainer = require('views/colsHeadContainer'),
-		SiderLineColContainer = require('views/siderLineColContainer');
+		SiderLineColContainer = require('views/siderLineColContainer'),
+		ColsAllHeadContainer;
 
 	/**
 	 * ColsAllHeadContainer
@@ -15,7 +16,7 @@ define(function(require) {
 	 * @extends Backbone.View
 	 * @constructor
 	 */
-	var ColsAllHeadContainer = Backbone.View.extend({
+	ColsAllHeadContainer = Backbone.View.extend({
 		/**
 		 * @property {element} className
 		 */
