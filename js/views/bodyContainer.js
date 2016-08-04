@@ -37,7 +37,7 @@ define(function(require) {
 			 * @event mousemove
 			 */
 			'mousemove': 'mouseInfo',
-			'mouseup' : 'getFocus'
+			'mouseup': 'getFocus'
 		},
 		/**
 		 * 初始化bodyContainer
@@ -63,7 +63,9 @@ define(function(require) {
 			this.adaptScreen();
 			this.generateSheet();
 			this.$el.css({
-				'overflow': 'hidden'
+				'overflow': 'hidden',
+				'position': 'relative',
+				'height': '100%'
 			});
 			this.inputContainer.$el.focus();
 		},
@@ -115,7 +117,7 @@ define(function(require) {
 		 * 在操作区域内，发生mouseup事件，隐藏输入框获取输入焦点，用来避免中文文本输入问题
 		 * @return {[type]} [description]
 		 */
-		getFocus: function(){
+		getFocus: function() {
 			Backbone.trigger('event:InputContainer:hide');
 		},
 		/**
