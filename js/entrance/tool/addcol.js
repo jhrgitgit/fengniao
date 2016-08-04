@@ -136,7 +136,6 @@ define(function(require) {
 				startColIndex,
 				endColIndex,
 				lastIndex,
-				lastAlias,
 				width,
 				left;
 
@@ -198,7 +197,6 @@ define(function(require) {
 				aliasArray,
 				insertAlias,
 				colAlias,
-				cellColAliasArray,
 				cellRowAliasArray,
 				cellRowAlias,
 				cellColAlias,

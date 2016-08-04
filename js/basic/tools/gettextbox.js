@@ -31,12 +31,11 @@ define(function(require) {
 			return height;
 		},
 		getTextWidth: function(text, fontSize) {
-			var tempDiv,
-				tempDiv = $('<div/>').html(text),
+			var tempDiv = $('<div/>').html(text),
 				currentWidth;
 			tempDiv.css({
-				"display": "none",
-				"font-size": fontSize + 'pt'
+				'display': 'none',
+				'font-size': fontSize + 'pt'
 			});
 			$('body').append(tempDiv);
 			currentWidth = parseInt(tempDiv.width());
