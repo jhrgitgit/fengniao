@@ -9,9 +9,4 @@ define(function(require) {
 	window.SPREADSHEET_AUTHENTIC_KEY = $('#excelId').val();
 	window.SPREADSHEET_BUILD_STATE = $('#build').val();
 	var ss =new SpreadSheet('spreadsheet');
-	
-	$('#btn').click(function(){
-			console.log(ss.getSelectRegion());
-	});
-
 });
