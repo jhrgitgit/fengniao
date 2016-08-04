@@ -175,7 +175,7 @@ define(function(require) {
 				endIndexCol = startIndexCol;
 			}
 			for (i = startIndexRow; i < endIndexRow + 1; i++) {
-				for (j = endIndexCol; j < endIndexCol + 1; j++) {
+				for (j = startIndexCol; j < endIndexCol + 1; j++) {
 					rowAlias = headItemRows.models[i].get('alias');
 					colAlias = headItemCols.models[j].get('alias');
 					if (cache.CellsPosition.strandY[rowAlias] !== undefined && cache.CellsPosition.strandY[rowAlias][colAlias] !== undefined) {
@@ -729,7 +729,7 @@ define(function(require) {
 			cellsPositionX = cache.CellsPosition.strandX;
 			aliasRow = headLineColModelList[endRowIndex].get('alias');
 			for (i = 0; i < colLen; i++) {
-				aliasCol = headLineRowModelList[startColIndex + i].get('alias');
+				aliasCol = headLineColModelList[startColIndex + i].get('alias');
 				if (cellsPositionX[aliasCol] !== undefined &&
 					cellsPositionX[aliasCol][aliasRow] !== undefined) {
 					tempCell = this.models[cellsPositionX[aliasCol][aliasRow]];

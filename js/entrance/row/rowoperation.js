@@ -69,11 +69,15 @@ define(function(require) {
 				}
 			}
 			//在加载区域内，填充创建单元格，并设置属性
-			startColAlias = cache.loadStartColAlias;
-			endColAlias = cache.loadEndColAlias;
+			//暂时取所有值，完成横向动态加载时需要修改
+			// startColAlias = cache.loadStartColAlias;
+			// endColAlias = cache.loadEndColAlias;
 
-			startColIndex = headItemCols.getIndexByAlias(startColAlias);
-			endColIndex = headItemCols.getIndexByAlias(endColAlias);
+			// startColIndex = headItemCols.getIndexByAlias(startColAlias);
+			// endColIndex = headItemCols.getIndexByAlias(endColAlias);
+
+			startColIndex = 0;
+			endColIndex = headItemCols.length - 1;
 
 			i = startColIndex;
 			currentStrandX = cache.CellsPosition.strandX;

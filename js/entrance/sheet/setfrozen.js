@@ -142,7 +142,7 @@ define(function(require) {
 			sheetId = '1';
 
 		send.PackAjax({
-			url: 'excel.htm?m=frozen',
+			url: 'sheet.htm?m=frozen',
 			data: JSON.stringify({
 				excelId: excelId,
 				sheetId: '1',

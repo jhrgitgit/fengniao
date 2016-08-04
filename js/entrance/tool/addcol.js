@@ -28,12 +28,13 @@ define(function(require) {
 			} else {
 				select = selectRegions.getModelByType('operation')[0];
 				box = select.get('wholePosi');
-				if (box.endX !== 'max') {
+				if (box.endX !== 'MAX') {
 					index = headItemCols.getIndexByAlias(box.startX);
 				} else {
-					index = 0;
+					return;
 				}
 			}
+
 			
 			clip = selectRegions.getModelByType('clip')[0];
 			if (clip !== undefined) {

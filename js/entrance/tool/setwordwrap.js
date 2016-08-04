@@ -7,6 +7,7 @@ define(function(require) {
 		cells = require('collections/cells'),
 		cache = require('basic/tools/cache'),
 		analysisLabel = require('basic/tools/analysislabel'),
+		colOperate = require('entrance/col/coloperation'),
 		rowOperate = require('entrance/row/rowoperation');
 
 	var setWordWrap = function(sheetId, wordWrap, label) {
@@ -40,6 +41,9 @@ define(function(require) {
 		if (region.endColIndex === 'MAX') { //整行操作
 			endColAlias = 'MAX';
 			endRowAlias = headItemRows.models[region.endRowIndex].get('alias');
+		} else if (region.endRowIndex === 'MAX') {
+			endRowAlias = 'MAX';
+			endColAlias = headItemCols.models[region.endColIndex].get('alias');
 		} else {
 			region = cells.getFullOperationRegion(region);
 			endColAlias = headItemCols.models[region.endColIndex].get('alias');
@@ -64,6 +68,8 @@ define(function(require) {
 
 		if (endColAlias === 'MAX') {
 			rowOperate.rowPropOper(region.startRowIndex, 'wordWrap', wordWrap);
+		} else if (endRowAlias === 'MAX') {
+			colOperate.colPropOper(region.startColIndex, 'wordWrap', wordWrap);
 		} else {
 			cells.operateCellsByRegion(region, function(cell) {
 				cell.set('wordWrap', wordWrap);

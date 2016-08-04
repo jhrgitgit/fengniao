@@ -84,6 +84,7 @@ define(function(require) {
 				tempHeadRow.set('top', rows[i].top);
 				tempHeadRow.set('height', rows[i].height);
 				tempHeadRow.set('alias', rows[i].aliasY);
+				tempHeadRow.set('operProp', rows[i].operProp);
 				tempHeadRow.set('displayName', buildAlias.buildRowAlias(startRowSort + i));
 				headItemRows.push(tempHeadRow, {
 					at: index
@@ -108,6 +109,15 @@ define(function(require) {
 				tempHeadCol.set('left', cols[i].left);
 				tempHeadCol.set('width', cols[i].width);
 				tempHeadCol.set('alias', cols[i].aliasX);
+				if (!isEmptyObject(cols[i].operProp.content)) {
+					tempHeadCol.set('operProp.content', cols[i].operProp.content);
+				}
+				if (!isEmptyObject(cols[i].operProp.customProp)) {
+					tempHeadCol.set('operProp.customProp', cols[i].operProp.customProp);
+				}
+				if (!isEmptyObject(cols[i].operProp.border)) {
+					tempHeadCol.set('operProp.border', cols[i].operProp.border);
+				}
 				tempHeadCol.set('displayName', buildAlias.buildColAlias(startColSort + i));
 				headItemCols.add(tempHeadCol);
 			}
@@ -124,6 +134,14 @@ define(function(require) {
 					tempHeadCol.set('displayName', buildAlias.buildColAlias(collen + j));
 					headItemCols.add(tempHeadCol);
 				}
+			}
+
+			function isEmptyObject(obj) {
+				var prop;
+				for (prop in obj) {
+					return false;
+				}
+				return true;
 			}
 		},
 		/**

@@ -37,7 +37,7 @@ define(function(require) {
 			 * @event mousemove
 			 */
 			'mousemove': 'mouseInfo',
-			'mouseup' : 'getFocus'
+			'mouseup': 'getFocus'
 		},
 		/**
 		 * 初始化bodyContainer
@@ -115,7 +115,7 @@ define(function(require) {
 		 * 在操作区域内，发生mouseup事件，隐藏输入框获取输入焦点，用来避免中文文本输入问题
 		 * @return {[type]} [description]
 		 */
-		getFocus: function(){
+		getFocus: function() {
 			Backbone.trigger('event:InputContainer:hide');
 		},
 		/**
@@ -315,6 +315,8 @@ define(function(require) {
 					reduceUserView: true
 				};
 				cache.FrozenRules.col.push(tempRule);
+			} else {
+				currentModelLeft = 0;
 			}
 			tempRule = {
 				displayPosition: {
@@ -377,6 +379,8 @@ define(function(require) {
 					reduceUserView: true
 				};
 				cache.FrozenRules.row.push(tempRule);
+			} else {
+				currentModelTop = 0;
 			}
 			tempRule = {
 				displayPosition: {
@@ -560,6 +564,10 @@ define(function(require) {
 					}
 					cache.FrozenRules.main.push(tempRule);
 				}
+
+			} else {
+				currentRowModelTop = 0;
+				currentColModelLeft = 0;
 			}
 			tempRule = {
 				boxAttributes: {

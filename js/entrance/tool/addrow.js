@@ -5,6 +5,7 @@ define(function(require) {
 		config = require('spreadsheet/config'),
 		cache = require('basic/tools/cache'),
 		headItemRows = require('collections/headItemRow'),
+		headItemCols = require('collections/headItemCol'),
 		cells = require('collections/cells'),
 		selectRegions = require('collections/selectRegion'),
 		siderLineRows = require('collections/siderLineRow'),
@@ -27,9 +28,9 @@ define(function(require) {
 			} else {
 				select = selectRegions.getModelByType('operation')[0];
 				box = select.get('wholePosi');
-				if (box.endY !== 'max') {
+				if (box.endY !== 'MAX') {
 					index = headItemRows.getIndexByAlias(box.startY);
-				}else{
+				} else {
 					return;
 				}
 			}
@@ -47,6 +48,7 @@ define(function(require) {
 			this._adaptHeadRowItem(index);
 			this._adaptSelectRegion(index);
 			this._adaptCells(index);
+			this._fillCells(index);
 			this._frozenHandle(index);
 
 			send.PackAjax({
@@ -125,7 +127,7 @@ define(function(require) {
 				select.set('physicsBox.height', height);
 				siderLineRows.models[0].set('height', height);
 				headItemRows.models[index].set('activeState', true);
-			//	endRowIndex++;
+				//	endRowIndex++;
 			}
 
 		},
@@ -183,6 +185,39 @@ define(function(require) {
 					aliasArray.splice(index - startIndex, 0, insertAlias);
 					tempCell.set('occupy.y', aliasArray);
 				}
+			}
+		},
+		_fillCells: function(index) {
+			var headItemColList,
+				headColModel,
+				currentStrandX,
+				rowAlias,
+				colAlias,
+				colProp,
+				len, i = 0;
+
+			headItemColList = headItemCols.models;
+			len = headItemCols.length;
+			rowAlias = headItemRows.models[index].get('alias');
+			currentStrandX = cache.CellsPosition.strandX;
+			for (; i < len; i++) {
+				headColModel = headItemColList[i];
+				colProp = headColModel.get('operProp');
+				if (!isEmptyObj(colProp)) {
+					colAlias = headColModel.get('alias');
+					if (currentStrandX[colAlias] === undefined ||
+						currentStrandX[colAlias][rowAlias] === undefined) {
+						cells.createCellModel(i, index, colProp);
+					}
+				}
+			}
+
+			function isEmptyObj(obj) {
+				var i;
+				for (i in obj) {
+					return false;
+				}
+				return true;
 			}
 		},
 		/**
