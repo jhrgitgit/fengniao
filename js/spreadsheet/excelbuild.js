@@ -129,7 +129,7 @@ define(function(require) {
 			SpreadSheet.prototype.clearQueue = function() {
 				cache.sendQueueStep = 0;
 			};
-			SpreadSheet.prototype.getLastStep = function(){
+			SpreadSheet.prototype.getLastStep = function() {
 				return cache.sendQueueStep;
 			};
 
