@@ -11,7 +11,7 @@ define(function(require) {
 	var ss =new SpreadSheet('spreadsheet');
 	
 	$('#btn').click(function(){
-			// console.log(ss.getLastStep());
+			console.log(ss.getSelectRegion());
 	});
 
 });

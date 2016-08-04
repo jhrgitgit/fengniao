@@ -15,6 +15,10 @@ define(function(require) {
 			cols = [],
 			rows = [],
 			selectRegion,
+			startColAlias,
+			startRowAlias,
+			endColAlias,
+			endRowAlias,
 			startColIndex,
 			startRowIndex,
 			endColIndex,
@@ -23,10 +27,18 @@ define(function(require) {
 		selectRegion = selectRegions.findWhere({
 			'selectType': 'operation'
 		});
-		startColIndex = selectRegion.get('wholePosi').startX;
-		startRowIndex = selectRegion.get('wholePosi').startY;
-		endColIndex = selectRegion.get('wholePosi').endX;
-		endRowIndex = selectRegion.get('wholePosi').endY;
+		startColAlias = selectRegion.get('wholePosi').startX;
+		startRowAlias = selectRegion.get('wholePosi').startY;
+		endColAlias = selectRegion.get('wholePosi').endX;
+		endRowAlias = selectRegion.get('wholePosi').endY;
+
+		startRowIndex = headItemRows.getIndexByAlias(startRowAlias);
+		startColIndex = headItemCols.getIndexByAlias(startColAlias);
+
+		endRowIndex = headItemRows.getIndexByAlias(endRowAlias);
+		endColIndex = headItemCols.getIndexByAlias(endColAlias);
+		
+
 		for (i = startColIndex; i < endColIndex + 1; i++) {
 			cols.push(headItemCols.models[i].get('displayName'));
 		}
