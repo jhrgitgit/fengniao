@@ -45,8 +45,7 @@ define(function(require) {
 		 */
 		initialize: function() {
 			Backbone.on('call:bodyContainer', this.callBodyContainer, this);
-			Backbone.on('event:bodyContainer:executiveFrozen',
-				this.executiveFrozen, this);
+			Backbone.on('event:bodyContainer:executiveFrozen', this.executiveFrozen, this);
 			Backbone.on('event:commentContainer:show', this.showCommentContainer, this);
 			Backbone.on('event:commentContainer:remove', this.removeCommentContainer, this);
 			_.bindAll(this, 'executiveFrozen', 'showCommentContainer', 'removeCommentContainer');
@@ -64,8 +63,7 @@ define(function(require) {
 			this.generateSheet();
 			this.$el.css({
 				'overflow': 'hidden',
-				'position': 'relative',
-				'height': '100%'
+				'position': 'relative'
 			});
 			this.inputContainer.$el.focus();
 		},
