@@ -176,6 +176,8 @@ define(function(require) {
 				reduceTopValue,
 				clientX,
 				clientY,
+				maxMousePosiX,
+				maxMousePosiY,
 				mainMousePosiX,
 				mainMousePosiY,
 				modelIndexCol,
@@ -198,12 +200,21 @@ define(function(require) {
 			//ps:增加过滤
 			clientX = mouseColPosi - config.System.outerLeft - $('#' + containerId).offset().left;
 			clientY = mouseRowPosi - config.System.outerTop - $('#' + containerId).offset().top;
-			if (clientX < 0 || clientY < 0) return;
+			// maxMousePosiX = $('#' + containerId).width() + $('#' + containerId).offset().left;
+			// maxMousePosiY = $('#' + containerId).height() + $('#' + containerId).offset().top;
 
+			if (clientX < 0 || clientY < 0) {
+				return;
+			}
+			// if (clientX > maxMousePosiX || clientY > maxMousePosiY) {
+			// 	return;
+			// }
 			//position of mouse in mainContainer
 			mainMousePosiX = clientX + this.parentView.el.scrollLeft - this.currentRule.displayPosition.offsetLeft + reduceLeftValue;
 			mainMousePosiY = clientY + this.parentView.el.scrollTop - this.currentRule.displayPosition.offsetTop + reduceTopValue;
-			if (mainMousePosiX < 0 || mainMousePosiY < 0 || mouseColPosi > this.$el.width() || mouseRowPosi > this.$el.height()) return;
+
+			//
+			if (mainMousePosiX < 0 || mainMousePosiY < 0) return;
 
 
 			//this model index of gridline
