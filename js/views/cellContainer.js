@@ -47,13 +47,8 @@ define(function(require) {
 				modelColList = headItemCols;
 			this.listenTo(this.model, 'change', this.render);
 			this.listenTo(this.model, 'change:isDestroy', this.destroy);
-			
-			//监听字体变换 单独处理
-			//监听自动换行 单独处理
-			
-			this.listenTo(this.model, 'destroy', this.modelDestroy);
-
 			this.listenTo(this.model, 'change:commentShowState', this.commentViewHandler);
+			this.listenTo(this.model, 'destroy', this.clear);
 
 			this.currentRule = options.currentRule;
 			if (cache.TempProp.isFrozen !== true ||
@@ -95,7 +90,6 @@ define(function(require) {
 		showComment: function() {
 			this.newCommentView();
 		},
-
 		newCommentView: function() {
 			//ps:修改
 			var rowAlias,
@@ -508,11 +502,11 @@ define(function(require) {
 		wordWrap: function(modelJSON) {
 			if (modelJSON.wordWrap === true) {
 				this.$contentBody.css({
-					'word-break': 'break-all'
+					'wordBreak': 'break-all'
 				});
 			} else {
 				this.$contentBody.css({
-					'white-space': 'nowrap'
+					'whiteSpace': 'nowrap'
 				});
 			}
 		},
@@ -525,7 +519,7 @@ define(function(require) {
 			this.$contentBody.html(this.getDisplayText(modelJSON));
 		},
 		/**
-		 * 移除视图
+		 * 根据状态暂时移除视图
 		 * @method destroy 
 		 */
 		destroy: function() {
@@ -533,7 +527,11 @@ define(function(require) {
 				this.remove();
 			}
 		},
-		modelDestroy: function() {
+		/**
+		 * 彻底清除视图
+		 * @method clear
+		 */
+		clear: function() {
 			this.remove();
 		}
 	});
