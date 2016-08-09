@@ -53,52 +53,10 @@ define(function(require) {
 		relativeColIndex = startColIndex - headItemCols.getIndexByAlias(selectRegion.get("wholePosi").startX);
 		relativeRowIndex = startRowIndex - headItemRows.getIndexByAlias(selectRegion.get("wholePosi").startY);
 
-		// if (isAblePaste(endRowIndex - startRowIndex + 1, endColIndex - startColIndex + 1) === false) return;
-		for (i = startRowIndex; i < endRowIndex + 1; i++) {
-			for (j = startColIndex; j < endColIndex + 1; j++) {
-				if (j - relativeColIndex > headItemCols.models.length - 1) continue;
-				if (i - relativeRowIndex > headItemRows.models.length - 1) continue;
-				selectColAlias = headItemCols.models[j - relativeColIndex].get('alias');
-				selectRowAlias = headItemRows.models[i - relativeRowIndex].get('alias');
-				tempCellModel = cells.getCellByAlias(selectColAlias, selectRowAlias);
-				if (tempCellModel !== null) {
-					tempCellModel.set('isDestroy', true);
-					deletePosi(selectColAlias, selectRowAlias);
-				}
-			}
-		}
-
-		//超出已加载区域处理
-		for (i = startRowIndex; i < endRowIndex + 1; i++) {
-			for (j = startColIndex; j < endColIndex + 1; j++) {
-				clipColAlias = headItemCols.models[j].get('alias');
-				clipRowAlias = headItemRows.models[i].get('alias');
-				if (j - relativeColIndex > headItemCols.models.length - 1) continue;
-				if (i - relativeRowIndex > headItemRows.models.length - 1) continue;
-				CellModel = cells.getCellByAlias(clipColAlias, clipRowAlias);
-
-				if (type === "cut") deletePosi(clipColAlias, clipRowAlias);
-				if (CellModel !== null && CellModel.get('occupy').x[0] === clipColAlias && CellModel.get('occupy').y[0] === clipRowAlias) {
-					tempCopyCellModel = CellModel.clone();
-					if (type === "cut") {
-						CellModel.set('isDestroy', true);
-					}
-					adaptCell(tempCopyCellModel, relativeColIndex, relativeRowIndex);
-					cacheCellPosition(tempCopyCellModel);
-					cells.add(tempCopyCellModel);
-				}
-			}
-		}
-
-		Backbone.trigger('event:cellsContainer:adjustSelectRegion', {
-			initColIndex: startColIndex - relativeColIndex,
-			initRowIndex: startRowIndex - relativeRowIndex,
-			mouseColIndex: endColIndex - relativeColIndex < headItemCols.models.length - 1 ? endColIndex - relativeColIndex : headItemCols.models.length - 1,
-			mouseRowIndex: endRowIndex - relativeRowIndex < headItemRows.models.length - 1 ? endRowIndex - relativeRowIndex : headItemRows.models.length - 1
-		});
 
 		send.PackAjax({
 			url: 'plate.htm?m=' + type,
+			async: false,
 			data: JSON.stringify({
 				excelId: window.SPREADSHEET_AUTHENTIC_KEY,
 				sheetId: '1',
@@ -112,19 +70,66 @@ define(function(require) {
 					colAlias: selectRegion.get("wholePosi").startX,
 					rowAlias: selectRegion.get("wholePosi").startY,
 				}
-			})
+			}),
+			success: function(data) {
+				var isable = data.returndata;
+				if (isable) {
+					for (i = startRowIndex; i < endRowIndex + 1; i++) {
+						for (j = startColIndex; j < endColIndex + 1; j++) {
+							if (j - relativeColIndex > headItemCols.models.length - 1) continue;
+							if (i - relativeRowIndex > headItemRows.models.length - 1) continue;
+							selectColAlias = headItemCols.models[j - relativeColIndex].get('alias');
+							selectRowAlias = headItemRows.models[i - relativeRowIndex].get('alias');
+							tempCellModel = cells.getCellByAlias(selectColAlias, selectRowAlias);
+							if (tempCellModel !== null) {
+								tempCellModel.set('isDestroy', true);
+								deletePosi(selectColAlias, selectRowAlias);
+							}
+						}
+					}
+
+					//超出已加载区域处理
+					for (i = startRowIndex; i < endRowIndex + 1; i++) {
+						for (j = startColIndex; j < endColIndex + 1; j++) {
+							clipColAlias = headItemCols.models[j].get('alias');
+							clipRowAlias = headItemRows.models[i].get('alias');
+							if (j - relativeColIndex > headItemCols.models.length - 1) continue;
+							if (i - relativeRowIndex > headItemRows.models.length - 1) continue;
+							CellModel = cells.getCellByAlias(clipColAlias, clipRowAlias);
+
+							if (type === "cut") deletePosi(clipColAlias, clipRowAlias);
+							if (CellModel !== null && CellModel.get('occupy').x[0] === clipColAlias && CellModel.get('occupy').y[0] === clipRowAlias) {
+								tempCopyCellModel = CellModel.clone();
+								if (type === "cut") {
+									CellModel.set('isDestroy', true);
+								}
+								adaptCell(tempCopyCellModel, relativeColIndex, relativeRowIndex);
+								cacheCellPosition(tempCopyCellModel);
+								cells.add(tempCopyCellModel);
+							}
+						}
+					}
+
+					Backbone.trigger('event:cellsContainer:adjustSelectRegion', {
+						initColIndex: startColIndex - relativeColIndex,
+						initRowIndex: startRowIndex - relativeRowIndex,
+						mouseColIndex: endColIndex - relativeColIndex < headItemCols.models.length - 1 ? endColIndex - relativeColIndex : headItemCols.models.length - 1,
+						mouseRowIndex: endRowIndex - relativeRowIndex < headItemRows.models.length - 1 ? endRowIndex - relativeRowIndex : headItemRows.models.length - 1
+					})
+					if (type === 'cut') {
+						cache.clipState = "null";
+						clipRegion.destroy();
+					} //进行区域判断，判断复制区域与目标区域是否重叠 
+					if (startColIndex - relativeColIndex > endColIndex ||
+						endColIndex - relativeColIndex < startColIndex ||
+						startRowIndex - relativeRowIndex > endRowIndex ||
+						endRowIndex - relativeRowIndex < startRowIndex) {} else {
+						cache.clipState = "null";
+						clipRegion.destroy();
+					}
+				}
+			}
 		});
-		if (type === 'cut') {
-			cache.clipState = "null";
-			clipRegion.destroy();
-		} //进行区域判断，判断复制区域与目标区域是否重叠 
-		if (startColIndex - relativeColIndex > endColIndex ||
-			endColIndex - relativeColIndex < startColIndex ||
-			startRowIndex - relativeRowIndex > endRowIndex ||
-			endRowIndex - relativeRowIndex < startRowIndex) {} else {
-			cache.clipState = "null";
-			clipRegion.destroy();
-		}
 	}
 
 	function cacheCellPosition(cell) {
@@ -188,36 +193,7 @@ define(function(require) {
 		});
 	}
 
-	function isAblePaste(rowlen, collen) {
-		var rowStartIndex,
-			colStartIndex,
-			rowEndIndex,
-			colEndIndex,
-			cellModelArray,
-			startColAlias,
-			startRowAlias,
-			clipRegion,
-			result = false;
 
-		startColAlias = selectRegions.models[0].get('wholePosi').startX;
-		startRowAlias = selectRegions.models[0].get('wholePosi').startY;
-		send.PackAjax({
-			url: "plate.htm?m=isablepaste",
-			async: false,
-			data: JSON.stringify({
-				excelId: window.SPREADSHEET_AUTHENTIC_KEY,
-				sheetId: '1',
-				startColAlias: startColAlias,
-				startRowAlias: startRowAlias,
-				colLen: collen,
-				rowLen: rowlen
-			}),
-			success: function(data) {
-				result = data.returndata;
-			}
-		});
-		return result;
-	}
 
 	function deletePosi(aliasCol, aliasRow) {
 		var currentCellPosition = cache.CellsPosition,
@@ -237,52 +213,105 @@ define(function(require) {
 		}
 	}
 	/**
-	 * 剪切板数据源数据解析
+	 * 剪切板数据粘贴
 	 * @method shearPlateDataPaste
 	 * @param  {String} pasteText 复制数据内容
 	 */
 	function clipBoardDataPaste(pasteText) {
-		var encodeText,
+		var headItemColList,
+			headItemRowList,
+			encodeText,
 			rowData = [],
 			tempCellData = [],
+			cellData = [],
 			decodeText,
 			sendData = [],
 			startRowAlias,
 			startColAlias,
+			startRowIndex,
+			startColIndex,
 			selectRegion,
-			clipRegion;
+			clipRegion,
+			rowAlias,
+			colAlias,
+			rowLen,
+			colLen,
+			tempCell;
+		//清楚选中复制区域视图
+		clipRegion = selectRegions.getModelByType('clip')[0];
+		if (clipRegion !== null && clipRegion !== undefined) {
+			clipRegion.destroy();
+		}
+		cache.clipState = 'null';
 
 		encodeText = encodeURI(pasteText);
 		rowData = encodeText.split('%0D%0A');
-		if (isAblePaste(rowData.length - 1, rowData[0].split('%09').length) === false) return;
+		rowLen = rowData.length;
+		if (rowData[rowLen] === '') {
+			rowLen++;
+		}
+		colLen = rowData[0].split('%09').length;
 
-		for (var i = 0; i < rowData.length; i++) {
+		selectRegion = selectRegions.getModelByType('operation')[0];
+		startRowAlias = selectRegion.get('wholePosi').startY;
+		startColAlias = selectRegion.get('wholePosi').startX;
+		startRowIndex = headItemRows.getIndexByAlias(startRowAlias);
+		startColIndex = headItemCols.getIndexByAlias(startColAlias);
+		headItemColList = headItemCols.models;
+		headItemRowList = headItemRows.models;
+
+		for (var i = 0; i < rowLen; i++) {
 			tempCellData = rowData[i].split('%09');
 			for (var j = 0; j < tempCellData.length; j++) {
 				if (tempCellData[j] !== '') {
-					sendData.push(textToCell(i, j, decodeURI(analysisText(tempCellData[j]))));
+					rowAlias = headItemRowList[startRowIndex + i].get('alias');
+					colAlias = headItemColList[startColIndex + j].get('alias');
+					sendData.push({
+						'aliasCol': colAlias,
+						'aliasRow': rowAlias,
+						'text': decodeURI(analysisText(tempCellData[j]))
+					});
+					cellData.push({
+						colIndex: startColIndex + j,
+						rowIndex: startRowIndex + i,
+						text: decodeURI(analysisText(tempCellData[j]))
+					});
+
 				}
 			}
 		}
 
-		clipRegion = selectRegions.getModelByType("clip")[0];
-		selectRegion = selectRegions.getModelByType("operation")[0];
-		startRowAlias = selectRegion.get('wholePosi').startY;
-		startColAlias = selectRegion.get('wholePosi').startX;
-
-		if (clipRegion !== null && clipRegion !== undefined) {
-			clipRegion.destroy();
-		}
-		cache.clipState = "null";
 		send.PackAjax({
 			url: 'plate.htm?m=paste',
+			async: false,
 			data: JSON.stringify({
 				excelId: window.SPREADSHEET_AUTHENTIC_KEY,
 				sheetId: '1',
 				startColAlias: startColAlias,
 				startRowAlias: startRowAlias,
+				colLen: colLen,
+				rowLen: rowLen,
 				pasteData: sendData
-			})
+			}),
+			success: function(data) {
+				var isable = data.returndata;
+				if (isable === true) {
+					for (i = 0; i < rowLen; i++) {
+						for (j = 0; j < colLen; j++) {
+							rowAlias = headItemRowList[startRowIndex + i].get('alias');
+							colAlias = headItemColList[startColIndex + j].get('alias');
+							tempCell = cells.getCellByX(startColIndex + j, startRowIndex + i)[0];
+							if (tempCell !== undefined && tempCell.get("isDestroy") === false) {
+								tempCell.set("isDestroy", true);
+							}
+							cache.deletePosi(rowAlias, colAlias);
+						}
+					}
+					for (i = 0; i < cellData.length; i++) {
+						textToCell(cellData[i]);
+					}
+				}
+			}
 		});
 
 		function analysisText(text) {
@@ -313,9 +342,8 @@ define(function(require) {
 		}
 	}
 
-	function textToCell(relativeRowIndex, relativeColIndex, text) {
+	function textToCell(data) {
 		var cacheCell,
-			tempCell,
 			indexCol,
 			indexRow,
 			aliasCol,
@@ -327,30 +355,14 @@ define(function(require) {
 			displaytext,
 			result;
 
-		if (text === '') return;
 		gridLineColList = headItemCols.models;
 		gridLineRowList = headItemRows.models;
 
-		selectRowIndex = headItemRows.getIndexByAlias(selectRegions.models[0].get('wholePosi').startY);
-		selectColIndex = headItemCols.getIndexByAlias(selectRegions.models[0].get('wholePosi').startX);
-		indexCol = selectColIndex + relativeColIndex;
-		indexRow = selectRowIndex + relativeRowIndex;
-
-		result = {
-			relativeColIndex: relativeColIndex,
-			relativeRowIndex: relativeRowIndex,
-			text: text
-		};
+		indexCol = data.colIndex;
+		indexRow = data.rowIndex;
 		if ((indexCol > headItemCols.length - 1) || (indexRow > headItemRows.length - 1)) {
 			return result;
 		}
-
-		tempCell = cells.getCellByX(indexCol, indexRow)[0];
-
-		if (tempCell !== undefined && tempCell.get("isDestroy") === false) {
-			tempCell.set("isDestroy", true);
-		}
-
 		var top, left, width, height;
 		top = gridLineRowList[indexRow].get('top');
 		left = gridLineColList[indexCol].get('left');
@@ -370,12 +382,11 @@ define(function(require) {
 			width: width,
 			height: height
 		});
-		cacheCell.set("content.texts", text);
+		cacheCell.set("content.texts", data.text);
 		displaytext = setTextType.textTypeRecognize(cacheCell);
 		cacheCell.set("content.displayTexts", displaytext);
 		cache.cachePosition(aliasRow, aliasCol, cells.length);
 		cells.add(cacheCell);
-		return result;
 	}
 
 	return clipPasteOperate;
