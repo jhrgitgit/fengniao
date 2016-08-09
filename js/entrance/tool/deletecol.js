@@ -40,7 +40,7 @@ define(function(require) {
 				if (box.endX !== 'MAX') {
 					index = headItemCols.getIndexByAlias(box.startX);
 				} else {
-					index = 0;
+					return;
 				}
 			}
 

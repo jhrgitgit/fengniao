@@ -53,7 +53,9 @@ define(function(require) {
 				cache.clipState = 'null';
 				clip.destroy();
 			}
+			//后期修改，多次设置属性，造成效率低下
 			if (region.endColIndex === 'MAX') { //整行操作
+				//整列操作优化
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.format', 'normal');
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.isValid', true);
 				rowOperate.rowPropOper(region.startRowIndex, 'customProp.decimal', null);
