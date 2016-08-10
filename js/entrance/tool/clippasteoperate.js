@@ -244,14 +244,15 @@ define(function(require) {
 		}
 		cache.clipState = 'null';
 
+		//bug
 		encodeText = encodeURI(pasteText);
-		rowData = encodeText.split('%0D%0A');
-		rowLen = rowData.length;
-		if (rowData[rowLen] === '') {
+		rowData = encodeText.split('%0D%0A'); 
+		rowLen = rowData.length - 1;
+		if (rowData[rowLen] !== '') {
 			rowLen++;
 		}
-		colLen = rowData[0].split('%09').length;
 
+		colLen = rowData[0].split('%09').length;
 		selectRegion = selectRegions.getModelByType('operation')[0];
 		startRowAlias = selectRegion.get('wholePosi').startY;
 		startColAlias = selectRegion.get('wholePosi').startX;
