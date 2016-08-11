@@ -36,6 +36,8 @@ define(function(require) {
 				box = select.get('wholePosi');
 				if (box.endY !== 'MAX') {
 					index = headItemRows.getIndexByAlias(box.startY);
+				} else{
+					return;
 				}
 			}
 

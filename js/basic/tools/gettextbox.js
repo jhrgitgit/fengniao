@@ -2,7 +2,7 @@
 define(function(require) {
 	var $ = require('lib/jquery');
 	return {
-		getTextHeight: function(text, wordWrap, fontSize, width) {
+		getTextHeight: function(text, fontSize, width) {
 			var tempDiv,
 				height,
 				inputText = '',
@@ -14,14 +14,16 @@ define(function(require) {
 			for (; i < len; i++) {
 				inputText += (texts[i] + '<br>');
 			}
+			// textarea.scrollHeight;
+			inputText = inputText.replace(/\u0020/g, '&nbsp;');
 			tempDiv = $('<div/>').html(inputText);
 			tempDiv.css({
-				'visibility': 'hidden',
-				'font-size': fontSize + 'pt'
+				'display': 'none',
+				'font-size': fontSize + 'pt',
+				'word-wrap': 'break-word',
 			});
-			if (wordWrap === true || width !== undefined) {
+			if (width !== undefined) {
 				tempDiv.css({
-					'word-wrap': 'break-word',
 					'width': width
 				});
 			}
@@ -30,13 +32,34 @@ define(function(require) {
 			tempDiv.remove();
 			return height;
 		},
+		getInputHeight: function(text, fontSize, width) {
+			var tempTextarea,
+				height;
+			tempTextarea = $('<textarea>');
+			tempTextarea.css({
+				'visibility': 'hidden',
+				'font-size': fontSize + 'pt',
+				'height': 0,
+				'width': width + 'px',
+				'overflow': 'scroll',
+			});
+			$('body').append(tempTextarea);
+			tempTextarea.val(text);
+			height = parseInt(tempTextarea[0].scrollHeight);
+			tempTextarea.remove();
+			return height;
+		},
 		getTextWidth: function(text, fontSize) {
-			var tempDiv = $('<div/>').html(text),
+			var tempDiv,
 				currentWidth;
+
+			text = text.replace(/\u0020/g, '&nbsp');
+			tempDiv = $('<div/>').html(text);
 			tempDiv.css({
 				'display': 'none',
 				'font-size': fontSize + 'pt'
 			});
+
 			$('body').append(tempDiv);
 			currentWidth = parseInt(tempDiv.width());
 			tempDiv.remove();

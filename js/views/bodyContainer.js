@@ -115,8 +115,12 @@ define(function(require) {
 		 * 在操作区域内，发生mouseup事件，隐藏输入框获取输入焦点，用来避免中文文本输入问题
 		 * @return {[type]} [description]
 		 */
-		getFocus: function() {
-			Backbone.trigger('event:InputContainer:hide');
+		getFocus: function(e) {
+			//判断输入框状态，如果输入框未失去焦点，不进行隐藏
+			var focus = $(':focus')[0];
+			if (focus === undefined || focus.type !== 'textarea') {
+				Backbone.trigger('event:InputContainer:hide');
+			}
 		},
 		/**
 		 * 绑定视图
