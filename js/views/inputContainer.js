@@ -1,16 +1,11 @@
+'use strict';
 define(function(require) {
-	'use strict';
-	var $ = require('lib/jquery'),
-		Backbone = require('lib/backbone'),
+	var Backbone = require('lib/backbone'),
 		cache = require('basic/tools/cache'),
 		getTextBox = require('basic/tools/gettextbox'),
-		util = require('basic/util/clone'),
 		config = require('spreadsheet/config'),
-		binary = require('basic/util/binary'),
 		send = require('basic/tools/send'),
 		Cell = require('models/cell'),
-		siderLineRows = require('collections/siderLineRow'),
-		siderLineCols = require('collections/siderLineCol'),
 		headItemRows = require('collections/headItemRow'),
 		headItemCols = require('collections/headItemCol'),
 		selectRegions = require('collections/selectRegion'),
@@ -61,7 +56,7 @@ define(function(require) {
 		 * 类初始化函数
 		 * @method initialize
 		 */
-		initialize: function(options) {
+		initialize: function() {
 			Backbone.on('event:InputContainer:show', this.show, this);
 			Backbone.on('event:InputContainer:hide', this.hide, this);
 		},
@@ -76,16 +71,10 @@ define(function(require) {
 				colAlias,
 				colIndex,
 				rowIndex,
-				scrollTop,
-				scrollLeft,
-				offsetTop,
-				offsetLeft,
 				select,
 				clip,
 				left,
 				top,
-				width,
-				height,
 				cell;
 
 			clip = selectRegions.getModelByType('clip')[0];
@@ -143,7 +132,7 @@ define(function(require) {
 				'font-family': modelJSON.content.family,
 				'left': left,
 				'top': top,
-			})
+			});
 			if (dblclick !== false) {
 				this.$el.val(modelJSON.content.texts);
 			}
@@ -169,12 +158,12 @@ define(function(require) {
 		},
 		copyData: function(event) {
 			if (this.showState === false) {
-				clipSelectOperate("copy", event);
+				clipSelectOperate('copy', event);
 			}
 		},
 		cutData: function(event) {
 			if (this.showState === false) {
-				clipSelectOperate("cut", event);
+				clipSelectOperate('cut', event);
 			}
 		},
 		/**
@@ -432,10 +421,10 @@ define(function(require) {
 		/**
 		 * 自适应输入框的大小
 		 */
-		adapt: function() {
+		adapt: function(e) {
 			if (this.showState === true) {
-				this.adjustWidth();
-				this.adjustHeight();
+				this.adjustWidth(e);
+				this.adjustHeight(e);
 			} else {
 				if (this.keyHandle() === false) {
 					return;
@@ -447,12 +436,11 @@ define(function(require) {
 		/**
 		 * 调整输入框高度
 		 */
-		adjustHeight: function() {
+		adjustHeight: function(e) {
 			var height,
 				scrollBarHeight,
 				maxHeight,
 				minHeight,
-				cellHeight,
 				fontSize,
 				width,
 				inputText,
@@ -466,18 +454,10 @@ define(function(require) {
 
 			inputText = this.$el.val();
 
-			texts = inputText.split('\n');
-			len = texts.length;
-			for (i = 0; i < len; i++) {
-				text += texts[i];
-				if (i !== len - 1) {
-					text += '<br>';
-				}
-			}
-			fontSize = this.model.get("content").size;
+			fontSize = this.model.get('content').size;
 			width = this.$el.width();
 
-			height = getTextBox.getTextHeight(text, this.model.get("wordWrap"), fontSize, width);
+			height = getTextBox.getInputHeight(inputText, fontSize, width);
 			height = height > minHeight ? height : minHeight;
 
 			if (height < maxHeight) {
@@ -498,11 +478,8 @@ define(function(require) {
 				texts,
 				width,
 				inputText,
-				tempDiv,
-				currentWidth,
 				scrollBarWidth,
 				fontSize,
-				tempDivWidth,
 				maxWidth,
 				minWidth,
 				len, i;
@@ -514,7 +491,7 @@ define(function(require) {
 			minWidth = this.model.get('physicsBox').width - 1;
 
 			//自动换行，宽度等于输入框初始化列宽
-			if (this.model.get("wordWrap") === true) {
+			if (this.model.get('wordWrap') === true) {
 				this.$el.width(minWidth);
 				return;
 			}
@@ -529,6 +506,7 @@ define(function(require) {
 					text += '<br>';
 				}
 			}
+
 			width = getTextBox.getTextWidth(text, fontSize) + 5;
 			width = width > minWidth ? width : minWidth;
 			if (width < maxWidth) {
@@ -569,7 +547,7 @@ define(function(require) {
 				})
 			});
 
-			if (text.indexOf("\n") > 0 && (this.model.get('wordWrap') === false)) {
+			if (text.indexOf('\n') > 0 && (this.model.get('wordWrap') === false)) {
 				this.model.set({
 					'wordWrap': true
 				});
@@ -598,18 +576,8 @@ define(function(require) {
 			return false;
 		},
 		keypressHandle: function(e) {
-			var aliasRow,
-				aliasCol,
-				endIndexRow,
-				startIndexCol,
-				selectRegion,
-				headItemColList,
-				headItemRowList,
-				width,
-				height,
-				currentTexts,
-				self = this,
-				len, i, isShortKey, keyboard;
+			var self = this,
+				isShortKey, keyboard;
 
 			keyboard = config.keyboard;
 			isShortKey = this.isShortKey(e.keyCode);
@@ -626,7 +594,7 @@ define(function(require) {
 					}
 					e.preventDefault();
 					return;
-				};
+				}
 			}
 			if (this.showState === true) {
 				//内部换行处理
@@ -635,7 +603,7 @@ define(function(require) {
 						insertAtCursor('\n');
 						this.adjustHeight();
 						return;
-					};
+					}
 				}
 				this.autoScrollLeft();
 				this.autoScrollTop();
@@ -645,10 +613,10 @@ define(function(require) {
 				var $t = self.$el[0];
 				if (document.selection) {
 					self.$el.focus();
-					sel = document.selection.createRange();
-					sel.text = myValue;
+					self = document.selection.createRange();
+					self.text = myValue;
 					self.$el.focus();
-				} else if ($t.selectionStart || $t.selectionStart == '0') {
+				} else if ($t.selectionStart || $t.selectionStart === '0') {
 					var startPos = $t.selectionStart;
 					var endPos = $t.selectionEnd;
 					var scrollTop = $t.scrollTop;
@@ -669,9 +637,7 @@ define(function(require) {
 		 * @param  {[type]} e 键盘点击事件
 		 */
 		keyHandle: function() {
-			var flag = true,
-				charcode,
-				inputChar,
+			var inputChar,
 				regular;
 			// if (e.ctrlKey === true || e.altKey === true) {
 			// 	return false;

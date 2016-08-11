@@ -45,14 +45,15 @@ define(function(require) {
 
 			var modelRowList = headItemRows,
 				modelColList = headItemCols;
-			this.listenTo(this.model, 'change', this.render);
-			this.listenTo(this.model, 'change:isDestroy', this.destroy);
-			
-			//监听字体变换 单独处理
-			//监听自动换行 单独处理
-			
-			this.listenTo(this.model, 'destroy', this.modelDestroy);
 
+			this.listenTo(this.model, 'change', this.render);
+			this.listenTo(this.model, 'change:customProp', this.generateDisplayText);
+			this.listenTo(this.model, 'change:content', this.generateDisplayText);
+
+			this.listenTo(this.model, 'change:wordWrap', this.adaptCellHight);
+			this.listenTo(this.model, 'change:content', this.adaptCellHight);
+			this.listenTo(this.model, 'destroy', this.modelDestroy);
+			this.listenTo(this.model, 'change:isDestroy', this.destroy);
 			this.listenTo(this.model, 'change:commentShowState', this.commentViewHandler);
 
 			this.currentRule = options.currentRule;
@@ -61,10 +62,15 @@ define(function(require) {
 				this.listenTo(this.model, 'change:showState', this.changeShowState);
 			}
 			this.currentRule = options.currentRule;
+
 			this.offsetLeft = cache.TempProp.isFrozen ? (this.currentRule.displayPosition.offsetLeft || 0) : 0;
 			this.offsetTop = cache.TempProp.isFrozen ? (this.currentRule.displayPosition.offsetTop || 0) : 0;
+
 			this.userViewLeft = cache.TempProp.isFrozen ? modelColList.getModelByAlias(cache.UserView.colAlias).get('left') : 0;
 			this.userViewTop = cache.TempProp.isFrozen ? modelRowList.getModelByAlias(cache.UserView.rowAlias).get('top') : 0;
+
+			//方法移动到设置类型模块中
+			this.generateDisplayText();
 			_.bindAll(this, 'showComment', 'hideComment');
 		},
 		overCellView: function() {
@@ -145,9 +151,15 @@ define(function(require) {
 				'top': modelJSON.physicsBox.top - this.offsetTop - this.userViewTop - 1
 			}).html(this.template(modelJSON));
 
+			// "color": modelJSON.content.color
 			// this is improve poiont , marinottejs itemview function can be replace this bug
 			this.$contentBody = $('.bg', this.$el);
-			//end
+			this.$contentBody.css({
+				"color": modelJSON.content.color,
+				"font-family": modelJSON.content.family,
+				"font-size": modelJSON.content.size + 'pt'
+			}).html(this.getDisplayText(modelJSON));
+
 			this.changeTopBorder(modelJSON);
 			this.changeLeftBorder(modelJSON);
 			this.changeBottomBorder(modelJSON);
@@ -157,12 +169,7 @@ define(function(require) {
 			this.setVerticalAlign(modelJSON);
 			this.setBold(modelJSON);
 			this.setItalic(modelJSON);
-			this.setFontColor(modelJSON);
-			this.setFont(modelJSON);
-			this.setFontSize(modelJSON);
 			this.wordWrap(modelJSON);
-			this.getFormatText(modelJSON);
-			this.changeTexts(modelJSON);
 			this.showCommentSign(modelJSON);
 			return this;
 		},
@@ -185,13 +192,38 @@ define(function(require) {
 				this.$el.prepend('<div class="comment-ico"><div class="triangle"></div></div>');
 			}
 		},
-
 		/**
 		 * 根据不同单元格类型，生成不同displaytext
 		 * @return {[type]} [description]
 		 */
-		getFormatText: function(modelJSON) {
-			var text = modelJSON.content.texts,
+		// getFormatText: function(modelJSON) {
+		// },
+		getDisplayText: function(modelJSON) {
+			var inputText,
+				texts,
+				text,
+				temp,
+				i = 0,
+				height;
+			text = modelJSON.content.displayTexts;
+			temp = text;
+			texts = text.split('\n');
+			text = '';
+			if (this.model.get('wordWrap') === false) {
+				for (i = 0; i < texts.length; i++) {
+					text += texts[i];
+				}
+			} else {
+				for (i = 0; i < texts.length; i++) {
+					text += texts[i] + '<br>';
+				}
+			}
+			text = text.replace(/\u0020/g, '&nbsp;');
+			return text;
+		},
+		generateDisplayText: function() {
+			var modelJSON = this.model.toJSON(),
+				text = modelJSON.content.texts,
 				format = modelJSON.customProp.format,
 				decimal = modelJSON.customProp.decimal,
 				thousands = modelJSON.customProp.thousands || false,
@@ -199,7 +231,8 @@ define(function(require) {
 				currencySign = modelJSON.customProp.currencySign,
 				isValid = modelJSON.customProp.isValid,
 				displayTexts;
-			
+
+			//类型处理存在bug
 			switch (format) {
 				case 'normal':
 					if (textTypeHandler.isNum(text)) {
@@ -242,101 +275,48 @@ define(function(require) {
 					}
 					break;
 				default:
+					this.model.set("content.displayTexts", text);
 					break;
 			}
 		},
-		getDisplayText: function(modelJSON) {
-			var fontsize = modelJSON.content.size,
-				occupyX = modelJSON.occupy.x,
-				occupyY = modelJSON.occupy.y,
-				headModelCol,
+		adaptCellHight: function() {
+			var text,
+				height,
+				occupyY,
+				occupyX,
+				initHeight,
+				colItemIndex,
+				rowItemIndex,
 				headModelRow,
-				inputText,
-				texts,
-				text,
-				temp,
-				i = 0,
-				height;
-			text = modelJSON.content.displayTexts;
-			temp = text;
-			texts = text.split('\n');
-			text = '';
-			if (this.model.get('wordWrap') === false) {
-				for (i = 0; i < texts.length; i++) {
-					text += texts[i];
+				headModelCol,
+				fontsize;
+			initHeight = config.User.cellHeight;
+			occupyY = this.model.get('occupy').y;
+			occupyX = this.model.get('occupy').x;
+			fontsize = this.model.get('content').size;
+			if (this.model.get('wordWrap') === true && occupyX.length === 1 && occupyY.length === 1) {
+				headModelRow = headItemRows.getModelByAlias(occupyY[0]);
+				headModelCol = headItemCols.getModelByAlias(occupyX[0]);
+				text = this.model.get('content').displayTexts;
+				height = getTextBox.getTextHeight(text, fontsize, headModelCol.get('width'));
+				if (height > initHeight && headModelRow.get('height') < height) {
+					setCellHeight('sheetId', headModelRow.get('displayName'), height);
+					if (cache.TempProp.isFrozen) {
+						Backbone.trigger('event:bodyContainer:executiveFrozen');
+					};
 				}
-			} else {
-				for (i = 0; i < texts.length; i++) {
-					text += texts[i] + '<br>';
+				return;
+			}
+			if (fontsize > 11) {
+				//处理设置字体问题
+				headModelRow = headItemRows.getModelByAlias(occupyY[0]);
+				height = getTextBox.getTextHeight('', fontsize, 200);
+				if (height > initHeight && headModelRow.get('height') < height) {
+					setCellHeight('sheetId', headModelRow.get('displayName'), height);
+					if (cache.TempProp.isFrozen) {
+						Backbone.trigger('event:bodyContainer:executiveFrozen');
+					};
 				}
-			}
-
-			if (occupyX.length > 1 || occupyY.length > 1) return text;
-
-			//将代码先，迁移到自动换行与设置字体的功能中
-			//冻结情况，不进行自动宽高调整
-			//备注：需要代码调整
-			// if (this.model.get("wordWrap") === true) {
-			// 	headModelCol = headItemCols.getModelByAlias(occupyX[0]);
-			// 	headModelRow = headItemRows.getModelByAlias(occupyY[0]);
-			// 	height = getTextBox.getTextHeight(temp, true, fontsize, headModelCol.get('width'));
-			// 	if (height > 17 && headModelRow.get('height') < height) {
-
-			// 		setCellHeight('sheetId', headModelRow.get('displayName'), height);
-			// 		if (cache.TempProp.isFrozen) {
-			// 			Backbone.trigger('event:bodyContainer:executiveFrozen');
-			// 		};
-			// 	}
-			// } else {
-			// 	//处理设置字体问题
-			// 	headModelCol = headItemCols.getModelByAlias(occupyX[0]);
-			// 	headModelRow = headItemRows.getModelByAlias(occupyY[0]);
-			// 	height = getTextBox.getTextHeight('', false, fontsize);
-			// 	if (height > 17 && headModelRow.get('height') < height) {
-
-			// 		setCellHeight('sheetId', headModelRow.get('displayName'), height);
-			// 		if (cache.TempProp.isFrozen) {
-			// 			Backbone.trigger('event:bodyContainer:executiveFrozen');
-			// 		};
-			// 	}
-			// }
-			return text;
-		},
-		/**
-		 * 设置单元格背景颜色
-		 * @method setFontColor 
-		 * @param modelJSON {modelJSON} 对象属性集合
-		 */
-		setFontColor: function(modelJSON) {
-			if (modelJSON.content.color !== '') {
-				this.$contentBody.css({
-					"color": modelJSON.content.color
-				});
-			}
-
-		},
-		/**
-		 * 设置单元格内容字体
-		 * @method setFont 
-		 * @param modelJSON {modelJSON} 对象属性集合
-		 */
-		setFont: function(modelJSON) {
-			if (modelJSON.content.family !== '') {
-				this.$contentBody.css({
-					"font-family": modelJSON.content.family
-				});
-			}
-		},
-		/**
-		 * 设置单元格内容字体大小
-		 * @method setFontSize 
-		 * @param modelJSON {modelJSON} 对象属性集合
-		 */
-		setFontSize: function(modelJSON) {
-			if (modelJSON.content.size !== '') {
-				this.$contentBody.css({
-					"font-size": modelJSON.content.size + 'pt'
-				});
 			}
 		},
 		/**
@@ -382,7 +362,7 @@ define(function(require) {
 				text = modelJSON.content.texts,
 				isValid = modelJSON.customProp.isValid,
 				alignRowPosi = modelJSON.content.alignRow;
-
+			//分离操作
 			if (alignRowPosi === 'center' || alignRowPosi === 'right' || alignRowPosi === 'left') {
 				this.$contentBody.css({
 					'text-align': alignRowPosi
@@ -521,9 +501,9 @@ define(function(require) {
 		 * @method changeTexts 
 		 * @param modelJSON {modelJSON} 对象属性集合
 		 */
-		changeTexts: function(modelJSON) {
-			this.$contentBody.html(this.getDisplayText(modelJSON));
-		},
+		// changeTexts: function(modelJSON) {
+		// 	this.$contentBody.html(this.getDisplayText(modelJSON));
+		// },
 		/**
 		 * 移除视图
 		 * @method destroy 
