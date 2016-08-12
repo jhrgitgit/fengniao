@@ -29,7 +29,7 @@ define(function(require) {
 				contentType: cfg.contentType || 'application/json; charset=UTF-8',
 				dataType: cfg.dataType || 'json',
 				data: cfg.data || '',
-				async: cfg.async !== undefined ? cfg.async : true,
+				async: cfg.async !== undefined ? cfg.async : false,
 				timeout: cfg.timeout || 5000,
 				success: cfg.success || NULLFUNC,
 				error: cfg.error || NULLFUNC,
