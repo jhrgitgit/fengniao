@@ -49,6 +49,7 @@ define(function(require) {
 			if (this.model.get("selectType") === "operation") {
 				Backbone.on('event:selectRegion:patchOprCell', this.patchOprCell, this);
 			}
+			//添加视图
 			this.listenTo(this.model, 'change', this.changePosition);
 			this.listenTo(this.model, 'destroy', this.destroy);
 			if (options.currentRule !== undefined) {
@@ -208,12 +209,6 @@ define(function(require) {
 		destroy: function() {
 			if (this.model.get("selectType") === "operation") {
 				Backbone.off('event:selectRegion:patchOprCell');
-			}
-			if (this.model.get('selectType') === 'drag') {
-				this.viewCellsContainer.dragView = null;
-			}
-			if (this.model.get('selectType') === 'dataSource') {
-				this.viewCellsContainer.dataSoureRegionView = null;
 			}
 			this.remove();
 		}

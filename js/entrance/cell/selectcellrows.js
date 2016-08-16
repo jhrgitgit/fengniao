@@ -1,9 +1,10 @@
 'use strict';
 define(function(require) {
-	var Backbone = require('lib/backbone'),
-		cache = require('basic/tools/cache'),
+	var cache = require('basic/tools/cache'),
+		config = require('spreadsheet/config'),
 		listener = require('basic/util/listener'),
 		selectRegions = require('collections/selectRegion'),
+		SelectRegionModel = require('models/selectRegion'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
 		siderLineCols = require('collections/siderLineCol'),
@@ -16,6 +17,7 @@ define(function(require) {
 			headLineRowModelList,
 			colDisplayNames = [],
 			rowDisplayNames = [],
+			dataSourceRegion,
 			rowAlias,
 			colAlias,
 			select,
@@ -53,11 +55,14 @@ define(function(require) {
 			row: rowDisplayNames
 		};
 
-		if (cache.setDataSource === true) {
-			if (selectRegions.getModelByType('dataSource')[0] === undefined) {
-				Backbone.trigger('event:cellsContainer:createDataSourceRegion', {});
+		if (cache.mouseOperateState === config.mouseOperateState.dataSource) {
+			dataSourceRegion = selectRegions.getModelByType('dataSource')[0];
+			if (dataSourceRegion === undefined) {
+				dataSourceRegion = new SelectRegionModel();
+				dataSourceRegion.set('selectType', 'dataSource');
+				selectRegions.add(dataSourceRegion);
 			}
-			selectRegions.getModelByType('dataSource')[0].set({
+			dataSourceRegion.set({
 				physicsPosi: {
 					left: left,
 					top: top

@@ -40,7 +40,8 @@ define(function(require) {
 		clipModel.set("selectType", "clip");
 		selectRegions.add(clipModel);
 
-		Backbone.trigger('event:cellsContainer:addClipRegionView');
+		
+		// Backbone.trigger('event:cellsContainer:addClipRegionView');
 
 		if (type === "copy") {
 			cache.clipState = "copy";

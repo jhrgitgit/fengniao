@@ -109,7 +109,7 @@ define(function(require) {
 							}
 						}
 					}
-
+					//修改:对模型直接进行修改
 					Backbone.trigger('event:cellsContainer:adjustSelectRegion', {
 						initColIndex: startColIndex - relativeColIndex,
 						initRowIndex: startRowIndex - relativeRowIndex,

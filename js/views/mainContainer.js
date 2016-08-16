@@ -58,6 +58,7 @@ define(function(require) {
 				userViewEndRowModel,
 				userViewEndColModel,
 				len;
+				
 			Backbone.on('event:mainContainer:destroy', this.destroy, this);
 			Backbone.on('event:mainContainer:attributesRender', this.attributesRender, this);
 			Backbone.on('event:mainContainer:appointPosition', this.appointPosition, this);
