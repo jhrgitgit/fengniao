@@ -39,15 +39,34 @@ define(function(require) {
 			clip.destroy();
 		}
 
+		if (region.startColIndex === -1 ||
+			region.startRowIndex === -1 ||
+			region.endColIndex === -1 ||
+			region.endRowIndex === -1) {
+			send.PackAjax({
+				url: 'text.htm?m=color_set',
+				data: JSON.stringify({
+					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
+					sheetId: '1',
+					coordinate: {
+						startX: region.startColDisplayName,
+						startY: region.startRowDisplayName,
+					},
+					bgcolor: color
+				})
+			});
+			return;
+		}
+
 		if (region.endColIndex === 'MAX') { //整行操作
 			rowOperate.rowPropOper(region.startRowIndex, 'customProp.background', color);
 			endColAlias = 'MAX';
 			endRowAlias = headItemRows.models[region.endRowIndex].get('alias');
-		}else if(region.endRowIndex === 'MAX'){
+		} else if (region.endRowIndex === 'MAX') {
 			colOperate.colPropOper(region.startColIndex, 'customProp.background', color);
 			endRowAlias = 'MAX';
 			endColAlias = headItemCols.models[region.endColIndex].get('alias');
-		}else {
+		} else {
 			region = cells.getFullOperationRegion(region);
 			cells.operateCellsByRegion(region, function(cell) {
 				cell.set('customProp.background', color);

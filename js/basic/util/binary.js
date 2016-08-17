@@ -1,5 +1,5 @@
 'use strict';
-define(function() {	
+define(function() {
 	/**
 	 * 二分查询工具类
 	 * @author ray wu
@@ -193,6 +193,35 @@ define(function() {
 				}
 			}
 			return start;
+		},
+		indexAttrBinary: function(value, array, attr, startIndex, endIndex) {
+			var startIndex = startIndex || 0,
+				endIndex = endIndex || array.length - 1,
+				middleIndex;
+
+			if (array[startIndex].get(attr) > value) {
+				return -1;
+			}
+			if (array[endIndex].get(attr) < value) {
+				return -1;
+			}
+			while (startIndex < endIndex) {
+				if (array[startIndex].get(attr)=== value) {
+					return startIndex;
+				}
+				if (array[endIndex].get(attr) === value) {
+					return endIndex;
+				}
+				middleIndex = endIndex + startIndex >>> 1;
+				if (array[middleIndex].get(attr) === value) {
+					return middleIndex;
+				} else if (array[middleIndex].get(attr) < value) {
+					startIndex = middleIndex + 1;
+				} else {
+					endIndex = middleIndex;
+				}
+			}
+			return -1;
 		}
 	};
 

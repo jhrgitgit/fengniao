@@ -1,8 +1,9 @@
 'use strict';
 define(function(require) {
 	var analysisLabel,
-		headItemCol = require('collections/headItemCol'),
-		headItemRow = require('collections/headItemRow');
+		binary = require('basic/util/binary'),
+		headItemCols = require('collections/headItemCol'),
+		headItemRows = require('collections/headItemRow');
 	/**
 	 * 对外开放接口，将开发者传入label转为内部可使用索引
 	 * @param  {array/string} label 标签
@@ -10,7 +11,13 @@ define(function(require) {
 	 */
 	analysisLabel = function(regionLabel) {
 		var region = {},
-			reg = /^[A-Z]+[0-9]+$/;
+			reg = /^[A-Z]+[0-9]+$/,
+			startColSort, //后台Excel对象存储的正确索引值
+			endColSort,
+			startRowSort,
+			endRowSort,
+			headItemColList = headItemCols.models,
+			headItemRowList = headItemRows.models;
 
 		if (regionLabel instanceof Array) {
 			//判断数组长度
@@ -21,38 +28,45 @@ define(function(require) {
 			if (!reg.test(regionLabel[0]) && !reg.test(regionLabel[1])) {
 				throw new Error('Parameter format error');
 			}
-			region.startColIndex = headItemCol.getIndexByDisplayname(getDisplayName(regionLabel[0], 'col'));
-			region.startRowIndex = headItemRow.getIndexByDisplayname(getDisplayName(regionLabel[0], 'row'));
-			//修改正则匹配
-			region.endColIndex = headItemCol.getIndexByDisplayname(getDisplayName(regionLabel[1], 'col'));
-			region.endRowIndex = headItemRow.getIndexByDisplayname(getDisplayName(regionLabel[1], 'row'));
+
+			region.startColDisplayName = getDisplayName(regionLabel[0], 'col')
+			region.startRowDisplayName = getDisplayName(regionLabel[0], 'row')
+			region.endColDisplayName = getDisplayName(regionLabel[1], 'col')
+			region.endRowDisplayName = getDisplayName(regionLabel[1], 'row')
+
+			startColSort = colSignToSort(region.startColDisplayName);
+			endColSort = colSignToSort(region.endColDisplayName);
+			startRowSort = rowSignToSort(region.startRowDisplayName);
+			endRowSort = rowSignToSort(region.endRowDisplayName);
+
+			region.startColIndex = binary.indexAttrBinary(startColSort, headItemColList, 'sort');
+			region.endColIndex = binary.indexAttrBinary(endColSort, headItemColList, 'sort');
+			region.startRowIndex = binary.indexAttrBinary(startRowSort, headItemRowList, 'sort');
+			region.endRowIndex = binary.indexAttrBinary(endRowSort, headItemColList, 'sort');
+
 		} else if (/^[A-Z]+$/.test(regionLabel)) { //整列操作
 			region.startRowIndex = 0;
 			region.endRowIndex = 'MAX';
-			region.startColIndex = region.endColIndex = headItemCol.getIndexByDisplayname(regionLabel);
+			region.startRowDisplayName = '1';
+			region.startColDisplayName = regionLabel;
+			startColSort = colSignToSort(regionLabel);
+			region.startColIndex = region.endColIndex = binary.indexAttrBinary(startColSort, headItemColList, 'sort');
 		} else if (/^[0-9]+$/.test(regionLabel)) { //整行操作
 			region.startColIndex = 0;
 			region.endColIndex = 'MAX';
-			region.startRowIndex = region.endRowIndex = headItemRow.getIndexByDisplayname(regionLabel);
+			startRowSort = rowSignToSort(regionLabel);
+			region.startRowDisplayName = regionLabel;
+			region.startColDisplayName = 'A';
+			region.startRowIndex = region.endRowIndex = binary.indexAttrBinary(startRowSort, headItemRowList, 'sort');
 		} else {
-			region.startColIndex = region.endColIndex = headItemCol.getIndexByDisplayname(getDisplayName(regionLabel, 'col'));
-			region.startRowIndex = region.endRowIndex = headItemRow.getIndexByDisplayname(getDisplayName(regionLabel, 'row'));
-		}
+			region.startRowDisplayName = getDisplayName(regionLabel, 'row');
+			region.startColDisplayName = getDisplayName(regionLabel, 'col');
+			startColSort = colSignToSort(region.startColDisplayName);
+			startRowSort = rowSignToSort(region.startRowDisplayName);
 
-		//判断数据是否合法
-		if (region.startColIndex === -1) {
-			throw new Error('start col not found');
+			region.startColIndex = region.endColIndex = binary.indexAttrBinary(startColSort, headItemColList, 'sort');
+			region.startRowIndex = region.endRowIndex = binary.indexAttrBinary(startRowSort, headItemRowList, 'sort');
 		}
-		if (region.startRowIndex === -1) {
-			throw new Error('start row not found');
-		}
-		if (region.endColIndex === -1) {
-			throw new Error('end col not found');
-		}
-		if (region.endRowIndex === -1) {
-			throw new Error('end row not found');
-		}
-		
 		return region;
 
 		function getDisplayName(regionLabel, lineType) {
@@ -67,6 +81,23 @@ define(function(require) {
 				result = regionLabel.substring(len);
 			}
 			return result;
+		}
+
+		function colSignToSort(sign) {
+			var i = 0,
+				sort = 0,
+				len = sign.length,
+				letter = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
+				index;
+			for (; i < len; i++) {
+				index = letter.indexOf(sign[i]) + 1;
+				sort += index * (Math.pow(26, (len - i - 1)));
+			}
+			return sort - 1;
+		}
+
+		function rowSignToSort(sign) {
+			return parseInt(sign) - 1;
 		}
 	};
 	return analysisLabel;
