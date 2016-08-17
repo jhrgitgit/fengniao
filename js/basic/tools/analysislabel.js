@@ -29,10 +29,10 @@ define(function(require) {
 				throw new Error('Parameter format error');
 			}
 
-			region.startColDisplayName = getDisplayName(regionLabel[0], 'col')
-			region.startRowDisplayName = getDisplayName(regionLabel[0], 'row')
-			region.endColDisplayName = getDisplayName(regionLabel[1], 'col')
-			region.endRowDisplayName = getDisplayName(regionLabel[1], 'row')
+			region.startColDisplayName = getDisplayName(regionLabel[0], 'col');
+			region.startRowDisplayName = getDisplayName(regionLabel[0], 'row');
+			region.endColDisplayName = getDisplayName(regionLabel[1], 'col');
+			region.endRowDisplayName = getDisplayName(regionLabel[1], 'row');
 
 			startColSort = colSignToSort(region.startColDisplayName);
 			endColSort = colSignToSort(region.endColDisplayName);

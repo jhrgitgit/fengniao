@@ -195,10 +195,10 @@ define(function() {
 			return start;
 		},
 		indexAttrBinary: function(value, array, attr, startIndex, endIndex) {
-			var startIndex = startIndex || 0,
-				endIndex = endIndex || array.length - 1,
-				middleIndex;
-
+			var	middleIndex;
+			
+			startIndex = startIndex || 0;
+			endIndex = endIndex || array.length - 1;
 			if (array[startIndex].get(attr) > value) {
 				return -1;
 			}
