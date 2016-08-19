@@ -12,12 +12,18 @@ define(function(require) {
 	analysisLabel = function(regionLabel) {
 		var region = {},
 			reg = /^[A-Z]+[0-9]+$/,
+			startColDisplayName,
+			startRowDisplayName,
+			endColDisplayName,
+			endRowDisplayName,
 			startColSort, //后台Excel对象存储的正确索引值
 			endColSort,
 			startRowSort,
 			endRowSort,
 			headItemColList = headItemCols.models,
-			headItemRowList = headItemRows.models;
+			headItemRowList = headItemRows.models,
+			tempSort,
+			tempDisplayName;
 
 		if (regionLabel instanceof Array) {
 			//判断数组长度
@@ -29,20 +35,47 @@ define(function(require) {
 				throw new Error('Parameter format error');
 			}
 
-			region.startColDisplayName = getDisplayName(regionLabel[0], 'col');
-			region.startRowDisplayName = getDisplayName(regionLabel[0], 'row');
-			region.endColDisplayName = getDisplayName(regionLabel[1], 'col');
-			region.endRowDisplayName = getDisplayName(regionLabel[1], 'row');
+			startColDisplayName = getDisplayName(regionLabel[0], 'col');
+			startRowDisplayName = getDisplayName(regionLabel[0], 'row');
+			endColDisplayName = getDisplayName(regionLabel[1], 'col');
+			endRowDisplayName = getDisplayName(regionLabel[1], 'row');
 
-			startColSort = colSignToSort(region.startColDisplayName);
-			endColSort = colSignToSort(region.endColDisplayName);
-			startRowSort = rowSignToSort(region.startRowDisplayName);
-			endRowSort = rowSignToSort(region.endRowDisplayName);
+			startColSort = colSignToSort(startColDisplayName);
+			endColSort = colSignToSort(endColDisplayName);
+			startRowSort = rowSignToSort(startRowDisplayName);
+			endRowSort = rowSignToSort(endRowDisplayName);
+
+			if (startColSort > endColSort) {
+				tempSort = startColSort;
+				startColSort = endColSort;
+				endColSort = tempSort;
+				tempDisplayName = startColDisplayName;
+				startColDisplayName = endColDisplayName;
+				endColDisplayName = tempDisplayName;
+			}
+			if (startRowSort > endRowSort) {
+				tempSort = startRowSort;
+				startRowSort = endRowSort;
+				endRowSort = tempSort;
+				tempDisplayName = startRowDisplayName;
+				startRowDisplayName = endRowDisplayName;
+				endRowDisplayName = tempDisplayName;
+			}
+			//暂时使用，以后更改为sort
+			region.startRowDisplayName = startRowDisplayName;
+			region.endRowDisplayName = endRowDisplayName;
+			region.startColDisplayName = startColDisplayName;
+			region.endColDisplayName = endColDisplayName;
+
+			region.startColSort = startColSort;
+			region.endColSort = endColSort;
+			region.startRowSort = startRowSort;
+			region.endRowSort = endRowSort;
 
 			region.startColIndex = binary.indexAttrBinary(startColSort, headItemColList, 'sort');
 			region.endColIndex = binary.indexAttrBinary(endColSort, headItemColList, 'sort');
 			region.startRowIndex = binary.indexAttrBinary(startRowSort, headItemRowList, 'sort');
-			region.endRowIndex = binary.indexAttrBinary(endRowSort, headItemColList, 'sort');
+			region.endRowIndex = binary.indexAttrBinary(endRowSort, headItemRowList, 'sort');
 
 		} else if (/^[A-Z]+$/.test(regionLabel)) { //整列操作
 			region.startRowIndex = 0;
@@ -59,11 +92,12 @@ define(function(require) {
 			region.startColDisplayName = 'A';
 			region.startRowIndex = region.endRowIndex = binary.indexAttrBinary(startRowSort, headItemRowList, 'sort');
 		} else {
-			region.startRowDisplayName = getDisplayName(regionLabel, 'row');
-			region.startColDisplayName = getDisplayName(regionLabel, 'col');
+			region.endRowDisplayName = region.startRowDisplayName = getDisplayName(regionLabel, 'row');
+			region.endColDisplayName = region.startColDisplayName = getDisplayName(regionLabel, 'col');
 			startColSort = colSignToSort(region.startColDisplayName);
 			startRowSort = rowSignToSort(region.startRowDisplayName);
-
+			region.startColSort = region.endColSort = startColSort;
+			region.startRowSort = region.endRowSort = startRowSort;
 			region.startColIndex = region.endColIndex = binary.indexAttrBinary(startColSort, headItemColList, 'sort');
 			region.startRowIndex = region.endRowIndex = binary.indexAttrBinary(startRowSort, headItemRowList, 'sort');
 		}

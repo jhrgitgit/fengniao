@@ -50,7 +50,7 @@ define(function(require) {
 				left;
 			if (endColIndex === undefined) {
 				endColIndex = startColIndex;
-			}else if(typeof endColIndex === 'object'){
+			} else if (typeof endColIndex === 'object') {
 				prop = endColIndex;
 				endColIndex = startColIndex;
 			}
@@ -1245,12 +1245,10 @@ define(function(require) {
 					}
 				}
 			}
-			region = {
-				startRowIndex: startRowIndex,
-				startColIndex: startColIndex,
-				endRowIndex: endRowIndex,
-				endColIndex: endColIndex
-			};
+			region.startRowIndex = startRowIndex;
+			region.startColIndex = startColIndex;
+			region.endRowIndex = endRowIndex;
+			region.endColIndex = endColIndex;
 			return region;
 		},
 	});
