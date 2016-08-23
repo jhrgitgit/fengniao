@@ -74,6 +74,7 @@ define(function(require) {
 				i;
 
 			for (i = 0; i < rows.length; i++) {
+				//存在bug
 				index = binary.indexModelBinary(rows[i].top, headItemRows.models, 'top', 'height');
 				if (headItemRows.getIndexByAlias(rows[i].aliasY) !== -1) {
 					index++;
@@ -128,6 +129,7 @@ define(function(require) {
 				collen = headItemCols.length;
 				for (j = 0; j < len; j++) {
 					tempHeadCol = new LineCol();
+					tempHeadCol.set('sort', collen + j);
 					tempHeadCol.set('left', headItemCols.models[collen + j - 1].get('left') + headItemCols.models[collen + j - 1].get('width') + 1);
 					tempHeadCol.set('width', 71);
 					tempHeadCol.set('alias', (headItemCols.length + 1).toString());
