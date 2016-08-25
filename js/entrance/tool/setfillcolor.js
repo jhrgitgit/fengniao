@@ -1,12 +1,12 @@
 'use strict';
 define(function(require) {
 	var send = require('basic/tools/send'),
-		selectRegions = require('collections/selectRegion'),
-		headItemCols = require('collections/headItemCol'),
-		headItemRows = require('collections/headItemRow'),
+		// selectRegions = require('collections/selectRegion'),
+		// headItemCols = require('collections/headItemCol'),
+		// headItemRows = require('collections/headItemRow'),
 		cache = require('basic/tools/cache'),
 		cells = require('collections/cells'),
-		analysisLabel = require('basic/tools/analysislabel'),
+		getOperRegion= require('basic/tool/getoperregion'),
 		rowOperate = require('entrance/row/rowoperation'),
 		colOperate = require('entrance/col/coloperation');
 
@@ -24,15 +24,7 @@ define(function(require) {
 			startRowAlias,
 			endColAlias,
 			endRowAlias;
-		if (label !== undefined) {
-			region = analysisLabel(label);
-		} else {
-			select = selectRegions.getModelByType('operation')[0];
-			region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
-			region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
-			region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
-			region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
-		}
+
 		clip = selectRegions.getModelByType('clip')[0];
 		if (clip !== undefined) {
 			cache.clipState = 'null';

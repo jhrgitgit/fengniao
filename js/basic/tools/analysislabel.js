@@ -1,24 +1,23 @@
 'use strict';
-define(function(require) {
-	var analysisLabel,
-		binary = require('basic/util/binary'),
-		headItemCols = require('collections/headItemCol'),
-		headItemRows = require('collections/headItemRow');
+define(function() {
 	/**
-	 * 对外开放接口，将开发者传入label转为内部可使用索引
+	 * 将第三方使用者传入label转为对应sort坐标值
 	 * @param  {array/string} label 标签
 	 * @return {object} 索引对象
 	 */
-	analysisLabel = function(regionLabel) {
-		var region = {},
-			reg = /^[A-Z]+[0-9]+$/,
+	var analysisLabel = function(regionLabel) {
+		var temp,
+			reg = /^[A-Z]+[1-9]+[0-9]*$/,
 			startColSort, //后台Excel对象存储的正确索引值
 			endColSort,
 			startRowSort,
 			endRowSort,
-			headItemColList = headItemCols.models,
-			headItemRowList = headItemRows.models;
+			startColDisplayName,
+			startRowDisplayName,
+			endColDisplayName,
+			endRowDisplayName;
 
+		//解析
 		if (regionLabel instanceof Array) {
 			//判断数组长度
 			if (regionLabel.length !== 2) {
@@ -29,45 +28,53 @@ define(function(require) {
 				throw new Error('Parameter format error');
 			}
 
-			region.startColDisplayName = getDisplayName(regionLabel[0], 'col');
-			region.startRowDisplayName = getDisplayName(regionLabel[0], 'row');
-			region.endColDisplayName = getDisplayName(regionLabel[1], 'col');
-			region.endRowDisplayName = getDisplayName(regionLabel[1], 'row');
+			startColDisplayName = getDisplayName(regionLabel[0], 'col');
+			startRowDisplayName = getDisplayName(regionLabel[0], 'row');
+			endColDisplayName = getDisplayName(regionLabel[1], 'col');
+			endRowDisplayName = getDisplayName(regionLabel[1], 'row');
 
-			startColSort = colSignToSort(region.startColDisplayName);
-			endColSort = colSignToSort(region.endColDisplayName);
-			startRowSort = rowSignToSort(region.startRowDisplayName);
-			endRowSort = rowSignToSort(region.endRowDisplayName);
 
-			region.startColIndex = binary.indexAttrBinary(startColSort, headItemColList, 'sort');
-			region.endColIndex = binary.indexAttrBinary(endColSort, headItemColList, 'sort');
-			region.startRowIndex = binary.indexAttrBinary(startRowSort, headItemRowList, 'sort');
-			region.endRowIndex = binary.indexAttrBinary(endRowSort, headItemColList, 'sort');
+			startColSort = colSignToSort(startColDisplayName);
+			endColSort = colSignToSort(endColDisplayName);
+			startRowSort = rowSignToSort(startRowDisplayName);
+			endRowSort = rowSignToSort(endRowDisplayName);
 
 		} else if (/^[A-Z]+$/.test(regionLabel)) { //整列操作
-			region.startRowIndex = 0;
-			region.endRowIndex = 'MAX';
-			region.startRowDisplayName = '1';
-			region.startColDisplayName = regionLabel;
-			startColSort = colSignToSort(regionLabel);
-			region.startColIndex = region.endColIndex = binary.indexAttrBinary(startColSort, headItemColList, 'sort');
-		} else if (/^[0-9]+$/.test(regionLabel)) { //整行操作
-			region.startColIndex = 0;
-			region.endColIndex = 'MAX';
-			startRowSort = rowSignToSort(regionLabel);
-			region.startRowDisplayName = regionLabel;
-			region.startColDisplayName = 'A';
-			region.startRowIndex = region.endRowIndex = binary.indexAttrBinary(startRowSort, headItemRowList, 'sort');
-		} else {
-			region.startRowDisplayName = getDisplayName(regionLabel, 'row');
-			region.startColDisplayName = getDisplayName(regionLabel, 'col');
-			startColSort = colSignToSort(region.startColDisplayName);
-			startRowSort = rowSignToSort(region.startRowDisplayName);
+			startRowSort = 0;
+			endRowSort = 10000;
+			startColSort = endColSort = colSignToSort(regionLabel);
 
-			region.startColIndex = region.endColIndex = binary.indexAttrBinary(startColSort, headItemColList, 'sort');
-			region.startRowIndex = region.endRowIndex = binary.indexAttrBinary(startRowSort, headItemRowList, 'sort');
+		} else if (/^[1-9]+[0-9]*$/.test(regionLabel)) { //整行操作
+			startColSort = 0;
+			endColSort = 100;
+			startRowSort = endRowSort = rowSignToSort(regionLabel);
+
+		} else if (reg.test(regionLabel)) {
+			startRowDisplayName = getDisplayName(regionLabel, 'row');
+			startColDisplayName = getDisplayName(regionLabel, 'col');
+			startColSort = endColSort = colSignToSort(region.startColDisplayName);
+			startRowSort = endRowSort = rowSignToSort(region.startRowDisplayName);
+		} else {
+			throw new Error('Parameter format error');
 		}
-		return region;
+		//交换位置
+
+		if (startRowSort > endRowSort) {
+			temp = startRowSort;
+			startRowSort = endRowSort;
+			endRowSort = temp;
+		}
+		if (startColSort > endColSort) {
+			temp = startColSort;
+			startColSort = endRowSort;
+			endRowSort = temp;
+		}
+		return {
+			startRowSort: startRowSort,
+			endRowSort: endRowSort,
+			startColSort: startColSort,
+			endColSort: endColSort
+		};
 
 		function getDisplayName(regionLabel, lineType) {
 			var result = '',
