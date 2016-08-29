@@ -2,62 +2,40 @@
 define(function(require) {
 	var send = require('basic/tools/send'),
 		selectRegions = require('collections/selectRegion'),
-		headItemCols = require('collections/headItemCol'),
-		headItemRows = require('collections/headItemRow'),
 		cells = require('collections/cells'),
 		cache = require('basic/tools/cache'),
-		analysisLabel = require('basic/tools/analysislabel'),
+		getOperRegion = require('basic/tools/getoperregion'),
 		colOperate = require('entrance/col/coloperation'),
 		rowOperate = require('entrance/row/rowoperation');
 
 	var setWordWrap = function(sheetId, wordWrap, label) {
-
-		var region = {},
-			select,
-			startColAlias,
-			startRowAlias,
-			endColAlias,
-			endRowAlias,
-			tempCellList,
-			clip;
-
-
+		var clip,
+			region,
+			operRegion,
+			sendRegion,
+			tempCellList;
 		clip = selectRegions.getModelByType('clip')[0];
 		if (clip !== undefined) {
 			cache.clipState = 'null';
 			clip.destroy();
 		}
-		if (label !== undefined) {
-			region = analysisLabel(label);
-			region = cells.getFullOperationRegion(region);
-		} else {
-			select = selectRegions.getModelByType('operation')[0];
-			region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
-			region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
-			region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
-			region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
-		}
+		region = getOperRegion(label);
+		operRegion = region.operRegion;
+		sendRegion = region.sendRegion;
 
-		if (region.endColIndex === 'MAX') { //整行操作
-			endColAlias = 'MAX';
-			endRowAlias = headItemRows.models[region.endRowIndex].get('alias');
-		} else if (region.endRowIndex === 'MAX') {
-			endRowAlias = 'MAX';
-			endColAlias = headItemCols.models[region.endColIndex].get('alias');
-		} else {
-			region = cells.getFullOperationRegion(region);
-			endColAlias = headItemCols.models[region.endColIndex].get('alias');
-			endRowAlias = headItemRows.models[region.endRowIndex].get('alias');
+		if (operRegion.startColIndex === -1 || operRegion.startRowIndex === -1) {
+			sendData();
+			return;
 		}
 
 		if (wordWrap === undefined) {
-			if (endColAlias === 'MAX') {
+			if (operRegion.endColIndex === 'MAX' || operRegion.endRowIndex) {
 				wordWrap = true;
 			} else {
-				tempCellList = cells.getCellByX(region.startColIndex,
-					region.startRowIndex,
-					region.endColIndex,
-					region.endRowIndex);
+				tempCellList = cells.getCellByX(operRegion.startColIndex,
+					operRegion.startRowIndex,
+					operRegion.endColIndex,
+					operRegion.endRowIndex);
 				if (tempCellList === null || tempCellList === undefined || tempCellList.length === 0) {
 					wordWrap = true;
 				} else {
@@ -66,33 +44,26 @@ define(function(require) {
 			}
 		}
 
-		if (endColAlias === 'MAX') {
+		if (operRegion.endColIndex === 'MAX') {
 			rowOperate.rowPropOper(region.startRowIndex, 'wordWrap', wordWrap);
-		} else if (endRowAlias === 'MAX') {
+		} else if (operRegion.endColIndex === 'MAX') {
 			colOperate.colPropOper(region.startColIndex, 'wordWrap', wordWrap);
 		} else {
-			cells.operateCellsByRegion(region, function(cell) {
+			cells.operateCellsByRegion(operRegion, function(cell) {
 				cell.set('wordWrap', wordWrap);
 			});
 		}
-		startColAlias = headItemCols.models[region.startColIndex].get('alias');
-		startRowAlias = headItemRows.models[region.startRowIndex].get('alias');
+		sendData();
 
-		send.PackAjax({
-			url: 'text.htm?m=wordwrap',
-			data: JSON.stringify({
-				excelId: window.SPREADSHEET_AUTHENTIC_KEY,
-				sheetId: '1',
-				coordinate: {
-					startX: startColAlias,
-					startY: startRowAlias,
-					endX: endColAlias,
-					endY: endRowAlias
-				},
-				wordWrap: wordWrap
-			})
-		});
-
+		function sendData() {
+			send.PackAjax({
+				url: 'text.htm?m=wordwrap',
+				data: JSON.stringify({
+					coordinate: sendRegion,
+					wordWrap: wordWrap || 'true'
+				})
+			});
+		}
 	};
 	return setWordWrap;
 });

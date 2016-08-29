@@ -4,45 +4,28 @@ define(function(require) {
 		cells = require('collections/cells'),
 		cache = require('basic/tools/cache'),
 		selectRegions = require('collections/selectRegion'),
-		headItemCols = require('collections/headItemCol'),
-		headItemRows = require('collections/headItemRow'),
-		analysisLabel = require('basic/tools/analysislabel'),
+		getOperRegion = require('basic/tools/getoperregion'),
 		rowOperate = require('entrance/row/rowoperation'),
 		colOperate = require('entrance/col/coloperation');
 
 	var setCellBorder = function(sheetId, border, label) {
-		var region = {},
-			select,
-			clip,
-			startColAlias,
-			startRowAlias,
-			endColAlias,
-			endRowAlias;
+		var clip,
+			region,
+			operRegion,
+			sendRegion;
 
-		if (label !== undefined) {
-			region = analysisLabel(label);
-		} else {
-			select = selectRegions.getModelByType('operation')[0];
-			region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
-			region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
-			region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
-			region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
-		}
 		clip = selectRegions.getModelByType('clip')[0];
 		if (clip !== undefined) {
 			cache.clipState = 'null';
 			clip.destroy();
 		}
-		if (region.endColIndex === 'MAX') { //整行操作
-			endColAlias = 'MAX';
-			endRowAlias = headItemRows.models[region.endRowIndex].get('alias');
-		} else if (region.endRowIndex === 'MAX') {
-			endRowAlias = 'MAX';
-			endColAlias = headItemCols.models[region.endColIndex].get('alias');
-		} else {
-			region = cells.getFullOperationRegion(region);
-			endColAlias = headItemCols.models[region.endColIndex].get('alias');
-			endRowAlias = headItemRows.models[region.endRowIndex].get('alias');
+		region = getOperRegion(label);
+		operRegion = region.operRegion;
+		sendRegion = region.sendRegion;
+
+		if (operRegion.startColIndex === -1 || operRegion.startRowIndex === -1) {
+			sendData();
+			return;
 		}
 
 		switch (border) {
@@ -68,41 +51,35 @@ define(function(require) {
 				setOuter();
 				break;
 		}
+		sendData();
 
-		startColAlias = headItemCols.models[region.startColIndex].get('alias');
-		startRowAlias = headItemRows.models[region.startRowIndex].get('alias');
+		function sendData() {
+			send.PackAjax({
+				url: 'cells.htm?m=frame',
+				data: JSON.stringify({
+					coordinate: sendRegion,
+					frameStyle: border
+				})
+			});
+		}
 
-		send.PackAjax({
-			url: 'cells.htm?m=frame',
-			data: JSON.stringify({
-				excelId: window.SPREADSHEET_AUTHENTIC_KEY,
-				sheetId: '1',
-				coordinate: {
-					startX: startColAlias,
-					startY: startRowAlias,
-					endX: endColAlias,
-					endY: endRowAlias
-				},
-				frameStyle: border
-			})
-		});
 		/**
 		 * 清除全边框
 		 * @method setNone
 		 */
 		function setNone() {
-			if (region.endColIndex === 'MAX') {
-				rowOperate.rowPropOper(region.startRowIndex, 'border.left', false);
-				rowOperate.rowPropOper(region.startRowIndex, 'border.right', false);
-				rowOperate.rowPropOper(region.startRowIndex, 'border.top', false);
-				rowOperate.rowPropOper(region.startRowIndex, 'border.bottom', false);
-			} else if (region.endRowIndex === 'MAX') {
-				colOperate.colPropOper(region.startColIndex, 'border.left', false);
-				colOperate.colPropOper(region.startColIndex, 'border.right', false);
-				colOperate.colPropOper(region.startColIndex, 'border.top', false);
-				colOperate.colPropOper(region.startColIndex, 'border.bottom', false);
+			if (operRegion.endColIndex === 'MAX') {
+				rowOperate.rowPropOper(operRegion.startRowIndex, 'border.left', false);
+				rowOperate.rowPropOper(operRegion.startRowIndex, 'border.right', false);
+				rowOperate.rowPropOper(operRegion.startRowIndex, 'border.top', false);
+				rowOperate.rowPropOper(operRegion.startRowIndex, 'border.bottom', false);
+			} else if (operRegion.endRowIndex === 'MAX') {
+				colOperate.colPropOper(operRegion.startColIndex, 'border.left', false);
+				colOperate.colPropOper(operRegion.startColIndex, 'border.right', false);
+				colOperate.colPropOper(operRegion.startColIndex, 'border.top', false);
+				colOperate.colPropOper(operRegion.startColIndex, 'border.bottom', false);
 			} else {
-				cells.operateCellsByRegion(region, function(cell) {
+				cells.operateCellsByRegion(operRegion, function(cell) {
 					cell.set('border.left', false);
 					cell.set('border.right', false);
 					cell.set('border.top', false);
@@ -115,18 +92,18 @@ define(function(require) {
 		 * @method setAll
 		 */
 		function setAll() {
-			if (region.endColIndex === 'MAX') {
-				rowOperate.rowPropOper(region.startRowIndex, 'border.left', true);
-				rowOperate.rowPropOper(region.startRowIndex, 'border.right', true);
-				rowOperate.rowPropOper(region.startRowIndex, 'border.top', true);
-				rowOperate.rowPropOper(region.startRowIndex, 'border.bottom', true);
-			} else if (region.endRowIndex === 'MAX') {
-				colOperate.colPropOper(region.startColIndex, 'border.left', true);
-				colOperate.colPropOper(region.startColIndex, 'border.right', true);
-				colOperate.colPropOper(region.startColIndex, 'border.top', true);
-				colOperate.colPropOper(region.startColIndex, 'border.bottom', true);
+			if (operRegion.endColIndex === 'MAX') {
+				rowOperate.rowPropOper(operRegion.startRowIndex, 'border.left', true);
+				rowOperate.rowPropOper(operRegion.startRowIndex, 'border.right', true);
+				rowOperate.rowPropOper(operRegion.startRowIndex, 'border.top', true);
+				rowOperate.rowPropOper(operRegion.startRowIndex, 'border.bottom', true);
+			} else if (operRegion.endRowIndex === 'MAX') {
+				colOperate.colPropOper(operRegion.startColIndex, 'border.left', true);
+				colOperate.colPropOper(operRegion.startColIndex, 'border.right', true);
+				colOperate.colPropOper(operRegion.startColIndex, 'border.top', true);
+				colOperate.colPropOper(operRegion.startColIndex, 'border.bottom', true);
 			} else {
-				cells.operateCellsByRegion(region, function(cell) {
+				cells.operateCellsByRegion(operRegion, function(cell) {
 					cell.set('border.left', true);
 					cell.set('border.right', true);
 					cell.set('border.top', true);
@@ -141,15 +118,15 @@ define(function(require) {
 		 */
 		function setTop() {
 			var cellList, i;
-			if (region.endColIndex === 'MAX') {
-				rowOperate.rowPropOper(region.startRowIndex, 'border.top', true);
-			} else if (region.endRowIndex === 'MAX') {
-				colOperate.colPropOper(region.startColIndex, 'border.top', true);
+			if (operRegion.endColIndex === 'MAX') {
+				rowOperate.rowPropOper(operRegion.startRowIndex, 'border.top', true);
+			} else if (operRegion.endRowIndex === 'MAX') {
+				colOperate.colPropOper(operRegion.startColIndex, 'border.top', true);
 			} else {
-				cellList = cells.getTopHeadModelByIndex(region.startColIndex,
-					region.startRowIndex,
-					region.endColIndex,
-					region.endRowIndex);
+				cellList = cells.getTopHeadModelByIndex(operRegion.startColIndex,
+					operRegion.startRowIndex,
+					operRegion.endColIndex,
+					operRegion.endRowIndex);
 				for (i in cellList) {
 					cellList[i].set('border.top', true);
 				}
@@ -163,15 +140,15 @@ define(function(require) {
 		 */
 		function setLeft() {
 			var cellList, i;
-			if (region.endColIndex === 'MAX') {
-				rowOperate.rowPropOper(region.startRowIndex, 'border.left', true);
-			} else if (region.endRowIndex === 'MAX') {
-				colOperate.colPropOper(region.startColIndex, 'border.left', true);
+			if (operRegion.endColIndex === 'MAX') {
+				rowOperate.rowPropOper(operRegion.startRowIndex, 'border.left', true);
+			} else if (operRegion.endRowIndex === 'MAX') {
+				colOperate.colPropOper(operRegion.startColIndex, 'border.left', true);
 			} else {
-				cellList = cells.getLeftHeadModelByIndex(region.startColIndex,
-					region.startRowIndex,
-					region.endColIndex,
-					region.endRowIndex);
+				cellList = cells.getLeftHeadModelByIndex(operRegion.startColIndex,
+					operRegion.startRowIndex,
+					operRegion.endColIndex,
+					operRegion.endRowIndex);
 				for (i in cellList) {
 					cellList[i].set('border.left', true);
 				}
@@ -185,15 +162,15 @@ define(function(require) {
 		 */
 		function setBottom() {
 			var cellList, i;
-			if (region.endColIndex === 'MAX') {
-				rowOperate.rowPropOper(region.startRowIndex, 'border.bottom', true);
-			} else if (region.endRowIndex === 'MAX') {
-				colOperate.colPropOper(region.startColIndex, 'border.bottom', true);
+			if (operRegion.endColIndex === 'MAX') {
+				rowOperate.rowPropOper(operRegion.startRowIndex, 'border.bottom', true);
+			} else if (operRegion.endRowIndex === 'MAX') {
+				colOperate.colPropOper(operRegion.startColIndex, 'border.bottom', true);
 			} else {
-				cellList = cells.getBottomHeadModelByIndex(region.startColIndex,
-					region.startRowIndex,
-					region.endColIndex,
-					region.endRowIndex);
+				cellList = cells.getBottomHeadModelByIndex(operRegion.startColIndex,
+					operRegion.startRowIndex,
+					operRegion.endColIndex,
+					operRegion.endRowIndex);
 				for (i in cellList) {
 					cellList[i].set('border.bottom', true);
 				}
@@ -207,15 +184,15 @@ define(function(require) {
 		 */
 		function setRight() {
 			var cellList, i;
-			if (region.endColIndex === 'MAX') {
-				rowOperate.rowPropOper(region.startRowIndex, 'border.right', true);
-			} else if (region.endRowIndex === 'MAX') {
-				colOperate.colPropOper(region.startColIndex, 'border.right', true);
+			if (operRegion.endColIndex === 'MAX') {
+				rowOperate.rowPropOper(operRegion.startRowIndex, 'border.right', true);
+			} else if (operRegion.endRowIndex === 'MAX') {
+				colOperate.colPropOper(operRegion.startColIndex, 'border.right', true);
 			} else {
-				cellList = cells.getRightHeadModelByIndex(region.startColIndex,
-					region.startRowIndex,
-					region.endColIndex,
-					region.endRowIndex);
+				cellList = cells.getRightHeadModelByIndex(operRegion.startColIndex,
+					operRegion.startRowIndex,
+					operRegion.endColIndex,
+					operRegion.endRowIndex);
 				for (i in cellList) {
 					cellList[i].set('border.right', true);
 				}

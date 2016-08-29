@@ -403,8 +403,6 @@ define(function(require) {
 				async: false,
 				isPublic: false,
 				data: JSON.stringify({
-					excelId: excelId,
-					sheetId: '1',
 					containerHeight: $('#' + domId).height()
 				}),
 				dataType: 'json',

@@ -3,52 +3,50 @@ define(function(require) {
 	var send = require('basic/tools/send'),
 		cells = require('collections/cells'),
 		Backbone = require('lib/backbone'),
-		headItemCols = require('collections/headItemCol'),
-		headItemRows = require('collections/headItemRow'),
 		selectRegions = require('collections/selectRegion'),
-		analysisLabel = require('basic/tools/analysislabel'),
+		getOperRegion = require('basic/tools/getoperregion'),
 		rowOperate = require('entrance/row/rowoperation'),
 		colOperate = require('entrance/col/coloperation'),
 		cache = require('basic/tools/cache'),
-		commentHandler,
-		clip;
+		commentHandler;
 
 	commentHandler = {
 		modifyComment: function(sheetId, comment, label) {
-			if (label !== undefined) {
-				region = analysisLabel(label);
-			} else {
-				select = selectRegions.getModelByType('operation')[0];
-				region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
-				region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
-				region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
-				region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
-			}
+
+			var clip,
+				region,
+				operRegion,
+				sendRegion;
 
 			clip = selectRegions.getModelByType('clip')[0];
 			if (clip !== undefined) {
 				cache.clipState = 'null';
 				clip.destroy();
 			}
+			region = getOperRegion(label);
+			operRegion = region.operRegion;
+			sendRegion = region.sendRegion;
 
-			if (region.endColIndex === 'MAX') { //整行操作
-				rowOperate.rowPropOper(region.startRowIndex, 'customProp.comment', comment);
-				endColAlias = 'MAX';
-			}else if(region.endRowIndex === 'MAX'){
-				colOperate.colPropOper(region.startColIndex, 'customProp.comment', comment);
+			if (operRegion.startColIndex === -1 || operRegion.startRowIndex === -1) {
+				this.sendData(sendRegion, comment, 'text.htm?m=comment_set');
+				return;
+			}
+
+			if (operRegion.endColIndex === 'MAX') { //整行操作
+				rowOperate.rowPropOper(operRegion.startRowIndex, 'customProp.comment', comment);
+			} else if (operRegion.endRowIndex === 'MAX') {
+				colOperate.colPropOper(operRegion.startColIndex, 'customProp.comment', comment);
 			} else {
-				region = cells.getFullOperationRegion(region);
-				cells.operateCellsByRegion(region, function(cell) {
+				cells.operateCellsByRegion(operRegion, function(cell) {
 					cell.set('customProp.comment', comment);
 				});
 			}
 
-			this.sendData(region, comment, 'text.htm?m=comment_set');
+			this.sendData(sendRegion, comment, 'text.htm?m=comment_set');
 		},
 
 		createAddCommentView: function(sheetId) {
-			var select = selectRegions.getModelByType('operation')[0];
-			clip = selectRegions.getModelByType('clip')[0];
+			var clip = selectRegions.getModelByType('clip')[0];
 			if (clip !== undefined) {
 				cache.clipState = 'null';
 				clip.destroy();
@@ -59,8 +57,7 @@ define(function(require) {
 		},
 
 		createEditComment: function(sheetId) {
-			var select = selectRegions.getModelByType('operation')[0];
-			clip = selectRegions.getModelByType('clip')[0];
+			var clip = selectRegions.getModelByType('clip')[0];
 			if (clip !== undefined) {
 				cache.clipState = 'null';
 				clip.destroy();
@@ -71,68 +68,15 @@ define(function(require) {
 		},
 
 		deleteComment: function(sheetId, label) {
-			var select,
-				region = {};
-			if (label !== undefined) {
-				region = analysisLabel(label);
-			} else {
-				select = selectRegions.getModelByType('operation')[0];
-				region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
-				region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
-				region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
-				region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
-			}
-			clip = selectRegions.getModelByType('clip')[0];
-			if (clip !== undefined) {
-				cache.clipState = 'null';
-				clip.destroy();
-			}
-			if (region.endColIndex === 'MAX') { //整行操作
-				rowOperate.rowPropOper(region.startRowIndex, 'customProp.comment', null);
-			} else if (region.endRowIndex === 'MAX'){
-				colOperate.colPropOper(region.startColIndex, 'customProp.comment', null);
-			}else {
-				region = cells.getFullOperationRegion(region);
-				cells.operateCellsByRegion(region, function(cell) {
-					cell.set('customProp.comment', null);
-				});
-			}
-			this.sendData(region, undefined, 'text.htm?m=comment_del');
+			this.modifyComment('1', null, label);
 		},
-		sendData: function(region, comment, url) {
-			var startColAlias,
-				startRowAlias,
-				endColAlias,
-				endRowAlias,
-				data;
-
-			startColAlias = headItemCols.models[region.startColIndex].get('alias');
-			startRowAlias = headItemRows.models[region.startRowIndex].get('alias');
-			if (region.endColIndex === 'MAX') {
-				endColAlias = 'MAX';
-			} else {
-				endColAlias = headItemCols.models[region.endColIndex].get('alias');
-			}
-			if (region.endRowIndex === 'MAX') {
-				endRowAlias = 'MAX';
-			} else{
-				endRowAlias = headItemRows.models[region.startRowIndex].get('alias');
-			}
-
-			data = {
-				excelId: window.SPREADSHEET_AUTHENTIC_KEY,
-				sheetId: '1',
-				coordinate: {
-					startRowAlais: startRowAlias,
-					endRowAlais: endRowAlias,
-					startColAlais: startColAlias,
-					endColAlais: endColAlias
-				}
+		sendData: function(sendRegion, comment, url) {
+			var data = {
+				coordinate: sendRegion
 			};
-			if (comment !== undefined) {
+			if (comment !== null) {
 				data.comment = comment;
 			}
-
 			send.PackAjax({
 				url: url,
 				data: JSON.stringify(data)

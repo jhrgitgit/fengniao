@@ -2,11 +2,9 @@
 define(function(require) {
 	var send = require('basic/tools/send'),
 		selectRegions = require('collections/selectRegion'),
-		headItemCols = require('collections/headItemCol'),
-		headItemRows = require('collections/headItemRow'),
 		cells = require('collections/cells'),
 		cache = require('basic/tools/cache'),
-		analysisLabel = require('basic/tools/analysislabel'),
+		getOperRegion = require('basic/tools/getoperregion'),
 		rowOperate = require('entrance/row/rowoperation'),
 		colOperate = require('entrance/col/coloperation');
 
@@ -16,13 +14,20 @@ define(function(require) {
 			type,
 			transverse,
 			vertical,
-			region = {},
-			startColAlias,
-			startRowAlias,
-			endColAlias,
-			endRowAlias,
-			select,
-			clip;
+			clip,
+			region,
+			operRegion,
+			sendRegion;
+
+		clip = selectRegions.getModelByType('clip')[0];
+		if (clip !== undefined) {
+			cache.clipState = 'null';
+			clip.destroy();
+		}
+		region = getOperRegion(label);
+		operRegion = region.operRegion;
+		sendRegion = region.sendRegion;
+
 
 		switch (alignType) {
 			case 'left':
@@ -52,71 +57,45 @@ define(function(require) {
 			default:
 				return;
 		}
-
-
-
-		if (label !== undefined) {
-			region = analysisLabel(label);
-		} else {
-			select = selectRegions.getModelByType('operation')[0];
-			region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
-			region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
-			region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
-			region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
+		if (operRegion.startColIndex === -1 || operRegion.startRowIndex === -1) {
+			sendData();
+			return;
 		}
-		clip = selectRegions.getModelByType('clip')[0];
-		if (clip !== undefined) {
-			cache.clipState = 'null';
-			clip.destroy();
-		}
-		if (region.endColIndex === 'MAX') { //整行操作
+
+		if (operRegion.endColIndex === 'MAX') { //整行操作
 			if (transverse !== undefined) {
-				rowOperate.rowPropOper(region.startRowIndex, 'content.alignRow', transverse);
+				rowOperate.rowPropOper(operRegion.startRowIndex, 'content.alignRow', transverse);
 			} else {
-				rowOperate.rowPropOper(region.startRowIndex, 'content.alignCol', vertical);
+				rowOperate.rowPropOper(operRegion.startRowIndex, 'content.alignCol', vertical);
 			}
-			endColAlias = 'MAX';
-			endRowAlias = headItemRows.models[region.endRowIndex].get('alias');
-		}else if (region.endRowIndex === 'MAX') { //整行操作
+		} else if (operRegion.endRowIndex === 'MAX') { //整行操作
 			if (transverse !== undefined) {
-				colOperate.colPropOper(region.startColIndex, 'content.alignRow', transverse);
+				colOperate.colPropOper(operRegion.startColIndex, 'content.alignRow', transverse);
 			} else {
-				colOperate.colPropOper(region.startColIndex, 'content.alignCol', vertical);
+				colOperate.colPropOper(operRegion.startColIndex, 'content.alignCol', vertical);
 			}
-			endRowAlias = 'MAX';
-			endColAlias = headItemRows.models[region.endColIndex].get('alias');
 		} else {
-			region = cells.getFullOperationRegion(region);
-			cells.operateCellsByRegion(region, function(cell) {
+			cells.operateCellsByRegion(operRegion, function(cell) {
 				if (transverse !== undefined) {
 					cell.set('content.alignRow', transverse);
 				} else {
 					cell.set('content.alignCol', vertical);
 				}
 			});
-			endColAlias = headItemCols.models[region.endColIndex].get('alias');
-			endRowAlias = headItemRows.models[region.endRowIndex].get('alias');
+
 		}
-
-		startColAlias = headItemCols.models[region.startColIndex].get('alias');
-		startRowAlias = headItemRows.models[region.startRowIndex].get('alias');
 		type = transverse || vertical;
+		sendData();
 
-		send.PackAjax({
-			url: url,
-			data: JSON.stringify({
-				excelId: window.SPREADSHEET_AUTHENTIC_KEY,
-				sheetId: '1',
-				coordinate: {
-					startX: startColAlias,
-					startY: startRowAlias,
-					endX: endColAlias,
-					endY: endRowAlias
-				},
-				alignStyle: type
-			})
-		});
-
+		function sendData() {
+			send.PackAjax({
+				url: url,
+				data: JSON.stringify({
+					coordinate: sendRegion,
+					alignStyle: type
+				})
+			});
+		}
 	};
 	return setAlign;
 });

@@ -41,14 +41,14 @@ app.configure(function() {
 // 		}
 // 	})
 // });
-app.post('/text.htm', function(request, response) {
-	for(var i =0 ;i<100000;i++){
-		console.log(i);
-	}
-	response.send({
-		returncode: 200
-	});
-});
+// app.post('/text.htm', function(request, response) {
+// 	for(var i =0 ;i<100000;i++){
+// 		console.log(i);
+// 	}
+// 	response.send({
+// 		returncode: 200
+// 	});
+// });
 // app.post('/template/merge/cells.html', function(request, response) {
 // 	var container = new ContainerModel({
 // 		contents: request.body.contents,

@@ -37,6 +37,8 @@ define(function(require) {
 			selectCells,
 			tempCellModel,
 			CellModel,
+			headItemColList,
+			headItemRowList,
 			sendData = [],
 			text = "",
 			i,
@@ -44,6 +46,9 @@ define(function(require) {
 
 		clipRegion = selectRegions.getModelByType("clip")[0];
 		selectRegion = selectRegions.getModelByType("operation")[0];
+
+		headItemRowList = headItemRows.models;
+		headItemColList = headItemCols.models;
 
 		startColIndex = headItemCols.getIndexByAlias(clipRegion.get("wholePosi").startX);
 		startRowIndex = headItemRows.getIndexByAlias(clipRegion.get("wholePosi").startY);
@@ -61,14 +66,14 @@ define(function(require) {
 				excelId: window.SPREADSHEET_AUTHENTIC_KEY,
 				sheetId: '1',
 				orignal: {
-					startColAlias: clipRegion.get("wholePosi").startX,
-					endColAlias: clipRegion.get("wholePosi").endX,
-					startRowAlias: clipRegion.get("wholePosi").startY,
-					endRowAlias: clipRegion.get("wholePosi").endY
+					startColSort: headItemColList[startColIndex].get('sort'),
+					endColSort: headItemColList[endColIndex].get('sort'),
+					startRowSort: headItemRowList[startRowIndex].get('sort'),
+					endRowSort: headItemRowList[endRowIndex].get('sort'),
 				},
 				target: {
-					colAlias: selectRegion.get("wholePosi").startX,
-					rowAlias: selectRegion.get("wholePosi").startY,
+					colSort: headItemColList[startColIndex - relativeColIndex].get('sort'),
+					rowSort: headItemRowList[startRowIndex - relativeRowIndex].get('sort')
 				}
 			}),
 			success: function(data) {
@@ -230,10 +235,14 @@ define(function(require) {
 			startColAlias,
 			startRowIndex,
 			startColIndex,
+			startRowSort,
+			startColSort,
 			selectRegion,
 			clipRegion,
 			rowAlias,
 			colAlias,
+			colSort,
+			rowSort,
 			rowLen,
 			colLen,
 			tempCell;
@@ -246,11 +255,14 @@ define(function(require) {
 
 		//bug
 		encodeText = encodeURI(pasteText);
-		rowData = encodeText.split('%0D%0A'); 
+		rowData = encodeText.split('%0D%0A');
 		rowLen = rowData.length - 1;
 		if (rowData[rowLen] !== '') {
 			rowLen++;
 		}
+
+		headItemColList = headItemCols.models;
+		headItemRowList = headItemRows.models;
 
 		colLen = rowData[0].split('%09').length;
 		selectRegion = selectRegions.getModelByType('operation')[0];
@@ -258,18 +270,18 @@ define(function(require) {
 		startColAlias = selectRegion.get('wholePosi').startX;
 		startRowIndex = headItemRows.getIndexByAlias(startRowAlias);
 		startColIndex = headItemCols.getIndexByAlias(startColAlias);
-		headItemColList = headItemCols.models;
-		headItemRowList = headItemRows.models;
+		startRowSort = headItemRowList[startRowIndex].get('sort');
+		startColSort = headItemColList[startColIndex].get('sort');
 
+		rowSort = startRowSort;
+		colSort = startColSort;
 		for (var i = 0; i < rowLen; i++) {
 			tempCellData = rowData[i].split('%09');
 			for (var j = 0; j < tempCellData.length; j++) {
 				if (tempCellData[j] !== '') {
-					rowAlias = headItemRowList[startRowIndex + i].get('alias');
-					colAlias = headItemColList[startColIndex + j].get('alias');
 					sendData.push({
-						'aliasCol': colAlias,
-						'aliasRow': rowAlias,
+						'colSort': colSort,
+						'rowSort': rowSort,
 						'text': decodeURI(analysisText(tempCellData[j]))
 					});
 					cellData.push({
@@ -277,9 +289,11 @@ define(function(require) {
 						rowIndex: startRowIndex + i,
 						text: decodeURI(analysisText(tempCellData[j]))
 					});
-
+					colSort++;
 				}
 			}
+			colSort = startColSort;
+			rowSort++;
 		}
 
 		send.PackAjax({
@@ -288,8 +302,8 @@ define(function(require) {
 			data: JSON.stringify({
 				excelId: window.SPREADSHEET_AUTHENTIC_KEY,
 				sheetId: '1',
-				startColAlias: startColAlias,
-				startRowAlias: startRowAlias,
+				startColSort: startColSort,
+				startRowSort: startRowSort,
 				colLen: colLen,
 				rowLen: rowLen,
 				pasteData: sendData

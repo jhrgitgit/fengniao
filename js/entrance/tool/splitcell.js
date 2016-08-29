@@ -3,23 +3,20 @@ define(function(require) {
 	var send = require('basic/tools/send'),
 		cache = require('basic/tools/cache'),
 		selectRegions = require('collections/selectRegion'),
+		getOperRegion = require('basic/tools/getoperregion'),
 		cells = require('collections/cells'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
-		analysisLabel = require('basic/tools/analysislabel'),
 		splitCell;
 
 	splitCell = function(sheetId, label) {
-		var region = {},
-			select,
+		var region,
+			operRegion,
+			sendRegion,
 			startColIndex,
 			startRowIndex,
 			endColIndex,
 			endRowIndex,
-			startColAlias,
-			startRowAlias,
-			endColAlias,
-			endRowAlias,
 			selectRegionCells,
 			cacheCell,
 			clip,
@@ -29,28 +26,25 @@ define(function(require) {
 			aliasCol,
 			aliasRow;
 		//选中区域内开始坐标，结束坐标
-		if (label !== undefined) {
-			region = analysisLabel(label);
-		} else {
-			select = selectRegions.getModelByType('operation')[0];
-			region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
-			region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
-			region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
-			region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
-		}
-		if (region.endColIndex === 'MAX' || region.endRowIndex === 'MAX') {
-			return;
-		}
 		clip = selectRegions.getModelByType('clip')[0];
 		if (clip !== undefined) {
 			cache.clipState = 'null';
 			clip.destroy();
 		}
-		region = cells.getFullOperationRegion(region);
-		startColIndex = region.startColIndex;
-		startRowIndex = region.startRowIndex;
-		endColIndex = region.endColIndex;
-		endRowIndex = region.endRowIndex;
+		region = getOperRegion(label);
+		operRegion = region.operRegion;
+		sendRegion = region.sendRegion;
+		if (operRegion.endColIndex === 'MAX' || operRegion.endRowIndex === 'MAX') {
+			return;
+		}
+		if (operRegion.startColIndex === -1 || operRegion.startRowIndex === -1) {
+			sendData();
+			return;
+		}
+		startColIndex = operRegion.startColIndex;
+		startRowIndex = operRegion.startRowIndex;
+		endColIndex = operRegion.endColIndex;
+		endRowIndex = operRegion.endRowIndex;
 
 		//选中区域内所有单元格对象
 		selectRegionCells = cells.getCellByX(startColIndex, startRowIndex, endColIndex, endRowIndex);
@@ -64,32 +58,22 @@ define(function(require) {
 				cache.deletePosi(aliasRow, aliasCol);
 			}
 		}
-		//ps:逻辑错误待修改
 		len = selectRegionCells.length;
 		for (i = 0; i < len; i++) {
 			cacheCell = selectRegionCells[i].clone();
 			selectRegionCells[i].set('isDestroy', true);
 			modifyCell(cacheCell);
 		}
+		sendData();
 
-		startColAlias = headItemCols.models[region.startColIndex].get('alias');
-		startRowAlias = headItemRows.models[region.startRowIndex].get('alias');
-		endColAlias = headItemCols.models[region.endColIndex].get('alias');
-		endRowAlias = headItemRows.models[region.endRowIndex].get('alias');
-
-		send.PackAjax({
-			url: 'cells.htm?m=merge_delete',
-			data: JSON.stringify({
-				excelId: window.SPREADSHEET_AUTHENTIC_KEY,
-				sheetId: '1',
-				coordinate: {
-					startX: startColAlias,
-					startY: startRowAlias,
-					endX: endColAlias,
-					endY: endRowAlias
-				}
-			}),
-		});
+		function sendData() {
+			send.PackAjax({
+				url: 'cells.htm?m=merge_delete',
+				data: JSON.stringify({
+					coordinate: sendRegion
+				}),
+			});
+		}
 	};
 
 	function modifyCell(cacheCell) {

@@ -1,15 +1,10 @@
-define(function(require) {
-	'use strict';
-	var $ = require('lib/jquery'),
-		_ = require('lib/underscore'),
-		Backbone = require('lib/backbone'),
-		Cell = require('models/cell'),
-		headItemCols = require('collections/headItemCol'),
+'use strict';
+define(function(require) {	
+	var headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
 		selectRegions = require('collections/selectRegion'),
 		cells = require('collections/cells'),
-		cache = require('basic/tools/cache'),
-		send = require('basic/tools/send');
+		cache = require('basic/tools/cache');
 
 	function clipSelectOperate(type, e) {
 		var tempCellModel,
@@ -18,11 +13,10 @@ define(function(require) {
 			startRowIndex,
 			endColIndex,
 			endRowIndex,
-			selectModel,
 			clipModel,
 			colAlias,
 			rowAlias,
-			text = "",
+			text = '',
 			i,
 			j;
 
@@ -30,29 +24,27 @@ define(function(require) {
 		if (clipModel !== undefined) {
 			clipModel.destroy();
 		}
-		selectRegion = selectRegions.getModelByType("operation")[0];
+		selectRegion = selectRegions.getModelByType('operation')[0];
 		//整行整列，禁止复制
 		if(selectRegion.get('wholePosi').endX === 'MAX' ||
 			selectRegion.get('wholePosi').endY === 'MAX'){
 			return;
 		}
 		clipModel = selectRegion.clone();
-		clipModel.set("selectType", "clip");
+		clipModel.set('selectType', 'clip');
 		selectRegions.add(clipModel);
 
-		
-		// Backbone.trigger('event:cellsContainer:addClipRegionView');
 
-		if (type === "copy") {
-			cache.clipState = "copy";
-		} else if (type === "cut") {
-			cache.clipState = "cut";
+		if (type === 'copy') {
+			cache.clipState = 'copy';
+		} else if (type === 'cut') {
+			cache.clipState = 'cut';
 		}
 
-		startColIndex = headItemCols.getIndexByAlias(clipModel.get("wholePosi").startX);
-		startRowIndex = headItemRows.getIndexByAlias(clipModel.get("wholePosi").startY);
-		endColIndex = headItemCols.getIndexByAlias(clipModel.get("wholePosi").endX);
-		endRowIndex = headItemRows.getIndexByAlias(clipModel.get("wholePosi").endY);
+		startColIndex = headItemCols.getIndexByAlias(clipModel.get('wholePosi').startX);
+		startRowIndex = headItemRows.getIndexByAlias(clipModel.get('wholePosi').startY);
+		endColIndex = headItemCols.getIndexByAlias(clipModel.get('wholePosi').endX);
+		endRowIndex = headItemRows.getIndexByAlias(clipModel.get('wholePosi').endY);
 
 		for (i = startRowIndex; i < endRowIndex + 1; i++) {
 			for (j = startColIndex; j < endColIndex + 1; j++) {
@@ -63,18 +55,18 @@ define(function(require) {
 					text += cellToText(tempCellModel);
 				}
 				if (j !== endColIndex) {
-					text += "\t";
+					text += '\t';
 				} else {
-					text += "\r\n";
+					text += '\r\n';
 				}
 			}
 		}
 		if (e !== undefined) {
 			e.preventDefault();
 			if (window.clipboardData) {
-				window.clipboardData.setData("Text", text);
+				window.clipboardData.setData('Text', text);
 			} else {
-				e.originalEvent.clipboardData.setData("Text", text);
+				e.originalEvent.clipboardData.setData('Text', text);
 			}
 		}
 
@@ -82,7 +74,7 @@ define(function(require) {
 			var text,
 				head = '"',
 				tail = '"';
-			text = cell.get("content").texts;
+			text = cell.get('content').texts;
 
 			if (text.indexOf('\n') === -1) {
 				return text;

@@ -7,23 +7,20 @@ define(function(require) {
 		Cell = require('models/cell'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
-		analysisLabel = require('basic/tools/analysislabel'),
+		getOperRegion = require('basic/tools/getoperregion'),
 		mergeCell;
 
 	mergeCell = function(sheetId, label) {
+
 		var gridLineColList = headItemCols.models,
 			gridLineRowList = headItemRows.models,
 			startRowIndex,
 			startColIndex,
 			endRowIndex,
 			endColIndex,
-			startRowAlias,
-			startColAlias,
-			endRowAlias,
-			endColAlias,
-			textCellNum = 0,
-			region = {},
-			select,
+			region,
+			operRegion,
+			sendRegion,
 			clip,
 			cacheCell,
 			cellList,
@@ -36,30 +33,27 @@ define(function(require) {
 			len, i = 0,
 			j = 0;
 
-		if (label !== undefined) {
-			region = analysisLabel(label);
-		} else {
-			select = selectRegions.getModelByType('operation')[0];
-			region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
-			region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
-			region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
-			region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
-		}
-		if (region.endColIndex === 'MAX' || region.endRowIndex === 'MAX') {
-			return;
-		}
-		
 		clip = selectRegions.getModelByType('clip')[0];
 		if (clip !== undefined) {
 			cache.clipState = 'null';
 			clip.destroy();
 		}
-		//bug
-		region = cells.getFullOperationRegion(region);
-		startRowIndex = region.startRowIndex;
-		startColIndex = region.startColIndex;
-		endRowIndex = region.endRowIndex;
-		endColIndex = region.endColIndex;
+		region = getOperRegion(label);
+		operRegion = region.operRegion;
+		sendRegion = region.sendRegion;
+
+		if (operRegion.startColIndex === -1 || operRegion.startRowIndex === -1) {
+			sendData();
+			return;
+		}
+		if (operRegion.endColIndex === 'MAX' || operRegion.endRowIndex === 'MAX') {
+			return;
+		}
+
+		startRowIndex = operRegion.startRowIndex;
+		startColIndex = operRegion.startColIndex;
+		endRowIndex = operRegion.endRowIndex;
+		endColIndex = operRegion.endColIndex;
 		/**
 		 * 合并操作：
 		 * 存在含有文本单元格，按照先行后列，按照查找到第一个单元格作为模板进行扩大
@@ -75,8 +69,8 @@ define(function(require) {
 		}
 		if (cacheCell === undefined) {
 			cacheCell = cells.getCellByRow(startRowIndex, startColIndex)[0];
-			if(cacheCell !== undefined){
-				cacheCell =cacheCell.clone();
+			if (cacheCell !== undefined) {
+				cacheCell = cacheCell.clone();
 			}
 		}
 		if (cacheCell === undefined) {
@@ -89,11 +83,11 @@ define(function(require) {
 			}
 		}
 		//删除position索引
-		for (i = startColIndex; i < endColIndex+ 1; i++) {
+		for (i = startColIndex; i < endColIndex + 1; i++) {
 			for (j = startRowIndex; j < endRowIndex + 1; j++) {
 				aliasCol = gridLineColList[i].get('alias');
 				aliasRow = gridLineRowList[j].get('alias');
-				cache.deletePosi(aliasRow,aliasCol);
+				cache.deletePosi(aliasRow, aliasCol);
 			}
 		}
 		//获取occupy信息
@@ -123,25 +117,15 @@ define(function(require) {
 				cache.cachePosition(aliasRow, aliasCol, cells.length - 1);
 			}
 		}
-		startRowAlias = gridLineRowList[startRowIndex].get('alias');
-		startColAlias = gridLineColList[startColIndex].get('alias');
-
-		endRowAlias = gridLineRowList[endRowIndex].get('alias');
-		endColAlias = gridLineColList[endColIndex].get('alias');
-
-		send.PackAjax({
-			url: 'cells.htm?m=merge',
-			data: JSON.stringify({
-				excelId: window.SPREADSHEET_AUTHENTIC_KEY,
-				sheetId: '1',
-				coordinate: {
-					startX: startColAlias,
-					startY: startRowAlias,
-					endX: endColAlias,
-					endY: endRowAlias
-				}
-			}),
-		});
+		sendData();
+		function sendData() {
+			send.PackAjax({
+				url: 'cells.htm?m=merge',
+				data: JSON.stringify({
+					coordinate: sendRegion
+				}),
+			});
+		}
 	};
 
 

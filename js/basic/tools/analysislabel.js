@@ -17,6 +17,7 @@ define(function() {
 			endColDisplayName,
 			endRowDisplayName;
 
+
 		//解析
 		if (regionLabel instanceof Array) {
 			//判断数组长度
@@ -33,7 +34,6 @@ define(function() {
 			endColDisplayName = getDisplayName(regionLabel[1], 'col');
 			endRowDisplayName = getDisplayName(regionLabel[1], 'row');
 
-
 			startColSort = colSignToSort(startColDisplayName);
 			endColSort = colSignToSort(endColDisplayName);
 			startRowSort = rowSignToSort(startRowDisplayName);
@@ -41,30 +41,30 @@ define(function() {
 
 		} else if (/^[A-Z]+$/.test(regionLabel)) { //整列操作
 			startRowSort = 0;
-			endRowSort = 10000;
+			endRowSort = -1;
 			startColSort = endColSort = colSignToSort(regionLabel);
 
 		} else if (/^[1-9]+[0-9]*$/.test(regionLabel)) { //整行操作
 			startColSort = 0;
-			endColSort = 100;
+			endColSort = -1;
 			startRowSort = endRowSort = rowSignToSort(regionLabel);
 
 		} else if (reg.test(regionLabel)) {
 			startRowDisplayName = getDisplayName(regionLabel, 'row');
 			startColDisplayName = getDisplayName(regionLabel, 'col');
-			startColSort = endColSort = colSignToSort(region.startColDisplayName);
-			startRowSort = endRowSort = rowSignToSort(region.startRowDisplayName);
+			startColSort = endColSort = colSignToSort(startColDisplayName);
+			startRowSort = endRowSort = rowSignToSort(startRowDisplayName);
 		} else {
 			throw new Error('Parameter format error');
 		}
 		//交换位置
 
-		if (startRowSort > endRowSort) {
+		if (startRowSort > endRowSort && endRowSort !== -1) {
 			temp = startRowSort;
 			startRowSort = endRowSort;
 			endRowSort = temp;
 		}
-		if (startColSort > endColSort) {
+		if (startColSort > endColSort && endColSort !== -1) {
 			temp = startColSort;
 			startColSort = endRowSort;
 			endRowSort = temp;

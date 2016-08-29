@@ -4,6 +4,7 @@ define(function(require) {
 		cache = require('basic/tools/cache'),
 		headItemRows = require('collections/headItemRow'),
 		cells = require('collections/cells'),
+		getOperRegion = require('basic/tools/getoperregion'),
 		selectRegions = require('collections/selectRegion'),
 		siderLineRows = require('collections/siderLineRow'),
 		send = require('basic/tools/send');
@@ -15,34 +16,30 @@ define(function(require) {
 		 * @param {string} label   行标识号,如果为undefined,则按照当前选中区域进行操作
 		 */
 		deleteRow: function(sheetId, label) {
-			var index = -1,
-				alias,
-				select,
-				clip,
-				box;
+			var clip,
+				region,
+				operRegion,
+				sendRegion,
+				index;
 
 			clip = selectRegions.getModelByType('clip')[0];
 			if (clip !== undefined) {
 				cache.clipState = 'null';
 				clip.destroy();
 			}
-			if (label !== undefined) {
-				index = headItemRows.getIndexByDisplayname(label);
-				if (index === -1) {
-					return;
-				}
-			} else {
-				select = selectRegions.getModelByType('operation')[0];
-				box = select.get('wholePosi');
-				if (box.endY !== 'MAX') {
-					index = headItemRows.getIndexByAlias(box.startY);
-				} else{
-					return;
-				}
+			region = getOperRegion(label);
+			operRegion = region.operRegion;
+			sendRegion = region.sendRegion;
+
+			if (operRegion.endColIndex === 'MAX') {
+				return;
 			}
 
-			alias = headItemRows.models[index].get('alias');
-
+			if (operRegion.startRowIndex === -1) {
+				sendData();
+				return;
+			}
+			index = operRegion.startRowIndex;
 			this._adaptCells(index);
 			this._adaptSelectRegion(index);
 			this._frozenHandle(index);
@@ -51,16 +48,17 @@ define(function(require) {
 			if (cache.TempProp.isFrozen === true) {
 				Backbone.trigger('event:bodyContainer:executiveFrozen');
 			}
+			sendData();
 			Backbone.on('event:mainContainer:addBottom');
 
-			send.PackAjax({
-				url: 'cells.htm?m=rows_delete',
-				data: JSON.stringify({
-					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
-					sheetId: '1',
-					rowAlias: alias,
-				}),
-			});
+			function sendData() {
+				send.PackAjax({
+					url: 'cells.htm?m=rows_delete',
+					data: JSON.stringify({
+						rowSort: sendRegion.startSortY,
+					}),
+				});
+			}
 		},
 		/**
 		 * 调整行对象

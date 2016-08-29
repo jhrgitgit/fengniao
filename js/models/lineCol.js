@@ -34,7 +34,7 @@ define(function(require) {
 			 * 宽度
 			 * @property {number} width
 			 */
-			width: 71,
+			width: 71, //0
 			/**
 			 * 显示的名字
 			 * @property {string} displayName

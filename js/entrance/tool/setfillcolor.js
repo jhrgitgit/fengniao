@@ -1,12 +1,10 @@
 'use strict';
 define(function(require) {
 	var send = require('basic/tools/send'),
-		// selectRegions = require('collections/selectRegion'),
-		// headItemCols = require('collections/headItemCol'),
-		// headItemRows = require('collections/headItemRow'),
 		cache = require('basic/tools/cache'),
 		cells = require('collections/cells'),
-		getOperRegion= require('basic/tool/getoperregion'),
+		selectRegions = require('collections/selectRegion'),
+		getOperRegion = require('basic/tools/getoperregion'),
 		rowOperate = require('entrance/row/rowoperation'),
 		colOperate = require('entrance/col/coloperation');
 
@@ -17,75 +15,46 @@ define(function(require) {
 	 * @param {string} label   行标，列标
 	 */
 	var setFillColor = function(sheetId, color, label) {
-		var select,
-			clip,
-			region = {},
-			startColAlias,
-			startRowAlias,
-			endColAlias,
-			endRowAlias;
+		var clip,
+			region,
+			operRegion,
+			sendRegion;
 
 		clip = selectRegions.getModelByType('clip')[0];
 		if (clip !== undefined) {
 			cache.clipState = 'null';
 			clip.destroy();
 		}
-
-		if (region.startColIndex === -1 ||
-			region.startRowIndex === -1 ||
-			region.endColIndex === -1 ||
-			region.endRowIndex === -1) {
-			send.PackAjax({
-				url: 'text.htm?m=color_set',
-				data: JSON.stringify({
-					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
-					sheetId: '1',
-					coordinate: {
-						startX: region.startColDisplayName,
-						startY: region.startRowDisplayName,
-					},
-					bgcolor: color
-				})
-			});
+		region = getOperRegion(label);
+		operRegion = region.operRegion;
+		sendRegion = region.sendRegion;
+		
+		if (operRegion.startColIndex === -1 || operRegion.startRowIndex === -1) {
+			sendData();
 			return;
 		}
 
-		if (region.endColIndex === 'MAX') { //整行操作
-			rowOperate.rowPropOper(region.startRowIndex, 'customProp.background', color);
-			endColAlias = 'MAX';
-			endRowAlias = headItemRows.models[region.endRowIndex].get('alias');
-		} else if (region.endRowIndex === 'MAX') {
-			colOperate.colPropOper(region.startColIndex, 'customProp.background', color);
-			endRowAlias = 'MAX';
-			endColAlias = headItemCols.models[region.endColIndex].get('alias');
+		if (operRegion.endColIndex === 'MAX') { //整行操作
+			rowOperate.rowPropOper(operRegion.startRowIndex, 'customProp.background', color);
+		} else if (operRegion.endRowIndex === 'MAX') {
+			console.log(operRegion.startColIndex);
+			colOperate.colPropOper(operRegion.startColIndex, 'customProp.background', color);
 		} else {
-			region = cells.getFullOperationRegion(region);
-			cells.operateCellsByRegion(region, function(cell) {
+			cells.operateCellsByRegion(operRegion, function(cell) {
 				cell.set('customProp.background', color);
 			});
-			endColAlias = headItemCols.models[region.endColIndex].get('alias');
-			endRowAlias = headItemRows.models[region.endRowIndex].get('alias');
 		}
+		sendData();
 
-		startColAlias = headItemCols.models[region.startColIndex].get('alias');
-		startRowAlias = headItemRows.models[region.startRowIndex].get('alias');
-
-
-		send.PackAjax({
-			url: 'text.htm?m=fill_bgcolor',
-			data: JSON.stringify({
-				excelId: window.SPREADSHEET_AUTHENTIC_KEY,
-				sheetId: '1',
-				coordinate: {
-					startX: startColAlias,
-					startY: startRowAlias,
-					endX: endColAlias,
-					endY: endRowAlias
-				},
-				bgcolor: color
-			})
-		});
-
+		function sendData() {
+			send.PackAjax({
+				url: 'text.htm?m=fill_bgcolor',
+				data: JSON.stringify({
+					coordinate: sendRegion,
+					bgcolor: color
+				})
+			});
+		}
 	};
 	return setFillColor;
 });

@@ -49,21 +49,24 @@ define(function(require) {
 			tempTextarea.remove();
 			return height;
 		},
-		getTextWidth: function(text, fontSize) {
-			var tempDiv,
-				currentWidth;
-
-			text = text.replace(/\u0020/g, '&nbsp');
-			tempDiv = $('<div/>').html(text);
-			tempDiv.css({
-				'display': 'none',
-				'font-size': fontSize + 'pt'
+		getInputWidth: function(text, fontSize) {
+			var tempTextarea,
+				width;
+			tempTextarea = $('<textarea>');
+			tempTextarea.css({
+				'position': 'absolute',
+				'visibility': 'hidden',
+				'font-size': fontSize + 'pt',
+				'height': 0,
+				'width': 0,
+				'overflow': 'scroll',
 			});
-
-			$('body').append(tempDiv);
-			currentWidth = parseInt(tempDiv.width());
-			tempDiv.remove();
-			return currentWidth;
+			tempTextarea.attr('wrap','off');
+			$('body').append(tempTextarea);
+			tempTextarea.val(text);
+			width = parseInt(tempTextarea[0].scrollWidth);
+			tempTextarea.remove();
+			return width;
 		}
 	};
 });

@@ -40,7 +40,7 @@ define(function(require) {
 
 			//维护行对象operProp属性
 			headColModel = headItemCols.models[index];
-			headColProp = headColModel.get('operProp');
+			headColProp = headColModel.toJSON().operProp;
 
 			defaultProp = (new Cell()).toJSON();
 

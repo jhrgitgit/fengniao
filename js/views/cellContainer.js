@@ -234,6 +234,7 @@ define(function(require) {
 			switch (format) {
 				case 'normal':
 					if (textTypeHandler.isNum(text)) {
+						
 						decimal = textTypeHandler.getNoZeroDecimal(text);
 						decimal = decimal < 6 ? decimal : 6;
 						this.model.set("content.displayTexts", textTypeHandler.getFormatNumber(text, thousands, decimal));

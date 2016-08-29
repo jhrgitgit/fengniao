@@ -137,7 +137,7 @@ define(function(require) {
 				this.$el.val(modelJSON.content.texts);
 			}
 			//适应文本宽度高度
-			this.adjustWidth();
+			this.adjustWidth(true);
 			this.adjustHeight();
 		},
 		/**
@@ -217,6 +217,7 @@ define(function(require) {
 					'z-index': -100
 				});
 				this.model.set('content.texts', this.$el.val());
+				// Backbone.trigger('event:cellsContainer:unBindDrag');
 				this.sendData();
 			}
 			this.$el.val('');
@@ -473,12 +474,13 @@ define(function(require) {
 		 * @method adjustWidth
 		 * @param e {event} propertychange函数
 		 */
-		adjustWidth: function() {
+		adjustWidth: function(init) {
 			var text = '',
 				texts,
 				width,
 				inputText,
 				scrollBarWidth,
+				currentWidth,
 				fontSize,
 				maxWidth,
 				minWidth,
@@ -497,18 +499,14 @@ define(function(require) {
 			}
 			inputText = this.$el.val();
 			fontSize = this.model.get('content').size;
+			currentWidth = this.$el.width();
 
-			texts = inputText.split('\n');
-			len = texts.length;
-			for (i = 0; i < len; i++) {
-				text += texts[i];
-				if (i !== len - 1) {
-					text += '<br>';
-				}
-			}
+			width = getTextBox.getInputWidth(inputText, fontSize) + 20;
 
-			width = getTextBox.getTextWidth(text, fontSize) + 5;
 			width = width > minWidth ? width : minWidth;
+			if(init!==true){
+				width = width > currentWidth ? width : currentWidth;
+			}
 			if (width < maxWidth) {
 				this.$el.width(width);
 				return width;
@@ -526,13 +524,16 @@ define(function(require) {
 		sendData: function() {
 			var text,
 				colAlias,
-				rowAlias;
-
+				rowAlias,
+				colSort,
+				rowSort;
 
 			text = this.$el.val();
 			colAlias = this.model.get('occupy').x[0];
 			rowAlias = this.model.get('occupy').y[0];
 
+			rowSort=headItemRows.getModelByAlias(rowAlias).get('sort');
+			colSort=headItemCols.getModelByAlias(colAlias).get('sort');
 
 			send.PackAjax({
 				url: 'text.htm?m=data',
@@ -540,8 +541,8 @@ define(function(require) {
 					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
 					sheetId: '1',
 					coordinate: {
-						startX: colAlias,
-						startY: rowAlias
+						startSortY: rowSort,
+						startSortX: colSort
 					},
 					content: encodeURIComponent(text)
 				})

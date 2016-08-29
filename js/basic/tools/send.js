@@ -30,6 +30,7 @@ define(function(require) {
 				dataType: cfg.dataType || 'json',
 				data: cfg.data || '',
 				async: cfg.async !== undefined ? cfg.async : false,
+				// async: cfg.async !== undefined ? cfg.async : true,
 				timeout: cfg.timeout || 5000,
 				success: cfg.success || NULLFUNC,
 				error: cfg.error || NULLFUNC,
@@ -37,7 +38,7 @@ define(function(require) {
 				isPublic: cfg.isPublic !== undefined ? cfg.isPublic : true
 			};
 			//请求过滤,回调数据
-			if(config.isPublic=== true){
+			if (config.isPublic === true) {
 				cache.sendQueueStep++;
 			}
 			$.ajax({

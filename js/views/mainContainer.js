@@ -970,8 +970,6 @@ define(function(require) {
 			send.PackAjax({
 				url: 'sheet.htm?m=addrowline',
 				data: JSON.stringify({
-					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
-					sheetId: '1',
 					rowNum: len
 				})
 			});

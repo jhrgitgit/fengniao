@@ -5,33 +5,38 @@ define(function(require) {
 		send = require('basic/tools/send'),
 		cache = require('basic/tools/cache'),
 		selectRegions = require('collections/selectRegion'),
-		cells = require('collections/cells'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
-		analysisLabel = require('basic/tools/analysislabel');
+		getOperRegion = require('basic/tools/getoperregion');
 
 
 	var setFrozen = function(sheetId, frozenPositon, label) {
-		var select,
-			region = {};
-		//选中区域内开始坐标，结束坐标
-		if (label !== undefined) {
-			region = analysisLabel(label);
-		} else {
-			select = selectRegions.getModelByType('operation')[0];
-			region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
-			region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
-			region.endColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').endX);
-			region.endRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').endY);
+
+
+		var clip,
+			region,
+			operRegion,
+			sendRegion;
+
+		clip = selectRegions.getModelByType('clip')[0];
+		if (clip !== undefined) {
+			cache.clipState = 'null';
+			clip.destroy();
 		}
-		if (region.endColIndex === 'MAX' || region.endRowIndex === 'MAX') {
+		region = getOperRegion(label);
+		operRegion = region.operRegion;
+		sendRegion = region.sendRegion;
+
+		if (operRegion.startColIndex === -1 || operRegion.startRowIndex === -1) {
 			return;
 		}
-		region = cells.getFullOperationRegion(region);
+		if (sendRegion.endColIndex === 100 || sendRegion.endRowIndex === 10000) {
+			return;
+		}
 
 		switch (frozenPositon) {
 			case 'custom':
-				setCustom(region);
+				setCustom(operRegion);
 				break;
 			case 'row':
 				setRow();
@@ -43,7 +48,7 @@ define(function(require) {
 				setUnfrozen();
 				break;
 			default:
-				setCustom(region);
+				setCustom(operRegion);
 				break;
 		}
 		Backbone.trigger('event:bodyContainer:executiveFrozen');
@@ -61,7 +66,10 @@ define(function(require) {
 		//初始化，未进行滚动
 		if (userViewRowIndex === userViewEndRowIndex) {
 			return false;
-		} else if (region.startColIndex < userViewColIndex || region.startRowIndex < userViewRowIndex || region.startColIndex > userViewEndColIndex || region.startRowIndex > userViewEndRowIndex) {
+		} else if (region.startColIndex < userViewColIndex ||
+			region.startRowIndex < userViewRowIndex ||
+			region.startColIndex > userViewEndColIndex ||
+			region.startRowIndex > userViewEndRowIndex) {
 			return true;
 		} else {
 			return false;
@@ -72,13 +80,16 @@ define(function(require) {
 	 * @method setCustom
 	 */
 	var setCustom = function(region) {
-		if (filterOutUserView(region)) {
-			return;
-		}
 		var headItemRowList = headItemRows.models,
 			headItemColList = headItemCols.models,
 			splitColAlias = headItemColList[region.startColIndex].get('alias'),
-			splitRowAlias = headItemRowList[region.startRowIndex].get('alias');
+			splitRowAlias = headItemRowList[region.startRowIndex].get('alias'),
+			splitColSort = headItemColList[region.startColIndex].get('sort'),
+			splitRowSort = headItemRowList[region.startRowIndex].get('sort');
+
+		if(filterOutUserView(region)){
+			return;
+		}
 
 		cache.TempProp = {
 			isFrozen: true,
@@ -88,7 +99,7 @@ define(function(require) {
 			colFrozen: true
 		};
 
-		requestFrozen(splitColAlias, splitRowAlias, cache.UserView.colAlias, cache.UserView.rowAlias);
+		requestFrozen(splitColSort, splitRowSort);
 	};
 	/**
 	 * 执行列冻结
@@ -103,7 +114,7 @@ define(function(require) {
 			colFrozen: true
 		};
 		cache.UserView.rowAlias = '1';
-		requestFrozen(neighborModel.get('alias'), '1', cache.UserView.colAlias, cache.UserView.rowAlias);
+		requestFrozen(neighborModel.get('sort'), 0);
 	};
 	/**
 	 * 执行行冻结
@@ -119,7 +130,7 @@ define(function(require) {
 		};
 
 		cache.UserView.colAlias = '1';
-		requestFrozen('1', neighborModel.get('alias'), cache.UserView.colAlias, cache.UserView.rowAlias);
+		requestFrozen(0, neighborModel.get('sort'));
 	};
 	/**
 	 * 解除冻结
@@ -137,19 +148,16 @@ define(function(require) {
 	 * 向后台请求冻结操作
 	 * @method requestFrozen
 	 */
-	var requestFrozen = function(frozenColAlias, frozenRowAlias, startColAlias, startRowAlias) {
-		var excelId = window.SPREADSHEET_AUTHENTIC_KEY,
-			sheetId = '1';
-
+	var requestFrozen = function(frozenColSort, frozenRowSort) {
+		var startColSort = headItemCols.getModelByAlias(cache.UserView.colAlias).get('sort'),
+			startRowSort = headItemRows.getModelByAlias(cache.UserView.rowAlias).get('sort');
 		send.PackAjax({
 			url: 'sheet.htm?m=frozen',
 			data: JSON.stringify({
-				excelId: excelId,
-				sheetId: '1',
-				frozenX: frozenColAlias,
-				frozenY: frozenRowAlias,
-				startX: startColAlias,
-				startY: startRowAlias
+				frozenSortX: frozenColSort,
+				frozenSortY: frozenRowSort,
+				startSortX: startColSort,
+				startSortY: startRowSort
 			})
 		});
 	};
@@ -158,9 +166,8 @@ define(function(require) {
 	 * @method requestUnfrozen
 	 */
 	var requestUnfrozen = function() {
-		var excelId = window.SPREADSHEET_AUTHENTIC_KEY;
 		send.PackAjax({
-			url: 'sheet.htm?m=unFrozen&excelId=' + excelId + '&sheetId=1'
+			url: 'sheet.htm?m=unFrozen'
 		});
 	};
 	return setFrozen;

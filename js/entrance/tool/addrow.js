@@ -6,6 +6,7 @@ define(function(require) {
 		cache = require('basic/tools/cache'),
 		headItemRows = require('collections/headItemRow'),
 		headItemCols = require('collections/headItemCol'),
+		getOperRegion = require('basic/tools/getoperregion'),
 		cells = require('collections/cells'),
 		selectRegions = require('collections/selectRegion'),
 		siderLineRows = require('collections/siderLineRow'),
@@ -18,46 +19,36 @@ define(function(require) {
 		 * @param {string} label   行标识号,如果为undefined,则按照当前选中区域进行操作
 		 */
 		addRow: function(sheetId, label) {
-			var index = -1,
-				alias,
-				select,
-				clip,
-				box;
-			if (label !== undefined) {
-				index = headItemRows.getIndexByDisplayname(label);
-			} else {
-				select = selectRegions.getModelByType('operation')[0];
-				box = select.get('wholePosi');
-				if (box.endY !== 'MAX') {
-					index = headItemRows.getIndexByAlias(box.startY);
-				} else {
-					return;
-				}
-			}
+			var clip,
+				region,
+				operRegion,
+				sendRegion;
 
 			clip = selectRegions.getModelByType('clip')[0];
 			if (clip !== undefined) {
 				cache.clipState = 'null';
 				clip.destroy();
 			}
-			if (index === -1) {
+			region = getOperRegion(label);
+			operRegion = region.operRegion;
+			sendRegion = region.sendRegion;
+
+
+			if (operRegion.startColIndex === -1 || operRegion.startRowIndex === -1) {
 				return;
 			}
-			alias = headItemRows.models[index].get('alias');
 
-			this._adaptHeadRowItem(index);
-			this._adaptSelectRegion(index);
-			this._adaptCells(index);
-			this._fillCells(index);
-			this._frozenHandle(index);
+			this._adaptHeadRowItem(operRegion.startRowIndex);
+			this._adaptSelectRegion(operRegion.startRowIndex);
+			this._adaptCells(operRegion.startRowIndex);
+			this._fillCells(operRegion.startRowIndex);
+			this._frozenHandle(operRegion.startRowIndex);
 
 			send.PackAjax({
 				url: 'cells.htm?m=rows_insert',
 				data: JSON.stringify({
-					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
-					sheetId: '1',
-					rowAlias: alias,
-				}),
+					rowSort: sendRegion.startSortY
+				})
 			});
 		},
 		/**

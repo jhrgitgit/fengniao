@@ -194,6 +194,9 @@ define(function() {
 			}
 			return start;
 		},
+		/**
+		 * 二分查询，暂时查询sort值使用
+		 */
 		indexAttrBinary: function(value, array, attr, startIndex, endIndex) {
 			var	middleIndex;
 			

@@ -6,6 +6,7 @@ define(function(require) {
 		cache = require('basic/tools/cache'),
 		headItemCols = require('collections/headItemCol'),
 		aliasBuild = require('basic/tools/buildalias'),
+		getOperRegion = require('basic/tools/getoperregion'),
 		cells = require('collections/cells'),
 		selectRegions = require('collections/selectRegion'),
 		siderLineCols = require('collections/siderLineCol'),
@@ -18,50 +19,38 @@ define(function(require) {
 		 * @param {string} label   行标识号,如果为undefined,则按照当前选中区域进行操作
 		 */
 		addCol: function(sheetId, label) {
-			var index = -1,
-				alias,
-				select,
-				clip,
-				box;
-			if (label !== undefined) {
-				index = headItemCols.getIndexByDisplayname(label);
-			} else {
-				select = selectRegions.getModelByType('operation')[0];
-				box = select.get('wholePosi');
-				if (box.endX !== 'MAX') {
-					index = headItemCols.getIndexByAlias(box.startX);
-				} else {
-					return;
-				}
-			}
 
-			
+			var clip,
+				region,
+				operRegion,
+				sendRegion;
+
 			clip = selectRegions.getModelByType('clip')[0];
 			if (clip !== undefined) {
 				cache.clipState = 'null';
 				clip.destroy();
 			}
-			if (index === -1) {
-				return;
-			}
 			if (!this._isAbleAdd()) {
 				return;
 			}
+			region = getOperRegion(label);
+			operRegion = region.operRegion;
+			sendRegion = region.sendRegion;
 
-			alias = headItemCols.models[index].get('alias');
 
-			this._adaptHeadColItem(index);
-			this._adaptSelectRegion(index);
-			this._adaptCells(index);
+			if (operRegion.startColIndex === -1 || operRegion.startRowIndex === -1) {
+				return;
+			}
+
+			this._adaptHeadColItem(operRegion.startColIndex);
+			this._adaptSelectRegion(operRegion.startColIndex);
+			this._adaptCells(operRegion.startColIndex);
 			this._removeLastColItem();
-			this._frozenHandle(index);
-
+			this._frozenHandle(operRegion.startColIndex);
 			send.PackAjax({
 				url: 'cells.htm?m=cols_insert',
 				data: JSON.stringify({
-					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
-					sheetId: '1',
-					colAlias: alias,
+					colSort: sendRegion.startSortX,
 				}),
 			});
 		},

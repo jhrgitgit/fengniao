@@ -118,8 +118,7 @@ define(function(require) {
 			SpreadSheet.prototype.setWordWrap = setWordWrap;
 			SpreadSheet.prototype.getSelectRegion = getSelectRegion;
 			SpreadSheet.prototype.reloadCells = reloadCells;
-			//ps:修改
-			SpreadSheet.prototype.comment = comment;
+	
 
 			SpreadSheet.prototype.addRow = addRow;
 			SpreadSheet.prototype.addCol = addCol;
@@ -133,6 +132,7 @@ define(function(require) {
 				return cache.sendQueueStep;
 			};
 
+			SpreadSheet.prototype.comment = comment;
 			// SpreadSheet.prototype.createAddCommentView =comment.createAddCommentView;
 			// SpreadSheet.prototype.createEditComment =comment.createEditComment;
 			// SpreadSheet.prototype.deleteComment=comment.deleteComment;

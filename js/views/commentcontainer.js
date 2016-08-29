@@ -4,6 +4,7 @@ define(function(require) {
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
 		selectRegions = require('collections/selectRegion'),
+		getOperRegion = require('basic/tools/getoperregion'),
 		config = require('spreadsheet/config'),
 		cells = require('collections/cells'),
 		send = require('basic/tools/send'),
@@ -295,31 +296,12 @@ define(function(require) {
 			this.remove();
 		},
 		sendData: function(comment) {
-			var select,
-				startColAlias,
-				startRowAlias,
-				endColAlias,
-				endRowAlias;
-			select = selectRegions.getModelByType('operation')[0];
-			if (select.get('wholePosi').endX === 'MAX') {
-				endColAlias = 'MAX';
-			} else {
-				endColAlias = select.get('wholePosi').endX;
-			}
-			startColAlias = select.get('wholePosi').startX;
-			startRowAlias = select.get('wholePosi').startY;
-			endRowAlias = select.get('wholePosi').endY;
+			var sendData;
+			sendData = getOperRegion().sendRegion;
 			send.PackAjax({
 				url: 'text.htm?m=comment_set',
 				data: JSON.stringify({
-					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
-					sheetId: '1',
-					coordinate: {
-						startRowAlais: startRowAlias,
-						endRowAlais: endRowAlias,
-						startColAlais: startColAlias,
-						endColAlais: endColAlias
-					},
+					coordinate: sendData,
 					comment: comment
 				})
 			});

@@ -1,43 +1,55 @@
 'use strict';
 define(function(require) {
 	var send = require('basic/tools/send'),
+		cache = require('basic/tools/cache'),
 		selectRegions = require('collections/selectRegion'),
-		headItemCols = require('collections/headItemCol'),
-		headItemRows = require('collections/headItemRow'),
 		cells = require('collections/cells'),
-		analysisLabel = require('basic/tools/analysislabel');
+		getOperRegion = require('basic/tools/getoperregion');
 
 	var setCellContent = function(sheetId, text, label) {
-		var select,
-			region = {},
-			startColAlias,
-			startRowAlias;
-		if (label !== undefined) {
-			region = analysisLabel(label);
-			region = cells.getFullOperationRegion(region);
-		} else {
-			select = selectRegions.getModelByType('operation')[0];
-			region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
-			region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
-		}
-		startColAlias = headItemCols.models[region.startColIndex].get('alias');
-		startRowAlias = headItemRows.models[region.startRowIndex].get('alias');
+		var clip,
+			region,
+			operRegion,
+			sendRegion,
+			startColSort,
+			startRowSort,
+			endColSort,
+			endRowSort,
+			i, j;
 
-		cells.operateCellsByRegion(region, function(cell) {
+		clip = selectRegions.getModelByType('clip')[0];
+		if (clip !== undefined) {
+			cache.clipState = 'null';
+			clip.destroy();
+		}
+		region = getOperRegion(label);
+		operRegion = region.operRegion;
+		sendRegion = region.sendRegion;
+
+		startColSort = sendRegion.startColSort;
+		startRowSort = sendRegion.startRowSort;
+		endColSort = sendRegion.endColSort;
+		endRowSort = sendRegion.endRowSort;
+
+		cells.operateCellsByRegion(operRegion, function(cell) {
 			cell.set('content.texts', text);
-		});		
-		send.PackAjax({
-			url: 'text.htm?m=data',
-			data: JSON.stringify({
-				excelId: window.SPREADSHEET_AUTHENTIC_KEY,
-				sheetId: '1',
-				coordinate: {
-					startX: startColAlias,
-					startY: startRowAlias,
-				},
-				content: text
-			})
 		});
+
+		for (i = startRowSort; i < endRowSort + 1; i++) {
+			for (j = startColSort; j < endColSort + 1; j++) {
+				send.PackAjax({
+					url: 'text.htm?m=data',
+					data: JSON.stringify({
+						coordinate: {
+							startSortX: j,
+							startSortY: i,
+						},
+						content: text
+					})
+				});
+			}
+		}
+
 	};
 	return setCellContent;
 });

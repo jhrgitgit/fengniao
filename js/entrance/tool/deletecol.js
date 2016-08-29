@@ -5,6 +5,7 @@ define(function(require) {
 		config = require('spreadsheet/config'),
 		headItemRows = require('collections/headItemRow'),
 		headItemCols = require('collections/headItemCol'),
+		getOperRegion = require('basic/tools/getoperregion'),
 		aliasBuild = require('basic/tools/buildalias'),
 		cells = require('collections/cells'),
 		selectRegions = require('collections/selectRegion'),
@@ -18,33 +19,30 @@ define(function(require) {
 		 * @param {string} label   行标识号,如果为undefined,则按照当前选中区域进行操作
 		 */
 		deleteCol: function(sheetId, label) {
-			var index = -1,
-				alias,
-				select,
-				clip,
-				box;
+			var clip,
+				region,
+				operRegion,
+				sendRegion,
+				index;
 
 			clip = selectRegions.getModelByType('clip')[0];
 			if (clip !== undefined) {
 				cache.clipState = 'null';
 				clip.destroy();
 			}
-			if (label !== undefined) {
-				index = headItemCols.getIndexByDisplayname(label);
-				if (index === -1) {
-					return;
-				}
-			} else {
-				select = selectRegions.getModelByType('operation')[0];
-				box = select.get('wholePosi');
-				if (box.endX !== 'MAX') {
-					index = headItemCols.getIndexByAlias(box.startX);
-				} else {
-					return;
-				}
+			region = getOperRegion(label);
+			operRegion = region.operRegion;
+			sendRegion = region.sendRegion;
+
+			if (operRegion.endRowIndex === 'MAX') {
+				return;
 			}
 
-			alias = headItemCols.models[index].get('alias');
+			if (operRegion.startRowIndex === -1) {
+				sendData();
+				return;
+			}
+			index = operRegion.startColIndex;
 			//未完成动态加载功能，先用方法，处理边界值问题
 			this._addColItem();
 			this._adaptCells(index);
@@ -56,14 +54,15 @@ define(function(require) {
 			if (cache.TempProp.isFrozen === true) {
 				Backbone.trigger('event:bodyContainer:executiveFrozen');
 			}
-			send.PackAjax({
-				url: 'cells.htm?m=cols_delete',
-				data: JSON.stringify({
-					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
-					sheetId: '1',
-					colAlias: alias,
-				}),
-			});
+			sendData();
+			function sendData(){
+				send.PackAjax({
+					url: 'cells.htm?m=cols_delete',
+					data: JSON.stringify({
+						colSort: sendRegion.startSortX,
+					}),
+				});
+			}
 		},
 		/**
 		 * 尾部补充列
