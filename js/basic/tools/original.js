@@ -383,8 +383,7 @@ define(function(require) {
 		 * @method  
 		 */
 		restoreExcel: function(domId) {
-			var excelId = window.SPREADSHEET_AUTHENTIC_KEY,
-				build = window.SPREADSHEET_BUILD_STATE,
+			var build = window.SPREADSHEET_BUILD_STATE,
 				startRowSort,
 				startColSort,
 				sheetNames = [],
