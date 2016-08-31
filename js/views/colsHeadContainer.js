@@ -245,13 +245,11 @@ define(function(require) {
 		 * @method requstAdjust
 		 */
 		requstAdjust: function(colIndex, offset) {
-			var colAlias = headItemCols.models[colIndex].get('alias');
+			var colSort = headItemCols.models[colIndex].get('sort');
 			send.PackAjax({
 				url: 'cells.htm?m=cols_width',
 				data: JSON.stringify({
-					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
-					sheetId: '1',
-					colAlias: colAlias,
+					colSort: colSort,
 					offset: offset
 				}),
 			});
