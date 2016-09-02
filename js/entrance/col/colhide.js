@@ -117,6 +117,12 @@ define(function(require) {
 					i--;
 				}
 			}
+			if (i === -1) {
+				i = index + 1;
+				while (headItemColList[i].get('isHide')) {
+					i++;
+				}
+			}
 			headItemModel = headItemColList[i];
 			headItemModel.set('activeState', true);
 			colAlias = headItemModel.get('alias');

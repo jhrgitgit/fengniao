@@ -1,10 +1,8 @@
+'use strict';
 define(function(require) {
-	'use strict';
-
 	var original = require('basic/tools/original'),
 		domloader = require('basic/tools/template'),
 		listener = require('basic/util/listener'),
-		extend = require('basic/util/extend'),
 		cache = require('basic/tools/cache'),
 		setFontColor = require('entrance/tool/setfontcolor'),
 		setFillColor = require('entrance/tool/setfillcolor'),
@@ -108,11 +106,15 @@ define(function(require) {
 			SpreadSheet.prototype.setFontWeight = setFontWeight;
 			SpreadSheet.prototype.setFrozen = setFrozen;
 
-			SpreadSheet.prototype.type = setTextType;
-			// SpreadSheet.prototype.setNumType = setTextType.setNum;
-			// SpreadSheet.prototype.setDateType = setTextType.setDate;
-			// SpreadSheet.prototype.setPercentType = setTextType.setPercent;
-			// SpreadSheet.prototype.setCoinType = setTextType.setCoin;
+
+			SpreadSheet.prototype.setNumType = setTextType.setNum.bind(setTextType);
+			SpreadSheet.prototype.setDateType = setTextType.setDate.bind(setTextType);
+			SpreadSheet.prototype.setPercentType = setTextType.setPercent.bind(setTextType);
+			SpreadSheet.prototype.setCoinType = setTextType.setCoin.bind(setTextType);
+
+			SpreadSheet.prototype.createAddCommentView = comment.createAddCommentView.bind(comment);
+			SpreadSheet.prototype.createEditComment = comment.createEditComment.bind(comment);
+			SpreadSheet.prototype.deleteComment = comment.deleteComment.bind(comment);
 
 			SpreadSheet.prototype.getPointByPosi = getPointByPosi;
 			SpreadSheet.prototype.adaptScreen = adaptScreen;
@@ -121,7 +123,7 @@ define(function(require) {
 			SpreadSheet.prototype.setWordWrap = setWordWrap;
 			SpreadSheet.prototype.getSelectRegion = getSelectRegion;
 			SpreadSheet.prototype.reloadCells = reloadCells;
-	
+
 
 			SpreadSheet.prototype.addRow = addRow;
 			SpreadSheet.prototype.addCol = addCol;
@@ -135,6 +137,7 @@ define(function(require) {
 				return cache.sendQueueStep;
 			};
 
+<<<<<<< HEAD
 			SpreadSheet.prototype.comment = comment;
 			// SpreadSheet.prototype.createAddCommentView =comment.createAddCommentView;
 			// SpreadSheet.prototype.createEditComment =comment.createEditComment;
@@ -145,6 +148,8 @@ define(function(require) {
 			SpreadSheet.prototype.colHide = colHide.hide.bind(colHide);
 			SpreadSheet.prototype.colCancelHide = colHide.cancelHide.bind(colHide);
 
+=======
+>>>>>>> 3b7de0ebce82a51b937dd344c79ab12f731f4f24
 		},
 		buildDataSourceOperation: function(SpreadSheet) {
 			SpreadSheet.prototype.setDataSourceRegion = operationDataSourceRegion.setDataSourceRegion;
