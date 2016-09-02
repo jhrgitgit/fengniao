@@ -37,6 +37,8 @@ define(function(require) {
 		initialize: function() {
 			this.currentRule = util.clone(cache.CurrentRule);
 			Backbone.on('event:contentCellsContainer:reloadCells', this.reloadCells, this);
+			Backbone.on('event:restoreHideCellView', this.restoreHideCellView, this);
+			//还原
 			this.listenTo(cells, 'add', this.addCell);
 		},
 		/**
@@ -111,6 +113,44 @@ define(function(require) {
 			});
 
 		},
+		restoreHideCellView: function() {
+			var headItemColList = headItemCols.models,
+				headItemRowList = headItemRows.models,
+				len = headItemColList.length,
+				headItemModel,
+				startRowIndex,
+				endRowIndex,
+				colAlias,
+				rowAlias,
+				strandX,
+				tempCell,
+				rowLen,
+				i = 0,
+				j;
+			startRowIndex = headItemRows.getIndexByAlias(cache.UserView.rowAlias);
+			endRowIndex = headItemRows.getIndexByAlias(cache.UserView.rowEndAlias);
+			strandX = cache.CellsPosition.strandX;
+			if (endRowIndex > startRowIndex) {
+				rowLen = endRowIndex + 1;
+			} else {
+				rowLen = headItemRows.length;
+			}
+			for (; i < len; i++) {
+				headItemModel = headItemColList[i];
+				if (headItemModel.get('isHide') === true) {
+					colAlias = headItemModel.get('alias');
+					for (j = startRowIndex; j < rowLen; j++) {
+						rowAlias = headItemRowList[j].get('alias');
+						if (strandX[colAlias] !== undefined && strandX[colAlias][rowAlias] !== undefined) {
+							tempCell = cells.models[strandX[colAlias][rowAlias]];
+							if (tempCell.get('isHide') === true) {
+								this.addCellView(tempCell);
+							}
+						}
+					}
+				}
+			}
+		},
 		/**
 		 * view创建一个单元格
 		 * @method addCell
@@ -178,11 +218,20 @@ define(function(require) {
 			}
 
 		},
+		addCellView: function(cell) {
+			this.cellView = new CellContainer({
+				model: cell,
+				currentRule: this.currentRule
+			});
+			this.$el.append(this.cellView.render().el);
+		},
 		/**
 		 * 视图销毁
 		 * @method destroy
 		 */
 		destroy: function() {
+			Backbone.off('event:contentCellsContainer:reloadCells');
+			Backbone.off('event:restoreHideCellView');
 			this.remove();
 		}
 	});

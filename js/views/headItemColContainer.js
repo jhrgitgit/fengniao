@@ -1,12 +1,10 @@
+'use strict';
 define(function(require) {
-	'use strict';
 	var $ = require('lib/jquery'),
-		_ = require('lib/underscore'),
 		Backbone = require('lib/backbone'),
 		Handlebars = require('lib/handlebars'),
 		headItemCols = require('collections/headItemCol'),
 		cache = require('basic/tools/cache'),
-		config = require('spreadsheet/config'),
 		util = require('basic/util/clone'),
 		HeadItemColContainer;
 
@@ -28,14 +26,16 @@ define(function(require) {
 		 * 初始化监听
 		 * @method initialize
 		 */
-		initialize: function(option) {
+		initialize: function() {
 			// this.frozenOffsetLeft = option.frozenLeft;
-
 			this.listenTo(this.model, 'change:activeState', this.toggleActive);
-			this.listenTo(this.model, 'change:isView', this.remove);
+			this.listenTo(this.model, 'change:isView', this.destroy);
+			this.listenTo(this.model, 'change:isHide', this.destroy);
 			this.listenTo(this.model, 'change:left', this.changeLeft);
 			this.listenTo(this.model, 'change:width', this.changeWidth);
 			this.listenTo(this.model, 'change:displayName', this.changeDisplayName);
+			this.listenTo(this.model, 'change:isLeftAjacentHide', this.changeLeftAjacentHide);
+			this.listenTo(this.model, 'change:isRightAjacentHide', this.changeRightAjacentHide);
 			this.listenTo(this.model, 'destroy', this.remove);
 			this.currentRule = util.clone(cache.CurrentRule);
 			this.offsetLeft = cache.TempProp.isFrozen ? (this.currentRule.displayPosition.offsetLeft || 0) : 0;
@@ -51,7 +51,8 @@ define(function(require) {
 			 */
 			this.template = Handlebars.compile($('#tempColHeadItem').html());
 			this.changeLeft();
-			this.changeWidth();
+			// this.changeWidth();
+			this.changeRightAjacentHide();
 			this.$el.html(this.template(this.model.toJSON())).data('alias', this.model.get('alias'));
 			this.toggleActive();
 			return this;
@@ -61,21 +62,26 @@ define(function(require) {
 		 * @method toggleActive
 		 */
 		toggleActive: function() {
-			this.$el.toggleClass("active", this.model.toJSON().activeState);
+			this.$el.toggleClass('active', this.model.toJSON().activeState);
 		},
 		/**
 		 * 修改DOM对象的`left`值
 		 * @method changeLeft
 		 */
 		changeLeft: function() {
-			var userViewLeft = 0,
+			var modelJSON = this.model.toJSON(),
+				left = modelJSON.left,
+				userViewLeft = 0,
 				userViewModel;
 			if (this.currentRule.reduceUserView) {
 				userViewModel = headItemCols.getModelByAlias(cache.UserView.colAlias);
 				userViewLeft = userViewModel.toJSON().left;
 			}
+			if (modelJSON.isLeftAjacentHide) {
+				left++;
+			}
 			this.$el.css({
-				left: this.model.toJSON().left - this.offsetLeft - userViewLeft
+				left: left - this.offsetLeft - userViewLeft
 			});
 		},
 		/**
@@ -83,19 +89,53 @@ define(function(require) {
 		 * @method changeWidth		 
 		 */
 		changeWidth: function() {
+			var modelJSON = this.model.toJSON(),
+				width = modelJSON.width;
+
+			if (modelJSON.isLeftAjacentHide) {
+				width--;
+			}
+
+			if (modelJSON.isRightAjacentHide) {
+				width--;
+			}
+
 			this.$el.css({
-				width: this.model.toJSON().width
+				width: width
 			});
+		},
+		changeRightAjacentHide: function() {
+			var modelJSON = this.model.toJSON();
+			if (modelJSON.isRightAjacentHide) {
+				this.changeWidth();
+				this.$el.css({
+					'border-right': '3px double #d4d4d4'
+				});
+			} else {
+				this.changeWidth();
+				this.$el.removeAttr('border-right');
+			}
+		},
+		changeLeftAjacentHide: function() {
+			this.changeWidth();
+			this.changeLeft();
 		},
 		changeDisplayName: function() {
 			this.$el.children('.item').html(this.model.get('displayName'));
+		},
+		changeView: function() {
+			if (this.model.toJSON().isView === false) {
+				this.destroy();
+			}
 		},
 		/**
 		 * 视图销毁
 		 * @method destroy
 		 */
 		destroy: function() {
-			this.remove();
+			if (!this.model.get('isView') || this.model.get('isHide')) {
+				this.remove();
+			}
 		}
 	});
 	return HeadItemColContainer;

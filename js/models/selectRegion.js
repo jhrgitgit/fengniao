@@ -86,22 +86,22 @@ define(function(require) {
 			 */
 			wholePosi: {
 				/**
-				 * 开始盒模型`col`索引值
+				 * 开始盒模型`col`别名
 				 * @property {number} startX
 				 */
 				startX: 0,
 				/**
-				 * 开始盒模型`row`索引值
+				 * 开始盒模型`row`别名
 				 * @property {number} startY
 				 */
 				startY: 0,
 				/**
-				 * 结束盒模型`col`索引值
+				 * 结束盒模型`col`别名
 				 * @property {number} endX
 				 */
 				endX: 0,
 				/**
-				 * 结束盒模型`row`索引值
+				 * 结束盒模型`row`别名
 				 * @property {number} endY
 				 */
 				endY: 0

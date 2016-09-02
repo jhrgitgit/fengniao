@@ -7,7 +7,7 @@ define(function(require) {
 		binary = require('basic/util/binary'),
 		cache = require('basic/tools/cache'),
 		headItemCols = require('collections/headItemCol'),
-		buildAlias= require('basic/tools/buildalias'),
+		buildAlias = require('basic/tools/buildalias'),
 		GridLineColContainer = require('views/gridLineColContainer'),
 		ColsGridContainer;
 
@@ -38,6 +38,8 @@ define(function(require) {
 			 */
 			this.colNumber = 0;
 			this.listenTo(headItemCols, 'add', this.addGridLineCol);
+			Backbone.on('event:restoreHideCols', this.restoreHideCols, this);
+			
 		},
 		/**
 		 * 渲染本身对象
@@ -64,6 +66,16 @@ define(function(require) {
 				this.colNumber++;
 			}
 			return this;
+		},
+		restoreHideCols: function() {
+			var headItemColList = headItemCols.models,
+				len = headItemColList.length,
+				i = 0;
+			for (; i < len; i++) {
+				if(headItemColList[i].get('isHide')){
+					this.addGridLineCol(headItemColList[i]);
+				}
+			}
 		},
 		/**
 		 * 渲染view，增加列在`grid`区域内
@@ -105,6 +117,7 @@ define(function(require) {
 		 * @method destroy
 		 */
 		destroy: function() {
+			Backbone.off('event:restoreHideCols');
 			this.remove();
 		}
 	});

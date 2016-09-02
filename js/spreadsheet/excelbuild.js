@@ -38,6 +38,7 @@ define(function(require) {
 		deleteRow = require('entrance/tool/deleterow'),
 		deleteCol = require('entrance/tool/deletecol'),
 		regionDel = require('entrance/tool/regiondel'),
+		colHide = require('entrance/col/colhide'),
 		comment = require('entrance/tool/comment');
 
 
@@ -68,6 +69,7 @@ define(function(require) {
 				DeleteOperation = require('widgets/delete/deleteoperation'),
 				CommentContainer = require('widgets/celloperation/commentcontainer'),
 				WordWrapContainer = require('widgets/celloperation/wordwrapcontainer'),
+				ColHide = require('widgets/hidecol/colhidecontainer'),
 				RegionDelContainer = require('widgets/celldel/regiondel');
 			new ShearPlateContainer();
 			new FontFamilyContainer();
@@ -85,6 +87,7 @@ define(function(require) {
 			new DeleteOperation();
 			new WordWrapContainer();
 			new RegionDelContainer();
+			new ColHide();
 		},
 		buildExcelPublicAPI: function(SpreadSheet) {
 			SpreadSheet.prototype.setFontColor = setFontColor;
@@ -136,6 +139,11 @@ define(function(require) {
 			// SpreadSheet.prototype.createAddCommentView =comment.createAddCommentView;
 			// SpreadSheet.prototype.createEditComment =comment.createEditComment;
 			// SpreadSheet.prototype.deleteComment=comment.deleteComment;
+			// 
+			// colHide.hide.bind(colHide);
+			// colHide.cancelHide.bind(colHide);
+			SpreadSheet.prototype.colHide = colHide.hide.bind(colHide);
+			SpreadSheet.prototype.colCancelHide = colHide.cancelHide.bind(colHide);
 
 		},
 		buildDataSourceOperation: function(SpreadSheet) {

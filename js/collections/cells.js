@@ -134,7 +134,9 @@ define(function(require) {
 			if (endIndexY === 'MAX') {
 				endIndexY = headItemRows.length - 1;
 			}
-			var cells = [],
+			var cellList = [],
+				tempObj = {},
+				index,
 				i, j;
 			for (i = 0; i < endIndexX - startIndexX + 1; i++) {
 				for (j = 0; j < endIndexY - startIndexY + 1; j++) {
@@ -144,15 +146,17 @@ define(function(require) {
 
 					if (cache.CellsPosition.strandX[indexX] !== undefined &&
 						cache.CellsPosition.strandX[indexX][indexY] !== undefined) {
-						//cells去掉重复
-						if (cells.indexOf(this.at(cache.CellsPosition.strandX[indexX][indexY])) === -1) {
-							cells.push(this.at(cache.CellsPosition.strandX[indexX][indexY]));
+						index = cache.CellsPosition.strandX[indexX][indexY];
+						//去重
+						if (!tempObj[index]) {
+							cellList.push(this.at(index));
+							tempObj[index] = true;
 						}
 					}
 
 				}
 			}
-			return cells;
+			return cellList;
 		},
 		/**
 		 * 查询区域内包含所有cell对象
