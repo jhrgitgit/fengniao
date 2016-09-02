@@ -136,20 +136,9 @@ define(function(require) {
 			SpreadSheet.prototype.getLastStep = function() {
 				return cache.sendQueueStep;
 			};
-
-<<<<<<< HEAD
-			SpreadSheet.prototype.comment = comment;
-			// SpreadSheet.prototype.createAddCommentView =comment.createAddCommentView;
-			// SpreadSheet.prototype.createEditComment =comment.createEditComment;
-			// SpreadSheet.prototype.deleteComment=comment.deleteComment;
-			// 
-			// colHide.hide.bind(colHide);
-			// colHide.cancelHide.bind(colHide);
 			SpreadSheet.prototype.colHide = colHide.hide.bind(colHide);
 			SpreadSheet.prototype.colCancelHide = colHide.cancelHide.bind(colHide);
 
-=======
->>>>>>> 3b7de0ebce82a51b937dd344c79ab12f731f4f24
 		},
 		buildDataSourceOperation: function(SpreadSheet) {
 			SpreadSheet.prototype.setDataSourceRegion = operationDataSourceRegion.setDataSourceRegion;
