@@ -40,7 +40,7 @@ define(function(require) {
 			//不能进行全部隐藏
 			if (headItemColList[len - 1].get('left') === 0 ||
 				(headItemColList[len - 1].get('left') === adjustWidth + 1 &&
-					headItemColList[len - 1].get('isHide'))
+					headItemColList[len - 1].get('hidden'))
 			) {
 				return;
 			}
@@ -50,7 +50,14 @@ define(function(require) {
 			this._adjustHideCells(colindex, adjustWidth);
 			this._adjustHideSelectRegion(colindex, adjustWidth);
 			Backbone.trigger('event:cellsContainer:adaptWidth');
-			// send.PackAjax({});
+
+			send.PackAjax({
+				url: 'cells.htm?m=cols_hide',
+				data: JSON.stringify({
+					colSort: headItemColList[colindex].get('sort'),
+					'hide': true
+				})
+			});
 
 		},
 		_adjustHideCells: function(index) {
@@ -72,7 +79,7 @@ define(function(require) {
 				if (colAliasList.length === 1) {
 					if (colAliasList[0] === alias) {
 						tempCell.set('physicsBox.width', 0);
-						tempCell.set('isHide', true);
+						tempCell.set('hidden', true);
 					} else {
 						left = tempCell.get('physicsBox').left;
 						tempCell.set('physicsBox.left', left - width - 1);
@@ -80,11 +87,17 @@ define(function(require) {
 				} else {
 					if (colAliasList.indexOf(alias) !== -1) {
 						currentWidth = tempCell.get('physicsBox').width;
-						tempCell.set('physicsBox.width', currentWidth - width - 1);
+						if (currentWidth === width) {
+							tempCell.set('physicsBox.width', 0);
+							tempCell.set('hidden', true);
+						} else {
+							tempCell.set('physicsBox.width', currentWidth - width - 1);
+						}
 					} else {
 						left = tempCell.get('physicsBox').left;
 						tempCell.set('physicsBox.left', left - width - 1);
 					}
+
 				}
 			}
 		},
@@ -108,18 +121,18 @@ define(function(require) {
 			//处理只剩一列情况
 			if (left < lastHeadItemLeft) { //最后一列隐藏
 				i = index + 1;
-				while (headItemColList[i].get('isHide')) {
+				while (headItemColList[i].get('hidden')) {
 					i++;
 				}
 			} else {
 				i = index - 1;
-				while (i > -1 && headItemColList[i].get('isHide')) {
+				while (i > -1 && headItemColList[i].get('hidden')) {
 					i--;
 				}
 			}
 			if (i === -1) {
 				i = index + 1;
-				while (headItemColList[i].get('isHide')) {
+				while (headItemColList[i].get('hidden')) {
 					i++;
 				}
 			}
@@ -170,7 +183,7 @@ define(function(require) {
 				headItemColList[index - 1].set('isRightAjacentHide', true);
 			}
 			width = headItemColList[index].get('width');
-			headItemColList[index].set('isHide', true);
+			headItemColList[index].set('hidden', true);
 			headItemColList[index].set('width', 0);
 			headItemColList[index].set('activeState', false);
 			left = headItemColList[index].get('left');
@@ -189,6 +202,7 @@ define(function(require) {
 		cancelHide: function(sheetId, label) {
 			var headItemColList = headItemCols.models,
 				len = headItemColList.length,
+				hidden,
 				select,
 				cellList,
 				cellLen,
@@ -204,12 +218,15 @@ define(function(require) {
 				i = 0,
 				j;
 
+			if (cache.TempProp.isFrozen) {
+				return;
+			}
 			Backbone.trigger('event:restoreHideCellView');
 			Backbone.trigger('event:restoreHideCols');
 
 			for (; i < len; i++) {
 				headItemAlias = headItemColList[i].get('alias');
-				if (headItemColList[i].get('isHide')) {
+				if (headItemColList[i].get('hidden')) {
 					if (i > 0) {
 						headItemColList[i - 1].set('isRightAjacentHide', false);
 					}
@@ -223,13 +240,15 @@ define(function(require) {
 					headItemColList[i].set('width', width);
 					headItemLeft = headItemColList[i].get('left');
 					headItemColList[i].set('left', headItemLeft + moveWidth);
-					headItemColList[i].set('isHide', false);
+					headItemColList[i].set('hidden', false);
 					for (j = 0; j < cellLen; j++) {
 						cellWidth = cellList[j].get('physicsBox').width;
-						if (cellWidth) {
+						hidden = cellList[j].get('hidden');
+						if (!hidden) {
 							cellList[j].set('physicsBox.width', cellWidth + width + 1);
 						} else {
 							cellList[j].set('physicsBox.width', cellWidth + width);
+							cellList[j].set('hidden', false);
 						}
 						if (headItemAlias === cellList[j].get('occupy').x[0]) {
 							cellLeft = cellList[j].get('physicsBox').left;
@@ -254,6 +273,11 @@ define(function(require) {
 			}
 			this._adjustCancelHideSelectRegion();
 			Backbone.trigger('event:cellsContainer:adaptWidth');
+			Backbone.trigger('event:colsAllHeadContainer:adaptWidth');
+			send.PackAjax({
+				url: 'sheet.htm?m=cols_cancelhide'
+			});
+
 		},
 		_adjustCancelHideSelectRegion: function() {
 			var headItemColList = headItemCols.models,

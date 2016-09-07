@@ -28,7 +28,7 @@ define(function(require) {
 			var modelList, currentIndex, currentModel;
 			this.offsetLeft = 0;
 			this.listenTo(this.model, 'change:isView', this.destroy);
-			this.listenTo(this.model, 'change:isHide', this.destroy);
+			this.listenTo(this.model, 'change:hidden', this.destroy);
 			this.listenTo(this.model, 'change:left', this.changeLeft);
 			this.listenTo(this.model, 'change:width', this.changeWidth);
 			this.listenTo(this.model, 'destroy', this.remove);
@@ -58,7 +58,7 @@ define(function(require) {
 			});
 		},
 		destroy: function() {
-			if (!this.model.get('isView') || this.model.get('isHide')) {
+			if (!this.model.get('isView') || this.model.get('hidden')) {
 				this.remove();
 			}
 		}

@@ -120,7 +120,7 @@ define(function(require) {
 				width, i;
 
 			for (i = len - 1; i > -1; i--) {
-				if (!headItemColList[i].get('isHide')) {
+				if (!headItemColList[i].get('hidden')) {
 					left = headItemColList[i].get('left');
 					width = headItemColList[i].get('width');
 					break;

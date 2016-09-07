@@ -145,6 +145,6 @@ define(function() {
 			enter: true
 		},
 		version: '@version@',
-		rootPath: 'http://excel-inc.acmr.com.cn/spreadsheet/'
+		rootPath: 'http://localhost:8080/newacmrexcel/'
 	};
 });

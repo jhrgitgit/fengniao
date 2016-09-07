@@ -54,7 +54,7 @@ define(function(require) {
 			this.listenTo(this.model, 'change:content', this.adaptCellHight);
 			this.listenTo(this.model, 'change:isDestroy', this.destroy);
 			this.listenTo(this.model, 'change:commentShowState', this.commentViewHandler);
-			this.listenTo(this.model, 'change:isHide', this.destroy);
+			this.listenTo(this.model, 'change:hidden', this.destroy);
 			this.listenTo(this.model, 'destroy', this.clear);
 
 			this.currentRule = options.currentRule;
@@ -521,7 +521,7 @@ define(function(require) {
 		 * @method destroy 
 		 */
 		destroy: function() {
-			if (this.model.get('isDestroy') || this.model.get('isHide')) {
+			if (this.model.get('isDestroy') || this.model.get('hidden')) {
 				this.remove();
 			}
 		},

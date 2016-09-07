@@ -37,7 +37,7 @@ define(function(require) {
 			width: 71,
 			/**
 			 * 原始宽度：取消隐藏后显示宽度
-			 * @property {number} originalWidth
+			 * @property {number} originWidth
 			 */
 			originalWidth: 71,
 			/**
@@ -49,7 +49,7 @@ define(function(require) {
 			 * 左侧存在已隐藏的列：宽度-1
 			 * @property {boolean} isleftAjacentHide
 			 */
-			isleftAjacentHide: false, 
+			isleftAjacentHide: false,
 			/**
 			 * 显示的名字
 			 * @property {string} displayName
@@ -64,7 +64,7 @@ define(function(require) {
 			 * 是否隐藏，用于隐藏列功能，判断该列是否隐藏
 			 * @type {Boolean}
 			 */
-			isHide: false,
+			hidden: false,
 			/**
 			 * 是否显示,用于动态加载功能，判断是否存在dom对象
 			 * @property {boolean} isView
@@ -73,7 +73,7 @@ define(function(require) {
 			/**
 			 * 整列操作设置属性
 			 */
-			operProp:{}
+			operProp: {}
 		},
 		/**
 		 * 销毁`model`对象的视图

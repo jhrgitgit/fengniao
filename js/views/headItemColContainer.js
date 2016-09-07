@@ -30,7 +30,7 @@ define(function(require) {
 			// this.frozenOffsetLeft = option.frozenLeft;
 			this.listenTo(this.model, 'change:activeState', this.toggleActive);
 			this.listenTo(this.model, 'change:isView', this.destroy);
-			this.listenTo(this.model, 'change:isHide', this.destroy);
+			this.listenTo(this.model, 'change:hidden', this.destroy);
 			this.listenTo(this.model, 'change:left', this.changeLeft);
 			this.listenTo(this.model, 'change:width', this.changeWidth);
 			this.listenTo(this.model, 'change:displayName', this.changeDisplayName);
@@ -133,7 +133,7 @@ define(function(require) {
 		 * @method destroy
 		 */
 		destroy: function() {
-			if (!this.model.get('isView') || this.model.get('isHide')) {
+			if (!this.model.get('isView') || this.model.get('hidden')) {
 				this.remove();
 			}
 		}

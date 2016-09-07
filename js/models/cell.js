@@ -196,7 +196,7 @@ define(function(require) {
 			 * 是否被隐藏：用于隐藏行列的连带效果
 			 * @type {Boolean}
 			 */
-			isHide: false,
+			hidden: false,
 			/**
 			 * 是否已经被销毁
 			 * @property {Boolean} isDestroy

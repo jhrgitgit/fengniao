@@ -60,7 +60,9 @@ define(function(require) {
 			});
 			len = cellsList.length;
 			for (i = 0; i < len; i++) {
-				this.addCell(cellsList[i]);
+				if (!cellsList[i].get('hidden')) {
+					this.addCell(cellsList[i]);
+				}
 			}
 		},
 		/**
@@ -137,13 +139,13 @@ define(function(require) {
 			}
 			for (; i < len; i++) {
 				headItemModel = headItemColList[i];
-				if (headItemModel.get('isHide') === true) {
+				if (headItemModel.get('hidden') === true) {
 					colAlias = headItemModel.get('alias');
 					for (j = startRowIndex; j < rowLen; j++) {
 						rowAlias = headItemRowList[j].get('alias');
 						if (strandX[colAlias] !== undefined && strandX[colAlias][rowAlias] !== undefined) {
 							tempCell = cells.models[strandX[colAlias][rowAlias]];
-							if (tempCell.get('isHide') === true) {
+							if (tempCell.get('hidden') === true) {
 								this.addCellView(tempCell);
 							}
 						}

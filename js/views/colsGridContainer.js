@@ -39,7 +39,7 @@ define(function(require) {
 			this.colNumber = 0;
 			this.listenTo(headItemCols, 'add', this.addGridLineCol);
 			Backbone.on('event:restoreHideCols', this.restoreHideCols, this);
-			
+
 		},
 		/**
 		 * 渲染本身对象
@@ -62,7 +62,9 @@ define(function(require) {
 			}
 			len = gridLineColRegionList.length;
 			for (; i < len; i++) {
-				this.addGridLineCol(gridLineColRegionList[i]);
+				if (!gridLineColRegionList[i].get('hidden')) {
+					this.addGridLineCol(gridLineColRegionList[i]);
+				}
 				this.colNumber++;
 			}
 			return this;
@@ -72,7 +74,7 @@ define(function(require) {
 				len = headItemColList.length,
 				i = 0;
 			for (; i < len; i++) {
-				if(headItemColList[i].get('isHide')){
+				if (headItemColList[i].get('hidden')) {
 					this.addGridLineCol(headItemColList[i]);
 				}
 			}

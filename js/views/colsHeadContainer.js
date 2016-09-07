@@ -90,7 +90,9 @@ define(function(require) {
 
 			len = modelsHeadLineColRegionList.length;
 			for (; i < len; i++) {
-				this.addColsHeadContainer(modelsHeadLineColRegionList[i]);
+				if(!modelsHeadLineColRegionList[i].get('hidden')){
+					this.addColsHeadContainer(modelsHeadLineColRegionList[i]);
+				}
 				this.colNumber++;
 			}
 			//ensure y or n has exist active model,
@@ -245,7 +247,7 @@ define(function(require) {
 				len = headItemColList.length,
 				i = 0;
 			for (; i < len; i++) {
-				if(headItemColList[i].get('isHide')){
+				if (headItemColList[i].get('hidden')) {
 					this.addColsHeadContainer(headItemColList[i]);
 				}
 			}
