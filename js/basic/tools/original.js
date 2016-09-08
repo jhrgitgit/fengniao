@@ -225,8 +225,8 @@ define(function(require) {
 				//计算cell模型宽高
 				for (j = cellStartColIndex; j < cellEndColIndex + 1; j++) {
 					model = gridLineColList[j];
-					if (!model.get('hidden')) {
 
+					if(!model.get('hidden')){
 						width += model.get('width') + 1;
 					}
 				}
