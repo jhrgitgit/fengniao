@@ -3,6 +3,8 @@ define(function(require) {
 
 	var Backbone = require('lib/backbone'),
 		siderLineCols = require('collections/siderLineCol'),
+		headItemCols = require('collections/headItemCol'),
+		config = require('spreadsheet/config'),
 		ColsHeadContainer = require('views/colsHeadContainer'),
 		SiderLineColContainer = require('views/siderLineColContainer'),
 		ColsAllHeadContainer;
@@ -28,6 +30,7 @@ define(function(require) {
 		 */
 		initialize: function(options) {
 			Backbone.on('call:colsAllHeadContainer', this.callColsAllHeadContainer, this);
+			Backbone.on('event:colsAllHeadContainer:adaptWidth', this.adaptWidth, this);
 			this.listenTo(siderLineCols, 'add', this.addSiderLineCol);
 			this.boxAttributes = options.boxAttributes;
 		},
@@ -72,6 +75,14 @@ define(function(require) {
 				});
 			}
 		},
+		adaptWidth: function() {
+			var len = headItemCols.length,
+				width = headItemCols.models[len - 1].get('width'),
+				left = headItemCols.models[len - 1].get('left');
+			this.$el.css({
+				'width': left + width
+			});
+		},
 		/**
 		 * [addSiderLineCol description]
 		 * @method addSiderLineCol
@@ -96,6 +107,7 @@ define(function(require) {
 		},
 		destroy: function() {
 			Backbone.off('call:colsAllHeadContainer');
+			Backbone.off('event:colsAllHeadContainer:adaptWidth');
 			this.colsHeadContainer.destroy();
 			this.remove();
 		}

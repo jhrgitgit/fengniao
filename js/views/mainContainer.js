@@ -45,20 +45,10 @@ define(function(require) {
 				modelsHeadLineColList,
 				modelsHeadLineRowRegionList,
 				modelsHeadLineColRegionList,
-				modelStartHeadLineRow,
-				modelStartHeadLineCol,
 				modelLastHeadLineRow,
 				modelLastHeadLineCol,
-				headItemRowList,
-				headItemColList,
-				startRowHeadModel, //可视区域起始Row模型
-				startColHeadModel, //可视区域起始Col模型
-				userViewRowModel,
-				userViewColModel,
-				userViewEndRowModel,
-				userViewEndColModel,
 				len;
-				
+
 			Backbone.on('event:mainContainer:destroy', this.destroy, this);
 			Backbone.on('event:mainContainer:attributesRender', this.attributesRender, this);
 			Backbone.on('event:mainContainer:appointPosition', this.appointPosition, this);
@@ -141,7 +131,7 @@ define(function(require) {
 		addRowHeadItemViewPublish: function(headItemRowModel) {
 			this.publish(headItemRowModel, 'addRowHeadItemViewPublish');
 		},
-		addHeadItemView: function(headItemRowModel, args) {
+		addHeadItemView: function(headItemRowModel) {
 			var gridLineRowContainer;
 			gridLineRowContainer = new GridLineRowContainer({
 				model: headItemRowModel,
@@ -240,18 +230,15 @@ define(function(require) {
 		 */
 		downCellPosition: function() {
 			var rowAliasArray = [],
-				nextRowAlias,
 				loadStartAlias = [],
 				loadEndAlias,
 				offsetTop,
 				userViewTop,
 				recordScrollTop,
-				cellModels,
 				cellModel,
 				bottomHeadRowItem,
-				visibleTop,
 				top,
-				i, len, load;
+				i, len;
 
 
 			//处理冻结情况,只有主区域能够进行滚动
@@ -283,7 +270,7 @@ define(function(require) {
 			//判断Excel冻结状态，非冻结状态(冻结高度为0，用户可视起点高度为0)
 			if (cache.TempProp.isFrozen === true) {
 				offsetTop = this.currentRule.displayPosition.offsetTop;
-				userViewTop = headItemRows.getModelByAlias(cache.UserView.rowAlias).get("top");
+				userViewTop = headItemRows.getModelByAlias(cache.UserView.rowAlias).get('top');
 			} else {
 				offsetTop = 0;
 				userViewTop = 0;
@@ -291,7 +278,9 @@ define(function(require) {
 			//重新定位，可视区域底部高度值
 			top = bottomHeadRowItem.get('top') + bottomHeadRowItem.get('height') + config.User.cellHeight + 10 - offsetTop - userViewTop;
 
-			if (top < this.el.scrollTop + this.el.offsetHeight) return;
+			if (top < this.el.scrollTop + this.el.offsetHeight) {
+				return;
+			}
 			recordScrollTop = this.el.scrollTop;
 			this.el.scrollTop = (top - this.el.offsetHeight);
 			this.deleteTop(recordScrollTop);

@@ -66,7 +66,10 @@ define(function(require) {
 			//
 			Backbone.on('event:cellsContainer:adaptSelectRegion', this.adaptSelectRegion, this);
 
+			Backbone.on('event:cellsContainer:adaptWidth', this.adaptWidth, this);
+
 			Backbone.on('event:cellsContainer:destroy', this.destroy, this);
+
 
 			Backbone.on('event:cellsContainer:unBindDrag', this.unBindDrag, this);
 			Backbone.on('event:cellsContainer:bindDrag', this.bindDrag, this);
@@ -108,6 +111,22 @@ define(function(require) {
 			}
 			this.triggerCallback();
 			return this;
+		},
+		adaptWidth: function() {
+			var headItemColList = headItemCols.models,
+				len = headItemColList.length,
+				index,
+				left,
+				width, i;
+
+			for (i = len - 1; i > -1; i--) {
+				if (!headItemColList[i].get('hidden')) {
+					left = headItemColList[i].get('left');
+					width = headItemColList[i].get('width');
+					break;
+				}
+			}
+			this.$el.css('width', left + width);
 		},
 		onDragOver: function(event) {
 			event.preventDefault();
@@ -1126,7 +1145,7 @@ define(function(require) {
 
 			if (dataSourceRegion === undefined) {
 				dataSourceRegion = new SelectRegionModel();
-				dataSourceRegion.set('selectType','dataSource');
+				dataSourceRegion.set('selectType', 'dataSource');
 				selectRegions.add(dataSourceRegion);
 			}
 			width = headItemColList[endColIndex].get('width') + headItemColList[endColIndex].get('left') - headItemColList[startColIndex].get('left');
@@ -1251,9 +1270,10 @@ define(function(require) {
 			Backbone.off('event:cellsContainer:getCoordinate');
 			Backbone.off('event:cellsContainer:startHighlight');
 			Backbone.off('event:cellsContainer:stopHighlight');
+			Backbone.off('event:cellsContainer:adaptWidth');
 			this.contentCellsContainer.destroy();
 			this.selectRegion.destroy();
-			selectModelList=selectRegions.models;
+			selectModelList = selectRegions.models;
 			len = selectModelList.length;
 			for (; i < len; i++) {
 				if (selectModelList[i].get('selectType') !== 'operation') {

@@ -51,6 +51,7 @@ define(function(require) {
 						request.setRequestHeader('step', step);
 					}
 					request.setRequestHeader('excelId', window.SPREADSHEET_AUTHENTIC_KEY);
+					request.setRequestHeader('sheetId', '1');
 
 				},
 				type: config.type,
