@@ -48,7 +48,6 @@ define(function(require) {
 					 * @event mousedown
 					 */
 					'mousedown .col-head-item': 'transAction',
-
 					/**
 					 * 鼠标移动时，判断位置，确实是否需要作出效果调整
 					 * @event mousemove
@@ -59,6 +58,7 @@ define(function(require) {
 			Backbone.on('call:colsHeadContainer', this.callColsHeadContainer, this);
 			Backbone.on('event:colsHeadContainer:relaseSpaceEffect', this.relaseSpaceEffect, this);
 			Backbone.on('event:colWidthAdjust', this.colWidthAdjust, this);
+			Backbone.on('event:restoreHideCols', this.restoreHideCols, this);
 			/**
 			 * 已经加载列数
 			 * @property {int} colNumber
@@ -90,7 +90,9 @@ define(function(require) {
 
 			len = modelsHeadLineColRegionList.length;
 			for (; i < len; i++) {
-				this.addColsHeadContainer(modelsHeadLineColRegionList[i]);
+				if(!modelsHeadLineColRegionList[i].get('hidden')){
+					this.addColsHeadContainer(modelsHeadLineColRegionList[i]);
+				}
 				this.colNumber++;
 			}
 			//ensure y or n has exist active model,
@@ -240,18 +242,26 @@ define(function(require) {
 				width: headItemCols.getMaxDistanceWidth()
 			});
 		},
+		restoreHideCols: function() {
+			var headItemColList = headItemCols.models,
+				len = headItemColList.length,
+				i = 0;
+			for (; i < len; i++) {
+				if (headItemColList[i].get('hidden')) {
+					this.addColsHeadContainer(headItemColList[i]);
+				}
+			}
+		},
 		/**
 		 * 发送列调整的请求到后台
 		 * @method requstAdjust
 		 */
 		requstAdjust: function(colIndex, offset) {
-			var colAlias = headItemCols.models[colIndex].get('alias');
+			var colSort = headItemCols.models[colIndex].get('sort');
 			send.PackAjax({
 				url: 'cells.htm?m=cols_width',
 				data: JSON.stringify({
-					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
-					sheetId: '1',
-					colAlias: colAlias,
+					colSort: colSort,
 					offset: offset
 				}),
 			});
@@ -442,6 +452,7 @@ define(function(require) {
 			Backbone.off('call:colsHeadContainer');
 			Backbone.off('event:colsHeadContainer:relaseSpaceEffect');
 			Backbone.off('event:colWidthAdjust');
+			Backbone.off('event:restoreHideCols');
 			this.undelegateEvents();
 			this.headItemColContainer.destroy();
 			this.remove();

@@ -6,6 +6,7 @@ define(function(require) {
 	'use strict';
 	var $ = require('lib/jquery'),
 		Handlebars = require('lib/handlebars'),
+		binary = require('basic/util/binary'),
 		Backbone = require('lib/backbone'),
 		headItemRows = require('collections/headItemRow'),
 		headItemCols = require('collections/headItemCol'),
@@ -53,6 +54,7 @@ define(function(require) {
 			this.listenTo(this.model, 'change:content', this.adaptCellHight);
 			this.listenTo(this.model, 'change:isDestroy', this.destroy);
 			this.listenTo(this.model, 'change:commentShowState', this.commentViewHandler);
+			this.listenTo(this.model, 'change:hidden', this.destroy);
 			this.listenTo(this.model, 'destroy', this.clear);
 
 			this.currentRule = options.currentRule;
@@ -234,7 +236,7 @@ define(function(require) {
 			switch (format) {
 				case 'normal':
 					if (textTypeHandler.isNum(text)) {
-						
+
 						decimal = textTypeHandler.getNoZeroDecimal(text);
 						decimal = decimal < 6 ? decimal : 6;
 						this.model.set("content.displayTexts", textTypeHandler.getFormatNumber(text, thousands, decimal));
@@ -426,15 +428,21 @@ define(function(require) {
 		 * @param modelJSON {modelJSON} 对象属性集合
 		 */
 		changeLeftBorder: function(modelJSON) {
-			if (modelJSON.border.left) {
-				this.$el.css({
-					'borderLeftColor': '#000'
-				});
-			} else {
+			var left = modelJSON.physicsBox.left,
+				headItemColList = headItemCols.models,
+				index;
+
+			index = binary.indexModelBinary(left + 1, headItemColList, 'left', 'width');
+			if (headItemColList[index].get('isLeftAjacentHide') || !modelJSON.border.left) {
 				this.$el.css({
 					'borderLeftColor': 'transparent'
 				});
+			} else {
+				this.$el.css({
+					'borderLeftColor': '#000'
+				});
 			}
+
 		},
 		/**
 		 * 渲染下边框边框
@@ -458,13 +466,18 @@ define(function(require) {
 		 * @param modelJSON {modelJSON} 对象属性集合
 		 */
 		changeRightBorder: function(modelJSON) {
-			if (modelJSON.border.right) {
+			var right = modelJSON.physicsBox.left + modelJSON.physicsBox.width,
+				headItemColList = headItemCols.models,
+				index;
+			index = binary.indexModelBinary(right, headItemColList, 'left', 'width');
+			//边框处理
+			if (headItemColList[index].get('isRightAjacentHide') || !modelJSON.border.right) {
 				this.$el.css({
-					'borderRightColor': '#000'
+					'borderRightColor': 'transparent'
 				});
 			} else {
 				this.$el.css({
-					'borderRightColor': 'transparent'
+					'borderRightColor': '#000'
 				});
 			}
 		},
@@ -487,7 +500,8 @@ define(function(require) {
 		wordWrap: function(modelJSON) {
 			if (modelJSON.wordWrap === true) {
 				this.$contentBody.css({
-					'wordBreak': 'break-all'
+					'wordBreak': 'break-word',
+					'whiteSpace': 'normal'
 				});
 			} else {
 				this.$contentBody.css({
@@ -508,7 +522,7 @@ define(function(require) {
 		 * @method destroy 
 		 */
 		destroy: function() {
-			if (this.model.get('isDestroy')) {
+			if (this.model.get('isDestroy') || this.model.get('hidden')) {
 				this.remove();
 			}
 		},

@@ -37,7 +37,6 @@ define(function(require) {
 		if (operRegion.endColIndex === 'MAX') { //整行操作
 			rowOperate.rowPropOper(operRegion.startRowIndex, 'customProp.background', color);
 		} else if (operRegion.endRowIndex === 'MAX') {
-			console.log(operRegion.startColIndex);
 			colOperate.colPropOper(operRegion.startColIndex, 'customProp.background', color);
 		} else {
 			cells.operateCellsByRegion(operRegion, function(cell) {
