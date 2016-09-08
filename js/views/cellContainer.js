@@ -500,7 +500,8 @@ define(function(require) {
 		wordWrap: function(modelJSON) {
 			if (modelJSON.wordWrap === true) {
 				this.$contentBody.css({
-					'wordBreak': 'break-word'
+					'wordBreak': 'break-word',
+					'whiteSpace': 'normal'
 				});
 			} else {
 				this.$contentBody.css({
