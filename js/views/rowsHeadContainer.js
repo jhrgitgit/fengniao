@@ -246,13 +246,11 @@ define(function(require) {
 		 * @method requstAdjust
 		 */
 		requstAdjust: function(rowIndex, offset) {
-			var rowAlias = headItemRows.models[rowIndex].get('alias');
+			var rowSort = headItemRows.models[rowIndex].get('sort');
 			send.PackAjax({
 				url: 'cells.htm?m=rows_height',
 				data: JSON.stringify({
-					excelId: window.SPREADSHEET_AUTHENTIC_KEY,
-					sheetId: '1',
-					rowAlias: rowAlias,
+					rowSort: rowSort,
 					offset: offset
 				})
 			});

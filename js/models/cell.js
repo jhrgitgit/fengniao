@@ -188,10 +188,15 @@ define(function(require) {
 				comment: null
 			},
 			/**
-			 * 单元格是否显示
+			 * 单元格是否显示：用于动态加载过程中
 			 * @property {boolean} showState
 			 */
 			showState: true,
+			/**
+			 * 是否被隐藏：用于隐藏行列的连带效果
+			 * @type {Boolean}
+			 */
+			hidden: false,
 			/**
 			 * 是否已经被销毁
 			 * @property {Boolean} isDestroy

@@ -74,8 +74,8 @@ define(function(require) {
 				i;
 
 			for (i = 0; i < rows.length; i++) {
-				//存在bug
 				index = binary.indexModelBinary(rows[i].top, headItemRows.models, 'top', 'height');
+				//待修改：判定是否已存在加载类，应使用二分查询进行判定
 				if (headItemRows.getIndexByAlias(rows[i].aliasY) !== -1) {
 					index++;
 					continue;
@@ -99,9 +99,11 @@ define(function(require) {
 		 * @param  {Array} cols 列数据数组
 		 */
 		analysisColData: function(cols, startColSort) {
+
+			//隐藏列还原
 			var tempHeadCol, i, j, len, collen;
 			for (i = 0; i < cols.length; i++) {
-				//去重
+				//待修改：判定是否已存在加载类，应使用二分查询进行判定
 				if (headItemCols.getIndexByAlias(cols[i].aliasY) !== -1) {
 					continue;
 				}
@@ -110,6 +112,8 @@ define(function(require) {
 				tempHeadCol.set('left', cols[i].left);
 				tempHeadCol.set('width', cols[i].width);
 				tempHeadCol.set('alias', cols[i].aliasX);
+				tempHeadCol.set('hidden', cols[i].hidden);
+				tempHeadCol.set('originalWidth', cols[i].originWidth);
 				if (!isEmptyObject(cols[i].operProp.content)) {
 					tempHeadCol.set('operProp.content', cols[i].operProp.content);
 				}
@@ -120,6 +124,12 @@ define(function(require) {
 					tempHeadCol.set('operProp.border', cols[i].operProp.border);
 				}
 				tempHeadCol.set('displayName', buildAlias.buildColAlias(startColSort + i));
+				if (cols[i].hidden && i > 0) {
+					headItemCols.models[i - 1].set('isRightAjacentHide', true);
+				}
+				if (i > 0 && cols[i - 1].hidden) {
+					tempHeadCol.set('isLeftAjacentHide', true);
+				}
 				headItemCols.add(tempHeadCol);
 			}
 
@@ -215,7 +225,9 @@ define(function(require) {
 				//计算cell模型宽高
 				for (j = cellStartColIndex; j < cellEndColIndex + 1; j++) {
 					model = gridLineColList[j];
-					width += model.get('width') + 1;
+					if(!model.get('hidden')){
+						width += model.get('width') + 1;
+					}
 				}
 				for (j = cellStartRowIndex; j < cellEndRowIndex + 1; j++) {
 					model = gridLineRowList[j];
@@ -263,6 +275,7 @@ define(function(require) {
 				headItemColModel,
 				rowAlias,
 				colAlias,
+				colIndex,
 				endRowAlias,
 				endColAlias,
 				endColIndex,
@@ -278,7 +291,11 @@ define(function(require) {
 			colAlias = cache.UserView.colAlias;
 
 			headItemRowModel = headItemRows.getModelByAlias(rowAlias);
-			headItemColModel = headItemCols.getModelByAlias(colAlias);
+			colIndex = headItemCols.getIndexByAlias(colAlias);
+			headItemColModel = headItemCols.models[colIndex];
+			while (headItemColModel.get('hidden')) {
+				headItemColModel = headItemCols.models[++colIndex];
+			}
 
 			cellsPositionX = cache.CellsPosition.strandX;
 
@@ -383,8 +400,7 @@ define(function(require) {
 		 * @method  
 		 */
 		restoreExcel: function(domId) {
-			var excelId = window.SPREADSHEET_AUTHENTIC_KEY,
-				build = window.SPREADSHEET_BUILD_STATE,
+			var build = window.SPREADSHEET_BUILD_STATE,
 				startRowSort,
 				startColSort,
 				sheetNames = [],

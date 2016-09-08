@@ -28,9 +28,10 @@ define(function(require) {
 			var modelList, currentIndex, currentModel;
 			this.offsetLeft = 0;
 			this.listenTo(this.model, 'change:isView', this.destroy);
+			this.listenTo(this.model, 'change:hidden', this.destroy);
 			this.listenTo(this.model, 'change:left', this.changeLeft);
 			this.listenTo(this.model, 'change:width', this.changeWidth);
-			this.listenTo(this.model, 'destroy', this.destroy);
+			this.listenTo(this.model, 'destroy', this.remove);
 			modelList = headItemCols;
 			currentModel = modelList.getModelByAlias(cache.TempProp.colAlias);
 			this.userViewLeft = cache.TempProp.isFrozen ? modelList.getModelByAlias(cache.UserView.colAlias).get('left') : 0;
@@ -57,7 +58,9 @@ define(function(require) {
 			});
 		},
 		destroy: function() {
-			this.remove();
+			if (!this.model.get('isView') || this.model.get('hidden')) {
+				this.remove();
+			}
 		}
 	});
 	return GridLineColContainer;

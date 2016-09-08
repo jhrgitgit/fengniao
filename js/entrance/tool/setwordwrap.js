@@ -29,7 +29,7 @@ define(function(require) {
 		}
 
 		if (wordWrap === undefined) {
-			if (operRegion.endColIndex === 'MAX' || operRegion.endRowIndex) {
+			if (operRegion.endColIndex === 'MAX' || operRegion.endRowIndex === 'MAX') {
 				wordWrap = true;
 			} else {
 				tempCellList = cells.getCellByX(operRegion.startColIndex,
