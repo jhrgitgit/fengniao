@@ -109,7 +109,11 @@ define(function() {
 			 * excel最大支持行数
 			 * @property {number} maxRowNum
 			 */
-			maxRowNum: 9999
+			maxRowNum: 9999,
+			/**
+			 * 动态加载，水平方式，一次性请求宽度
+			 */
+			onceLoadWidth: 200
 		},
 		mouseOperateState: {
 			select: 'operation',

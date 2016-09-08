@@ -52,15 +52,8 @@ define(function(require) {
 			Backbone.on('event:mainContainer:destroy', this.destroy, this);
 			Backbone.on('event:mainContainer:attributesRender', this.attributesRender, this);
 			Backbone.on('event:mainContainer:appointPosition', this.appointPosition, this);
-
 			this.currentRule = clone.clone(cache.CurrentRule);
-
 			if (this.currentRule.eventScroll) {
-				/**
-				 * 绑定滚动事件
-				 * @property events
-				 * @type {Object}
-				 */
 				this.delegateEvents({
 					'scroll': 'syncScroll'
 				});
@@ -69,7 +62,6 @@ define(function(require) {
 				Backbone.on('event:mainContainer:addBottom', this.addBottom, this);
 			}
 			this.boxModel = {};
-
 			this.boxAttributes = this.currentRule.boxAttributes;
 
 			// for reduction position , prevent event scroll auto trigger.
@@ -96,14 +88,21 @@ define(function(require) {
 			modelLastHeadLineRow = modelsHeadLineRowRegionList[len - 1];
 			len = modelsHeadLineColRegionList.length;
 			modelLastHeadLineCol = modelsHeadLineColRegionList[len - 1];
-			//ps:计算问题
+
+
 			this.boxModel.height = modelLastHeadLineRow.get('top') + modelLastHeadLineRow.get('height') - modelsHeadLineRowRegionList[0].get('top');
 			this.boxModel.width = modelLastHeadLineCol.get('left') + modelLastHeadLineCol.get('width') - modelsHeadLineColRegionList[0].get('left');
 
 			this.rowsViewBottomPosi = this.boxModel.height;
+			//待删除：使用cache.visibleRegion.bottom代替
 			config.displayRowHeight = this.rowsViewBottomPosi;
+			//待修改：只有滚动视图，进行记录
+			//待修改：视图初始化滚动高度不为0时，需要对该值进行修改
 			cache.visibleRegion.top = 0;
 			cache.visibleRegion.bottom = this.rowsViewBottomPosi;
+
+			//列滚动时，使用
+
 		},
 		/**
 		 * 生成白色背景，用于遮挡输入框
@@ -239,15 +238,6 @@ define(function(require) {
 				bottomHeadRowItem,
 				top,
 				i, len;
-
-
-			//处理冻结情况,只有主区域能够进行滚动
-			if (cache.TempProp.isFrozen &&
-				(this.currentRule.displayPosition.endRowIndex ||
-					this.currentRule.displayPosition.endColIndex)) {
-				return;
-			}
-
 			//判断是否存在单元格未全部初始化
 			cellModel = cells.getCellsByWholeSelectRegion()[0];
 			if (cellModel === null) {
@@ -1021,6 +1011,8 @@ define(function(require) {
 			Backbone.off('call:mainContainer');
 			Backbone.off('event:mainContainer:destroy');
 			Backbone.off('event:mainContainer:attributesRender');
+			Backbone.off('event:mainContainer:nextCellPosition');
+			Backbone.off('event:mainContainer:addBottom');
 			this.cellsContainer.destroy();
 			this.remove();
 		}

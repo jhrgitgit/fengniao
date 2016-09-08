@@ -99,12 +99,10 @@ define(function(require) {
 		 * @param  {Array} cols 列数据数组
 		 */
 		analysisColData: function(cols, startColSort) {
-
-			//隐藏列还原
-			var tempHeadCol, i, j, len, collen;
+			var tempHeadCol, i, collen;
+			collen = cols.length;
 			for (i = 0; i < cols.length; i++) {
-				//待修改：判定是否已存在加载类，应使用二分查询进行判定
-				if (headItemCols.getIndexByAlias(cols[i].aliasY) !== -1) {
+				if (binary.existArrayBinary(cols[i].left, headItemCols.models, 'left', 'width')) {
 					continue;
 				}
 				tempHeadCol = new LineCol();
@@ -131,21 +129,6 @@ define(function(require) {
 					tempHeadCol.set('isLeftAjacentHide', true);
 				}
 				headItemCols.add(tempHeadCol);
-			}
-
-
-			if (headItemCols.length < config.User.initColNum) {
-				len = config.User.initColNum - headItemCols.length;
-				collen = headItemCols.length;
-				for (j = 0; j < len; j++) {
-					tempHeadCol = new LineCol();
-					tempHeadCol.set('sort', collen + j);
-					tempHeadCol.set('left', headItemCols.models[collen + j - 1].get('left') + headItemCols.models[collen + j - 1].get('width') + 1);
-					tempHeadCol.set('width', 71);
-					tempHeadCol.set('alias', (headItemCols.length + 1).toString());
-					tempHeadCol.set('displayName', buildAlias.buildColAlias(collen + j));
-					headItemCols.add(tempHeadCol);
-				}
 			}
 
 			function isEmptyObject(obj) {
@@ -195,6 +178,7 @@ define(function(require) {
 				gridAliasRowList = cellAttributes.occupy.y;
 				width = 0;
 				height = 0;
+				//待优化：初始化单元格，进行了过多的遍历
 				//获取已加载行模型内，cell起始索引，结束索引
 				for (j = 0; j < gridAliasRowList.length; j++) {
 					if (headItemRows.getIndexByAlias(gridAliasRowList[j]) !== -1) {
@@ -208,12 +192,25 @@ define(function(require) {
 						break;
 					}
 				}
-				if (cellStartRowIndex === -1 || cellEndRowIndex === -1) {
+				for (j = 0; j < gridAliasColList.length; j++) {
+					if (headItemCols.getIndexByAlias(gridAliasColList[j]) !== -1) {
+						cellStartColIndex = headItemCols.getIndexByAlias(gridAliasColList[j]);
+						break;
+					}
+				}
+				for (j = gridAliasColList.length - 1; j > -1; j--) {
+					if (headItemCols.getIndexByAlias(gridAliasColList[j]) !== -1) {
+						cellEndColIndex = headItemCols.getIndexByAlias(gridAliasColList[j]);
+						break;
+					}
+				}
+
+				if (cellStartRowIndex === -1 ||
+					cellEndRowIndex === -1 ||
+					cellStartColIndex === -1 ||
+					cellEndColIndex === -1) {
 					continue;
 				}
-				//列模型未涉及动态加载功能，直接使用cell模型列索引
-				cellStartColIndex = headItemCols.getIndexByAlias(gridAliasColList[0]);
-				cellEndColIndex = headItemCols.getIndexByAlias(gridAliasColList[gridAliasColList.length - 1]);
 
 				//判断cell模型是否已加载
 				cellsPositionX = cache.CellsPosition.strandX;
@@ -225,7 +222,7 @@ define(function(require) {
 				//计算cell模型宽高
 				for (j = cellStartColIndex; j < cellEndColIndex + 1; j++) {
 					model = gridLineColList[j];
-					if(!model.get('hidden')){
+					if (!model.get('hidden')) {
 						width += model.get('width') + 1;
 					}
 				}

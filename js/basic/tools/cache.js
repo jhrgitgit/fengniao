@@ -41,8 +41,7 @@ define(function(require) {
 		clipState: 'null', //copy：复制状态，cut:剪切状态，null:未进行剪切板操作
 		commentState: false, //true 备注编辑状态,不能进行选中区域的移动
 		/**
-		 * 用户可视的区域(在Excel未冻结的情况下使用)
-		 * 需要修改默认值
+		 * 用户可视的区域,初始化时,需要修改默认值
 		 * @property {object} UserView
 		 */
 		UserView: {
@@ -65,7 +64,24 @@ define(function(require) {
 			 * 可视区域右下单元格行别名
 			 * @property {string} rowEndAlias
 			 */
-			rowEndAlias: '1'
+			rowEndAlias: '1',
+		},
+		//可视区域（适用于滚动区域）
+		visibleRegion: {
+			top: 0,
+			bottom: 0,
+			left: 0,
+			right: 0
+		},
+		/**
+		 * 动态加载，视图存在区域
+		 * @type {Object}
+		 */
+		existView: {
+			left: 0,
+			right: 0,
+			top: 0,
+			bottom: 0
 		},
 		highlightDirection: 'null',
 		//鼠标操作状态
@@ -129,12 +145,6 @@ define(function(require) {
 			transverse: [],
 			vertical: []
 		},
-		visibleRegion: {
-			top: 0,
-			bottom: 0,
-			left: 0,
-			right: 0
-		},
 		//
 		/**
 		 * 保存位置信息
@@ -190,17 +200,17 @@ define(function(require) {
 		aliasGenerator: function(type) {
 			var alias,
 				num;
-			if(type==='col'){
+			if (type === 'col') {
 				alias = this.aliasColCounter;
-			}else{
+			} else {
 				alias = this.aliasRowCounter;
 			}
-			
+
 			num = parseInt(alias);
 			alias = (num + 1).toString();
-			if(type==='col'){
+			if (type === 'col') {
 				this.aliasColCounter = alias;
-			}else{
+			} else {
 				this.aliasRowCounter = alias;
 			}
 			return alias;
