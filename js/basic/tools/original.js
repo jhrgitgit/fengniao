@@ -225,7 +225,8 @@ define(function(require) {
 				//计算cell模型宽高
 				for (j = cellStartColIndex; j < cellEndColIndex + 1; j++) {
 					model = gridLineColList[j];
-					if(!model.get('hidden')){
+					if (!model.get('hidden')) {
+
 						width += model.get('width') + 1;
 					}
 				}
@@ -292,9 +293,17 @@ define(function(require) {
 
 			headItemRowModel = headItemRows.getModelByAlias(rowAlias);
 			colIndex = headItemCols.getIndexByAlias(colAlias);
+
 			headItemColModel = headItemCols.models[colIndex];
-			while (headItemColModel.get('hidden')) {
-				headItemColModel = headItemCols.models[++colIndex];
+
+			len = headItemCols.length;
+			for (i = colIndex; i < len; i++) {
+				if (headItemColModel.get('hidden')) {
+					headItemColModel = headItemCols.models[++colIndex];
+					colAlias = headItemColModel.get('alias');
+				} else {
+					break;
+				}
 			}
 
 			cellsPositionX = cache.CellsPosition.strandX;
