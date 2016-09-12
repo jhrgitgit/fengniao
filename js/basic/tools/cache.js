@@ -41,7 +41,8 @@ define(function(require) {
 		clipState: 'null', //copy：复制状态，cut:剪切状态，null:未进行剪切板操作
 		commentState: false, //true 备注编辑状态,不能进行选中区域的移动
 		/**
-		 * 用户可视的区域,初始化时,需要修改默认值
+		 * 用户可视的区域(在Excel未冻结的情况下使用)
+		 * 需要修改默认值
 		 * @property {object} UserView
 		 */
 		UserView: {
@@ -64,24 +65,7 @@ define(function(require) {
 			 * 可视区域右下单元格行别名
 			 * @property {string} rowEndAlias
 			 */
-			rowEndAlias: '1',
-		},
-		//可视区域（适用于滚动区域）
-		visibleRegion: {
-			top: 0,
-			bottom: 0,
-			left: 0,
-			right: 0
-		},
-		/**
-		 * 动态加载，视图存在区域
-		 * @type {Object}
-		 */
-		existView: {
-			left: 0,
-			right: 0,
-			top: 0,
-			bottom: 0
+			rowEndAlias: '1'
 		},
 		highlightDirection: 'null',
 		//鼠标操作状态
@@ -99,9 +83,17 @@ define(function(require) {
 		 */
 		localRowPosi: 0,
 		/**
-		 * 后台存储excel,别名最大
+		 * 后台存储excel的总宽度
+		 */
+		localColPosi: 0,
+		/**
+		 * 后台存储excel,行别名最大
 		 */
 		localMaxRowAlias: '',
+		/**
+		 * 后台存储excel,列别名最大
+		 */
+		localMaxColAlias: '',
 		/**
 		 * 临时代替属性，因为sheet还有做，所以sheet的冻结属性暂时由此属性替代。以后需要做成model处理
 		 * @property {object} TempProp
@@ -144,6 +136,12 @@ define(function(require) {
 		cellRegionPosi: {
 			transverse: [],
 			vertical: []
+		},
+		visibleRegion: {
+			top: 0,
+			bottom: 0,
+			left: 0,
+			right: 0
 		},
 		//
 		/**

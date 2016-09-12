@@ -44,16 +44,23 @@ define(function(require) {
 			var modelsHeadLineRowList,
 				modelsHeadLineColList,
 				modelsHeadLineRowRegionList,
-				modelsHeadLineColRegionList,
+				headItemColRegionList,
 				modelLastHeadLineRow,
-				modelLastHeadLineCol,
-				len;
+				headItemColList,
+				len, i;
 
 			Backbone.on('event:mainContainer:destroy', this.destroy, this);
 			Backbone.on('event:mainContainer:attributesRender', this.attributesRender, this);
 			Backbone.on('event:mainContainer:appointPosition', this.appointPosition, this);
+
 			this.currentRule = clone.clone(cache.CurrentRule);
+
 			if (this.currentRule.eventScroll) {
+				/**
+				 * 绑定滚动事件
+				 * @property events
+				 * @type {Object}
+				 */
 				this.delegateEvents({
 					'scroll': 'syncScroll'
 				});
@@ -62,6 +69,7 @@ define(function(require) {
 				Backbone.on('event:mainContainer:addBottom', this.addBottom, this);
 			}
 			this.boxModel = {};
+
 			this.boxAttributes = this.currentRule.boxAttributes;
 
 			// for reduction position , prevent event scroll auto trigger.
@@ -70,7 +78,7 @@ define(function(require) {
 			this.recordScrollLeft = this.recordScrollTop = 0;
 
 			modelsHeadLineRowRegionList = modelsHeadLineRowList = headItemRows.models;
-			modelsHeadLineColRegionList = modelsHeadLineColList = headItemCols.models;
+			headItemColRegionList = headItemColList = headItemCols.models;
 			//计算容器高度
 			if (cache.TempProp.isFrozen) {
 				if (this.currentRule.displayPosition.endRowIndex) {
@@ -79,30 +87,32 @@ define(function(require) {
 					modelsHeadLineRowRegionList = modelsHeadLineRowList.slice(this.currentRule.displayPosition.startRowIndex);
 				}
 				if (this.currentRule.displayPosition.endColIndex) {
-					modelsHeadLineColRegionList = modelsHeadLineColList.slice(this.currentRule.displayPosition.startColIndex, this.currentRule.displayPosition.endColIndex);
+					headItemColRegionList = headItemColList.slice(this.currentRule.displayPosition.startColIndex, this.currentRule.displayPosition.endColIndex);
 				} else {
-					modelsHeadLineColRegionList = modelsHeadLineColList.slice(this.currentRule.displayPosition.startColIndex);
+					headItemColRegionList = headItemColList.slice(this.currentRule.displayPosition.startColIndex);
 				}
 			}
 			len = modelsHeadLineRowRegionList.length;
 			modelLastHeadLineRow = modelsHeadLineRowRegionList[len - 1];
 			len = modelsHeadLineColRegionList.length;
 			modelLastHeadLineCol = modelsHeadLineColRegionList[len - 1];
-
-
+			//ps:计算问题
 			this.boxModel.height = modelLastHeadLineRow.get('top') + modelLastHeadLineRow.get('height') - modelsHeadLineRowRegionList[0].get('top');
 			this.boxModel.width = modelLastHeadLineCol.get('left') + modelLastHeadLineCol.get('width') - modelsHeadLineColRegionList[0].get('left');
 
 			this.rowsViewBottomPosi = this.boxModel.height;
-			//待删除：使用cache.visibleRegion.bottom代替
 			config.displayRowHeight = this.rowsViewBottomPosi;
-			//待修改：只有滚动视图，进行记录
-			//待修改：视图初始化滚动高度不为0时，需要对该值进行修改
 			cache.visibleRegion.top = 0;
 			cache.visibleRegion.bottom = this.rowsViewBottomPosi;
-
-			//列滚动时，使用
-
+			//通过遍历计算，获取列视图加载区域
+			len = headItemColRegionList.length;
+			this.loadGridView.left = headItemColRegionList[0].get('left');
+			for (i = 1; i < len; i++) {
+				if (headItemColRegionList[i].get('isView') === false) {
+					this.loadGridView.right = headItemColRegionList[i - 1].get('left') + headItemColRegionList[i - 1].get('width');
+					break;
+				}
+			}
 		},
 		/**
 		 * 生成白色背景，用于遮挡输入框
@@ -238,6 +248,15 @@ define(function(require) {
 				bottomHeadRowItem,
 				top,
 				i, len;
+
+
+			//处理冻结情况,只有主区域能够进行滚动
+			if (cache.TempProp.isFrozen &&
+				(this.currentRule.displayPosition.endRowIndex ||
+					this.currentRule.displayPosition.endColIndex)) {
+				return;
+			}
+
 			//判断是否存在单元格未全部初始化
 			cellModel = cells.getCellsByWholeSelectRegion()[0];
 			if (cellModel === null) {
@@ -291,9 +310,9 @@ define(function(require) {
 				userViewEndRowModel,
 				userViewEndColModel,
 				currentDisplayViewTop = this.recordScrollTop,
-				currentDisplayViewLeft = this.recordScrollLeft;
+				currentDisplayViewLeft = this.recordScrollLeft,
 
-			this.preventAutoScroll();
+				this.preventAutoScroll();
 			this.triggerCallback();
 
 			verticalDirection = currentDisplayViewTop - this.el.scrollTop;
@@ -324,11 +343,11 @@ define(function(require) {
 				this.addBottom(currentDisplayViewTop);
 				this.deleteTop(currentDisplayViewTop);
 			}
-			// // as scrolbar scroll left
-			// if (transverseDirection > 0) {}
-			// // as scrolbar scroll right
-			// if (transverseDirection < 0) {
-			// }
+			if (transverseDirection > 0) {}
+			if (transverseDirection < 0) {
+				this.addRight(currentDisplayViewLeft);
+			}
+
 		},
 		/**
 		 * 显示行上方超出预加载区域，删除超出视图
@@ -731,6 +750,17 @@ define(function(require) {
 			config.displayRowHeight = this.rowsViewBottomPosi;
 			cache.visibleRegion.bottom = this.rowsViewBottomPosi;
 		},
+		addRight: function(recordLeft) {
+			// var recordRight = recordLeft + this.el.offsetWidth
+			var startIndex = this.currentRule.displayPosition.startColIndex, //列视图起始index
+				startLeft = headItemCols.models[startIndex].get(left),
+				currentRight = this.loadGridView.right, //当前列视图右侧边界
+				limitRight = startLeft + this.el.scrollLeft + this.el.offsetWidth + config.,
+				maxRight = cache.localColPosi;//后台存储excel最大宽度
+				if(){
+
+				}
+		},
 		/**
 		 * 在整行整列选中时，进行滚动操作，时时修改选中区域的宽高
 		 * @return {[type]} [description]
@@ -1011,8 +1041,6 @@ define(function(require) {
 			Backbone.off('call:mainContainer');
 			Backbone.off('event:mainContainer:destroy');
 			Backbone.off('event:mainContainer:attributesRender');
-			Backbone.off('event:mainContainer:nextCellPosition');
-			Backbone.off('event:mainContainer:addBottom');
 			this.cellsContainer.destroy();
 			this.remove();
 		}

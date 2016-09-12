@@ -1,4 +1,4 @@
-// beacause of we used nested model ,but backbone not support nested lsitenTo .
+  // beacause of we used nested model ,but backbone not support nested lsitenTo .
 // so listenTo nested model didn't done.
 
 
@@ -500,7 +500,8 @@ define(function(require) {
 		wordWrap: function(modelJSON) {
 			if (modelJSON.wordWrap === true) {
 				this.$contentBody.css({
-					'wordBreak': 'break-word'
+					'wordBreak': 'break-word',
+					'whiteSpace': 'normal'
 				});
 			} else {
 				this.$contentBody.css({

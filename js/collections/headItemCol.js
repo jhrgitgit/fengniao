@@ -143,6 +143,9 @@ define(function(require) {
 				return modelList[currentIndex - 1];
 			}
 			return null;
+		},
+		getLastModel: function() {
+			return this.models[this.length - 1];
 		}
 	});
 	return new HeadItemCols();
