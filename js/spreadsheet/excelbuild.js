@@ -101,17 +101,19 @@ define(function(require) {
 			SpreadSheet.prototype.selectCellCols = selectCellCols;
 			SpreadSheet.prototype.selectCellRows = selectCellRows;
 			SpreadSheet.prototype.setCellWidth = setCellWidth;
-			SpreadSheet.prototype.setFontFamilySize = setFontFamilySize;
+			SpreadSheet.prototype.setFontSize = setFontFamilySize;
 			SpreadSheet.prototype.setFontStyle = setFontStyle;
 			SpreadSheet.prototype.setFontWeight = setFontWeight;
 			SpreadSheet.prototype.setFrozen = setFrozen;
 
-
+			SpreadSheet.prototype.setNormalType = setTextType.setNormal.bind(setTextType);
+			SpreadSheet.prototype.setTextType = setTextType.setText.bind(setTextType);
 			SpreadSheet.prototype.setNumType = setTextType.setNum.bind(setTextType);
 			SpreadSheet.prototype.setDateType = setTextType.setDate.bind(setTextType);
 			SpreadSheet.prototype.setPercentType = setTextType.setPercent.bind(setTextType);
 			SpreadSheet.prototype.setCoinType = setTextType.setCoin.bind(setTextType);
 
+			SpreadSheet.prototype.modifyComment = comment.modifyComment.bind(comment);
 			SpreadSheet.prototype.createAddCommentView = comment.createAddCommentView.bind(comment);
 			SpreadSheet.prototype.createEditComment = comment.createEditComment.bind(comment);
 			SpreadSheet.prototype.deleteComment = comment.deleteComment.bind(comment);
@@ -123,7 +125,6 @@ define(function(require) {
 			SpreadSheet.prototype.setWordWrap = setWordWrap;
 			SpreadSheet.prototype.getSelectRegion = getSelectRegion;
 			SpreadSheet.prototype.reloadCells = reloadCells;
-
 
 			SpreadSheet.prototype.addRow = addRow;
 			SpreadSheet.prototype.addCol = addCol;
