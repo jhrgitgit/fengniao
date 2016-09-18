@@ -115,7 +115,7 @@ define(function(require) {
 
 			SpreadSheet.prototype.modifyComment = comment.modifyComment.bind(comment);
 			SpreadSheet.prototype.createAddCommentView = comment.createAddCommentView.bind(comment);
-			SpreadSheet.prototype.createEditComment = comment.createEditComment.bind(comment);
+			SpreadSheet.prototype.createEditCommentView = comment.createEditComment.bind(comment);
 			SpreadSheet.prototype.deleteComment = comment.deleteComment.bind(comment);
 
 			SpreadSheet.prototype.getPointByPosi = getPointByPosi;
