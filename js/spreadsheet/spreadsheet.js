@@ -3,6 +3,7 @@ define(function(require) {
 	var $ = require('lib/jquery'),
 		config = require('spreadsheet/config'),
 		cache = require('basic/tools/cache'),
+		Point = require('basic/tools/point'),
 		excelBuild = require('spreadsheet/excelbuild');
 
 	function SpreadSheet(id, cfg) {
@@ -27,5 +28,6 @@ define(function(require) {
 		excelBuild.buildExcelEventListener(SpreadSheet);
 		excelBuild.buildExcelExtend(SpreadSheet);
 	}
+	SpreadSheet.Point = Point;
 	return SpreadSheet;
 });

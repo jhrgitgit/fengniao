@@ -117,3 +117,12 @@ textarea{resize:none;overflow:hidden;}
 /**
  * end
  */
+
+.loadmark {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	background-color: #ffffff;
+	background: url(../img/loading.gif) 50% 50% no-repeat #ffffff;
+	z-index:100;
+}

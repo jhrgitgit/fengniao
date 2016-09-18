@@ -7,11 +7,12 @@ define(function(require) {
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
 		analysisLabel = require('basic/tools/analysislabel'),
+		getOperRegion = require('basic/tools/getoperregion'),
 		getTextByCoordinate;
 
 	getTextByCoordinate = function(sheetId, label) {
 		var select,
-			region = {},
+			region,
 			headLineColModelList = headItemCols.models,
 			headLineRowModelList = headItemRows.models,
 			aliasGridRow,
@@ -19,14 +20,8 @@ define(function(require) {
 			cellsPositionX,
 			modelCell;
 
-		if (label !== undefined) {
-			region = analysisLabel(label);
-			region = cells.getFullOperationRegion(region);
-		} else {
-			select = selectRegions.getModelByType('operation')[0];
-			region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
-			region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
-		}
+		region = getOperRegion(label).operRegion;
+
 		aliasGridCol = headLineColModelList[region.startColIndex].get('alias');
 		aliasGridRow = headLineRowModelList[region.startRowIndex].get('alias');
 
