@@ -2,7 +2,7 @@ var application_root = __dirname,
 	express = require('express'),
 	bodyParser = require('body-parser'),
 	path = require('path');
-	// mongoose = require('mongoose');
+// mongoose = require('mongoose');
 
 var app = express();
 // mongoose.connect('mongodb://localhost/library_database');
@@ -23,15 +23,14 @@ app.configure(function() {
 });
 
 
-// app.get('/excel.htm/openExcel', function(request, response) {
-// 	return ContainerModel.find(function(err, container) {
-// 		if (!err) {
-// 			return response.send({name:1});
-// 		} else {
-// 			return console.log(err);
-// 		}
-// 	})
-// });
+app.post('/text.htm/fill_bgcolor', function(request, response) {
+	for (var i = 0; i < 10000; i++) {
+		console.log('run');
+	}
+	return response.send({
+		returncode: -1
+	});
+});
 // app.get('/excel.htm',function(request,response){
 // 	return ContainerModel.find(function(err, container) {
 // 		if (!err) {
