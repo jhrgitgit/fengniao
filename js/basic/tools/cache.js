@@ -10,9 +10,6 @@ define(function(require) {
 	 * @module basic
 	 */
 	return {
-		//ps:如果加载超过100行，问题
-		aliasRowCounter: '100',
-		aliasColCounter: '26',
 		sendQueueStep: 0, //0
 		containerId: '',
 		//ps:CurrentRule ，FrozenRules ，TempProp 都存有冻结信息，具体功能，需要说明
@@ -83,9 +80,27 @@ define(function(require) {
 		 */
 		localRowPosi: 0,
 		/**
-		 * 后台存储excel,别名最大
+		 * 后台存储excel的总宽度，超出总宽度，应该自增加列
+		 * @property {int} localRowPosi
 		 */
-		localMaxRowAlias: '',
+		localColPosi: 0,
+		/**
+		 * 行别名计数器
+		 * @type {String} 
+		 */
+		aliasRowCounter: '100',
+		/**
+		 * 列别名计数器
+		 * @type {String}
+		 */
+		aliasColCounter: '26',
+		/**
+		 * 列已加载区域
+		 */
+		loadCol: {
+			startSort: 0,
+			endSort: 0
+		}
 		/**
 		 * 临时代替属性，因为sheet还有做，所以sheet的冻结属性暂时由此属性替代。以后需要做成model处理
 		 * @property {object} TempProp
@@ -117,8 +132,6 @@ define(function(require) {
 			 */
 			colFrozen: false
 		},
-		loadStartColAlias: '1',
-		loadEndColAlias: '26',
 		//变量值重复，需要删除
 		//动态加载，模型对象已加载区域，以坐标为记录单位
 		rowRegionPosi: [],
@@ -190,17 +203,17 @@ define(function(require) {
 		aliasGenerator: function(type) {
 			var alias,
 				num;
-			if(type==='col'){
+			if (type === 'col') {
 				alias = this.aliasColCounter;
-			}else{
+			} else {
 				alias = this.aliasRowCounter;
 			}
-			
+
 			num = parseInt(alias);
 			alias = (num + 1).toString();
-			if(type==='col'){
+			if (type === 'col') {
 				this.aliasColCounter = alias;
-			}else{
+			} else {
 				this.aliasRowCounter = alias;
 			}
 			return alias;

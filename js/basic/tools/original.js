@@ -225,7 +225,7 @@ define(function(require) {
 				//计算cell模型宽高
 				for (j = cellStartColIndex; j < cellEndColIndex + 1; j++) {
 					model = gridLineColList[j];
-					if(!model.get('hidden')){
+					if (!model.get('hidden')) {
 						width += model.get('width') + 1;
 					}
 				}
@@ -438,6 +438,10 @@ define(function(require) {
 					cache.UserView.rowAlias = data.displayRowStartAlias;
 					cache.UserView.colAlias = data.displayColStartAlias;
 
+					cache.aliasRowCounter;
+					cache.aliasColCounter;
+
+
 					if (data.returndata.spreadSheet[0].sheet.frozen.state === '1') {
 						cache.TempProp = {
 							isFrozen: true,
@@ -466,6 +470,8 @@ define(function(require) {
 			});
 			loadRecorder.insertPosi(headItemRows.models[0].get('top'), headItemRows.models[headItemRows.length - 1].get('top') + headItemRows.models[headItemRows.length - 1].get('height'), cache.rowRegionPosi);
 			loadRecorder.insertPosi(headItemRows.models[0].get('top'), headItemRows.models[headItemRows.length - 1].get('top') + headItemRows.models[headItemRows.length - 1].get('height'), cache.cellRegionPosi.vertical);
+			cache.loadCol.startSort = headItemCols.models[0].get('sort');
+			cache.loadCol.endSort = headItemCols.models[headItemCols.length - 1].get('sort');
 		}
 	};
 });

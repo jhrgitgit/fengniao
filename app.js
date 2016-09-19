@@ -11,6 +11,9 @@ define(function(require) {
 	var ss = new SpreadSheet('spreadSheet');
 
 	$('#t').on('click', function() {
-		ss.setWordWrap('1',true,'D5');
+		var point = new SpreadSheet.Point({
+			startCol:'A',
+			startRow:'1'
+		});
 	});
 });

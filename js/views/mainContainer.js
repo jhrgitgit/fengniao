@@ -334,11 +334,12 @@ define(function(require) {
 				this.addBottom(currentDisplayViewTop);
 				this.deleteTop(currentDisplayViewTop);
 			}
-			// // as scrolbar scroll left
-			// if (transverseDirection > 0) {}
-			// // as scrolbar scroll right
-			// if (transverseDirection < 0) {
-			// }
+			//
+			if (transverseDirection > 0) {
+				this.addRight(currentDisplayViewLeft);
+			}
+			if (transverseDirection < 0) {
+			}
 		},
 		/**
 		 * 显示行上方超出预加载区域，删除超出视图
