@@ -18,8 +18,10 @@ define(function(require) {
 		 * @param  {object} cfg 用户自定义配置
 		 */
 		PackAjax: function(cfg) {
-			var config = {},
-				NULLFUNC = function() {};
+			var self = this,
+				config = {},
+				NULLFUNC = function() {},
+				containerId = cache.containerId;
 			if (!cfg.url) {
 				return;
 			}
@@ -57,11 +59,23 @@ define(function(require) {
 				type: config.type,
 				contentType: config.contentType,
 				dataType: config.dataType,
-				async: config.async,
+				async: config.async, 
 				data: config.data,
 				timeout: config.timeout,
 				success: function(data) {
-					config.success(data);
+					if (config.async || data.returncode === -1) {
+						if ($('#' + containerId + ' .loadmark').length === 0) {
+							$('#' + containerId).append('<div class="loadmark"></div>');
+						}
+						setTimeout(function() {
+							self.PackAjax(cfg);
+						}, 500);
+					} else {
+						config.success(data);
+						if ($('#' + containerId + ' .loadmark').length > 0) {
+							$('#' + containerId + ' .loadmark').remove();
+						}
+					}
 				},
 				error: config.error,
 				complete: config.complete

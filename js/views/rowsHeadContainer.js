@@ -78,8 +78,10 @@ define(function(require) {
 			}
 			len = modelsHeadLineRowRegionList.length;
 			for (; i < len; i++) {
-				this.addRowsHeadContainer(modelsHeadLineRowRegionList[i], true);
-				this.rowNumber++;
+				if (!modelsHeadLineRowRegionList[i].get('hidden')) {
+					this.addRowsHeadContainer(modelsHeadLineRowRegionList[i], true);
+					this.rowNumber++;
+				}
 			}
 			//ensure y or n has exist active model,
 			//if exist , the first model will be not active this.

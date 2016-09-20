@@ -1,3 +1,14 @@
+<a name="0.7.1"></a>
+## [0.7.1](https://github.com/iCloudWorkGroup/fengniao/compare/v0.7.0...v0.7.1) (2016-09-18)
+
+
+### Bug Fixes
+
+* **entrance/tool/setfillcolor:** 填充背景色，添加对于批量处理功能 ([fb61620](https://github.com/iCloudWorkGroup/fengniao/commit/fb61620))
+
+
+
+
 # SpreadSheet Online 版本更新日志
 
 #### 0.5.3 (2016-7-7) ####

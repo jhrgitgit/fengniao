@@ -289,9 +289,18 @@ define(function(require) {
 
 			headItemRowModel = headItemRows.getModelByAlias(rowAlias);
 			colIndex = headItemCols.getIndexByAlias(colAlias);
+
+
 			headItemColModel = headItemCols.models[colIndex];
-			while (headItemColModel.get('hidden')) {
-				headItemColModel = headItemCols.models[++colIndex];
+
+			len = headItemCols.length;
+			for (i = colIndex; i < len; i++) {
+				if (headItemColModel.get('hidden')) {
+					headItemColModel = headItemCols.models[++colIndex];
+					colAlias = headItemColModel.get('alias');
+				} else {
+					break;
+				}
 			}
 
 			cellsPositionX = cache.CellsPosition.strandX;
@@ -426,6 +435,10 @@ define(function(require) {
 					cache.UserView.rowAlias = data.displayRowStartAlias;
 					cache.UserView.colAlias = data.displayColStartAlias;
 
+					cache.aliasRowCounter;
+					cache.aliasColCounter;
+
+
 					if (data.returndata.spreadSheet[0].sheet.frozen.state === '1') {
 						cache.TempProp = {
 							isFrozen: true,
@@ -454,6 +467,8 @@ define(function(require) {
 			});
 			loadRecorder.insertPosi(headItemRows.models[0].get('top'), headItemRows.models[headItemRows.length - 1].get('top') + headItemRows.models[headItemRows.length - 1].get('height'), cache.rowRegionPosi);
 			loadRecorder.insertPosi(headItemRows.models[0].get('top'), headItemRows.models[headItemRows.length - 1].get('top') + headItemRows.models[headItemRows.length - 1].get('height'), cache.cellRegionPosi.vertical);
+			cache.loadCol.startSort = headItemCols.models[0].get('sort');
+			cache.loadCol.endSort = headItemCols.models[headItemCols.length - 1].get('sort');
 		}
 	};
 });

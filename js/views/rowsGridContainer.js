@@ -63,8 +63,10 @@ define(function(require) {
 			}
 			len = gridLineRowRegionList.length;
 			for (; i < len; i++) {
-				this.addGridLineRow(gridLineRowRegionList[i]);
-				this.rowNumber++;
+				if (!gridLineRowRegionList[i].get('hidden')) {
+					this.addGridLineRow(gridLineRowRegionList[i]);
+					this.rowNumber++;
+				}
 			}
 			return this;
 		},

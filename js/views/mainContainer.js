@@ -47,6 +47,7 @@ define(function(require) {
 				headItemColRegionList,
 				modelLastHeadLineRow,
 				headItemColList,
+				lastHeadLineCol,
 				len, i;
 
 			Backbone.on('event:mainContainer:destroy', this.destroy, this);
@@ -94,16 +95,24 @@ define(function(require) {
 			}
 			len = modelsHeadLineRowRegionList.length;
 			modelLastHeadLineRow = modelsHeadLineRowRegionList[len - 1];
-			len = modelsHeadLineColRegionList.length;
-			modelLastHeadLineCol = modelsHeadLineColRegionList[len - 1];
+			len = headItemColRegionList.length;
+			lastHeadLineCol = headItemColRegionList[len - 1];
 			//ps:计算问题
 			this.boxModel.height = modelLastHeadLineRow.get('top') + modelLastHeadLineRow.get('height') - modelsHeadLineRowRegionList[0].get('top');
-			this.boxModel.width = modelLastHeadLineCol.get('left') + modelLastHeadLineCol.get('width') - modelsHeadLineColRegionList[0].get('left');
+			this.boxModel.width = lastHeadLineCol.get('left') + lastHeadLineCol.get('width') - headItemColRegionList[0].get('left');
+
+			//mianContainer内部列视图显示区域
+			// this.display.left = headItemColRegionList[0].get(left);
+			// this.display.right = headItemColRegionList[0].get(left);
 
 			this.rowsViewBottomPosi = this.boxModel.height;
 			config.displayRowHeight = this.rowsViewBottomPosi;
 			cache.visibleRegion.top = 0;
 			cache.visibleRegion.bottom = this.rowsViewBottomPosi;
+
+			//视图行列视图加载区域
+			this.loadGridView = {};
+			//待修改：应该使用this.boxAttributes+预加载区，判断滚动区域行列对象的可视范围
 			//通过遍历计算，获取列视图加载区域
 			len = headItemColRegionList.length;
 			this.loadGridView.left = headItemColRegionList[0].get('left');
@@ -120,7 +129,7 @@ define(function(require) {
 		addBackGround: function() {
 			if (this.currentRule.displayPosition.endColAlias !== undefined &&
 				this.currentRule.displayPosition.endRowAlias !== undefined) {
-				//修改为模板
+				//修改为模板this.boxAttributes
 				this.$el.append('<div style="position:absolute;width:inherit;height:inherit;background-color:white;top:0;left:0;z-index:13"></div>');
 				this.cellsContainer.$el.css({
 					'z-index': '14'
@@ -310,9 +319,9 @@ define(function(require) {
 				userViewEndRowModel,
 				userViewEndColModel,
 				currentDisplayViewTop = this.recordScrollTop,
-				currentDisplayViewLeft = this.recordScrollLeft,
+				currentDisplayViewLeft = this.recordScrollLeft;
 
-				this.preventAutoScroll();
+			this.preventAutoScroll();
 			this.triggerCallback();
 
 			verticalDirection = currentDisplayViewTop - this.el.scrollTop;
@@ -750,16 +759,56 @@ define(function(require) {
 			config.displayRowHeight = this.rowsViewBottomPosi;
 			cache.visibleRegion.bottom = this.rowsViewBottomPosi;
 		},
-		addRight: function(recordLeft) {
-			// var recordRight = recordLeft + this.el.offsetWidth
-			var startIndex = this.currentRule.displayPosition.startColIndex, //列视图起始index
-				startLeft = headItemCols.models[startIndex].get(left),
-				currentRight = this.loadGridView.right, //当前列视图右侧边界
-				limitRight = startLeft + this.el.scrollLeft + this.el.offsetWidth + config.,
-				maxRight = cache.localColPosi;//后台存储excel最大宽度
-				if(){
+		addRight: function() {
+			var len, i,
+				startIndex,
+				endIndex,
+				headItemColList = headItemCols.models,
+				tempCellModel,
+				tempColModel,
+				tempAlias,
+				offset, //容器内部左边界偏移量
+				offsetTop = 0,
+				userViewTop = 0,
+				maxRight, //已加载列对象的最大右边界
+				localMaxRight = cache.localColPosi, //服务端列对象最大右边界
+				currentRight, //当前视图显示右边界
+				currentLimitRight; //当前视图需要显示右边界
+			//用于冻结情况的处理
+			if (cache.TempProp.isFrozen === true) {
+				offsetTop = this.currentRule.displayPosition.offsetLeft;
+				userViewTop = headItemRows.getModelByAlias(cache.UserView.rowAlias).get("top");
+			}
+			offset = offsetTop + userViewTop;
+			currentLimitRight = this.el.scrollLeft + this.el.offsetWidth + config.prestrainWidth;
+			if (this.loadGridView.right > currentLimitRight) {
+				return;
+			}
+			len = headItemColList.length;
+			maxRight = headItemColList[len - 1].get('left') + headItemColList[len - 1].get('width');
+			currentRight = this.loadGridView.right;
+			//显示已加载视图
+			if (maxRight > currentRight) {
+				// startIndex = binary.indexModelBinary(currentRight + 1, headItemColList, 'left', 'width');
+				// endIndex = binary.indexModelBinary(endIndex, headItemColList, 'left', 'width');
+				// for (i = startIndex; i < endIndex + 1; i++) {
+				// 	tempColModel = headItemCols.remove(i);
+				// 	headItemCols.add(tempColModel, i);
+				// 	tempAlias = headItemCols
+				// 	if (cache.CellsPosition.strandX[]) {
+					//需要判断行加载区域
+				// 	}
+				// }
+			}
+			//需要向后台请求数据
+			if (maxRight < currentLimitRight && maxRight < localMaxRight) {
 
-				}
+			}
+			//自增加列对象
+			if (maxRight < currentLimitRight) {
+				len = (currentLimitRight - maxRight)/;
+				headItemCols.gener
+			}
 		},
 		/**
 		 * 在整行整列选中时，进行滚动操作，时时修改选中区域的宽高

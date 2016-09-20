@@ -39,7 +39,6 @@ define(function(require) {
 			this.colNumber = 0;
 			this.listenTo(headItemCols, 'add', this.addGridLineCol);
 			Backbone.on('event:restoreHideCols', this.restoreHideCols, this);
-
 		},
 		/**
 		 * 渲染本身对象

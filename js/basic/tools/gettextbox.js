@@ -20,7 +20,7 @@ define(function(require) {
 			tempDiv.css({
 				'display': 'none',
 				'font-size': fontSize + 'pt',
-				'word-wrap': 'break-word',
+				'wordBreak': 'break-word',
 			});
 			if (width !== undefined) {
 				tempDiv.css({

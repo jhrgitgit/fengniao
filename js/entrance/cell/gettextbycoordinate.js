@@ -1,17 +1,15 @@
-
 define(function(require) {
 	'use strict';
 	var cache = require('basic/tools/cache'),
-		selectRegions = require('collections/selectRegion'),
 		cells = require('collections/cells'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
-		analysisLabel = require('basic/tools/analysislabel'),
+		getOperRegion = require('basic/tools/getoperregion'),
 		getTextByCoordinate;
 
 	getTextByCoordinate = function(sheetId, label) {
-		var select,
-			region = {},
+		var region,
+			operRegion,
 			headLineColModelList = headItemCols.models,
 			headLineRowModelList = headItemRows.models,
 			aliasGridRow,
@@ -19,16 +17,12 @@ define(function(require) {
 			cellsPositionX,
 			modelCell;
 
-		if (label !== undefined) {
-			region = analysisLabel(label);
-			region = cells.getFullOperationRegion(region);
-		} else {
-			select = selectRegions.getModelByType('operation')[0];
-			region.startColIndex = headItemCols.getIndexByAlias(select.get('wholePosi').startX);
-			region.startRowIndex = headItemRows.getIndexByAlias(select.get('wholePosi').startY);
-		}
-		aliasGridCol = headLineColModelList[region.startColIndex].get('alias');
-		aliasGridRow = headLineRowModelList[region.startRowIndex].get('alias');
+		//bug：超出加载区域，出现错误
+		region = getOperRegion(label);
+		operRegion = region.operRegion;
+
+		aliasGridCol = headLineColModelList[operRegion.startColIndex].get('alias');
+		aliasGridRow = headLineRowModelList[operRegion.startRowIndex].get('alias');
 
 		cellsPositionX = cache.CellsPosition.strandX;
 
