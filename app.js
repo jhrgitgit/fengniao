@@ -11,9 +11,6 @@ define(function(require) {
 	var ss = new SpreadSheet('spreadSheet');
 
 	$('#t').on('click', function() {
-		var point = new SpreadSheet.Point({
-			startCol:'A',
-			startRow:'1'
-		});
+		ss.setCellContent('1','1','H101');
 	});
 });

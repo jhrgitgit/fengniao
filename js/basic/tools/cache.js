@@ -100,7 +100,7 @@ define(function(require) {
 		loadCol: {
 			startSort: 0,
 			endSort: 0
-		}
+		},
 		/**
 		 * 临时代替属性，因为sheet还有做，所以sheet的冻结属性暂时由此属性替代。以后需要做成model处理
 		 * @property {object} TempProp

@@ -12,10 +12,7 @@ define(function(require) {
 			operRegion,
 			sendRegion,
 			startColSort,
-			startRowSort,
-			endColSort,
-			endRowSort,
-			i, j;
+			startRowSort;
 
 		clip = selectRegions.getModelByType('clip')[0];
 		if (clip !== undefined) {
@@ -26,30 +23,30 @@ define(function(require) {
 		operRegion = region.operRegion;
 		sendRegion = region.sendRegion;
 
-		startColSort = sendRegion.startColSort;
-		startRowSort = sendRegion.startRowSort;
-		endColSort = sendRegion.endColSort;
-		endRowSort = sendRegion.endRowSort;
+		if (operRegion.startColIndex === -1 || operRegion.startRowIndex === -1) {
+			sendData();
+			return;
+		}
+		operRegion.endColIndex = operRegion.startColIndex;
+		operRegion.endRowIndex = operRegion.startRowIndex;
 
 		cells.operateCellsByRegion(operRegion, function(cell) {
 			cell.set('content.texts', text);
 		});
+		sendData();
 
-		for (i = startRowSort; i < endRowSort + 1; i++) {
-			for (j = startColSort; j < endColSort + 1; j++) {
-				send.PackAjax({
-					url: 'text.htm?m=data',
-					data: JSON.stringify({
-						coordinate: {
-							startSortX: j,
-							startSortY: i,
-						},
-						content: text
-					})
-				});
-			}
+		function sendData() {
+			send.PackAjax({
+				url: 'text.htm?m=data',
+				data: JSON.stringify({
+					coordinate: {
+						startSortX: sendRegion.startSortX,
+						startSortY: sendRegion.startSortY,
+					},
+					content: text
+				})
+			});
 		}
-
 	};
 	return setCellContent;
 });
