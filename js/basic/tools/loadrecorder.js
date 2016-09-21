@@ -2,6 +2,9 @@
 define(function(require) {
 	var binary = require('basic/util/binary');
 
+	/**
+	 * 该模块对行列动态加载,提供区域区域缓存变量的维护
+	 */
 	return {
 		insertPosi: function(startPosi, endPosi, region) {
 			var startIndex,
@@ -126,6 +129,82 @@ define(function(require) {
 				}
 			}
 			return result;
-		}
+		},
+		/**
+		 * 判断是否含有未从服务器请求区域
+		 * @param  {int}  left       左边界
+		 * @param  {int}  right      右边界
+		 * @param  {int}  top        上边界
+		 * @param  {int}  bottom     下边界
+		 * @param  {object}  loadRegion 加载在区域
+		 * @return {Boolean}   是否存在
+		 */
+		isIncludeUnLoadRegion: function(left, right, top, bottom, loadRegion) {
+			var leftIndex,
+				rightIndex,
+				topIndex,
+				bottomIndex;
+			leftIndex = binary.tempModelBinary(left, loadRegion.transverse, 'start', 'end');
+			rightIndex = binary.tempModelBinary(right, loadRegion.transverse, 'start', 'end');
+			topIndex = binary.tempModelBinary(top, loadRegion.vertical, 'start', 'end');
+			bottomIndex = binary.tempModelBinary(bottom, loadRegion.vertical, 'start', 'end');
+			if (leftIndex === -1 ||
+				rightIndex === -1 ||
+				topIndex === -1 ||
+				bottomIndex === -1) {
+				return true;
+			}
+			if (leftIndex !== rightIndex ||
+				topIndex !== bottomIndex) {
+				return true;
+			}
+			return false;
+		},
+		/**
+		 * 添加从服务器请求区域
+		 * @param  {int}  left       左边界
+		 * @param  {int}  right      右边界
+		 * @param  {int}  top        上边界
+		 * @param  {int}  bottom     下边界
+		 * @param  {object}  loadRegion 加载区域
+		 * @return {Boolean}   是否存在
+		 */
+		insertLoadRegion: function(left, right, top, bottom, loadRegion) {
+			insertLeftIndex,
+			insertRightIndex,
+			insertTopIndex,
+			insertBottomIndex,
+			exsitLeftIndex,
+			exsitRightIndex,
+			exsitTopIndex,
+			exsitBottomIndex,
+			len;
+
+			//插入数据，插入开始点与结束点，不在一起区域，需要修改原有区域
+			if (insertLeftIndex !== insertRightIndex) {
+				len = exsitRightIndex - exsitLeftIndex;
+				if (exsitLeftIndex) {
+					left = loadRegion.transverse[exsitLeftIndex].start;
+				}
+				if (exsitRightIndex) {
+					right = loadRegion.transverse[exsitRightIndex].start;
+				}
+			}
+
+		},
+		/**
+		 * 进行行高列宽调整，
+		 * @param  {int} startPosi 调整点坐标
+		 * @param  {int} value     调整值
+		 * @param  {string} type      调整类型：横向/纵向
+		 * @param  {object}  loadRegion 加载区域
+		 */
+		adjustLoadRegion: function(startPosi, value, type, loadRegion) {
+
+		},
+		/**
+		 * 清空记录值
+		 */
+		clearLoadRegion: function(loadRegion) {},
 	};
 });

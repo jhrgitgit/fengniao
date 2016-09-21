@@ -21,6 +21,8 @@ define(function(require) {
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
 		siderLineRows = require('collections/siderLineRow'),
+		siderLineCols = require('collections/siderLineCol'),
+		rowOperate = require('entrance/row/rowoperation'),
 		cells = require('collections/cells'),
 		selectRegions = require('collections/selectRegion'),
 		GridLineRowContainer = require('views/gridLineRowContainer'),
@@ -42,7 +44,6 @@ define(function(require) {
 		 */
 		initialize: function() {
 			var modelsHeadLineRowList,
-				modelsHeadLineColList,
 				modelsHeadLineRowRegionList,
 				headItemColRegionList,
 				modelLastHeadLineRow,
@@ -110,11 +111,14 @@ define(function(require) {
 			cache.visibleRegion.top = 0;
 			cache.visibleRegion.bottom = this.rowsViewBottomPosi;
 
+
+
 			//视图行列视图加载区域
 			this.loadGridView = {};
 			//待修改：应该使用this.boxAttributes+预加载区，判断滚动区域行列对象的可视范围
 			//通过遍历计算，获取列视图加载区域
 			len = headItemColRegionList.length;
+			//放入cache中，重新拉取cell单元格使用
 			this.loadGridView.left = headItemColRegionList[0].get('left');
 			for (i = 1; i < len; i++) {
 				if (headItemColRegionList[i].get('isView') === false) {
@@ -309,7 +313,7 @@ define(function(require) {
 		 * @method syncScroll
 		 * @param  {event} e 鼠标滚动事件
 		 */
-		syncScroll: function(e) {
+		syncScroll: function() {
 			var verticalDirection,
 				transverseDirection,
 				modelRowList,
@@ -352,11 +356,11 @@ define(function(require) {
 				this.addBottom(currentDisplayViewTop);
 				this.deleteTop(currentDisplayViewTop);
 			}
-			if (transverseDirection > 0) {}
+			// if (transverseDirection > 0) {}
 			if (transverseDirection < 0) {
-				this.addRight(currentDisplayViewLeft);
+				this.addRight();
+				this.deleteLeft();
 			}
-
 		},
 		/**
 		 * 显示行上方超出预加载区域，删除超出视图
@@ -380,7 +384,7 @@ define(function(require) {
 			//判断Excel冻结状态，非冻结状态(冻结高度为0，用户可视起点高度为0)
 			if (cache.TempProp.isFrozen === true) {
 				offsetTop = this.currentRule.displayPosition.offsetTop;
-				userViewTop = headItemRows.getModelByAlias(cache.UserView.rowAlias).get("top");
+				userViewTop = headItemRows.getModelByAlias(cache.UserView.rowAlias).get('top');
 			} else {
 				offsetTop = 0;
 				userViewTop = 0;
@@ -396,8 +400,12 @@ define(function(require) {
 			limitTop = this.el.scrollTop - config.System.prestrainHeight + offsetTop + userViewTop;
 
 
-			if (recordTop < 0) recordTop = 0;
-			if (limitTop < 0) limitTop = 0;
+			if (recordTop < 0) {
+				recordTop = 0;
+			}
+			if (limitTop < 0) {
+				limitTop = 0;
+			}
 
 			limitIndex = binary.indexModelBinary(limitTop, headItemRowList, 'top', 'height');
 			recordIndex = binary.indexModelBinary(recordTop, headItemRowList, 'top', 'height');
@@ -416,7 +424,7 @@ define(function(require) {
 				if (tempCells[j] === undefined || tempCells[j] === null) {
 					continue;
 				}
-				cellPositionArray = tempCells[j].get("occupy").y;
+				cellPositionArray = tempCells[j].get('occupy').y;
 
 				for (k = cellPositionArray.length - 1; k > -1; k--) {
 					cellMaxRowIndex = headItemRows.getIndexByAlias(cellPositionArray[k]);
@@ -505,7 +513,7 @@ define(function(require) {
 					}
 					if (tempCells[i].get('showState') === false) {
 						//ps:可优化
-						tempCells[i].set('physicsBox', this.recountCellPhysicsBox(tempCells[i]));
+						// tempCells[i].set('physicsBox', this.recountCellPhysicsBox(tempCells[i]));
 						tempCells[i].set('showState', true);
 						var tempView = new CellContainer({
 							model: tempCells[i],
@@ -744,7 +752,7 @@ define(function(require) {
 				}
 				if (tempCells[i].get('showState') === false) {
 					tempCells[i].set('showState', true);
-					tempCells[i].set('physicsBox', this.recountCellPhysicsBox(tempCells[i]));
+					// tempCells[i].set('physicsBox', this.recountCellPhysicsBox(tempCells[i]));
 
 					var tempView = new CellContainer({
 						model: tempCells[i],
@@ -764,6 +772,7 @@ define(function(require) {
 				startIndex,
 				endIndex,
 				headItemColList = headItemCols.models,
+				lastHeadItem,
 				tempCellModel,
 				tempColModel,
 				tempAlias,
@@ -780,13 +789,15 @@ define(function(require) {
 				userViewTop = headItemRows.getModelByAlias(cache.UserView.rowAlias).get("top");
 			}
 			offset = offsetTop + userViewTop;
-			currentLimitRight = this.el.scrollLeft + this.el.offsetWidth + config.prestrainWidth;
+			currentLimitRight = this.el.scrollLeft + this.el.offsetWidth + config.System.prestrainWidth;
 			if (this.loadGridView.right > currentLimitRight) {
 				return;
 			}
 			len = headItemColList.length;
-			maxRight = headItemColList[len - 1].get('left') + headItemColList[len - 1].get('width');
+			lastHeadItem = headItemCols.getLastModel();
+			maxRight = lastHeadItem.get('left') + lastHeadItem.get('width');
 			currentRight = this.loadGridView.right;
+			// requestCell
 			//显示已加载视图
 			if (maxRight > currentRight) {
 				// startIndex = binary.indexModelBinary(currentRight + 1, headItemColList, 'left', 'width');
@@ -796,21 +807,120 @@ define(function(require) {
 				// 	headItemCols.add(tempColModel, i);
 				// 	tempAlias = headItemCols
 				// 	if (cache.CellsPosition.strandX[]) {
-					//需要判断行加载区域
+				//需要判断行加载区域
 				// 	}
 				// }
 			}
-			//需要向后台请求数据
+			//需要向后台请求数据(列数据+单元格数据)
 			if (maxRight < currentLimitRight && maxRight < localMaxRight) {
-
+				//requestGridLine
 			}
 			//自增加列对象
 			if (maxRight < currentLimitRight) {
-				len = (currentLimitRight - maxRight)/;
-				headItemCols.gener
+				startIndex = headItemCols.length - 1;
+				len = Math.ceil((currentLimitRight - maxRight) / config.User.cellWidth);
+				if ((len + headItemCols.length) > config.User.maxColNum) {
+					len = config.User.maxColNum - headItemCols.length;
+				}
+				for (i = 0; i < len; i++) {
+					headItemCols.generate();
+				}
+				lastHeadItem = headItemCols.getLastModel();
+				this.loadGridView.right = lastHeadItem.get('left') + lastHeadItem.get('width');
+				endIndex = headItemCols.length - 1;
+				//处理含有整行操作
+				rowOperate.generateCol(startIndex, endIndex);
+				//修改单元格加载区域
+				//发送增长列长度 len
 			}
+			//整行选中状态处理(选中视图绑定事件)
+			Backbone.trigger('event:cellsContainer:adaptWidth');
+			Backbone.trigger('event:colsAllHeadContainer:adaptWidth');
+		},
+		deleteLeft: function() {
+			var currentLeft,
+				currentLimitLeft,
+				startIndex,
+				endIndex,
+				tempCellList,
+				offset,
+				headItemColList = headItemCols.models,
+				offsetLeft = 0,
+				userViewLeft = 0,
+				i;
+
+			//冻结情况，计算视图的偏移量
+			if (cache.TempProp.isFrozen === true) {
+				offsetLeft = this.currentRule.displayPosition.offsetLeft;
+				userViewLeft = headItemCols.getModelByAlias(cache.UserView.colAlias).get('left');
+			}
+			offset = offsetLeft + userViewLeft;
+			currentLimitLeft = offset + this.el.scrollLeft - config.System.prestrainWidth;
+			if (this.loadGridView.left >= currentLimitLeft) {
+				return;
+			}
+			currentLimitLeft = currentLimitLeft > 0 ? currentLimitLeft : 0;
+			startIndex = binary.indexModelBinary(this.loadGridView.left, headItemColList, 'left', 'width');
+			endIndex = binary.indexModelBinary(currentLimitLeft, headItemColList, 'left', 'width');
+			if (endIndex - startIndex < 1) {
+				return;
+			}
+			for (i = startIndex; i < endIndex; i++) {
+				headItemColList[i].destroyView();
+			}
+			//删除超过加载区域(视图区+预加载区)cell视图对象
+			tempCellList = cells.getCellsByColIndex(startIndex, endIndex - 1);
+			for (i = 0; i < tempCellList.length; i++) {
+				//判断cell视图对象最上端区域是否仍在加载区域(视图区+预加载区)
+				if (tempCellList[i].get('left') + tempCellList[i].get('width') < currentLimitLeft) {
+					tempCellList[i].hide();
+				}
+			}
+			this.loadGridView.left = headItemColList[endIndex].get('left');
+		},
+		deleteRight: function() {
+			var currentRight,
+				currentLimitRight,
+				startIndex,
+				endIndex,
+				tempCellList,
+				offset,
+				headItemColList = headItemCols.models,
+				offsetLeft = 0,
+				userViewLeft = 0,
+				i;
+
+			//冻结情况，计算视图的偏移量
+			if (cache.TempProp.isFrozen === true) {
+				offsetLeft = this.currentRule.displayPosition.offsetLeft;
+				userViewLeft = headItemCols.getModelByAlias(cache.UserView.colAlias).get('left');
+			}
+			offset = offsetLeft + userViewLeft;
+			currentLimitRight = offset + this.el.scrollLeft + this.el.offsetWidth + config.System.prestrainWidth;
+			if (this.loadGridView.right <= currentLimitRight) {
+				return;
+			}
+			startIndex = binary.indexModelBinary(currentLimitRight, headItemColList, 'left', 'width');
+			endIndex = binary.indexModelBinary(this.loadGridView.right, headItemColList, 'left', 'width');
+			//索引为startIndex的视图，不做隐藏处理
+			if (endIndex - startIndex < 1) {
+				return;
+			}
+			for (i = startIndex + 1; i < endIndex; i++) {
+				headItemColList[i].destroyView();
+			}
+			//删除超过加载区域(视图区+预加载区)cell视图对象
+			tempCellList = cells.getCellsByColIndex(startIndex + 1, endIndex);
+			for (i = 0; i < tempCellList.length; i++) {
+				//判断cell视图对象最上端区域是否仍在加载区域(视图区+预加载区)
+				if (tempCellList[i].get('left') > currentLimitRight) {
+					tempCellList[i].hide();
+				}
+			}
+			this.loadGridView.right = headItemColList[endIndex].get('left') + headItemColList[endIndex].get('width');
 		},
 		/**
+		 * 待修改：由select对象自己完成适应，进行trriger
 		 * 在整行整列选中时，进行滚动操作，时时修改选中区域的宽高
 		 * @return {[type]} [description]
 		 */
@@ -849,41 +959,41 @@ define(function(require) {
 		 * @param  {Object} cell 单元格对象
 		 * @return {Object} 重新计算后的cell
 		 */
-		recountCellPhysicsBox: function(cell) {
-			var i, j,
-				left = 0,
-				top = 0,
-				width = 0,
-				height = 0,
-				aliasColArr,
-				aliasRowArr;
-			aliasRowArr = aliasColArr = [];
+		// recountCellPhysicsBox: function(cell) {
+		// 	var i, j,
+		// 		left = 0,
+		// 		top = 0,
+		// 		width = 0,
+		// 		height = 0,
+		// 		aliasColArr,
+		// 		aliasRowArr;
+		// 	aliasRowArr = aliasColArr = [];
 
-			aliasRowArr = cell.get('occupy').y;
-			aliasColArr = cell.get('occupy').x;
-			left = cell.get('physicsBox').left;
-			width = cell.get('physicsBox').width;
-			//由于只存在行动态加载，所有只处理Cell模型高度问题
-			for (i = 0; i < aliasRowArr.length; i++) {
-				if (headItemRows.getModelByAlias(aliasRowArr[i]) !== undefined) {
-					top = headItemRows.getModelByAlias(aliasRowArr[i]).get('top');
-					for (; i < aliasRowArr.length; i++) {
-						if (headItemRows.getModelByAlias(aliasRowArr[i]) !== undefined) {
-							height += headItemRows.getModelByAlias(aliasRowArr[i]).get('height') + 1;
-						} else {
-							break;
-						}
-					}
-					break;
-				}
-			}
-			return {
-				top: top,
-				left: left,
-				height: height - 1,
-				width: width
-			};
-		},
+		// 	aliasRowArr = cell.get('occupy').y;
+		// 	aliasColArr = cell.get('occupy').x;
+		// 	left = cell.get('physicsBox').left;
+		// 	width = cell.get('physicsBox').width;
+		// 	//由于只存在行动态加载，所有只处理Cell模型高度问题
+		// 	for (i = 0; i < aliasRowArr.length; i++) {
+		// 		if (headItemRows.getModelByAlias(aliasRowArr[i]) !== undefined) {
+		// 			top = headItemRows.getModelByAlias(aliasRowArr[i]).get('top');
+		// 			for (; i < aliasRowArr.length; i++) {
+		// 				if (headItemRows.getModelByAlias(aliasRowArr[i]) !== undefined) {
+		// 					height += headItemRows.getModelByAlias(aliasRowArr[i]).get('height') + 1;
+		// 				} else {
+		// 					break;
+		// 				}
+		// 			}
+		// 			break;
+		// 		}
+		// 	}
+		// 	return {
+		// 		top: top,
+		// 		left: left,
+		// 		height: height - 1,
+		// 		width: width
+		// 	};
+		// },
 		/**
 		 * 禁止鼠标拖动超出单元格区域，单元格区域移动
 		 * @method preventAutoScroll
@@ -1038,7 +1148,6 @@ define(function(require) {
 			this.adjustContainerHeight(height);
 			this.publish(height, 'adjustHeadItemContainerPublish');
 			this.publish(height, 'adjustContainerHeightPublish');
-
 		},
 		/**
 		 * 加载行对象时，对进行过整列操作的列的所在单元格进行相应的渲染

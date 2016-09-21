@@ -152,8 +152,10 @@ define(function(require) {
 			}
 			len = arrOpr.length;
 			for (i = 0; i < len; i++) {
-				if (temp[i] && arrOpr[i].error) {
-					arrOpr[i].error();
+				if (temp[i]) {
+					if(arrOpr[i].error){
+						arrOpr[i].error();
+					}
 				} else {
 					if (coordianteData[i].endColSort === -1) { //整行操作
 						startRowIndex = binary.indexAttrBinary(coordianteData[i].startSortY, headItemRowList, 'sort');

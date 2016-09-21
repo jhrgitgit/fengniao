@@ -34,7 +34,7 @@ define(function(require) {
 			len = headItemColList.length;
 
 			colindex = region.operRegion.startColIndex;
-			colSort = region.sendRegion.startColSort;
+			colSort = region.sendRegion.startSortX;
 			adjustWidth = headItemColList[colindex].get('width');
 
 			//不能进行全部隐藏

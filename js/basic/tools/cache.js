@@ -95,13 +95,6 @@ define(function(require) {
 		 */
 		aliasColCounter: '26',
 		/**
-		 * 列已加载区域
-		 */
-		loadCol: {
-			startSort: 0,
-			endSort: 0
-		},
-		/**
 		 * 列的显示区域
 		 */
 		displayCol: {
@@ -144,6 +137,18 @@ define(function(require) {
 			colFrozen: false
 		},
 		//变量值重复，需要删除
+
+		//动态加载缓存行列变量
+		gridLoadRegion: {
+			transverse: [],
+			vertical: []
+		},
+		//动态加载缓存单元格变量
+		cellLoadRegion:{
+			transverse: [],
+			vertical: []
+		},
+
 		//动态加载，模型对象已加载区域，以坐标为记录单位
 		rowRegionPosi: [],
 		//动态加载，模型对象已加载区域，以坐标为记录单位

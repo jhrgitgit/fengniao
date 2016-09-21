@@ -894,68 +894,35 @@ define(function(require) {
 			return cacheCellArray;
 		},
 		/**
-		 * 通过列索引查询，区域内包含单元格
-		 * @method  getCellsByColIndex
-		 * @return {array} cell模型列表
+		 * 按照行列索引，获取两列之间的所有包含所有cell对象
+		 * @param  {int} startIndex 起始索引
+		 * @param  {int} endIndex   结束索引
+		 * @return {array}  cell数组
 		 */
 		getCellsByColIndex: function(startIndex, endIndex) {
-			var tempObj,
-				tempAttr,
-				cacheCellArray,
-				cachePosition,
-				cellModelList,
-				alias,
-				i;
-
-			cacheCellArray = [];
-			cellModelList = this.models;
-			cachePosition = cache.CellsPosition.strandX;
-			//遍历cache.CellsPosition中符合索引，生成cells[]集合
-			for (i = startIndex; i < endIndex + 1; i++) {
-				if (headItemCols.models[i] !== undefined) {
-					alias = headItemCols.models[i].get('alias');
-					if (cachePosition[alias] !== undefined) {
-						tempObj = cachePosition[alias];
-						for (tempAttr in tempObj) {
-							if (cacheCellArray.indexOf(cellModelList[tempObj[tempAttr]]) === -1) {
-								cacheCellArray.push(cellModelList[tempObj[tempAttr]]);
-							}
-						}
-					}
-				}
-			}
-			return cacheCellArray;
-		},
-		/**
-		 * 按照行列索引，获取两列之间的所有包含所有cell对象
-		 * @method getCellsByColIndex 
-		 * @param  startPosi {int} 列开始索引
-		 * @param  endPosi {int} 列结束索引
-		 * @return {array} Cell数组
-		 */
-		getCellsByColPosition: function(startPosi, endPosi) {
 			var tempColObj,
 				tempAttr,
+				tempObj,
 				cacheCellArray,
 				cachePosition,
 				cellModelList,
 				aliasCol,
-				i = 0;
+				i;
 
+			tempObj = {};
 			cacheCellArray = [];
 			cellModelList = this.models;
 			cachePosition = cache.CellsPosition.strandX;
 
 			//遍历cache.CellsPosition中符合索引，生成cells[]集合
-			for (; i < endPosi - startPosi + 1; i++) {
-				if (headItemCols.models[startPosi + i] !== undefined) {
-					aliasCol = headItemCols.models[startPosi + i].get('alias');
-					if (cachePosition[aliasCol] !== undefined) {
-						tempColObj = cachePosition[aliasCol];
-						for (tempAttr in tempColObj) {
-							if (cacheCellArray.indexOf(cellModelList[tempColObj[tempAttr]]) === -1) {
-								cacheCellArray.push(cellModelList[tempColObj[tempAttr]]);
-							}
+			for (i = startIndex; i < endIndex + 1; i++) {
+				aliasCol = headItemCols.models[i].get('alias');
+				if (cachePosition[aliasCol] !== undefined) {
+					tempColObj = cachePosition[aliasCol];
+					for (tempAttr in tempColObj) {
+						if (tempObj[tempColObj[tempAttr]] === undefined) {
+							cacheCellArray.push(cellModelList[tempColObj[tempAttr]]);
+							tempObj[tempColObj[tempAttr]] = 0;
 						}
 					}
 				}

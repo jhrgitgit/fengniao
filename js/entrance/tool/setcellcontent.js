@@ -26,11 +26,15 @@ define(function(require) {
 		operRegion = region.operRegion;
 		sendRegion = region.sendRegion;
 
-		startColSort = sendRegion.startColSort;
-		startRowSort = sendRegion.startRowSort;
-		endColSort = sendRegion.endColSort;
-		endRowSort = sendRegion.endRowSort;
+		startColSort = sendRegion.startSortX;
+		startRowSort = sendRegion.startSortY;
+		endColSort = sendRegion.endSortX;
+		endRowSort = sendRegion.endSortY;
 
+		if (operRegion.startColIndex === -1 || operRegion.startRowIndex === -1) {
+			sendData();
+			return;
+		}
 		cells.operateCellsByRegion(operRegion, function(cell) {
 			cell.set('content.texts', text);
 		});

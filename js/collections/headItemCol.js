@@ -1,6 +1,9 @@
 'use strict';
 define(function(require) {
 	var _ = require('lib/underscore'),
+		config = require('spreadsheet/config'),
+		cache = require('basic/tools/cache'),
+		buildAlias = require('basic/tools/buildalias'),
 		Backbone = require('lib/backbone'),
 		binary = require('basic/util/binary'),
 		LineColModel = require('models/lineCol'),
@@ -146,6 +149,19 @@ define(function(require) {
 		},
 		getLastModel: function() {
 			return this.models[this.length - 1];
+		},
+		generate: function() {
+			var lastModel = this.getLastModel(),
+				model = new LineColModel(),
+				sort = lastModel.get('sort'),
+				left;
+			left = lastModel.get('left') + lastModel.get('width') + 1;
+			model.set('left', left);
+			model.set('alias', cache.aliasGenerator('col'));
+			model.set('width', config.User.cellWidth);
+			model.set('sort', sort + 1);
+			model.set('displayName', buildAlias.buildColAlias(sort + 1));
+			this.add(model);
 		}
 	});
 	return new HeadItemCols();

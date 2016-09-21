@@ -80,7 +80,7 @@ define(function(require) {
 		 *
 		 * @method destoryView
 		 */
-		destoryView: function() {
+		destroyView: function() {
 			this.set('isView', false);
 		}
 	});

@@ -79,16 +79,16 @@ define(function() {
 			 * 单元格默认宽度
 			 * @property {int} cellWidth
 			 */
-			cellWidth: 72,
-			/**
-			 * 单元格默认高度
-			 * @property {int} cellHeight
-			 */
-			cellHeight: 20,
-			/**
-			 * 列调整时，鼠标手势变化的距离
-			 * @property {int} effectDistanceCol
-			 */
+			// cellWidth: 72,
+			// /**
+			//  * 单元格默认高度
+			//  * @property {int} cellHeight
+			//  */
+			// cellHeight: 20,
+			// /**
+			//  * 列调整时，鼠标手势变化的距离
+			//  * @property {int} effectDistanceCol
+			//  */
 			effectDistanceCol: 10,
 			/**
 			 * 行调整时，鼠标手势变化的距离

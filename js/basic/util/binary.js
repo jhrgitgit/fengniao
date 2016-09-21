@@ -48,7 +48,7 @@ define(function() {
 			return -1;
 		},
 		/**
-		 * 两个属性之间查询 二分查询
+		 * 两个属性之间查询 二分查询(backbone模型对象使用)
 		 * @method newModelBinary
 		 * @param  {int}       value       想查询的数据值
 		 * @param  {array}       array     查询的list集合
@@ -80,6 +80,97 @@ define(function() {
 			return start;
 		},
 		/**
+		 * 两个属性之间查询（未查询到，返回-1,普通对象数组使用）
+		 * @method newModelBinary
+		 * @param  {int}       value       想查询的数据值
+		 * @param  {array}       array     查询的list集合
+		 * @param  {string}       strandAttr 起始属性
+		 * @param  {string}       endAttr  结束值
+		 * @param  {int}       startIndex 起始索引
+		 * @param  {int}       endIndex   结束索引
+		 * @return {int} `array`中的索引值
+		 */
+		tempObjectBinary: function(value, array, startAttr, endAttr, startIndex, endIndex) {
+			var middle,
+				start = startIndex ? startIndex : 0,
+				end = endIndex ? endIndex : array.length - 1,
+				findValue = Math.floor(value),
+				startAttrValue,
+				endAttrValue,
+				middleArray;
+			while (start <= end) {
+				middle = end + start >>> 1;
+				middleArray = array[middle];
+				startAttrValue = middleArray[startAttr];
+				endAttrValue = middleArray[endAttr];
+				if (startAttrValue <= findValue && findValue <= endAttrValue) {
+					return middle;
+				}
+				if (end === start) {
+					return -1;
+				}
+				if (value < startAttrValue) {
+					end = middle - 1;
+				} else {
+					start = middle + 1;
+				}
+			}
+			return -1;
+		},
+		/**
+		 * 不连续的区域内，插入一个元素时，返回元素的位置
+		 * @param  {[type]} value      [description]
+		 * @param  {[type]} array      [description]
+		 * @param  {[type]} startAttr  [description]
+		 * @param  {[type]} endAttr    [description]
+		 * @param  {[type]} startIndex [description]
+		 * @param  {[type]} endIndex   [description]
+		 * @return {[type]}            [description]
+		 */
+		tempInsertObjectBinary: function(value, array, startAttr, endAttr, startIndex, endIndex) {
+			var middle,
+				startIndex = startIndex || 0,
+				endIndex = endIndex || array.length - 1,
+				findValue = Math.floor(value),
+				startValue,
+				endValue;
+
+			while (startIndex <= endIndex) {
+				middle = startIndex + endIndex >>> 1;
+				
+			}
+			return 0;
+
+
+			if (array.length === 1) {
+				return (array[0].get(strandAttr) + array[0].get(rangeAttr) >= findValue) ? 0 : 1;
+			}
+			while (start < end) {
+				if (array[start].get(strandAttr) + array[start].get(rangeAttr) >= findValue) {
+					return start;
+				}
+				if (array[end].get(strandAttr) + array[end].get(rangeAttr) === findValue) {
+					return end;
+				}
+				if (array[end].get(strandAttr) + array[end].get(rangeAttr) < findValue) {
+					return end + 1;
+				}
+				middle = end + start >>> 1;
+				middleArray = array[middle];
+				strandAttrByArray = middleArray.get(strandAttr);
+				rangeAttrByArray = middleArray.get(rangeAttr);
+				if (strandAttrByArray + rangeAttrByArray < findValue) {
+					start = middle + 1;
+				} else {
+					end = middle;
+				}
+			}
+			return start;
+
+
+		}
+
+		/**
 		 * 二分查询（用于插入元素，确定元素位置使用）
 		 * @method newModelBinary
 		 * @param  {int}       value       想查询的数据值
@@ -90,7 +181,7 @@ define(function() {
 		 * @param  {int}       endIndex   结束索引
 		 * @return {int} `array`中的索引值
 		 */
-		indexModelBinary: function(value, array, strandAttr, rangeAttr, startIndex, endIndex) {
+			indexModelBinary: function(value, array, strandAttr, rangeAttr, startIndex, endIndex) {
 			if (array.length === 0) {
 				return 0;
 			}
@@ -126,6 +217,7 @@ define(function() {
 			}
 			return start;
 		},
+		//待删除
 		existArrayBinary: function(value, array, startAttr, endAttr, startIndex, endIndex) {
 			var middle,
 				start = startIndex ? startIndex : 0,
@@ -159,6 +251,7 @@ define(function() {
 			}
 			return false;
 		},
+		//待删除
 		indexArrayBinary: function(value, array, startAttr, endAttr, startIndex, endIndex) {
 			var middle,
 				start = startIndex ? startIndex : 0,
@@ -198,8 +291,8 @@ define(function() {
 		 * 二分查询，暂时查询sort值使用
 		 */
 		indexAttrBinary: function(value, array, attr, startIndex, endIndex) {
-			var	middleIndex;
-			
+			var middleIndex;
+
 			startIndex = startIndex || 0;
 			endIndex = endIndex || array.length - 1;
 			if (array[startIndex].get(attr) > value) {
@@ -209,7 +302,7 @@ define(function() {
 				return -1;
 			}
 			while (startIndex < endIndex) {
-				if (array[startIndex].get(attr)=== value) {
+				if (array[startIndex].get(attr) === value) {
 					return startIndex;
 				}
 				if (array[endIndex].get(attr) === value) {

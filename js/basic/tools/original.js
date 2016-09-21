@@ -181,26 +181,26 @@ define(function(require) {
 				//待优化：初始化单元格，进行了过多的遍历
 				//获取已加载行模型内，cell起始索引，结束索引
 				for (j = 0; j < gridAliasRowList.length; j++) {
-					if (headItemRows.getIndexByAlias(gridAliasRowList[j]) !== -1) {
-						cellStartRowIndex = headItemRows.getIndexByAlias(gridAliasRowList[j]);
+					cellStartRowIndex = headItemRows.getIndexByAlias(gridAliasRowList[j]);
+					if (cellStartRowIndex !== -1) {
 						break;
 					}
 				}
 				for (j = gridAliasRowList.length - 1; j > -1; j--) {
-					if (headItemRows.getIndexByAlias(gridAliasRowList[j]) !== -1) {
-						cellEndRowIndex = headItemRows.getIndexByAlias(gridAliasRowList[j]);
+					cellEndRowIndex = headItemRows.getIndexByAlias(gridAliasRowList[j]);
+					if (cellEndRowIndex !== -1) {
 						break;
 					}
 				}
 				for (j = 0; j < gridAliasColList.length; j++) {
-					if (headItemCols.getIndexByAlias(gridAliasColList[j]) !== -1) {
-						cellStartColIndex = headItemCols.getIndexByAlias(gridAliasColList[j]);
+					cellStartColIndex = headItemCols.getIndexByAlias(gridAliasColList[j]);
+					if (cellStartColIndex !== -1) {
 						break;
 					}
 				}
 				for (j = gridAliasColList.length - 1; j > -1; j--) {
-					if (headItemCols.getIndexByAlias(gridAliasColList[j]) !== -1) {
-						cellEndColIndex = headItemCols.getIndexByAlias(gridAliasColList[j]);
+					cellEndColIndex = headItemCols.getIndexByAlias(gridAliasColList[j]);
+					if (cellEndColIndex !== -1) {
 						break;
 					}
 				}

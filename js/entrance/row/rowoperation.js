@@ -104,5 +104,40 @@ define(function(require) {
 				}
 			}
 		},
+		/**
+		 * 自增加列，自动填充整行操作效果单元格
+		 * @param  {int} startIndex 起始列索引
+		 * @param  {int} endIndex   结束列索引
+		 */
+		generateCol: function(startIndex, endIndex) {
+			var len = headItemRows.length,
+				headItemRowList = headItemRows.models,
+				headItemColList = headItemCols.models,
+				occupyCol = cache.CellsPosition.strandX,
+				rowOperProp,
+				rowAlias,
+				colAlias,
+				i, j;
+
+			for (i = 0; i < len; i++) {
+				rowOperProp = headItemRowList[i].get('operProp');
+				if (!isEmptyObject(rowOperProp)) {
+					for (j = startIndex; j < endIndex + 1; j++) {
+						colAlias = headItemRowList[j].get('alias');
+						rowAlias = headItemColList[i].get('alias');
+						if (occupyCol[colAlias] === undefined || occupyCol[colAlias][rowAlias] === undefined) {
+							cells.createCellModel(j, i, rowOperProp);
+						}
+					}
+				}
+			}
+			function isEmptyObject(obj) {
+				var name;
+				for (name in obj) {
+					return false;
+				}
+				return true;
+			}
+		}
 	};
 });
