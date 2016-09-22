@@ -137,7 +137,7 @@ define(function(require) {
 		 * @param  {int}  top        上边界
 		 * @param  {int}  bottom     下边界
 		 * @param  {object}  loadRegion 加载在区域
-		 * @return {Boolean}   是否存在
+		 * @return {Boolean}   true:存在未加载区域，false:不存在未加载区域
 		 */
 		isIncludeUnLoadRegion: function(left, right, top, bottom, loadRegion) {
 			var leftIndex,
@@ -170,25 +170,72 @@ define(function(require) {
 		 * @return {Boolean}   是否存在
 		 */
 		insertLoadRegion: function(left, right, top, bottom, loadRegion) {
-			insertLeftIndex,
-			insertRightIndex,
-			insertTopIndex,
-			insertBottomIndex,
-			exsitLeftIndex,
-			exsitRightIndex,
-			exsitTopIndex,
-			exsitBottomIndex,
-			len;
-
-			//插入数据，插入开始点与结束点，不在一起区域，需要修改原有区域
-			if (insertLeftIndex !== insertRightIndex) {
-				len = exsitRightIndex - exsitLeftIndex;
-				if (exsitLeftIndex) {
-					left = loadRegion.transverse[exsitLeftIndex].start;
+			this._insert(left, right, loadRegion, 'transverse');
+			this._insert(top, bottom, loadRegion, 'vertical');
+		},
+		_insert: function(start, end, loadRegion, type) {
+			var insertStartIndex,
+				insertEndIndex,
+				exsitStartIndex,
+				exsitEndIndex,
+				exsitAdjacentStartIndex,
+				exsitAdjacentEndIndex,
+				len = 0;
+			//查询相应坐标
+			insertStartIndex = binary.tempInsertObjectBinary(start, loadRegion[type], 'start', 'end');
+			insertEndIndex = binary.tempInsertObjectBinary(end, loadRegion[type], 'start', 'end');
+			exsitStartIndex = binary.tempObjectBinary(start, loadRegion[type], 'start', 'end');
+			exsitEndIndex = binary.tempObjectBinary(end, loadRegion[type], 'start', 'end');
+			//判断需要插入位置，相邻位置是否已存在加载去
+			exsitAdjacentStartIndex = binary.tempObjectBinary(start, loadRegion[type], 'start', 'end');
+			exsitAdjacentEndIndex = binary.tempObjectBinary(end, loadRegion[type], 'start', 'end');
+			//原水平方向区间数组维护
+			if (insertStartIndex !== insertEndIndex) {
+				//插入点位于已存在区间内，插入点需扩大到区间边界
+				if (exsitStartIndex !== -1) {
+					start = loadRegion[type][exsitStartIndex].start;
+				} else if (exsitAdjacentStartIndex !== -1) {
+					start = loadRegion[type][exsitAdjacentStartIndex].start;
+					insertStartIndex--;
 				}
-				if (exsitRightIndex) {
-					right = loadRegion.transverse[exsitRightIndex].start;
+				if (exsitEndIndex !== -1) {
+					end = loadRegion[type][exsitEndIndex].start;
+				} else if (exsitAdjacentEndIndex !== -1) {
+					start = loadRegion[type][exsitAdjacentEndIndex].start;
 				}
+				//需要删除原始数组中区间的数据长度
+				len = insertEndIndex - insertStartIndex;
+				//right需要判断是否包含在区域内，包含，删除长度+1
+				if (exsitEndIndex === -1 && exsitAdjacentEndIndex === -1) {
+					len--;
+				}
+				loadRegion[type].splice(insertStartIndex, len, {
+					start: start,
+					end: end
+				});
+			} else {
+				//插入区域已存在
+				if (exsitStartIndex !== -1 && exsitEndIndex !== -1) {
+					return;
+				}
+				if (exsitAdjacentStartIndex !== -1) {
+					start = loadRegion[type][exsitAdjacentStartIndex].start;
+					insertStartIndex = exsitAdjacentStartIndex;
+					exsitStartIndex = exsitAdjacentStartIndex;
+					len++;
+				}
+				if (exsitAdjacentEndIndex !== -1) {
+					end = loadRegion[type][exsitAdjacentEndIndex].end;
+					exsitEndIndex = exsitAdjacentEndIndex;
+					len++;
+				}
+				if (exsitStartIndex === -1 && exsitEndIndex !== -1) {
+					len++;
+				}
+				loadRegion[type].splice(insertStartIndex, len, {
+					start: start,
+					end: end
+				});
 			}
 
 		},
@@ -200,11 +247,27 @@ define(function(require) {
 		 * @param  {object}  loadRegion 加载区域
 		 */
 		adjustLoadRegion: function(startPosi, value, type, loadRegion) {
-
+			var insertIndex,
+				start,
+				end,
+				len, i;
+			insertIndex = binary.tempObjectBinary(startPosi, loadRegion[type], 'start', 'end');
+			len = loadRegion[type].length;
+			end = loadRegion[type][insertIndex].end;
+			loadRegion[type][insertIndex].end = end + value;
+			for (i = insertIndex + 1; i < len; i++) {
+				start = loadRegion[type][i].start;
+				end = loadRegion[type][i].end;
+				loadRegion[type][i].start = start + value;
+				loadRegion[type][i].end = end + value;
+			}
 		},
 		/**
 		 * 清空记录值
 		 */
-		clearLoadRegion: function(loadRegion) {},
+		clearLoadRegion: function(loadRegion) {
+			loadRegion.transverse = [];
+			loadRegion.vertical = [];
+		},
 	};
 });

@@ -129,46 +129,31 @@ define(function() {
 		 */
 		tempInsertObjectBinary: function(value, array, startAttr, endAttr, startIndex, endIndex) {
 			var middle,
-				startIndex = startIndex || 0,
-				endIndex = endIndex || array.length - 1,
-				findValue = Math.floor(value),
-				startValue,
-				endValue;
+				start,
+				end,
+				findValue = Math.floor(value);
 
-			while (startIndex <= endIndex) {
-				middle = startIndex + endIndex >>> 1;
-				
-			}
-			return 0;
-
-
-			if (array.length === 1) {
-				return (array[0].get(strandAttr) + array[0].get(rangeAttr) >= findValue) ? 0 : 1;
-			}
+			start = startIndex || 0;
+			end = endIndex || array.length - 1;
 			while (start < end) {
-				if (array[start].get(strandAttr) + array[start].get(rangeAttr) >= findValue) {
+				if (array[start][endAttr] >= findValue) {
 					return start;
 				}
-				if (array[end].get(strandAttr) + array[end].get(rangeAttr) === findValue) {
+				if (array[end][startAttr] <= findValue || array[end][endAttr] >= findValue) {
 					return end;
 				}
-				if (array[end].get(strandAttr) + array[end].get(rangeAttr) < findValue) {
+				if (array[end][endAttr] < findValue) {
 					return end + 1;
 				}
 				middle = end + start >>> 1;
-				middleArray = array[middle];
-				strandAttrByArray = middleArray.get(strandAttr);
-				rangeAttrByArray = middleArray.get(rangeAttr);
-				if (strandAttrByArray + rangeAttrByArray < findValue) {
+				if (array[middle][end] < findValue) {
 					start = middle + 1;
 				} else {
 					end = middle;
 				}
 			}
 			return start;
-
-
-		}
+		},
 
 		/**
 		 * 二分查询（用于插入元素，确定元素位置使用）
@@ -181,7 +166,7 @@ define(function() {
 		 * @param  {int}       endIndex   结束索引
 		 * @return {int} `array`中的索引值
 		 */
-			indexModelBinary: function(value, array, strandAttr, rangeAttr, startIndex, endIndex) {
+		indexModelBinary: function(value, array, strandAttr, rangeAttr, startIndex, endIndex) {
 			if (array.length === 0) {
 				return 0;
 			}
