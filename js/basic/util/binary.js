@@ -135,18 +135,18 @@ define(function() {
 
 			start = startIndex || 0;
 			end = endIndex || array.length - 1;
-			while (start < end) {
+			while (start <= end) {
 				if (array[start][endAttr] >= findValue) {
 					return start;
 				}
-				if (array[end][startAttr] <= findValue || array[end][endAttr] >= findValue) {
+				if (array[end][startAttr] <= findValue && array[end][endAttr] >= findValue) {
 					return end;
 				}
 				if (array[end][endAttr] < findValue) {
 					return end + 1;
 				}
 				middle = end + start >>> 1;
-				if (array[middle][end] < findValue) {
+				if (array[middle][endAttr] < findValue) {
 					start = middle + 1;
 				} else {
 					end = middle;

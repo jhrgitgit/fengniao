@@ -4,6 +4,7 @@ define(function(require) {
 	var Backbone = require('lib/backbone'),
 		send = require('basic/tools/send'),
 		cache = require('basic/tools/cache'),
+		binary = require('basic/util/binary'),
 		selectRegions = require('collections/selectRegion'),
 		headItemCols = require('collections/headItemCol'),
 		headItemRows = require('collections/headItemRow'),
@@ -59,17 +60,20 @@ define(function(require) {
 	 * @method filterOutUserView
 	 */
 	var filterOutUserView = function(region) {
-		var userViewColIndex = headItemCols.getIndexByAlias(cache.UserView.colAlias),
-			userViewRowIndex = headItemRows.getIndexByAlias(cache.UserView.rowAlias),
-			userViewEndColIndex = headItemCols.getIndexByAlias(cache.UserView.colEndAlias),
-			userViewEndRowIndex = headItemRows.getIndexByAlias(cache.UserView.rowEndAlias);
-		//初始化，未进行滚动
-		if (userViewRowIndex === userViewEndRowIndex) {
-			return false;
-		} else if (region.startColIndex < userViewColIndex ||
-			region.startRowIndex < userViewRowIndex ||
-			region.startColIndex > userViewEndColIndex ||
-			region.startRowIndex > userViewEndRowIndex) {
+		var startViewColIndex,
+			startViewRowIndex,
+			endViewColIndex,
+			endViewRowIndex;
+
+		startViewColIndex = binary.newModelBinary(cache.gridLineView.left, headItemCols.models, 'left', 'width');
+		startViewRowIndex = binary.newModelBinary(cache.gridLineView.top, headItemRows.models, 'top', 'height');
+		endViewColIndex = binary.newModelBinary(cache.gridLineView.left, headItemCols.models, 'left', 'width');
+		endViewRowIndex = binary.newModelBinary(cache.gridLineView.bottom, headItemRows.models, 'top', 'height');
+
+		if (region.startColIndex < startViewColIndex ||
+			region.startRowIndex < startViewRowIndex ||
+			region.startColIndex > endViewColIndex ||
+			region.startRowIndex > endViewRowIndex) {
 			return true;
 		} else {
 			return false;
@@ -87,7 +91,7 @@ define(function(require) {
 			splitColSort = headItemColList[region.startColIndex].get('sort'),
 			splitRowSort = headItemRowList[region.startRowIndex].get('sort');
 
-		if(filterOutUserView(region)){
+		if (filterOutUserView(region)) {
 			return;
 		}
 

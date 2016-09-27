@@ -144,10 +144,10 @@ define(function(require) {
 				rightIndex,
 				topIndex,
 				bottomIndex;
-			leftIndex = binary.tempModelBinary(left, loadRegion.transverse, 'start', 'end');
-			rightIndex = binary.tempModelBinary(right, loadRegion.transverse, 'start', 'end');
-			topIndex = binary.tempModelBinary(top, loadRegion.vertical, 'start', 'end');
-			bottomIndex = binary.tempModelBinary(bottom, loadRegion.vertical, 'start', 'end');
+			leftIndex = binary.tempObjectBinary(left, loadRegion.transverse, 'start', 'end');
+			rightIndex = binary.tempObjectBinary(right, loadRegion.transverse, 'start', 'end');
+			topIndex = binary.tempObjectBinary(top, loadRegion.vertical, 'start', 'end');
+			bottomIndex = binary.tempObjectBinary(bottom, loadRegion.vertical, 'start', 'end');
 			if (leftIndex === -1 ||
 				rightIndex === -1 ||
 				topIndex === -1 ||
@@ -187,8 +187,8 @@ define(function(require) {
 			exsitStartIndex = binary.tempObjectBinary(start, loadRegion[type], 'start', 'end');
 			exsitEndIndex = binary.tempObjectBinary(end, loadRegion[type], 'start', 'end');
 			//判断需要插入位置，相邻位置是否已存在加载去
-			exsitAdjacentStartIndex = binary.tempObjectBinary(start, loadRegion[type], 'start', 'end');
-			exsitAdjacentEndIndex = binary.tempObjectBinary(end, loadRegion[type], 'start', 'end');
+			exsitAdjacentStartIndex = binary.tempObjectBinary(start - 1, loadRegion[type], 'start', 'end');
+			exsitAdjacentEndIndex = binary.tempObjectBinary(end + 1, loadRegion[type], 'start', 'end');
 			//原水平方向区间数组维护
 			if (insertStartIndex !== insertEndIndex) {
 				//插入点位于已存在区间内，插入点需扩大到区间边界
@@ -199,12 +199,12 @@ define(function(require) {
 					insertStartIndex--;
 				}
 				if (exsitEndIndex !== -1) {
-					end = loadRegion[type][exsitEndIndex].start;
+					end = loadRegion[type][exsitEndIndex].end;
 				} else if (exsitAdjacentEndIndex !== -1) {
-					start = loadRegion[type][exsitAdjacentEndIndex].start;
+					end = loadRegion[type][exsitAdjacentEndIndex].end;
 				}
 				//需要删除原始数组中区间的数据长度
-				len = insertEndIndex - insertStartIndex;
+				len = insertEndIndex - insertStartIndex + 1;
 				//right需要判断是否包含在区域内，包含，删除长度+1
 				if (exsitEndIndex === -1 && exsitAdjacentEndIndex === -1) {
 					len--;
@@ -227,7 +227,6 @@ define(function(require) {
 				if (exsitAdjacentEndIndex !== -1) {
 					end = loadRegion[type][exsitAdjacentEndIndex].end;
 					exsitEndIndex = exsitAdjacentEndIndex;
-					len++;
 				}
 				if (exsitStartIndex === -1 && exsitEndIndex !== -1) {
 					len++;

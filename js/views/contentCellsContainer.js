@@ -37,9 +37,14 @@ define(function(require) {
 		initialize: function() {
 			this.currentRule = util.clone(cache.CurrentRule);
 			Backbone.on('event:contentCellsContainer:reloadCells', this.reloadCells, this);
+			//还原隐藏的单元格
 			Backbone.on('event:restoreHideCellView', this.restoreHideCellView, this);
-			//还原
-			this.listenTo(cells, 'add', this.addCell);
+			//还原动态加载删除的单元格视图
+			if (this.currentRule.displayPosition.endIndex &&
+				this.currentRule.displayPosition.startIndex) {
+				Backbone.on('event:restoreCellView', this.restoreCellView, this);
+			}
+			this.listenTo(cells, 'add', this.addCellView);
 		},
 		/**
 		 * 视图渲染方法
@@ -85,7 +90,7 @@ define(function(require) {
 
 			top = cache.visibleRegion.top;
 			bottom = cache.visibleRegion.bottom;
-			
+
 			this.getCells(top, bottom);
 			loadRecorder.insertPosi(top, bottom, cache.cellRegionPosi.vertical);
 			len = cells.length;
@@ -148,10 +153,35 @@ define(function(require) {
 						if (strandX[colAlias] !== undefined && strandX[colAlias][rowAlias] !== undefined) {
 							tempCell = cells.models[strandX[colAlias][rowAlias]];
 							if (tempCell.get('hidden') === true) {
+								tempCell.set('hidden', false);
 								this.addCellView(tempCell);
 							}
 						}
 					}
+				}
+			}
+		},
+		restoreCellView: function(region) {
+			var headItemRowList = headItemRows.models,
+				headItemColList = headItemCols.models,
+				tempCellList,
+				leftIndex,
+				rightIndex,
+				topIndex,
+				bottomIndex,
+				i, len;
+
+			leftIndex = binary.newModelBinary(region.left, headItemColList, 'left', 'width');
+			rightIndex = binary.newModelBinary(region.right, headItemColList, 'left', 'width');
+			topIndex = binary.newModelBinary(region.top, headItemColList, 'top', 'height');
+			bottomIndex = binary.newModelBinary(region.bottom, headItemColList, 'top', 'height');
+
+			tempCellList = cells.getCellByX(leftIndex, topIndex, rightIndex, bottomIndex);
+			len = tempCellList.length;
+			for (i = 0; i < len; i++) {
+				if (tempCellList[i].get('showState')) {
+					tempCellList[i].set('showState',true);
+					this.addCellView(tempCellList[i]);
 				}
 			}
 		},
@@ -236,6 +266,7 @@ define(function(require) {
 		destroy: function() {
 			Backbone.off('event:contentCellsContainer:reloadCells');
 			Backbone.off('event:restoreHideCellView');
+			Backbone.off('event:restoreCellView');
 			this.remove();
 		}
 	});

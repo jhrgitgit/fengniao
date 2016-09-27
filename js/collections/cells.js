@@ -868,12 +868,14 @@ define(function(require) {
 		getCellsByRowIndex: function(startIndex, endIndex) {
 			var tempObj,
 				tempAttr,
+				tempObjRow,
 				cacheCellArray,
 				cachePosition,
 				cellModelList,
 				alias,
 				i;
 
+			tempObj = {};
 			cacheCellArray = [];
 			cellModelList = this.models;
 			cachePosition = cache.CellsPosition.strandY;
@@ -882,10 +884,11 @@ define(function(require) {
 				if (headItemRows.models[i] !== undefined) {
 					alias = headItemRows.models[i].get('alias');
 					if (cachePosition[alias] !== undefined) {
-						tempObj = cachePosition[alias];
-						for (tempAttr in tempObj) {
-							if (cacheCellArray.indexOf(cellModelList[tempObj[tempAttr]]) === -1) {
-								cacheCellArray.push(cellModelList[tempObj[tempAttr]]);
+						tempObjRow = cachePosition[alias];
+						for (tempAttr in tempObjRow) {
+							if (tempObj[tempObjRow[tempAttr]] === undefined) {
+								cacheCellArray.push(cellModelList[tempColObj[tempAttr]]);
+								tempObj[tempObjRow[tempAttr]] = 0;
 							}
 						}
 					}

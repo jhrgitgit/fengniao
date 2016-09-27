@@ -58,13 +58,19 @@ define(function(require) {
 			Backbone.on('call:colsHeadContainer', this.callColsHeadContainer, this);
 			Backbone.on('event:colsHeadContainer:relaseSpaceEffect', this.relaseSpaceEffect, this);
 			Backbone.on('event:colWidthAdjust', this.colWidthAdjust, this);
+			//取消隐藏，还原隐藏的列视图
 			Backbone.on('event:restoreHideCols', this.restoreHideCols, this);
 			/**
 			 * 已经加载列数
 			 * @property {int} colNumber
 			 */
 			this.colNumber = 0;
-			this.listenTo(headItemCols, 'add', this.addColsHeadContainer);
+			this.listenTo(headItemCols, 'add', this.addColHeadContainer);
+			this.currentRule = cache.CurrentRule;
+			if (this.currentRule.displayPosition.endIndex !== undefined) {
+				//动态加载，还原删除的列视图
+				Backbone.on('event:restoreColView', this.restoreColView, this);
+			}
 		},
 		/**
 		 * 渲染本身对象
@@ -80,7 +86,6 @@ define(function(require) {
 				modelList = headItemCols;
 			modelsHeadLineColList = modelsHeadLineColRegionList = modelList.models;
 			if (cache.TempProp.isFrozen) {
-				this.currentRule = cache.CurrentRule;
 				if (this.currentRule.displayPosition.endIndex !== undefined) {
 					modelsHeadLineColRegionList = modelsHeadLineColList.slice(this.currentRule.displayPosition.startIndex, this.currentRule.displayPosition.endColIndex);
 				} else {
@@ -90,8 +95,8 @@ define(function(require) {
 
 			len = modelsHeadLineColRegionList.length;
 			for (; i < len; i++) {
-				if(!modelsHeadLineColRegionList[i].get('hidden')){
-					this.addColsHeadContainer(modelsHeadLineColRegionList[i]);
+				if (!modelsHeadLineColRegionList[i].get('hidden')) {
+					this.addColHeadContainer(modelsHeadLineColRegionList[i]);
 				}
 				this.colNumber++;
 			}
@@ -248,7 +253,27 @@ define(function(require) {
 				i = 0;
 			for (; i < len; i++) {
 				if (headItemColList[i].get('hidden')) {
-					this.addColsHeadContainer(headItemColList[i]);
+					this.addColHeadContainer(headItemColList[i]);
+				}
+			}
+		},
+		/**
+		 * 动态加载过程中，重新加载隐藏列视图
+		 * @return {[type]} [description]
+		 */
+		restoreColView: function(region) {
+			var headItemColList = headItemCols.models,
+				startPosi = region.start,
+				endPosi = region.end,
+				startIndex,
+				endIndex,
+				i, len;
+
+			startIndex = binary.newModelBinary(startPosi, headItemColList, 'left', 'width');
+			endIndex = binary.newModelBinary(endPosi, headItemColList, 'left', 'width');
+			for (i = startIndex; i < endIndex + 1; i++) {
+				if (!headItemColList[i].get('isView')) {
+					this.addColHeadContainer(headItemColList[i]);
 				}
 			}
 		},
@@ -286,10 +311,10 @@ define(function(require) {
 		},
 		/**
 		 * 渲染view，增加列在`head`区域内
-		 * @method addColsHeadContainer
+		 * @method addColHeadContainer
 		 * @param  {object} modelHeadItemCol 列model对象
 		 */
-		addColsHeadContainer: function(modelHeadItemCol) {
+		addColHeadContainer: function(modelHeadItemCol) {
 			this.headItemColContainer = new HeadItemColContainer({
 				model: modelHeadItemCol
 			});
@@ -453,6 +478,7 @@ define(function(require) {
 			Backbone.off('event:colsHeadContainer:relaseSpaceEffect');
 			Backbone.off('event:colWidthAdjust');
 			Backbone.off('event:restoreHideCols');
+			Backbone.off('event:restoreColView');
 			this.undelegateEvents();
 			this.headItemColContainer.destroy();
 			this.remove();

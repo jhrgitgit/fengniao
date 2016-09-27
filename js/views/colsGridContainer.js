@@ -39,6 +39,11 @@ define(function(require) {
 			this.colNumber = 0;
 			this.listenTo(headItemCols, 'add', this.addGridLineCol);
 			Backbone.on('event:restoreHideCols', this.restoreHideCols, this);
+			this.currentRule = cache.CurrentRule;
+			if (this.currentRule.displayPosition.endIndex === undefined) {
+				//动态加载，还原删除的列视图
+				Backbone.on('event:restoreColView', this.restoreColView, this);
+			}
 		},
 		/**
 		 * 渲染本身对象
@@ -52,7 +57,6 @@ define(function(require) {
 				len;
 			gridLineColList = gridLineColRegionList = headItemCols.models;
 			if (cache.TempProp.isFrozen) {
-				this.currentRule = cache.CurrentRule;
 				if (this.currentRule.displayPosition.endColIndex !== undefined) {
 					gridLineColRegionList = headItemCols.models.slice(this.currentRule.displayPosition.startColIndex, this.currentRule.displayPosition.endColIndex);
 				} else {
@@ -74,6 +78,27 @@ define(function(require) {
 				i = 0;
 			for (; i < len; i++) {
 				if (headItemColList[i].get('hidden')) {
+					this.addGridLineCol(headItemColList[i]);
+				}
+			}
+		},
+		/**
+		 * 动态加载过程中，重新加载隐藏列视图
+		 * @return {[type]} [description]
+		 */
+		restoreColView: function(region) {
+			var headItemColList = headItemCols.models,
+				startPosi = region.start,
+				endPosi = region.end,
+				startIndex,
+				endIndex,
+				i, len;
+
+			startIndex = binary.newModelBinary(startPosi, headItemColList, 'left', 'width');
+			endIndex = binary.newModelBinary(endPosi, headItemColList, 'left', 'width');
+			for (i = startIndex; i < endIndex + 1; i++) {
+				if (!headItemColList[i].get('isView')) {
+					headItemColList[i].set('isView',true)
 					this.addGridLineCol(headItemColList[i]);
 				}
 			}
@@ -119,6 +144,7 @@ define(function(require) {
 		 */
 		destroy: function() {
 			Backbone.off('event:restoreHideCols');
+			Backbone.off('event:restoreColView');
 			this.remove();
 		}
 	});

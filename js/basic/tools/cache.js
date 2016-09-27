@@ -38,8 +38,7 @@ define(function(require) {
 		clipState: 'null', //copy：复制状态，cut:剪切状态，null:未进行剪切板操作
 		commentState: false, //true 备注编辑状态,不能进行选中区域的移动
 		/**
-		 * 用户可视的区域(在Excel未冻结的情况下使用)
-		 * 需要修改默认值
+		 * 用户可视的区域(冻结情况用于记录左上角，初始化时需要修改默认值)
 		 * @property {object} UserView
 		 */
 		UserView: {
@@ -53,16 +52,24 @@ define(function(require) {
 			 * @property {string} rowAlias
 			 */
 			rowAlias: '1',
-			/**
-			 * 可视区域右下单元格列别名
-			 * @property {string} colEndAlias
-			 */
-			colEndAlias: '1',
-			/**
-			 * 可视区域右下单元格行别名
-			 * @property {string} rowEndAlias
-			 */
-			rowEndAlias: '1'
+		},
+		/**
+		 * 滚动区域（主区域），动态加载视图，视图范围缓存变量
+		 * @type {Object}
+		 */
+		gridLineView: {
+			left: 0,
+			right: 0,
+			top: 0,
+			height: 0
+		},
+		/**
+		 * 动态加载，已获取区域变量
+		 * @type {Object}
+		 */
+		gridLineLoadRegion: {
+			transverse: [],
+			vertical: []
 		},
 		highlightDirection: 'null',
 		//鼠标操作状态
@@ -95,17 +102,6 @@ define(function(require) {
 		 */
 		aliasColCounter: '26',
 		/**
-		 * 列的显示区域
-		 */
-		displayCol: {
-			startSort: 0,
-			endSort: 0
-		},
-		/**
-		 * 后台存储excel,列别名最大
-		 */
-		localMaxColAlias: '',
-		/**
 		 * 临时代替属性，因为sheet还有做，所以sheet的冻结属性暂时由此属性替代。以后需要做成model处理
 		 * @property {object} TempProp
 		 */
@@ -136,35 +132,6 @@ define(function(require) {
 			 */
 			colFrozen: false
 		},
-		//变量值重复，需要删除
-
-		//动态加载缓存行列变量
-		gridLoadRegion: {
-			transverse: [],
-			vertical: []
-		},
-		//动态加载缓存单元格变量
-		cellLoadRegion:{
-			transverse: [],
-			vertical: []
-		},
-
-		//动态加载，模型对象已加载区域，以坐标为记录单位
-		rowRegionPosi: [],
-		//动态加载，模型对象已加载区域，以坐标为记录单位
-		colRegionPosi: [],
-		//动态加载，模型对象已加载区域，以坐标为记录单位
-		cellRegionPosi: {
-			transverse: [],
-			vertical: []
-		},
-		visibleRegion: {
-			top: 0,
-			bottom: 0,
-			left: 0,
-			right: 0
-		},
-		//
 		/**
 		 * 保存位置信息
 		 * @method cachePosition

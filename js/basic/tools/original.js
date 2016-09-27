@@ -74,12 +74,11 @@ define(function(require) {
 				i;
 
 			for (i = 0; i < rows.length; i++) {
-				index = binary.indexModelBinary(rows[i].top, headItemRows.models, 'top', 'height');
-				//待修改：判定是否已存在加载类，应使用二分查询进行判定
-				if (headItemRows.getIndexByAlias(rows[i].aliasY) !== -1) {
-					index++;
+				//行已经存在
+				if (binary.existArrayBinary(rows[i].left, headItemRows.models, 'top', 'height')) {
 					continue;
 				}
+				index = binary.indexModelBinary(rows[i].top, headItemRows.models, 'top', 'height');
 				tempHeadRow = new LineRow();
 				tempHeadRow.set('sort', startRowSort + i);
 				tempHeadRow.set('top', rows[i].top);
@@ -105,6 +104,7 @@ define(function(require) {
 				if (binary.existArrayBinary(cols[i].left, headItemCols.models, 'left', 'width')) {
 					continue;
 				}
+
 				tempHeadCol = new LineCol();
 				tempHeadCol.set('sort', startColSort + i);
 				tempHeadCol.set('left', cols[i].left);
@@ -112,6 +112,9 @@ define(function(require) {
 				tempHeadCol.set('alias', cols[i].aliasX);
 				tempHeadCol.set('hidden', cols[i].hidden);
 				tempHeadCol.set('originalWidth', cols[i].originWidth);
+				tempHeadCol.set('displayName', buildAlias.buildColAlias(startColSort + i));
+
+				//处理整行操作情况
 				if (!isEmptyObject(cols[i].operProp.content)) {
 					tempHeadCol.set('operProp.content', cols[i].operProp.content);
 				}
@@ -121,7 +124,7 @@ define(function(require) {
 				if (!isEmptyObject(cols[i].operProp.border)) {
 					tempHeadCol.set('operProp.border', cols[i].operProp.border);
 				}
-				tempHeadCol.set('displayName', buildAlias.buildColAlias(startColSort + i));
+				//处理列隐藏情况
 				if (cols[i].hidden && i > 0) {
 					headItemCols.models[i - 1].set('isRightAjacentHide', true);
 				}
@@ -455,6 +458,7 @@ define(function(require) {
 					startRowSort = data.dataRowStartIndex;
 					startColSort = data.dataColStartIndex;
 					data = data.returndata;
+					startRowSort = data.dataRowStartIndex;
 					var cellModels = data.spreadSheet[0].sheet.cells;
 					var rows = data.spreadSheet[0].sheet.glY;
 					var cols = data.spreadSheet[0].sheet.glX;
