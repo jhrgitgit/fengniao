@@ -5,6 +5,7 @@ define(function(require) {
 		Backbone = require('lib/backbone'),
 		cache = require('basic/tools/cache'),
 		config = require('spreadsheet/config'),
+		binary = require('basic/util/binary'),
 		util = require('basic/util/clone'),
 		send = require('basic/tools/send'),
 		loadRecorder = require('basic/tools/loadrecorder'),
@@ -40,8 +41,7 @@ define(function(require) {
 			//还原隐藏的单元格
 			Backbone.on('event:restoreHideCellView', this.restoreHideCellView, this);
 			//还原动态加载删除的单元格视图
-			if (this.currentRule.displayPosition.endIndex &&
-				this.currentRule.displayPosition.startIndex) {
+			if (typeof this.currentRule.displayPosition.endIndex === 'undefined') {
 				Backbone.on('event:restoreCellView', this.restoreCellView, this);
 			}
 			this.listenTo(cells, 'add', this.addCellView);
@@ -122,6 +122,7 @@ define(function(require) {
 			});
 
 		},
+
 		restoreHideCellView: function() {
 			var headItemColList = headItemCols.models,
 				headItemRowList = headItemRows.models,
@@ -173,14 +174,13 @@ define(function(require) {
 
 			leftIndex = binary.newModelBinary(region.left, headItemColList, 'left', 'width');
 			rightIndex = binary.newModelBinary(region.right, headItemColList, 'left', 'width');
-			topIndex = binary.newModelBinary(region.top, headItemColList, 'top', 'height');
-			bottomIndex = binary.newModelBinary(region.bottom, headItemColList, 'top', 'height');
+			topIndex = binary.newModelBinary(region.top, headItemRowList, 'top', 'height');
+			bottomIndex = binary.newModelBinary(region.bottom, headItemRowList, 'top', 'height');
 
-			tempCellList = cells.getCellByX(leftIndex, topIndex, rightIndex, bottomIndex);
+			tempCellList = cells.getCellByRow(topIndex, leftIndex, bottomIndex, rightIndex);
 			len = tempCellList.length;
 			for (i = 0; i < len; i++) {
-				if (tempCellList[i].get('showState')) {
-					tempCellList[i].set('showState',true);
+				if (!tempCellList[i].get('showState')) {
 					this.addCellView(tempCellList[i]);
 				}
 			}

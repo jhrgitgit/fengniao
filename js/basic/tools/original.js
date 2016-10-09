@@ -35,7 +35,9 @@ define(function(require) {
 				j,
 				lenCol,
 				lenRow,
-				currentObject;
+				currentObject,
+				right,
+				bottom;
 			lenCol = config.User.initColNum;
 			lenRow = config.User.initRowNum;
 
@@ -60,8 +62,6 @@ define(function(require) {
 				headItemRows.add(currentObject);
 			}
 			this.restoreSelectRegion();
-			loadRecorder.insertPosi(0, headItemRows.models[lenRow - 1].height + headItemRows.models[lenRow - 1].top, cache.rowRegionPosi);
-			loadRecorder.insertPosi(0, headItemRows.models[lenRow - 1].height + headItemRows.models[lenRow - 1].top, cache.cellRegionPosi.vertical);
 		},
 		/**
 		 * 解析后台返回行索引数据，如果行数未满足加载区域，则生成新行，进行补充
@@ -412,6 +412,8 @@ define(function(require) {
 			var build = window.SPREADSHEET_BUILD_STATE,
 				startRowSort,
 				startColSort,
+				lastColModel,
+				lastRowModel,
 				sheetNames = [],
 				self = this,
 				i;
@@ -467,12 +469,14 @@ define(function(require) {
 					self.analysisColData(cols, startColSort);
 					self.analysisCellData(cellModels);
 					self.restoreSelectRegion();
+					lastColModel = headItemCols.getLastModel();
+					lastRowModel = headItemRows.getLastModel();
+					loadRecorder.insertLoadRegion(
+						0, lastColModel.get('left') + lastColModel.get('width'),
+						0, lastRowModel.get('top') + lastRowModel.get('height'), cache.gridLineLoadRegion);
 				}
 			});
-			loadRecorder.insertPosi(headItemRows.models[0].get('top'), headItemRows.models[headItemRows.length - 1].get('top') + headItemRows.models[headItemRows.length - 1].get('height'), cache.rowRegionPosi);
-			loadRecorder.insertPosi(headItemRows.models[0].get('top'), headItemRows.models[headItemRows.length - 1].get('top') + headItemRows.models[headItemRows.length - 1].get('height'), cache.cellRegionPosi.vertical);
-			cache.loadCol.startSort = headItemCols.models[0].get('sort');
-			cache.loadCol.endSort = headItemCols.models[headItemCols.length - 1].get('sort');
+
 		}
 	};
 });

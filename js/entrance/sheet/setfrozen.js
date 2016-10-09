@@ -67,7 +67,7 @@ define(function(require) {
 
 		startViewColIndex = binary.newModelBinary(cache.gridLineView.left, headItemCols.models, 'left', 'width');
 		startViewRowIndex = binary.newModelBinary(cache.gridLineView.top, headItemRows.models, 'top', 'height');
-		endViewColIndex = binary.newModelBinary(cache.gridLineView.left, headItemCols.models, 'left', 'width');
+		endViewColIndex = binary.newModelBinary(cache.gridLineView.right, headItemCols.models, 'left', 'width');
 		endViewRowIndex = binary.newModelBinary(cache.gridLineView.bottom, headItemRows.models, 'top', 'height');
 
 		if (region.startColIndex < startViewColIndex ||

@@ -67,6 +67,7 @@ define(function(require) {
 			Backbone.on('event:cellsContainer:adaptSelectRegion', this.adaptSelectRegion, this);
 
 			Backbone.on('event:cellsContainer:adaptWidth', this.adaptWidth, this);
+			Backbone.on('event:cellsContainer:adaptHeight', this.adaptHeight, this);
 
 			Backbone.on('event:cellsContainer:destroy', this.destroy, this);
 
@@ -114,25 +115,58 @@ define(function(require) {
 		},
 		adaptWidth: function() {
 			var headItemColList = headItemCols.models,
-				len = headItemColList.length,
-				index,
+				startIndex,
+				endIndex,
+				offset,
 				left,
 				width, i;
-
-			for (i = len - 1; i > -1; i--) {
-				if (!headItemColList[i].get('hidden')) {
-					left = headItemColList[i].get('left');
-					width = headItemColList[i].get('width');
-					break;
-				}
+			startIndex = this.currentRule.displayPosition.startColIndex;
+			endIndex = this.currentRule.displayPosition.endColIndex;
+			if (typeof startIndex === 'undefined') {
+				startIndex = 0;
 			}
-			this.$el.css('width', left + width);
+			if (typeof endIndex === 'undefined') {
+				endIndex = headItemColList.length - 1;
+			} else {
+				endIndex--;
+			}
+			offset = headItemColList[startIndex].get('left');
+			left = headItemColList[endIndex].get('left');
+			width = headItemColList[endIndex].get('width');
+			if (headItemColList[endIndex].get('hidden')) {
+				left--;
+			}
+			this.$el.css('width', left + width - offset);
+		},
+		adaptHeight: function() {
+			var headItemRowList = headItemRows.models,
+				startIndex,
+				endIndex,
+				offset,
+				height,
+				top, i;
+
+			startIndex = this.currentRule.displayPosition.startRowIndex;
+			endIndex = this.currentRule.displayPosition.endRowIndex;
+			if (typeof startIndex === 'undefined') {
+				startIndex = 0;
+			}
+			if (typeof endIndex === 'undefined') {
+				endIndex = headItemRowList.length - 1;
+			} else {
+				endIndex--;
+			}
+			offset = headItemRowList[startIndex].get('top');
+			top = headItemRowList[endIndex].get('top');
+			height = headItemRowList[endIndex].get('height');
+			if (headItemRowList[endIndex].get('hidden')) {
+				top--;
+			}
+			this.$el.css('height', top + height - offset);
 		},
 		onDragOver: function(event) {
 			event.preventDefault();
-			var coordinate,
-				aliasGridRow,
-				aliasGridCol;
+			var coordinate;
 			coordinate = this.getCoordinateByMouseEvent(event);
 			this.adjustDragRegion(coordinate);
 		},
@@ -141,11 +175,8 @@ define(function(require) {
 				headItemColList = headItemCols.models,
 				dragRegions,
 				coordinate,
-				aliasGridCol,
-				aliasGridRow,
 				point,
 				data,
-				cellsPositionX,
 				modelCell,
 				i, e = {};
 			dragRegions = selectRegions.getModelByType('drag');
@@ -162,15 +193,17 @@ define(function(require) {
 
 
 			if (event.isDefaultPrevented() === false) {
-				data = event.originalEvent.dataTransfer.getData("text");
+				data = event.originalEvent.dataTransfer.getData('text');
 				e.text = data;
 				event.originalEvent.dataTransfer.clearData();
-				if (data === "") return;
+				if (data === '') {
+					return;
+				}
 
 				if (modelCell === undefined) {
 					modelCell = cells.createCellModel(coordinate.startColIndex, coordinate.startRowIndex, coordinate.endColIndex, coordinate.endRowIndex);
 				}
-				modelCell.set("content.texts", data);
+				modelCell.set('content.texts', data);
 			}
 			listener.excute('dataDrag', e);
 		},
@@ -199,8 +232,6 @@ define(function(require) {
 				reduceTopValue,
 				clientX,
 				clientY,
-				maxMousePosiX,
-				maxMousePosiY,
 				mainMousePosiX,
 				mainMousePosiY,
 				modelIndexCol,
@@ -237,7 +268,9 @@ define(function(require) {
 			mainMousePosiY = clientY + this.parentView.el.scrollTop - this.currentRule.displayPosition.offsetTop + reduceTopValue;
 
 			//
-			if (mainMousePosiX < 0 || mainMousePosiY < 0) return;
+			if (mainMousePosiX < 0 || mainMousePosiY < 0) {
+				return;
+			}
 
 
 			//this model index of gridline
@@ -266,17 +299,13 @@ define(function(require) {
 			var self = this,
 				cellModel,
 				selectBox,
-				startColPosi,
-				endColPosi,
-				startRowPosi,
-				endRowPosi,
 				direction,
 				hightlightModel,
 				left, top, width, right, height, bottom;
 
 			selectBox = this.getCoordinateByMouseEvent(event);
 			cellModel = selectBox.model;
-			if (cellModel !== undefined && cellModel.get("highlight") === true) {
+			if (cellModel !== undefined && cellModel.get('highlight') === true) {
 				left = cellModel.get('physicsBox').left;
 				top = cellModel.get('physicsBox').top;
 				height = cellModel.get('physicsBox').height;
@@ -295,7 +324,7 @@ define(function(require) {
 			if (this.hightlightView === null || this.hightlightView === undefined) {
 				hightlightModel = new SelectRegionModel();
 				this.hightlightModel = hightlightModel;
-				hightlightModel.set("selectType", "extend");
+				hightlightModel.set('selectType', 'extend');
 				this.hightlightView = new SelectRegionView({
 					model: hightlightModel,
 					className: 'highlight-container',
@@ -304,13 +333,13 @@ define(function(require) {
 				this.$el.append(this.hightlightView.render().el);
 			}
 
-			this.hightlightModel.set("physicsPosi", {
+			this.hightlightModel.set('physicsPosi', {
 				left: left,
 				top: top,
 				bottom: bottom,
 				right: right
 			});
-			this.hightlightModel.set("physicsBox", {
+			this.hightlightModel.set('physicsBox', {
 				height: height,
 				width: width
 			});
@@ -326,28 +355,28 @@ define(function(require) {
 					topDistance = mouseRowPosi - top,
 					bottomDistance = bottom - mouseRowPosi,
 					temp = rightDistance,
-					direction = "right";
+					direction = 'right';
 
 				if (temp > leftDistance) {
 					temp = leftDistance;
-					direction = "left";
+					direction = 'left';
 				}
 				if (temp > topDistance) {
 					temp = topDistance;
-					direction = "top";
+					direction = 'top';
 				}
 				if (temp > bottomDistance) {
 					temp = bottomDistance;
-					direction = "bottom";
+					direction = 'bottom';
 				}
 				return direction;
 			}
 
 			function clearHighlight() {
-				self.hightlightView.$el.removeClass("highlight-right");
-				self.hightlightView.$el.removeClass("highlight-left");
-				self.hightlightView.$el.removeClass("highlight-top");
-				self.hightlightView.$el.removeClass("highlight-bottom");
+				self.hightlightView.$el.removeClass('highlight-right');
+				self.hightlightView.$el.removeClass('highlight-left');
+				self.hightlightView.$el.removeClass('highlight-top');
+				self.hightlightView.$el.removeClass('highlight-bottom');
 			}
 		},
 		/**
@@ -366,7 +395,6 @@ define(function(require) {
 		},
 		getMouseColRelativePosi: function(event) {
 			var currentColModel = headItemCols.getModelByAlias(cache.TempProp.colAlias),
-				headLineColModelList = headItemCols.models,
 				containerId = cache.containerId,
 				reduceLeftValue,
 				mainMousePosiX;
@@ -387,12 +415,9 @@ define(function(require) {
 		},
 		getMouseRowRelativePosi: function(event) {
 			var currentRowModel = headItemRows.getModelByAlias(cache.TempProp.rowAlias),
-				headLineRowModelList = headItemRows.models,
 				containerId = cache.containerId,
 				reduceTopValue,
-				mainMousePosiY,
-				modelIndexRow,
-				aliasGridRow;
+				mainMousePosiY;
 
 			this.userViewTop = cache.TempProp.isFrozen ? headItemRows.getModelByAlias(cache.UserView.rowAlias).get('top') : 0;
 			//if this offset value equal 0 ,that position isn't consider frozen point
@@ -536,13 +561,6 @@ define(function(require) {
 			this.adjustOperationRegion(options);
 		},
 		/**
-		 * 移除鼠标移动监听事件
-		 * @method destoryDelegate
-		 */
-		destoryDelegate: function() {
-			this.$el.off('mousemove', self.drag);
-		},
-		/**
 		 * 触发回调幻术，绑定其他View类
 		 * @method triggerCallback 
 		 */
@@ -590,10 +608,10 @@ define(function(require) {
 		 */
 		addSelectRegionView: function(model) {
 			var className;
-			if (model.get("selectType") === "operation") {
-				className = "selected-container";
+			if (model.get('selectType') === 'operation') {
+				className = 'selected-container';
 			} else {
-				className = "datasource-container";
+				className = 'datasource-container';
 			}
 			this.selectRegion = new SelectRegionView({
 				model: model,
@@ -646,8 +664,8 @@ define(function(require) {
 						left: 0
 					},
 					physicsBox: {
-						width: initCell.get("physicsBox").width,
-						height: initCell.get("physicsBox").height
+						width: initCell.get('physicsBox').width,
+						height: initCell.get('physicsBox').height
 					}
 				};
 			}
@@ -663,9 +681,7 @@ define(function(require) {
 				startX,
 				startY,
 				endX,
-				endY,
-				width,
-				height;
+				endY;
 
 			headLineRowModelList = headItemRows.models;
 			headLineColModelList = headItemCols.models;
@@ -674,17 +690,17 @@ define(function(require) {
 			// startX = binary.modelBinary(initCell.get("physicsBox").left, headLineColModelList, 'left', 'width', 0, headLineColModelList.length - 1);
 			startX = 0;
 			startY = 0;
-			endX = binary.modelBinary(initCell.get("physicsBox").left + initCell.get("physicsBox").width, headLineColModelList, 'left', 'width', 0, headLineColModelList.length - 1);
-			endY = binary.modelBinary(initCell.get("physicsBox").top + initCell.get("physicsBox").height, headLineRowModelList, 'top', 'height', 0, headLineRowModelList.length - 1);
+			endX = binary.modelBinary(initCell.get('physicsBox').left + initCell.get('physicsBox').width, headLineColModelList, 'left', 'width', 0, headLineColModelList.length - 1);
+			endY = binary.modelBinary(initCell.get('physicsBox').top + initCell.get('physicsBox').height, headLineRowModelList, 'top', 'height', 0, headLineRowModelList.length - 1);
 
 			siderLineRows.models[0].set({
-				top: initCell.get("physicsBox").top,
-				height: initCell.get("physicsBox").height
+				top: initCell.get('physicsBox').top,
+				height: initCell.get('physicsBox').height
 			});
 
 			siderLineCols.models[0].set({
-				left: initCell.get("physicsBox").left,
-				width: initCell.get("physicsBox").width
+				left: initCell.get('physicsBox').left,
+				width: initCell.get('physicsBox').width
 			});
 			var len = headLineRowModelList.length,
 				i;
@@ -725,7 +741,9 @@ define(function(require) {
 		located: function(event) {
 			// this is question , need deprecated
 			// when input data time avoid trigger this effect.
-			if (cache.commentState) return;
+			if (cache.commentState) {
+				return;
+			}
 			if ($(event.target).attr('class') === 'edit-frame') {
 				return;
 			}
@@ -752,10 +770,9 @@ define(function(require) {
 				endRowIndex,
 				colDisplayNames = [],
 				rowDisplayNames = [],
-				point,
 				text = '',
 				options,
-				left, top, width, height, i, len;
+				left, top, width, height, i;
 
 			//获取点击位置信息
 			selectBox = this.getCoordinateByMouseEvent(event);
@@ -800,13 +817,13 @@ define(function(require) {
 			result.text = text;
 			result.property = {
 				size: modelCell ? modelCell.get('content').size : '11pt',
-				family: modelCell ? modelCell.get('content').family : "SimSun",
+				family: modelCell ? modelCell.get('content').family : 'SimSun',
 				bd: modelCell ? modelCell.get('content').bd : false,
 				italic: modelCell ? modelCell.get('content').italic : false,
-				color: modelCell ? modelCell.get('content').color : "#000",
+				color: modelCell ? modelCell.get('content').color : '#000',
 				alignRow: modelCell ? modelCell.get('content').alignRow : 'left',
 				alignCol: modelCell ? modelCell.get('content').alignCol : 'middle',
-				background: modelCell ? modelCell.get('customProp').background : "#fff",
+				background: modelCell ? modelCell.get('customProp').background : '#fff',
 				format: modelCell ? modelCell.get('customProp').format : 'text',
 				wordWrap: modelCell ? modelCell.get('wordWrap') : false
 			};
@@ -860,9 +877,9 @@ define(function(require) {
 
 
 			if (cache.mouseOperateState === config.mouseOperateState.dataSource) {
-				regionModel = selectRegions.getModelByType("dataSource")[0];
+				regionModel = selectRegions.getModelByType('dataSource')[0];
 			} else {
-				regionModel = selectRegions.getModelByType("operation")[0];
+				regionModel = selectRegions.getModelByType('operation')[0];
 			}
 
 			//鼠标开始移动索引
@@ -889,9 +906,7 @@ define(function(require) {
 		 * 
 		 */
 		adaptSelectRegion: function() {
-			var headLineRowModelList = headItemRows.models,
-				headLineColModelList = headItemCols.models,
-				selectRegionModel,
+			var selectRegionModel,
 				startRowAlias,
 				startColAlias,
 				endRowAlias,
@@ -900,19 +915,16 @@ define(function(require) {
 				startY,
 				endX,
 				endY,
-				len,
 				region,
-				options,
-				flag = true,
-				i;
+				options;
 
 			//修改：没有起到自动调整的作用
-			selectRegionModel = selectRegions.getModelByType("operation")[0];
+			selectRegionModel = selectRegions.getModelByType('operation')[0];
 
-			startRowAlias = selectRegionModel.get("wholePosi").startY;
-			startColAlias = selectRegionModel.get("wholePosi").startX;
-			endRowAlias = selectRegionModel.get("wholePosi").endY;
-			endColAlias = selectRegionModel.get("wholePosi").endX;
+			startRowAlias = selectRegionModel.get('wholePosi').startY;
+			startColAlias = selectRegionModel.get('wholePosi').startX;
+			endRowAlias = selectRegionModel.get('wholePosi').endY;
+			endColAlias = selectRegionModel.get('wholePosi').endX;
 
 			startX = headItemCols.getIndexByAlias(startColAlias);
 			startY = headItemRows.getIndexByAlias(startRowAlias);
@@ -1141,7 +1153,7 @@ define(function(require) {
 			listener.excute('regionChange', e);
 			listener.excute('dataSourceRegionChange', e);
 
-			dataSourceRegion = selectRegions.getModelByType("dataSource")[0];
+			dataSourceRegion = selectRegions.getModelByType('dataSource')[0];
 
 			if (dataSourceRegion === undefined) {
 				dataSourceRegion = new SelectRegionModel();
@@ -1264,13 +1276,13 @@ define(function(require) {
 			Backbone.off('event:cellsContainer:selectRegionChange');
 			Backbone.off('event:cellsContainer:adjustSelectRegion');
 			Backbone.off('event:cellsContainer:adaptSelectRegion');
-			Backbone.off('event:cellsContainer:destroy');
 			Backbone.off('event:cellsContainer:unBindDrag');
 			Backbone.off('event:cellsContainer:bindDrag');
 			Backbone.off('event:cellsContainer:getCoordinate');
 			Backbone.off('event:cellsContainer:startHighlight');
 			Backbone.off('event:cellsContainer:stopHighlight');
 			Backbone.off('event:cellsContainer:adaptWidth');
+			Backbone.off('event:cellsContainer:adaptHeight');
 			this.contentCellsContainer.destroy();
 			this.selectRegion.destroy();
 			selectModelList = selectRegions.models;

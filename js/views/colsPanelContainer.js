@@ -37,7 +37,7 @@ define(function(require) {
 				len;
 			Backbone.on('call:colsPanelContainer', this.colsPanelContainer, this);
 			Backbone.on('event:colsPanelContainer:destroy', this.destroy, this);
-			Backbone.trigger('event:colsPanelContainer:adjustWidth', this.adjustWidth, this);
+			Backbone.on('event:colsPanelContainer:adjustWidth', this.adjustWidth, this);
 			/**
 			 * 盒模型属性
 			 * @property {object} boxAttribute

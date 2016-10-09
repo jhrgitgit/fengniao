@@ -2,6 +2,9 @@
 define(function(require) {
 	var _ = require('lib/underscore'),
 		Backbone = require('lib/backbone'),
+		config = require('spreadsheet/config'),
+		cache = require('basic/tools/cache'),
+		buildAlias = require('basic/tools/buildalias'),
 		binary = require('basic/util/binary'),
 		LineRowModel = require('models/lineRow'),
 		selectRegions = require('collections/selectRegion'),
@@ -100,6 +103,9 @@ define(function(require) {
 			var currentIndex = binary.newModelBinary(posi, this.models, 'top', 'height', 0, this.models.length - 1);
 			return this.models[currentIndex];
 		},
+		getLastModel: function() {
+			return this.models[this.length - 1];
+		},
 		/**
 		 * 通过别名查询符合条件标线的索引
 		 * @method getIndexByAlias
@@ -107,7 +113,7 @@ define(function(require) {
 		 * @return {int} 索引
 		 */
 		getIndexByAlias: function(alias) {
-			if (alias==='MAX') {
+			if (alias === 'MAX') {
 				return 'MAX';
 			} else {
 				return _.findIndex(this.toJSON(), {
@@ -152,6 +158,19 @@ define(function(require) {
 				return modelList[currentIndex - 1];
 			}
 			return null;
+		},
+		generate: function() {
+			var lastModel = this.getLastModel(),
+				model = new LineRowModel(),
+				sort = lastModel.get('sort'),
+				top;
+			top = lastModel.get('top') + lastModel.get('height') + 1;
+			model.set('top', top);
+			model.set('alias', cache.aliasGenerator('row'));
+			model.set('height', config.User.cellHeight);
+			model.set('sort', sort + 1);
+			model.set('displayName', buildAlias.buildRowAlias(sort + 1));
+			this.add(model);
 		}
 	});
 	return new HeadItemRows();

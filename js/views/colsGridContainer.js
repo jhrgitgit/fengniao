@@ -37,12 +37,12 @@ define(function(require) {
 			 * @default 0
 			 */
 			this.colNumber = 0;
-			this.listenTo(headItemCols, 'add', this.addGridLineCol);
 			Backbone.on('event:restoreHideCols', this.restoreHideCols, this);
 			this.currentRule = cache.CurrentRule;
-			if (this.currentRule.displayPosition.endIndex === undefined) {
+			if (cache.TempProp.isFrozen === false || this.currentRule.displayPosition.endColIndex === undefined) {
+				this.listenTo(headItemCols, 'add', this.addGridLineCol);
 				//动态加载，还原删除的列视图
-				Backbone.on('event:restoreColView', this.restoreColView, this);
+				Backbone.on('event:restoreColView', this.restoreGridLineColView, this);
 			}
 		},
 		/**
@@ -86,7 +86,7 @@ define(function(require) {
 		 * 动态加载过程中，重新加载隐藏列视图
 		 * @return {[type]} [description]
 		 */
-		restoreColView: function(region) {
+		restoreGridLineColView: function(region) {
 			var headItemColList = headItemCols.models,
 				startPosi = region.start,
 				endPosi = region.end,
@@ -98,7 +98,6 @@ define(function(require) {
 			endIndex = binary.newModelBinary(endPosi, headItemColList, 'left', 'width');
 			for (i = startIndex; i < endIndex + 1; i++) {
 				if (!headItemColList[i].get('isView')) {
-					headItemColList[i].set('isView',true)
 					this.addGridLineCol(headItemColList[i]);
 				}
 			}
@@ -111,7 +110,8 @@ define(function(require) {
 		addGridLineCol: function(modelGridLineCol) {
 			var gridLineCol = new GridLineColContainer({
 				model: modelGridLineCol,
-				frozenLeft: 0
+				frozenLeft: this.currentRule.displayPosition.offsetLeft,
+				endIndex: this.currentRule.displayPosition.endColIndex
 			});
 			this.$el.append(gridLineCol.render().el);
 		},

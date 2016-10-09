@@ -6,61 +6,61 @@ define(function(require) {
 	 * 该模块对行列动态加载,提供区域区域缓存变量的维护
 	 */
 	return {
-		insertPosi: function(startPosi, endPosi, region) {
-			var startIndex,
-				endIndex,
-				startExist,
-				endExist,
-				newStartPosi,
-				newEndPosi,
-				len;
-			startIndex = binary.indexArrayBinary(startPosi, region, 'start', 'end');
-			endIndex = binary.indexArrayBinary(endPosi, region, 'start', 'end');
-			startExist = binary.existArrayBinary(startPosi, region, 'start', 'end');
-			endExist = binary.existArrayBinary(endPosi, region, 'start', 'end');
+		// insertPosi: function(startPosi, endPosi, region) {
+		// 	var startIndex,
+		// 		endIndex,
+		// 		startExist,
+		// 		endExist,
+		// 		newStartPosi,
+		// 		newEndPosi,
+		// 		len;
+		// 	startIndex = binary.indexArrayBinary(startPosi, region, 'start', 'end');
+		// 	endIndex = binary.indexArrayBinary(endPosi, region, 'start', 'end');
+		// 	startExist = binary.existArrayBinary(startPosi, region, 'start', 'end');
+		// 	endExist = binary.existArrayBinary(endPosi, region, 'start', 'end');
 
-			newStartPosi = startExist === false ? startPosi : region[startIndex].start;
-			newEndPosi = endExist === false ? endPosi : region[endIndex].end;
-			//ps:对于相应区域，未进行合并，需要改进
-			if (startIndex === endIndex) {
-				if (startExist === true && endExist === true) {
-					return;
-				}
-				len = (startExist === true || endExist === true) ? 1 : 0;
-			} else {
-				if (startExist === true && endExist === true) {
-					len = endIndex - startIndex + 1;
-				} else if (startExist === true || endExist === true) {
-					len = endIndex - startIndex;
-				} else {
-					len = endIndex - startIndex - 1;
-				}
-			}
-			region.splice(startIndex, len, {
-				start: newStartPosi,
-				end: newEndPosi
-			});
-		},
-		adaptPosi: function(startPosi, value, region) {
-			var startIndex,
-				startExist,
-				i;
-			startIndex = binary.indexArrayBinary(startPosi, region, 'start', 'end');
-			startExist = binary.existArrayBinary(startPosi, region, 'start', 'end');
-			//问题
-			if (startExist === true && region[startIndex].start !== startPosi) {
-				region[startIndex].end = region[startIndex].end + value;
-				for (i = startIndex + 1; i < region.length; i++) {
-					region[i].start += value;
-					region[i].end += value;
-				}
-			} else {
-				for (i = startIndex; i < region.length; i++) {
-					region[i].start += value;
-					region[i].end += value;
-				}
-			}
-		},
+		// 	newStartPosi = startExist === false ? startPosi : region[startIndex].start;
+		// 	newEndPosi = endExist === false ? endPosi : region[endIndex].end;
+		// 	//ps:对于相应区域，未进行合并，需要改进
+		// 	if (startIndex === endIndex) {
+		// 		if (startExist === true && endExist === true) {
+		// 			return;
+		// 		}
+		// 		len = (startExist === true || endExist === true) ? 1 : 0;
+		// 	} else {
+		// 		if (startExist === true && endExist === true) {
+		// 			len = endIndex - startIndex + 1;
+		// 		} else if (startExist === true || endExist === true) {
+		// 			len = endIndex - startIndex;
+		// 		} else {
+		// 			len = endIndex - startIndex - 1;
+		// 		}
+		// 	}
+		// 	region.splice(startIndex, len, {
+		// 		start: newStartPosi,
+		// 		end: newEndPosi
+		// 	});
+		// },
+		// adaptPosi: function(startPosi, value, region) {
+		// 	var startIndex,
+		// 		startExist,
+		// 		i;
+		// 	startIndex = binary.indexArrayBinary(startPosi, region, 'start', 'end');
+		// 	startExist = binary.existArrayBinary(startPosi, region, 'start', 'end');
+		// 	//问题
+		// 	if (startExist === true && region[startIndex].start !== startPosi) {
+		// 		region[startIndex].end = region[startIndex].end + value;
+		// 		for (i = startIndex + 1; i < region.length; i++) {
+		// 			region[i].start += value;
+		// 			region[i].end += value;
+		// 		}
+		// 	} else {
+		// 		for (i = startIndex; i < region.length; i++) {
+		// 			region[i].start += value;
+		// 			region[i].end += value;
+		// 		}
+		// 	}
+		// },
 		getUnloadPosi: function(startPosi, endPosi, region) {
 			var result = [],
 				startIndex,

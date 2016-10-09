@@ -1,8 +1,7 @@
 define(function(require) {
 	'use strict';
-	var $ = require('lib/jquery'),
-		_ = require('lib/underscore'),
-		Backbone = require('lib/backbone'),
+	var Backbone = require('lib/backbone'),
+		binary = require('basic/util/binary'),
 		config = require('spreadsheet/config'),
 		cache = require('basic/tools/cache'),
 		headItemRows = require('collections/headItemRow'),
@@ -37,6 +36,8 @@ define(function(require) {
 			this.currentRule = cache.CurrentRule;
 			if (cache.TempProp.isFrozen !== true || this.currentRule.displayPosition.endRowIndex === undefined) {
 				this.listenTo(headItemRows, 'add', this.addGridLineRow);
+				//动态加载，还原删除的列视图
+				Backbone.on('event:restoreRowView', this.restoreGridLineRowView, this);
 			}
 			Backbone.on('call:rowsGridContainer', this.rowsGridContainer, this);
 		},
@@ -71,6 +72,25 @@ define(function(require) {
 			return this;
 		},
 		/**
+		 * 重新加载因动态加载删除的视图
+		 * @param  {[type]} region [description]
+		 */
+		restoreGridLineRowView: function(region) {
+			var headItemRowList = headItemRows.models,
+				startPosi = region.start,
+				endPosi = region.end,
+				startIndex,
+				endIndex,
+				i, len;
+			startIndex = binary.newModelBinary(startPosi, headItemRowList, 'top', 'height');
+			endIndex = binary.newModelBinary(endPosi, headItemRowList, 'top', 'height');
+			for (i = startIndex; i < endIndex + 1; i++) {
+				if (!headItemRowList[i].get('isView')) {
+					this.addGridLineRow(headItemRowList[i]);
+				}
+			}
+		},
+		/**
 		 * 渲染view，增加行在`grid`区域内
 		 * @method addGridLineRow
 		 * @param  {object} modelGridLineRow 行model对象
@@ -84,27 +104,13 @@ define(function(require) {
 			});
 			this.$el.append(gridLineRow.render().el);
 		},
-
-		/**
-		 * 设置新对象属性
-		 * @method newAttrRow
-		 * @return {object} 新对象属性
-		 * @deprecated 在行列调整后将会过时
-		 */
-		newAttrRow: function() {
-			var currentObject = {
-				alias: (this.rowNumber + 1).toString(),
-				top: this.rowNumber * config.User.cellHeight,
-				height: config.User.cellHeight - 1,
-				displayName: app.basic.buildRowAlias(this.rowNumber)
-			};
-			return currentObject;
-		},
 		/**
 		 * 视图销毁
 		 * @method destroy
 		 */
 		destroy: function() {
+			Backbone.off('event:restoreRowView');
+			Backbone.off('call:rowsGridContainer');
 			this.remove();
 		}
 	});

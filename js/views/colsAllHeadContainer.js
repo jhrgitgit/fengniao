@@ -1,10 +1,10 @@
 define(function(require) {
 	'use strict';
-
 	var Backbone = require('lib/backbone'),
 		siderLineCols = require('collections/siderLineCol'),
 		headItemCols = require('collections/headItemCol'),
 		config = require('spreadsheet/config'),
+		cache = require('basic/tools/cache'),
 		ColsHeadContainer = require('views/colsHeadContainer'),
 		SiderLineColContainer = require('views/siderLineColContainer'),
 		ColsAllHeadContainer;
@@ -33,6 +33,7 @@ define(function(require) {
 			Backbone.on('event:colsAllHeadContainer:adaptWidth', this.adaptWidth, this);
 			this.listenTo(siderLineCols, 'add', this.addSiderLineCol);
 			this.boxAttributes = options.boxAttributes;
+			this.currentRule = cache.CurrentRule;
 		},
 		/**
 		 * 初始化`ColHeadContainer`，渲染DOM结构
@@ -76,12 +77,23 @@ define(function(require) {
 			}
 		},
 		adaptWidth: function() {
-			var len = headItemCols.length,
-				width = headItemCols.models[len - 1].get('width'),
-				left = headItemCols.models[len - 1].get('left');
-			this.$el.css({
-				'width': left + width
-			});
+			var headItemColList = headItemCols.models,
+				endIndex,
+				width,
+				left, i;
+
+			endIndex = this.currentRule.displayPosition.endColIndex;
+			if (typeof endColIndex === 'undefined') {
+				endIndex = headItemColList.length - 1;
+			}
+			for (i = endIndex; i > -1; i--) {
+				if (!headItemColList[i].get('hidden')) {
+					left = headItemColList[i].get('left');
+					width = headItemColList[i].get('width');
+					break;
+				}
+			}
+			this.$el.css('width', width + left);
 		},
 		/**
 		 * [addSiderLineCol description]

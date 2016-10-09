@@ -65,11 +65,11 @@ define(function(require) {
 			 * @property {int} colNumber
 			 */
 			this.colNumber = 0;
-			this.listenTo(headItemCols, 'add', this.addColHeadContainer);
 			this.currentRule = cache.CurrentRule;
-			if (this.currentRule.displayPosition.endIndex !== undefined) {
+			if (cache.TempProp.isFrozen === false || this.currentRule.displayPosition.endIndex === undefined) {
+				this.listenTo(headItemCols, 'add', this.addColHeadContainer);
 				//动态加载，还原删除的列视图
-				Backbone.on('event:restoreColView', this.restoreColView, this);
+				Backbone.on('event:restoreColView', this.restoreHeadItemColView, this);
 			}
 		},
 		/**
@@ -87,7 +87,7 @@ define(function(require) {
 			modelsHeadLineColList = modelsHeadLineColRegionList = modelList.models;
 			if (cache.TempProp.isFrozen) {
 				if (this.currentRule.displayPosition.endIndex !== undefined) {
-					modelsHeadLineColRegionList = modelsHeadLineColList.slice(this.currentRule.displayPosition.startIndex, this.currentRule.displayPosition.endColIndex);
+					modelsHeadLineColRegionList = modelsHeadLineColList.slice(this.currentRule.displayPosition.startIndex, this.currentRule.displayPosition.endIndex);
 				} else {
 					modelsHeadLineColRegionList = modelsHeadLineColList.slice(this.currentRule.displayPosition.startIndex);
 				}
@@ -261,7 +261,7 @@ define(function(require) {
 		 * 动态加载过程中，重新加载隐藏列视图
 		 * @return {[type]} [description]
 		 */
-		restoreColView: function(region) {
+		restoreHeadItemColView: function(region) {
 			var headItemColList = headItemCols.models,
 				startPosi = region.start,
 				endPosi = region.end,
@@ -315,10 +315,12 @@ define(function(require) {
 		 * @param  {object} modelHeadItemCol 列model对象
 		 */
 		addColHeadContainer: function(modelHeadItemCol) {
-			this.headItemColContainer = new HeadItemColContainer({
-				model: modelHeadItemCol
+			var headItemColContainer = new HeadItemColContainer({
+				model: modelHeadItemCol,
+				frozenLeft: this.currentRule.displayPosition.offsetLeft,
+				endIndex: this.currentRule.displayPosition.endColIndex
 			});
-			this.$el.append(this.headItemColContainer.render().el);
+			this.$el.append(headItemColContainer.render().el);
 		},
 		/**
 		 * collection增加新model对象
@@ -470,6 +472,25 @@ define(function(require) {
 			}
 		},
 		/**
+		 * 移除视图，移除该视图下的列视图
+		 */
+		removeHeadItemCols: function() {
+			var headItemColList = headItemCols.models,
+				scrollStartPosi = cache.gridLineView.left, //滚动区域起始坐标
+				scrollEndPosi = cache.gridLineView.right, //滚动区域结束坐标
+				startIndex = this.currentRule.displayPosition.startIndex,
+				endIndex = this.currentRule.displayPosition.endIndex,
+				i;
+			//该视图区为滚动区
+			if (typeof endIndex === undefined) {
+				startIndex = binary.newModelBinary(scrollStartPosi, headItemCols.models, 'left', 'width');
+				endIndex = binary.newModelBinary(scrollEndPosi, headItemCols.models, 'left', 'width');
+			}
+			for (i = startIndex; i < endIndex + 1; i++) {
+				headItemColList[i].destroyView();
+			}
+		},
+		/**
 		 * 视图销毁
 		 * @method destroy
 		 */
@@ -479,8 +500,7 @@ define(function(require) {
 			Backbone.off('event:colWidthAdjust');
 			Backbone.off('event:restoreHideCols');
 			Backbone.off('event:restoreColView');
-			this.undelegateEvents();
-			this.headItemColContainer.destroy();
+			this.removeHeadItemCols();
 			this.remove();
 		}
 	});

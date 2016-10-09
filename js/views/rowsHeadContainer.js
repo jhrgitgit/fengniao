@@ -7,6 +7,7 @@ define(function(require) {
 		cache = require('basic/tools/cache'),
 		binary = require('basic/util/binary'),
 		send = require('basic/tools/send'),
+		buildAlias = require('basic/tools/buildalias'),
 		headItemRows = require('collections/headItemRow'),
 		headItemCols = require('collections/headItemCol'),
 		cells = require('collections/cells'),
@@ -54,6 +55,8 @@ define(function(require) {
 			this.currentRule = cache.CurrentRule;
 			if (cache.TempProp.isFrozen !== true || this.currentRule.displayPosition.endIndex === undefined) {
 				this.listenTo(headItemRows, 'add', this.addRowsHeadContainer);
+				//动态加载，还原删除的列视图
+				Backbone.on('event:restoreRowView', this.restoreHeadItemRowView, this);
 			}
 
 		},
@@ -104,6 +107,22 @@ define(function(require) {
 			Backbone.trigger('call:mainContainer', this.callView('viewMainContainer'));
 			Backbone.trigger('call:cellsContainer', this.callView('viewCellsContainer'));
 			Backbone.trigger('call:rowsAllHeadContainer', this.callView('viewRowsAllHeadContainer'));
+		},
+		restoreHeadItemRowView: function(region) {
+			var headItemRowList = headItemRows.models,
+				startPosi = region.start,
+				endPosi = region.end,
+				startIndex,
+				endIndex,
+				i, len;
+
+			startIndex = binary.newModelBinary(startPosi, headItemRowList, 'top', 'height');
+			endIndex = binary.newModelBinary(endPosi, headItemRowList, 'top', 'height');
+			for (i = startIndex; i < endIndex + 1; i++) {
+				if (!headItemRowList[i].get('isView')) {
+					this.addRowsHeadContainer(headItemRowList[i]);
+				}
+			}
 		},
 		/**
 		 * 用于其他视图，绑定该视图或调用该视图方法
@@ -409,6 +428,25 @@ define(function(require) {
 
 		},
 		/**
+		 * 移除视图，移除该视图下的列视图
+		 */
+		removeHeadItemRows: function() {
+			var headItemRowList = headItemRows.models,
+				scrollStartPosi = cache.gridLineView.top, //滚动区域起始坐标
+				scrollEndPosi = cache.gridLineView.bottom, //滚动区域结束坐标
+				startIndex = this.currentRule.displayPosition.startIndex,
+				endIndex = this.currentRule.displayPosition.endIndex,
+				i;
+			//该视图区为滚动区
+			if (typeof endIndex === 'undefined') {
+				startIndex = binary.newModelBinary(scrollStartPosi, headItemRows.models, 'top', 'height');
+				endIndex = binary.newModelBinary(scrollEndPosi, headItemRows.models, 'top', 'height');
+			}
+			for (i = startIndex; i < endIndex + 1; i++) {
+				headItemRowList[i].destroyView();
+			}
+		},
+		/**
 		 * 视图销毁
 		 * @method destroy
 		 */
@@ -416,7 +454,8 @@ define(function(require) {
 			Backbone.off('call:rowsHeadContainer');
 			Backbone.off('event:rowsHeadContainer:relaseSpaceEffect');
 			Backbone.off('event:rowHeightAdjust');
-			this.undelegateEvents();
+			Backbone.off('event:restoreRowView');
+			this.removeHeadItemRows();
 			this.remove();
 		}
 	});

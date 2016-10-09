@@ -37,87 +37,116 @@ define(function(require) {
 		 * @param  allAttributes 容器属性,设置容器，宽度，高度
 		 */
 		initialize: function() {
-			var modelsHeadLineRowList,
-				modelsHeadLineRowRegionList,
-				headItemColRegionList,
-				modelLastHeadLineRow,
+			var headItemRowList,
 				headItemColList,
-				lastHeadLineCol,
-				len, i;
+				headItemRowRegionList,
+				headItemColRegionList,
+				lastHeadItemRow,
+				lastHeadItemCol,
+				startColIndex,
+				endColIndex,
+				startRowIndex,
+				endRowIndex,
+				len;
 
 			Backbone.on('event:mainContainer:destroy', this.destroy, this);
 			Backbone.on('event:mainContainer:attributesRender', this.attributesRender, this);
 			Backbone.on('event:mainContainer:appointPosition', this.appointPosition, this);
 
 			this.currentRule = clone.clone(cache.CurrentRule);
+			this.boxAttributes = this.currentRule.boxAttributes;
 
+			startRowIndex = this.currentRule.displayPosition.startRowIndex;
+			startColIndex = this.currentRule.displayPosition.startColIndex;
+			endRowIndex = this.currentRule.displayPosition.endRowIndex;
+			endColIndex = this.currentRule.displayPosition.endColIndex;
+
+			headItemRowRegionList = headItemRowList = headItemRows.models;
+			headItemColRegionList = headItemColList = headItemCols.models;
+
+			//对主区域，绑定滚动事件，并初始化视图加载缓存变量
 			if (this.currentRule.eventScroll) {
-				/**
-				 * 绑定滚动事件
-				 * @property events
-				 * @type {Object}
-				 */
 				this.delegateEvents({
 					'scroll': 'syncScroll'
 				});
 				Backbone.on('call:mainContainer', this.callMainContainer, this);
 				Backbone.on('event:mainContainer:nextCellPosition', this.nextCellPosition, this);
 				Backbone.on('event:mainContainer:addBottom', this.addBottom, this);
+				this.initGridViewCache(startColIndex, startRowIndex);
 			}
 			this.boxModel = {};
-
-			this.boxAttributes = this.currentRule.boxAttributes;
-
 			// for reduction position , prevent event scroll auto trigger.
 			this.isPreventScroll = true;
 
 			this.recordScrollLeft = this.recordScrollTop = 0;
 
-			modelsHeadLineRowRegionList = modelsHeadLineRowList = headItemRows.models;
-			headItemColRegionList = headItemColList = headItemCols.models;
 			//计算容器高度
 			if (cache.TempProp.isFrozen) {
-				if (this.currentRule.displayPosition.endRowIndex) {
-					modelsHeadLineRowRegionList = modelsHeadLineRowList.slice(this.currentRule.displayPosition.startRowIndex, this.currentRule.displayPosition.endRowIndex);
+				if (endRowIndex) {
+					headItemRowRegionList = headItemRowList.slice(startRowIndex, endRowIndex);
 				} else {
-					modelsHeadLineRowRegionList = modelsHeadLineRowList.slice(this.currentRule.displayPosition.startRowIndex);
+					headItemRowRegionList = headItemRowList.slice(startRowIndex);
 				}
-				if (this.currentRule.displayPosition.endColIndex) {
-					headItemColRegionList = headItemColList.slice(this.currentRule.displayPosition.startColIndex, this.currentRule.displayPosition.endColIndex);
+				if (endColIndex) {
+					headItemColRegionList = headItemColList.slice(startColIndex, endColIndex);
 				} else {
-					headItemColRegionList = headItemColList.slice(this.currentRule.displayPosition.startColIndex);
+					headItemColRegionList = headItemColList.slice(startColIndex);
 				}
 			}
-			len = modelsHeadLineRowRegionList.length;
-			modelLastHeadLineRow = modelsHeadLineRowRegionList[len - 1];
+
+			len = headItemRowRegionList.length;
+			lastHeadItemRow = headItemRowRegionList[len - 1];
 			len = headItemColRegionList.length;
-			lastHeadLineCol = headItemColRegionList[len - 1];
-			//ps:计算问题
-			this.boxModel.height = modelLastHeadLineRow.get('top') + modelLastHeadLineRow.get('height') - modelsHeadLineRowRegionList[0].get('top');
-			this.boxModel.width = lastHeadLineCol.get('left') + lastHeadLineCol.get('width') - headItemColRegionList[0].get('left');
+			lastHeadItemCol = headItemColRegionList[len - 1];
+			this.boxModel.height = lastHeadItemRow.get('top') + lastHeadItemRow.get('height') - headItemRowRegionList[0].get('top');
+			this.boxModel.width = lastHeadItemCol.get('left') + lastHeadItemCol.get('width') - headItemColRegionList[0].get('left');
+		},
+		/**
+		 * 动态加载，视图区域缓存变量初始化
+		 * @param  {int} startColIndex 视图区域列起始索引
+		 * @param  {int} startRowIndex 视图区域列起始索引
+		 */
+		initGridViewCache: function(startColIndex, startRowIndex) {
+			var headItemRowList = headItemRows.models,
+				headItemColList = headItemCols.models,
+				limitRight,
+				limitBottom,
+				lastRowModel,
+				lastColModel,
+				endRowIndex,
+				endColIndex,
+				isUnload,
+				maxRight,
+				maxBottom;
 
-			//mianContainer内部列视图显示区域
-			// this.display.left = headItemColRegionList[0].get(left);
-			// this.display.right = headItemColRegionList[0].get(left);
+			cache.gridLineView.left = headItemColList[startColIndex].get('left');
+			cache.gridLineView.top = headItemRowList[startRowIndex].get('top');
 
-			this.rowsViewBottomPosi = this.boxModel.height;
-			config.displayRowHeight = this.rowsViewBottomPosi;
-			cache.visibleRegion.top = 0;
-			cache.visibleRegion.bottom = this.rowsViewBottomPosi;
+			lastRowModel = headItemRowList[headItemRowList.length - 1];
+			lastColModel = headItemColList[headItemColList.length - 1];
+			maxRight = lastColModel.get('left') + lastColModel.get('width');
+			maxBottom = lastRowModel.get('top') + lastRowModel.get('height');
 
-
-			//视图行列视图加载区域
-			// cache.gridLineView = {};
-			//待修改：应该使用this.boxAttributes+预加载区，判断滚动区域行列对象的可视范围
-			//通过遍历计算，获取列视图加载区域
-			len = headItemColRegionList.length;
-			//放入cache中，重新拉取cell单元格使用
-			cache.gridLineView.left = headItemColRegionList[0].get('left');
-			for (i = 1; i < len; i++) {
-				if (headItemColRegionList[i].get('isView') === false) {
-					cache.gridLineView.right = headItemColRegionList[i - 1].get('left') + headItemColRegionList[i - 1].get('width');
-					break;
+			if (cache.gridLineView.right === 0) { //新建excel或重新加载excel(第一次初始化页面)
+				cache.gridLineView.right = maxRight;
+				cache.gridLineView.bottom = maxBottom;
+			} else {
+				limitRight = cache.gridLineView.left + this.boxAttributes.width + config.System.prestrainWidth;
+				limitBottom = cache.gridLineView.top + this.boxAttributes.height + config.System.prestrainHeight;
+				limitRight = limitRight < maxRight ? limitRight : maxRight;
+				limitBottom = limitBottom < maxBottom ? limitBottom : maxBottom;
+				if (cache.localRowPosi !== 0) { //由于单元格位移，可能造成需要向后台加载数据情况
+					isUnload = loadRecorder.isIncludeUnLoadRegion(cache.gridLineView.left,
+						limitRight, cache.gridLineView.top, limitBottom, cache.gridLineLoadRegion);
+					if (isUnload) {
+						this.requestRegionData(cache.gridLineView.left,
+							limitRight, cache.gridLineView.top, limitBottom);
+					}
 				}
+				endRowIndex = binary.newModelBinary(limitBottom, headItemRowList, 'top', 'height');
+				endColIndex = binary.newModelBinary(limitRight, headItemColList, 'left', 'width');
+				cache.gridLineView.bottom = headItemRowList[endRowIndex].get('top') + headItemRowList[endRowIndex].get('height');
+				cache.gridLineView.right = headItemColList[endColIndex].get('left') + headItemColList[endColIndex].get('width');
 			}
 		},
 		/**
@@ -139,22 +168,6 @@ define(function(require) {
 				});
 			}
 		},
-
-		// addCellViewPublish: function(cellModel) {
-		// 	this.publish(cellModel, 'addCellViewPublish');
-		// },
-
-		// addRowHeadItemViewPublish: function(headItemRowModel) {
-		// 	this.publish(headItemRowModel, 'addRowHeadItemViewPublish');
-		// },
-		// addHeadItemView: function(headItemRowModel) {
-		// 	var gridLineRowContainer;
-		// 	gridLineRowContainer = new GridLineRowContainer({
-		// 		model: headItemRowModel,
-		// 		frozenTop: this.currentRule.displayPosition.offsetTop
-		// 	});
-		// 	this.cellsContainer.gridLineContainer.rowsGridContainer.$el.append(gridLineRowContainer.render().el);
-		// },
 		/**
 		 * 页面渲染方法
 		 * @method render
@@ -310,12 +323,8 @@ define(function(require) {
 		syncScroll: function() {
 			var verticalDirection,
 				transverseDirection,
-				modelRowList,
-				modelColList,
 				userViewRowModel,
 				userViewColModel,
-				userViewEndRowModel,
-				userViewEndColModel,
 				currentDisplayViewTop = this.recordScrollTop,
 				currentDisplayViewLeft = this.recordScrollLeft;
 
@@ -324,20 +333,12 @@ define(function(require) {
 
 			verticalDirection = currentDisplayViewTop - this.el.scrollTop;
 			transverseDirection = currentDisplayViewLeft - this.el.scrollLeft;
-			//save user view position , alias
+
 			if (!cache.TempProp.isFrozen) {
-				modelRowList = headItemRows;
-				modelColList = headItemCols;
-				userViewRowModel = modelRowList.getModelByPosition(this.recordScrollTop);
-				userViewEndRowModel = modelRowList.getModelByPosition(this.recordScrollTop + this.el.offsetHeight);
+				userViewRowModel = headItemRows.getModelByPosition(this.recordScrollTop);
+				userViewColModel = headItemCols.getModelByPosition(this.recordScrollLeft);
 
-				cache.UserView.rowAlias = userViewRowModel.get('alias');
-				cache.UserView.rowEndAlias = userViewEndRowModel.get('alias');
-				userViewColModel = modelColList.getModelByPosition(this.recordScrollLeft);
-				userViewEndColModel = modelColList.getModelByPosition(this.recordScrollLeft + this.el.offsetWidth);
-				cache.UserView.colAlias = userViewColModel.get('alias');
 			}
-
 			//as scrollbar scroll up
 			if (verticalDirection > 0) {
 				this.addTop(currentDisplayViewTop);
@@ -383,9 +384,9 @@ define(function(require) {
 			}
 			offset = offsetTop + userViewTop;
 			currentLimitTop = offset + this.el.scrollTop - config.System.prestrainHeight;
-			currentLimitTop = currentLimitTop > 0 ? currentLimitTop : 0;
+			currentLimitTop = currentLimitTop > offset ? currentLimitTop : offset;
 			currentTop = cache.gridLineView.top;
-			if (currentTop > currentLimitTop) {
+			if (currentTop >= currentLimitTop) {
 				return;
 			}
 			startIndex = binary.newModelBinary(currentTop, headItemRowList, 'top', 'height');
@@ -404,7 +405,7 @@ define(function(require) {
 					tempCellList[i].hide();
 				}
 			}
-			cache.gridLineView.top = headItemRowList[endIndex].get('physicsBox').top;
+			cache.gridLineView.top = headItemRowList[endIndex].get('top');
 		},
 		/**
 		 * 显示行上方到达加载区域，添加视图视图
@@ -418,27 +419,34 @@ define(function(require) {
 				userViewTop = 0,
 				isUnload = false,
 				fristViewIndex,
+				loadTop,
 				currentTop = cache.gridLineView.top, //当前视图显示上边界
+				localMaxBottom = cache.localRowPosi, //服务端列对象最大下边界
 				currentLimitTop,
 				currentLimitBottom;
 			//用于冻结情况的处理
 			if (cache.TempProp.isFrozen === true) {
-				offsetTop = this.currentRule.displayPosition.offsetLeft;
+				offsetTop = this.currentRule.displayPosition.offsetTop;
 				userViewTop = headItemRows.getModelByAlias(cache.UserView.rowAlias).get('top');
 			}
 			offset = offsetTop + userViewTop;
-			currentLimitTop = Math.floor(this.el.scrollTop - config.System.prestrainHeight);
-			currentLimitBottom = Math.floor(this.el.scrollTop + this.el.offsetHeight + config.System.prestrainHeight);
+
+			currentLimitTop = Math.floor(offset + this.el.scrollTop - config.System.prestrainHeight);
+			currentLimitBottom = Math.floor(offset + this.el.scrollTop + this.el.offsetHeight + config.System.prestrainHeight);
 			currentTop = currentTop < currentLimitBottom ? currentTop : currentLimitBottom;
-			currentLimitTop = currentLimitTop > 0 ? currentLimitTop : 0;
-			if (currentTop < currentLimitTop) {
+			currentLimitTop = currentLimitTop > offset ? currentLimitTop : offset;
+			// console.log(currentLimitTop + '+' + currentTop);
+			if (currentTop <= currentLimitTop) {
 				return;
 			}
-			isUnload = loadRecorder.isIncludeUnLoadRegion(cache.gridLineView.left,
-				cache.gridLineView.right, currentLimitTop, currentTop, cache.gridLineLoadRegion);
-			if (isUnload) {
-				this.requestRegionData(cache.gridLineView.left,
-					cache.gridLineView.right, currentLimitTop, currentTop);
+			if (currentLimitTop <= localMaxBottom && localMaxBottom !== 0) {
+				loadTop = currentTop < localMaxBottom ? currentTop : localMaxBottom;
+				isUnload = loadRecorder.isIncludeUnLoadRegion(cache.gridLineView.left,
+					cache.gridLineView.right, currentLimitTop, loadTop, cache.gridLineLoadRegion);
+				if (isUnload) {
+					this.requestRegionData(cache.gridLineView.left,
+						cache.gridLineView.right, currentLimitTop, loadTop);
+				}
 			}
 			//从新加载列视图
 			Backbone.trigger('event:restoreRowView', {
@@ -452,7 +460,7 @@ define(function(require) {
 				top: currentLimitTop,
 				bottom: currentTop
 			});
-
+			this.adaptShowState(cache.gridLineView.left, cache.gridLineView.right, currentLimitTop, currentTop, 'vertical');
 			fristViewIndex = binary.newModelBinary(currentLimitTop, headItemRowList, 'top', 'height');
 			cache.gridLineView.top = headItemRowList[fristViewIndex].get('top');
 		},
@@ -480,18 +488,18 @@ define(function(require) {
 			//用于冻结情况的处理
 			if (cache.TempProp.isFrozen === true) {
 				offsetTop = this.currentRule.displayPosition.offsetTop;
-				userViewTop = headItemRows.getModelByAlias(cache.UserView.colAlias).get('top');
+				userViewTop = headItemRows.getModelByAlias(cache.UserView.rowAlias).get('top');
 			}
 			offset = offsetTop + userViewTop;
 
-			currentLimitBottom = Math.floor(this.el.scrollTop + this.el.offsetHeight + config.System.prestrainHeight);
-			currentLimitTop = Math.floor(this.el.scrollTop - config.System.prestrainHeight);
+			currentLimitBottom = Math.floor(offset + this.el.scrollTop + this.el.offsetHeight + config.System.prestrainHeight);
+			currentLimitTop = Math.floor(offset + this.el.scrollTop - config.System.prestrainHeight);
 			currentBottom = currentBottom > currentLimitTop ? currentBottom : currentLimitTop;
 			//需要添加一个currentBottom的判断，如果currentBottom出现了小于top预加载情况
-			if (currentBottom > currentLimitBottom) {
+			if (currentBottom >= currentLimitBottom) {
 				return;
 			}
-			if (currentBottom < localMaxBottom) {
+			if (currentBottom <= localMaxBottom && localMaxBottom !== 0) {
 				//请求区域数据localMaxRight;
 				loadBottom = currentLimitBottom < localMaxBottom ? currentLimitBottom : localMaxBottom;
 				isUnload = loadRecorder.isIncludeUnLoadRegion(cache.gridLineView.left,
@@ -500,18 +508,6 @@ define(function(require) {
 					this.requestRegionData(cache.gridLineView.left,
 						cache.gridLineView.right, currentBottom, loadBottom);
 				}
-				//重新加载行视图
-				Backbone.trigger('event:restoreRowView', {
-					start: currentBottom,
-					end: loadBottom
-				});
-				//重新加载单元格视图
-				Backbone.trigger('event:restoreCellView', {
-					left: cache.gridLineView.left,
-					right: cache.gridLineView.right,
-					top: currentBottom,
-					bottom: loadBottom
-				});
 			}
 			lastHeadItem = headItemRowList[headItemRowList.length - 1];
 			maxBottom = lastHeadItem.get('top') + lastHeadItem.get('height');
@@ -527,8 +523,8 @@ define(function(require) {
 				}
 				endIndex = headItemRows.length - 1;
 				//处理含有整行操作
-				rowOperate.generateRow(startIndex, endIndex);
-				//修改单元格加载区域
+				// rowOperate.generateRow(startIndex, endIndex);
+				currentLimitBottom = headItemRowList[endIndex].get('top') + headItemRowList[endIndex].get('height');
 				//发送增长列长度 len
 				send.PackAjax({
 					url: 'sheet.htm?m=addrowline',
@@ -538,11 +534,24 @@ define(function(require) {
 					})
 				});
 			}
+			//重新加载行视图
+			Backbone.trigger('event:restoreRowView', {
+				start: currentBottom,
+				end: currentLimitBottom
+			});
+			//重新加载单元格视图
+			Backbone.trigger('event:restoreCellView', {
+				left: cache.gridLineView.left,
+				right: cache.gridLineView.right,
+				top: currentBottom,
+				bottom: currentLimitBottom
+			});
+			this.adaptShowState(cache.gridLineView.left, cache.gridLineView.right, currentBottom, currentLimitBottom, 'vertical');
 			lastViewIndex = binary.newModelBinary(currentLimitBottom, headItemRowList, 'top', 'height');
 			cache.gridLineView.bottom = headItemRowList[lastViewIndex].get('left') + headItemRowList[lastViewIndex].get('width');
 			//整行选中状态处理(选中视图绑定事件)
 			Backbone.trigger('event:cellsContainer:adaptHeight');
-			Backbone.trigger('event:colsAllHeadContainer:adaptHeight');
+			Backbone.trigger('event:rowsAllHeadContainer:adaptHeight');
 			Backbone.trigger('event:selectRegionContainer:adapt');
 		},
 		/**
@@ -577,7 +586,7 @@ define(function(require) {
 			if (endIndex - startIndex < 1) {
 				return;
 			}
-			for (i = startIndex + 1; i < endIndex; i++) {
+			for (i = startIndex + 1; i < endIndex + 1; i++) {
 				headItemRowList[i].destroyView();
 			}
 			//删除超过加载区域(视图区+预加载区)cell视图对象
@@ -613,32 +622,20 @@ define(function(require) {
 				userViewLeft = headItemCols.getModelByAlias(cache.UserView.colAlias).get('left');
 			}
 			offset = offsetLeft + userViewLeft;
-			currentLimitRight = Math.floor(this.el.scrollLeft + this.el.offsetWidth + config.System.prestrainWidth);
-			currentLimitLeft = Math.floor(this.el.scrollLeft - config.System.prestrainWidth);
-			currentRight = currentRight < currentLimitLeft ? currentRight : currentLimitLeft;
+			currentLimitRight = Math.floor(offset + this.el.scrollLeft + this.el.offsetWidth + config.System.prestrainWidth);
+			currentLimitLeft = Math.floor(offset + this.el.scrollLeft - config.System.prestrainWidth);
+			currentRight = currentRight > currentLimitLeft ? currentRight : currentLimitLeft;
 			if (currentRight > currentLimitRight) {
 				return;
 			}
-			if (currentRight < localMaxRight) {
+			if (currentRight <= localMaxRight && localMaxRight !== 0) {
 				//请求区域数据localMaxRight;
 				loadRight = currentLimitRight < localMaxRight ? currentLimitRight : localMaxRight;
 				isUnload = loadRecorder.isIncludeUnLoadRegion(currentRight,
-					loadRight, cache.gridLineView.top, cache.gridLineView.bottom, cache.gridLoadRegion);
+					loadRight, cache.gridLineView.top, cache.gridLineView.bottom, cache.gridLineLoadRegion);
 				if (isUnload) {
 					this.requestRegionData(currentRight, loadRight, cache.gridLineView.top, cache.gridLineView.bottom);
 				}
-				//从新加载列视图
-				Backbone.trigger('event:restoreColView', {
-					start: currentRight,
-					end: loadRight
-				});
-				//从新加载单元格视图
-				Backbone.trigger('event:restoreCellView', {
-					left: currentRight,
-					right: loadRight,
-					top: cache.gridLineView.top,
-					bottom: cache.gridLineView.bottom
-				});
 			}
 			//自增加列对象
 			lastHeadItem = headItemColList[headItemColList.length - 1];
@@ -653,6 +650,7 @@ define(function(require) {
 					headItemCols.generate();
 				}
 				endIndex = headItemCols.length - 1;
+				currentLimitRight = headItemColList[endIndex].get('left') + headItemColList[endIndex].get('width');
 				//处理含有整行操作
 				rowOperate.generateCol(startIndex, endIndex);
 				//发送增长列长度 len
@@ -664,6 +662,19 @@ define(function(require) {
 					})
 				});
 			}
+			//从新加载列视图
+			Backbone.trigger('event:restoreColView', {
+				start: currentRight,
+				end: currentLimitRight
+			});
+			//从新加载单元格视图
+			Backbone.trigger('event:restoreCellView', {
+				left: currentRight,
+				right: currentLimitRight,
+				top: cache.gridLineView.top,
+				bottom: cache.gridLineView.bottom
+			});
+			this.adaptShowState(currentRight, currentLimitRight, cache.gridLineView.top, cache.gridLineView.bottom, 'transverse');
 			lastViewIndex = binary.newModelBinary(currentLimitRight, headItemColList, 'left', 'width');
 			cache.gridLineView.right = headItemColList[lastViewIndex].get('left') + headItemColList[lastViewIndex].get('width');
 			//整行选中状态处理(选中视图绑定事件)
@@ -678,7 +689,9 @@ define(function(require) {
 				userViewLeft = 0,
 				isUnload = false,
 				fristViewIndex,
+				loadLeft,
 				currentLeft = cache.gridLineView.left, //当前视图显示右边界
+				localMaxRight = cache.localColPosi, //服务端列对象最大右边界
 				currentLimitRight,
 				currentLimitLeft; //当前视图需要显示右边界
 			//用于冻结情况的处理
@@ -687,37 +700,41 @@ define(function(require) {
 				userViewLeft = headItemCols.getModelByAlias(cache.UserView.colAlias).get('left');
 			}
 			offset = offsetLeft + userViewLeft;
-			currentLimitLeft = Math.floor(this.el.scrollLeft - config.System.prestrainWidth);
-			currentLimitRight = Math.floor(this.el.scrollLeft + this.el.offsetWidth + config.System.prestrainWidth);
-			currentLeft = currentLeft < currentLimitRight? currentLeft : currentLimitRight;
-			currentLimitLeft = currentLimitLeft > 0 ? currentLimitLeft : 0;
-			if (currentLeft < currentLimitLeft) {
+			currentLimitLeft = Math.floor(offset + this.el.scrollLeft - config.System.prestrainWidth);
+			currentLimitRight = Math.floor(offset + this.el.scrollLeft + this.el.offsetWidth + config.System.prestrainWidth);
+			currentLeft = currentLeft < currentLimitRight ? currentLeft : currentLimitRight;
+			currentLimitLeft = currentLimitLeft > offset ? currentLimitLeft : offset;
+			if (currentLeft <= currentLimitLeft) {
 				return;
 			}
-			isUnload = loadRecorder.isIncludeUnLoadRegion(currentLimitLeft,
-				currentLeft, cache.gridLineView.top, cache.gridLineView.bottom, cache.gridLineLoadRegion);
-			if (isUnload) {
-				this.requestRegionData(currentLimitLeft, currentLeft, cache.gridLineView.top, cache.gridLineView.bottom);
+			if (currentLimitLeft <= localMaxRight && localMaxRight !== 0) {
+				loadLeft = currentLeft < localMaxRight ? currentLeft : localMaxRight;
+				isUnload = loadRecorder.isIncludeUnLoadRegion(currentLimitLeft,
+					loadLeft, cache.gridLineView.top, cache.gridLineView.bottom, cache.gridLineLoadRegion);
+				if (isUnload) {
+					this.requestRegionData(currentLimitLeft, loadLeft, cache.gridLineView.top, cache.gridLineView.bottom);
+				}
 			}
 			//从新加载列视图
 			Backbone.trigger('event:restoreColView', {
-				start: currentLeft,
-				end: currentLimitLeft
+				start: currentLimitLeft,
+				end: currentLeft
 			});
 			//从新加载单元格视图
 			Backbone.trigger('event:restoreCellView', {
-				left: currentLeft,
-				right: currentLimitLeft,
+				left: currentLimitLeft,
+				right: currentLeft,
 				top: cache.gridLineView.top,
 				bottom: cache.gridLineView.bottom
 			});
-
+			//维护单元格，行列模型显示属性
+			this.adaptShowState(currentLimitLeft, currentLeft, cache.gridLineView.top, cache.gridLineView.bottom, 'transverse');
 			fristViewIndex = binary.newModelBinary(currentLimitLeft, headItemColList, 'left', 'width');
 			cache.gridLineView.left = headItemColList[fristViewIndex].get('left');
 		},
 
 		deleteLeft: function() {
-			var currentLeft =cache.gridLineView.left,
+			var currentLeft = cache.gridLineView.left,
 				currentLimitLeft,
 				startIndex,
 				endIndex,
@@ -735,7 +752,7 @@ define(function(require) {
 			}
 			offset = offsetLeft + userViewLeft;
 			currentLimitLeft = offset + this.el.scrollLeft - config.System.prestrainWidth;
-			currentLimitLeft = currentLimitLeft > 0 ? currentLimitLeft : 0;
+			currentLimitLeft = currentLimitLeft > offset ? currentLimitLeft : offset;
 			if (currentLeft >= currentLimitLeft) {
 				return;
 			}
@@ -751,14 +768,14 @@ define(function(require) {
 			tempCellList = cells.getCellsByColIndex(startIndex, endIndex - 1);
 			for (i = 0; i < tempCellList.length; i++) {
 				//判断cell视图对象最上端区域是否仍在加载区域(视图区+预加载区)
-				if (tempCellList[i].get('left') + tempCellList[i].get('width') < currentLimitLeft) {
+				if (tempCellList[i].get('physicsBox').left + tempCellList[i].get('physicsBox').width < currentLimitLeft) {
 					tempCellList[i].hide();
 				}
 			}
 			cache.gridLineView.left = headItemColList[endIndex].get('left');
 		},
 		deleteRight: function() {
-			var currentRight =cache.gridLineView.right,
+			var currentRight = cache.gridLineView.right,
 				currentLimitRight,
 				startIndex,
 				endIndex,
@@ -785,18 +802,54 @@ define(function(require) {
 			if (endIndex - startIndex < 1) {
 				return;
 			}
-			for (i = startIndex + 1; i < endIndex; i++) {
+			for (i = startIndex + 1; i < endIndex + 1; i++) {
 				headItemColList[i].destroyView();
 			}
 			//删除超过加载区域(视图区+预加载区)cell视图对象
 			tempCellList = cells.getCellsByColIndex(startIndex + 1, endIndex);
 			for (i = 0; i < tempCellList.length; i++) {
 				//判断cell视图对象最上端区域是否仍在加载区域(视图区+预加载区)
-				if (tempCellList[i].get('left') > currentLimitRight) {
+				if (tempCellList[i].get('physicsBox').left > currentLimitRight) {
 					tempCellList[i].hide();
 				}
 			}
-			cache.gridLineView.right = headItemColList[endIndex].get('left') + headItemColList[endIndex].get('width');
+			cache.gridLineView.right = headItemColList[startIndex].get('left') + headItemColList[startIndex].get('width');
+		},
+		/**
+		 * 重新加载动态隐藏视图，修改视图模型，显示属性
+		 * @param  {number} left   左边界
+		 * @param  {number} right  右边界
+		 * @param  {number} top    上边界
+		 * @param  {number} bottom 下边界
+		 * @param  {string} type   横向/纵向
+		 */
+		adaptShowState: function(left, right, top, bottom, type) {
+			var headItemColList = headItemCols.models,
+				headItemRowList = headItemRows.models,
+				startRowIndex,
+				startColIndex,
+				endRowIndex,
+				endColIndex,
+				cellList,
+				i;
+
+			startRowIndex = binary.newModelBinary(top, headItemRowList, 'top', 'height', 0, headItemRowList.length - 1);
+			startColIndex = binary.newModelBinary(left, headItemColList, 'left', 'width', 0, headItemColList.length - 1);
+			endRowIndex = binary.newModelBinary(bottom, headItemRowList, 'top', 'height', 0, headItemRowList.length - 1);
+			endColIndex = binary.newModelBinary(right, headItemColList, 'left', 'width', 0, headItemColList.length - 1);
+			cellList = cells.getCellByRow(startRowIndex, startColIndex, endRowIndex, endColIndex);
+			for (i = 0; i < cellList.length; i++) {
+				cellList[i].set('showState', true);
+			}
+			if (type === 'transverse') {
+				for (i = startColIndex; i < endColIndex + 1; i++) {
+					headItemColList[i].set('isView', true);
+				}
+			} else {
+				for (i = startRowIndex; i < endRowIndex + 1; i++) {
+					headItemRowList[i].set('isView', true);
+				}
+			}
 		},
 		requestRegionData: function(left, right, top, bottom) {
 			var temp,

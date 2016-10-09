@@ -27,16 +27,12 @@ define(function(require) {
 		 * @return {[type]}
 		 */
 		initialize: function(option) {
-			var modelList,
-				currentIndex;
-
 			this.offsetTop = cache.TempProp.isFrozen ? (option.frozenTop || 0) : 0;
 			this.endIndex = option.endIndex;
 			this.listenTo(this.model, 'change:top', this.changeTop);
 			this.listenTo(this.model, 'change:height', this.changeHeight);
 			this.listenTo(this.model, 'destroy', this.remove);
 			this.currentRule = util.clone(cache.CurrentRule);
-			modelList = headItemRows;
 
 			if (cache.TempProp.isFrozen !== true || this.endIndex === undefined) {
 				this.listenTo(this.model, 'change:isView', this.destroy);
@@ -81,7 +77,9 @@ define(function(require) {
 		 * @method destroy
 		 */
 		destroy: function() {
-			this.remove();
+			if (!this.model.get('isView') || this.model.get('hidden')) {
+				this.remove();
+			}
 		}
 	});
 	return GridLineRowContainer;

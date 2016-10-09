@@ -1,6 +1,7 @@
 define(function(require) {
 	'use strict';
 	var $ = require('lib/jquery'),
+		_ = require('lib/underscore'),
 		Backbone = require('lib/backbone'),
 		send = require('basic/tools/send'),
 		config = require('spreadsheet/config'),

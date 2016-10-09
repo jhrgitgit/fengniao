@@ -35,7 +35,6 @@ define(function(require) {
 			this.offsetTop = cache.TempProp.isFrozen ? (option.frozenTop || 0) : 0;
 			this.reduceUserView = option.reduceUserView;
 			this.endIndex = option.endIndex;
-			//ps:修改
 			if (cache.TempProp.isFrozen !== true || this.endIndex === undefined) {
 				this.listenTo(this.model, 'change:isView', this.destroy);
 			}
@@ -93,7 +92,9 @@ define(function(require) {
 		 * @method destroy
 		 */
 		destroy: function() {
-			this.remove();
+			if (!this.model.get('isView') || this.model.get('hidden')) {
+				this.remove();
+			}
 		}
 	});
 	return HeadItemRowContainer;

@@ -3,7 +3,10 @@ define(function(require) {
 	var $ = require('lib/jquery'),
 		_ = require('lib/underscore'),
 		Backbone = require('lib/backbone'),
+		config = require('spreadsheet/config'),
+		cache = require('basic/tools/cache'),
 		siderLineRows = require('collections/siderLineRow'),
+		headItemRows = require('collections/headItemRow'),
 		RowsHeadContainer = require('views/rowsHeadContainer'),
 		SiderLineRowContainer = require('views/siderLineRowContainer');
 
@@ -31,8 +34,10 @@ define(function(require) {
 		 */
 		initialize: function(options) {
 			Backbone.on('call:rowsAllHeadContainer', this.callRowsAllHeadContainer, this);
+			Backbone.on('event:rowsAllHeadContainer:adaptHeight', this.adaptHeight, this);
 			this.listenTo(siderLineRows, 'add', this.addSiderLineRow);
 			this.boxAttributes = options.boxAttributes;
+			this.currentRule = cache.CurrentRule;
 		},
 		/**
 		 * 页面渲染方法
@@ -52,7 +57,6 @@ define(function(require) {
 				for (i = len - 1; i >= 0; i--) {
 					this.addSiderLineRow(modelSiderLineRowList[i]);
 				}
-
 			}
 			return this;
 		},
@@ -96,6 +100,25 @@ define(function(require) {
 				top: 0,
 				height: config.User.cellHeight - 1
 			});
+		},
+		adaptHeight: function() {
+			var headItemRowList = headItemRows.models,
+				endIndex,
+				height,
+				top, i;
+
+			endIndex = this.currentRule.displayPosition.endRowIndex;
+			if (typeof endIndex === 'undefined') {
+				endIndex = headItemRowList.length - 1;
+			}
+			for (i = endIndex; i > -1; i--) {
+				if (!headItemRowList[i].get('hidden')) {
+					top = headItemRowList[i].get('top');
+					height = headItemRowList[i].get('height');
+					break;
+				}
+			}
+			this.$el.css('height', top + height);
 		},
 		/**
 		 * 视图销毁

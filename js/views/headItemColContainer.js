@@ -26,10 +26,9 @@ define(function(require) {
 		 * 初始化监听
 		 * @method initialize
 		 */
-		initialize: function() {
+		initialize: function(option) {
 			// this.frozenOffsetLeft = option.frozenLeft;
 			this.listenTo(this.model, 'change:activeState', this.toggleActive);
-			this.listenTo(this.model, 'change:isView', this.destroy);
 			this.listenTo(this.model, 'change:hidden', this.destroy);
 			this.listenTo(this.model, 'change:left', this.changeLeft);
 			this.listenTo(this.model, 'change:width', this.changeWidth);
@@ -38,14 +37,19 @@ define(function(require) {
 			this.listenTo(this.model, 'change:isRightAjacentHide', this.changeRightAjacentHide);
 			this.listenTo(this.model, 'destroy', this.remove);
 			this.currentRule = util.clone(cache.CurrentRule);
-			this.offsetLeft = cache.TempProp.isFrozen ? (this.currentRule.displayPosition.offsetLeft || 0) : 0;
+
+			this.offsetLeft = cache.TempProp.isFrozen ? (option.frozenLeft || 0) : 0;
+			this.endIndex = option.endIndex;
+
+			if (cache.TempProp.isFrozen === false || this.endIndex === undefined) {
+				this.listenTo(this.model, 'change:isView', this.destroy);
+			}
 		},
 		/**
 		 * 渲染本身对象
 		 * @method render
 		 */
 		render: function() {
-
 			/**
 			 * @property {string} template
 			 */
@@ -73,7 +77,7 @@ define(function(require) {
 				left = modelJSON.left,
 				userViewLeft = 0,
 				userViewModel;
-			if (this.currentRule.reduceUserView) {
+			if (cache.TempProp.isFrozen) {
 				userViewModel = headItemCols.getModelByAlias(cache.UserView.colAlias);
 				userViewLeft = userViewModel.toJSON().left;
 			}

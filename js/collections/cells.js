@@ -168,8 +168,9 @@ define(function(require) {
 		 * @return {array} Cell数组
 		 */
 		getCellByRow: function(startIndexRow, startIndexCol, endIndexRow, endIndexCol) {
-			var cells = [],
+			var cellList = [],
 				i, j,
+				tempObj = {},
 				rowAlias,
 				colAlias;
 			if (endIndexRow === undefined) {
@@ -184,14 +185,15 @@ define(function(require) {
 					colAlias = headItemCols.models[j].get('alias');
 					if (cache.CellsPosition.strandY[rowAlias] !== undefined && cache.CellsPosition.strandY[rowAlias][colAlias] !== undefined) {
 						//cells去掉重复
-						if (cells.indexOf(this.at(cache.CellsPosition.strandY[rowAlias][colAlias])) === -1) {
-							cells.push(this.at(cache.CellsPosition.strandY[rowAlias][colAlias]));
+						if (typeof tempObj[cache.CellsPosition.strandY[rowAlias][colAlias]] === 'undefined') {
+							cellList.push(this.at(cache.CellsPosition.strandY[rowAlias][colAlias]));
+							tempObj[cache.CellsPosition.strandY[rowAlias][colAlias]] = 0;
 						}
 					}
 
 				}
 			}
-			return cells;
+			return cellList;
 
 		},
 		/**
@@ -887,7 +889,7 @@ define(function(require) {
 						tempObjRow = cachePosition[alias];
 						for (tempAttr in tempObjRow) {
 							if (tempObj[tempObjRow[tempAttr]] === undefined) {
-								cacheCellArray.push(cellModelList[tempColObj[tempAttr]]);
+								cacheCellArray.push(cellModelList[tempObjRow[tempAttr]]);
 								tempObj[tempObjRow[tempAttr]] = 0;
 							}
 						}
@@ -1060,7 +1062,10 @@ define(function(require) {
 			gridLineColList = headItemCols;
 			cellModelList = this;
 
-			if (startRowIndex === undefined && startColIndex === undefined && endRowIndex === undefined && endColIndex === undefined) {
+			if (startRowIndex === undefined &&
+				startColIndex === undefined &&
+				endRowIndex === undefined &&
+				endColIndex === undefined) {
 				return cellModelList;
 			}
 

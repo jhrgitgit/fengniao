@@ -8,6 +8,8 @@ define(function(require) {
 		cache = require('basic/tools/cache'),
 		send = require('basic/tools/send'),
 		Cell = require('models/cell'),
+		siderLineRows = require('collections/siderLineRow'),
+		siderLineCols = require('collections/siderLineCol'),
 		headItemRows = require('collections/headItemRow'),
 		headItemCols = require('collections/headItemCol'),
 		cells = require('collections/cells'),
@@ -48,6 +50,7 @@ define(function(require) {
 			this.viewCellsContainer = options.parentView;
 			if (this.model.get("selectType") === "operation") {
 				Backbone.on('event:selectRegion:patchOprCell', this.patchOprCell, this);
+				Backbone.on('event:selectRegionContainer:adapt', this.adapt, this);
 			}
 			//添加视图
 			this.listenTo(this.model, 'change', this.changePosition);
@@ -72,10 +75,48 @@ define(function(require) {
 			this.$el.html(this.template());
 			return this;
 		},
+		/**
+		 * 整行整列选中后，滚动自适应宽高
+		 */
+		adapt: function() {
+			var modelJSON = this.model.toJSON(),
+				headItemRowList = headItemRows.models,
+				headItemColList = headItemCols.models,
+				startIndex,
+				endIndex,
+				width,
+				height, i;
+
+
+			if (modelJSON.wholePosi.endX === 'MAX') {
+				width = headItemCols.getMaxDistanceWidth();
+				if (width > modelJSON.physicsBox.width) {
+					startIndex = binary.newModelBinary(modelJSON.physicsBox.width, headItemColList, 'left', 'width');
+					endIndex = binary.newModelBinary(width, headItemColList, 'left', 'width');
+					this.model.set('physicsBox.width', width);
+					siderLineCols.models[0].set('width', width);
+					for (i = startIndex; i < endIndex + 1; i++) {
+						headItemColList[i].set('activeState', true);
+					}
+				}
+			}
+			if (modelJSON.wholePosi.endY === 'MAX') {
+				height = headItemRows.getMaxDistanceHeight();
+				if (height > modelJSON.physicsBox.height) {
+					startIndex = binary.newModelBinary(modelJSON.physicsBox.height, headItemRowList, 'top', 'height');
+					endIndex = binary.newModelBinary(height, headItemRowList, 'top', 'height');
+					this.model.set('physicsBox.height', height);
+					siderLineRows.models[0].set('height', height);
+					for (i = startIndex; i < endIndex + 1; i++) {
+						headItemRowList[i].set('activeState', true);
+					}
+				}
+			}
+		},
 		showComment: function(event) {
 			var model,
 				self = this;
-			
+
 			if (cache.commentState) {
 				return;
 			}
